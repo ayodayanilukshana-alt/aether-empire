@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockets & Spacecraft: 3D Size Comparison — Interactive Simulation Workstation | SCALEVERSE 3D</title>
+<meta name="description" content="A 3D scale comparison of the largest rockets and spacecraft in history, from the V-2 to the Starship.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-spacecraft-3d-size-comparison.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Rockets & Spacecraft: 3D Size Comparison - Interactive Simulation Workstation", "applicationCategory": "EducationalApplication", "operatingSystem": "Web Browser", "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-spacecraft-3d-size-comparison.html", "description": "A 3D scale comparison of the largest rockets and spacecraft in history, from the V-2 to the Starship.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "VideoObject", "name": "Rockets & Spacecraft: 3D Size Comparison", "description": "A 3D scale comparison of the largest rockets and spacecraft in history, from the V-2 to the Starship.", "thumbnailUrl": ["https://i.ytimg.com/vi/kjUgBduPecg/maxresdefault.jpg"], "uploadDate": "2026-11-14", "embedUrl": "https://www.youtube.com/embed/kjUgBduPecg"}]}</script>
+<style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#05070b; color:#f8fafc; font-family:'Inter',system-ui,sans-serif; line-height:1.6; }
+    .topbar { border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; background:#0b0f17; }
+    .container { max-width:1360px; margin:0 auto; padding:36px 28px; }
+    .eyebrow { font-family:monospace; font-size:0.78rem; color:#38bdf8; letter-spacing:0.12em; margin-bottom:8px; }
+    h1 { font-size:2.2rem; margin-bottom:10px; }
+    .subtitle { color:#94a3b8; margin-bottom:28px; max-width:840px; }
+    .workstation-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; margin-bottom:36px; }
+    @media(max-width:980px){ .workstation-grid { grid-template-columns:1fr; } }
+    .panel { background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:22px; }
+    .panel-title { font-family:monospace; font-size:0.8rem; color:#94a3b8; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-bottom:18px; display:flex; justify-content:space-between; }
+    .control-group { margin-bottom:16px; }
+    .control-label { display:flex; justify-content:space-between; font-family:monospace; font-size:0.82rem; color:#94a3b8; margin-bottom:6px; }
+    .control-val { color:#f8fafc; font-weight:700; }
+    input[type="range"] { width:100%; accent-color:#38bdf8; cursor:pointer; }
+    .btn-row { display:flex; gap:10px; margin-top:18px; }
+    .btn { flex:1; padding:10px; font-family:monospace; font-size:0.78rem; font-weight:700; border:1px solid #334155; background:#111827; color:#fff; border-radius:6px; cursor:pointer; }
+    .btn-primary { background:#38bdf8; color:#05070b; border-color:#38bdf8; }
+    .kpi-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+    .kpi-card { background:#05070b; border:1px solid #1e293b; border-radius:6px; padding:14px; }
+    .kpi-label { font-family:monospace; font-size:0.72rem; color:#64748b; }
+    .kpi-num { font-family:monospace; font-size:1.45rem; font-weight:700; margin-top:4px; }
+    .canvas-stage { width:100%; height:400px; background:#030508; border:1px solid #1e293b; border-radius:6px; display:block; }
+    a { color:inherit; text-decoration:none; }
+    </style>
+</head>
+<body>
+  <nav class="topbar">
+    <a href="./index.html">SCALEVERSE 3D PORTAL</a>
+    <span>MODEL ID: kjUgBduPecg</span>
+  </nav>
+  <main class="container">
+    <div class="eyebrow">SCALEVERSE 3D QUANTITATIVE WORKSTATION</div>
+    <h1>Rockets & Spacecraft: 3D Size Comparison</h1>
+    <p class="subtitle">A 3D scale comparison of the largest rockets and spacecraft in history, from the V-2 to the Starship.</p>
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <div class="workstation-grid">
+          <div class="panel">
+            <div class="panel-title"><span>3D CAD TELEMETRY CONTROLS</span><span>WEBGL 60HZ</span></div>
+            <div class="control-group">
+              <div class="control-label"><span>ORBIT ANGLE (DEG)</span><span class="control-val" id="lblA">25 DEG</span></div>
+              <input type="range" id="inA" min="-180" max="180" value="25" oninput="up3D()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>CAMERA ZOOM DISTANCE</span><span class="control-val" id="lblZ">310 M</span></div>
+              <input type="range" id="inZ" min="80" max="750" value="310" oninput="up3D()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>CUSTOM REFERENCE PILLAR (M)</span><span class="control-val" id="lblH">100 M</span></div>
+              <input type="range" id="inH" min="5" max="1500" value="100" oninput="up3D()">
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><span>VOLUMETRIC 3D SCALE VIEWPORT: ROCKETS & SPACECRAFT: 3D SIZE COMPARISON</span><span>INTERACTIVE</span></div>
+            <div id="v3d" class="canvas-stage"></div>
+          </div>
+        </div>
+        <script>
+        let sc, cam, ren, usrMesh;
+        function init3D() {
+          const box = document.getElementById('v3d');
+          sc = new THREE.Scene(); sc.background = new THREE.Color(0x050811);
+          cam = new THREE.PerspectiveCamera(42, (box.clientWidth||860)/400, 1, 10000);
+          ren = new THREE.WebGLRenderer({antialias:true}); ren.setSize(box.clientWidth||860, 400);
+          box.appendChild(ren.domElement);
+          sc.add(new THREE.HemisphereLight(0xffffff, 0x38bdf8, 1.3));
+          sc.add(new THREE.GridHelper(1600, 80, 0x38bdf8, 0x1e293b));
+          const heights = [24, 58, 95, 138, 185];
+          const cols = [0x10b981, 0x3b82f6, 0xf59e0b, 0xec4899, 0x38bdf8];
+          heights.forEach((h, idx) => {
+            const m = new THREE.Mesh(new THREE.BoxGeometry(26, h, 14), new THREE.MeshStandardMaterial({color:cols[idx%5]}));
+            m.position.set((idx-2)*58, h/2, 0); sc.add(m);
+          });
+          usrMesh = new THREE.Mesh(new THREE.CylinderGeometry(9,9,1,24), new THREE.MeshBasicMaterial({color:0xfacc15, wireframe:true}));
+          usrMesh.position.set(175, 50, 0); sc.add(usrMesh);
+          up3D();
+        }
+        function up3D() {
+          const a = Number(document.getElementById('inA').value)*Math.PI/180;
+          const z = Number(document.getElementById('inZ').value);
+          const h = Number(document.getElementById('inH').value);
+          document.getElementById('lblA').innerText = document.getElementById('inA').value + ' DEG';
+          document.getElementById('lblZ').innerText = z + ' M';
+          document.getElementById('lblH').innerText = h + ' M';
+          if (usrMesh) { usrMesh.scale.y = Math.max(10, h*0.2); usrMesh.position.y = usrMesh.scale.y/2; }
+          if (cam && ren) { cam.position.set(Math.sin(a)*z, 95, Math.cos(a)*z); cam.lookAt(0,60,0); ren.render(sc, cam); }
+        }
+        window.addEventListener('DOMContentLoaded', init3D);
+        </script>
+        
+    <div class="workstation-grid">
+      <div class="panel">
+        <div class="panel-title"><span>RELATED SIMULATION WORKSTATIONS</span><span>INDEX</span></div>
+        <a href="./rockets-v-2-to-starship-3d-size-comparison.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">Rockets: V-2 to Starship 3D Size Comparison</a>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span>OFFICIAL BROADCAST STREAM</span><span>YOUTUBE</span></div>
+        <iframe style="width:100%;height:380px;border:1px solid #1e293b;border-radius:6px;" src="https://www.youtube.com/embed/kjUgBduPecg" allowfullscreen></iframe>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
