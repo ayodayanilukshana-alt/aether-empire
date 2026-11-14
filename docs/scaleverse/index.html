@@ -3,24 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SCALEVERSE 3D — VOLUMETRIC CAD & SPATIAL TELEMETRY COMPARISON WORKSTATION</title>
+<title>SCALEVERSE 3D — VOLUMETRIC CAD & SPATIAL TELEMETRY WORKSTATION</title>
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/">
 <style>
-  body { background:#05070b; color:#f8fafc; font-family:'Inter',system-ui,sans-serif; margin:0; }
-  .topbar { border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; background:#0b0f17; }
-  .container { max-width:1360px; margin:0 auto; padding:36px 28px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:22px; margin-top:28px; }
-  a { color:inherit; text-decoration:none; }
-</style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#05070b; color:#f8fafc; font-family:'Inter',system-ui,sans-serif; line-height:1.6; }
+    .topbar { border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; background:#0b0f17; }
+    .container { max-width:1360px; margin:0 auto; padding:36px 28px; }
+    .eyebrow { font-family:monospace; font-size:0.78rem; color:#38bdf8; letter-spacing:0.12em; margin-bottom:8px; }
+    h1 { font-size:2.2rem; margin-bottom:10px; }
+    .subtitle { color:#94a3b8; margin-bottom:28px; max-width:840px; }
+    .workstation-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; margin-bottom:36px; }
+    @media(max-width:980px){ .workstation-grid { grid-template-columns:1fr; } }
+    .panel { background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:22px; }
+    .panel-title { font-family:monospace; font-size:0.8rem; color:#94a3b8; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-bottom:18px; display:flex; justify-content:space-between; }
+    .control-group { margin-bottom:16px; }
+    .control-label { display:flex; justify-content:space-between; font-family:monospace; font-size:0.82rem; color:#94a3b8; margin-bottom:6px; }
+    .control-val { color:#f8fafc; font-weight:700; }
+    input[type="range"] { width:100%; accent-color:#38bdf8; cursor:pointer; }
+    .btn-row { display:flex; gap:10px; margin-top:18px; }
+    .btn { flex:1; padding:10px; font-family:monospace; font-size:0.78rem; font-weight:700; border:1px solid #334155; background:#111827; color:#fff; border-radius:6px; cursor:pointer; }
+    .btn-primary { background:#38bdf8; color:#05070b; border-color:#38bdf8; }
+    .kpi-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+    .kpi-card { background:#05070b; border:1px solid #1e293b; border-radius:6px; padding:14px; }
+    .kpi-label { font-family:monospace; font-size:0.72rem; color:#64748b; }
+    .kpi-num { font-family:monospace; font-size:1.45rem; font-weight:700; margin-top:4px; }
+    .canvas-stage { width:100%; height:400px; background:#030508; border:1px solid #1e293b; border-radius:6px; display:block; }
+    a { color:inherit; text-decoration:none; }
+     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:22px; margin-top:28px; }</style>
 </head>
 <body>
   <nav class="topbar">
     <a href="../index.html">AETHER SYSTEMS</a>
-    <span>SCALEVERSE 3D (2 WORKSTATIONS)</span>
+    <span>SCALEVERSE 3D (3 WORKSTATIONS)</span>
   </nav>
   <main class="container">
-    <div style="font-family:monospace;color:#38bdf8;letter-spacing:0.12em;font-size:0.8rem;">SCALEVERSE 3D DIVISION</div>
-    <h1 style="font-size:2.2rem;margin:8px 0;">VOLUMETRIC CAD & SPATIAL TELEMETRY COMPARISON WORKSTATION</h1>
+    <div class="eyebrow">SCALEVERSE 3D DIVISION</div>
+    <h1>VOLUMETRIC CAD & SPATIAL TELEMETRY WORKSTATION</h1>
     <div class="grid">
+        <a href="./rockets-from-v-2-to-starship-3d-size-showdown.html" style="display:block;background:#0b0f17;border:1px solid #1e293b;border-radius:8px;padding:22px;color:#f8fafc;text-decoration:none;">
+          <div style="font-family:monospace;font-size:0.75rem;color:#64748b;margin-bottom:8px;">MODEL ID: fv45STPO1W4 • 2026-11-14</div>
+          <h3 style="margin:0 0 10px 0;color:#38bdf8;">Rockets From V-2 to Starship: 3D Size Showdown</h3>
+          <p style="color:#94a3b8;font-size:0.9rem;margin:0 0 16px 0;">A 3D scale comparison of five historic rockets, from the V-2 to SpaceX Starship, revealing their mind-blowing size differences.
+
+Try our Free Interactive Calcul</p>
+          <div style="font-family:monospace;font-size:0.78rem;font-weight:700;color:#05070b;background:#38bdf8;padding:8px 12px;border-radius:4px;display:inline-block;">LAUNCH WORKSTATION</div>
+        </a>
         <a href="./rockets-spacecraft-3d-size-comparison.html" style="display:block;background:#0b0f17;border:1px solid #1e293b;border-radius:8px;padding:22px;color:#f8fafc;text-decoration:none;">
           <div style="font-family:monospace;font-size:0.75rem;color:#64748b;margin-bottom:8px;">MODEL ID: kjUgBduPecg • 2026-11-14</div>
           <h3 style="margin:0 0 10px 0;color:#38bdf8;">Rockets & Spacecraft: 3D Size Comparison</h3>
