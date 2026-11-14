@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netflix vs Gym: $5/Day Showdown — Interactive Simulation Workstation | CAPITALGRID</title>
+<meta name="description" content="Comparing $5/day spent on Netflix subscriptions versus investing that money in a gym membership and index funds over 15 years.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/netflix-vs-gym-5-day-showdown.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Netflix vs Gym: $5/Day Showdown - Interactive Simulation Workstation", "applicationCategory": "FinanceApplication", "operatingSystem": "Web Browser", "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/netflix-vs-gym-5-day-showdown.html", "description": "Comparing $5/day spent on Netflix subscriptions versus investing that money in a gym membership and index funds over 15 years.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "VideoObject", "name": "Netflix vs Gym: $5/Day Showdown", "description": "Comparing $5/day spent on Netflix subscriptions versus investing that money in a gym membership and index funds over 15 years.", "thumbnailUrl": ["https://i.ytimg.com/vi/WZ0LNgShnc4/maxresdefault.jpg"], "uploadDate": "2026-11-14", "embedUrl": "https://www.youtube.com/embed/WZ0LNgShnc4"}]}</script>
+<style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#05070b; color:#f8fafc; font-family:'Inter',system-ui,sans-serif; line-height:1.6; }
+    .topbar { border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; background:#0b0f17; }
+    .container { max-width:1360px; margin:0 auto; padding:36px 28px; }
+    .eyebrow { font-family:monospace; font-size:0.78rem; color:#10b981; letter-spacing:0.12em; margin-bottom:8px; }
+    h1 { font-size:2.2rem; margin-bottom:10px; }
+    .subtitle { color:#94a3b8; margin-bottom:28px; max-width:840px; }
+    .workstation-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; margin-bottom:36px; }
+    @media(max-width:980px){ .workstation-grid { grid-template-columns:1fr; } }
+    .panel { background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:22px; }
+    .panel-title { font-family:monospace; font-size:0.8rem; color:#94a3b8; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-bottom:18px; display:flex; justify-content:space-between; }
+    .control-group { margin-bottom:16px; }
+    .control-label { display:flex; justify-content:space-between; font-family:monospace; font-size:0.82rem; color:#94a3b8; margin-bottom:6px; }
+    .control-val { color:#f8fafc; font-weight:700; }
+    input[type="range"] { width:100%; accent-color:#10b981; cursor:pointer; }
+    .btn-row { display:flex; gap:10px; margin-top:18px; }
+    .btn { flex:1; padding:10px; font-family:monospace; font-size:0.78rem; font-weight:700; border:1px solid #334155; background:#111827; color:#fff; border-radius:6px; cursor:pointer; }
+    .btn-primary { background:#10b981; color:#05070b; border-color:#10b981; }
+    .kpi-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+    .kpi-card { background:#05070b; border:1px solid #1e293b; border-radius:6px; padding:14px; }
+    .kpi-label { font-family:monospace; font-size:0.72rem; color:#64748b; }
+    .kpi-num { font-family:monospace; font-size:1.45rem; font-weight:700; margin-top:4px; }
+    .canvas-stage { width:100%; height:400px; background:#030508; border:1px solid #1e293b; border-radius:6px; display:block; }
+    a { color:inherit; text-decoration:none; }
+    </style>
+</head>
+<body>
+  <nav class="topbar">
+    <a href="./index.html">CAPITALGRID PORTAL</a>
+    <span>MODEL ID: WZ0LNgShnc4</span>
+  </nav>
+  <main class="container">
+    <div class="eyebrow">CAPITALGRID QUANTITATIVE WORKSTATION</div>
+    <h1>Netflix vs Gym: $5/Day Showdown</h1>
+    <p class="subtitle">Comparing $5/day spent on Netflix subscriptions versus investing that money in a gym membership and index funds over 15 years.</p>
+    
+        <div class="workstation-grid">
+          <div class="panel">
+            <div class="panel-title"><span>PARAMETER CONFIGURATION</span><span>QUANT ENGINE V12</span></div>
+            <div class="control-group">
+              <div class="control-label"><span>INITIAL CAPITAL ($)</span><span class="control-val" id="lblCap">$5,000</span></div>
+              <input type="range" id="inCap" min="500" max="100000" step="500" value="5000" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>MONTHLY CONTRIBUTION ($)</span><span class="control-val" id="lblMo">$150</span></div>
+              <input type="range" id="inMo" min="0" max="5000" step="25" value="150" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>HABIT / BASELINE RATE (%)</span><span class="control-val" id="lblRA">4.5%</span></div>
+              <input type="range" id="inRA" min="0" max="25" step="0.5" value="4.5" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>ALPHA COMPOUNDING CAGR (%)</span><span class="control-val" id="lblRB">22.0%</span></div>
+              <input type="range" id="inRB" min="2" max="45" step="0.5" value="22.0" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>TIME HORIZON (YEARS)</span><span class="control-val" id="lblYrs">15 YRS</span></div>
+              <input type="range" id="inYrs" min="3" max="40" step="1" value="15" oninput="runQuant()">
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="exportCSV()">EXPORT CSV TELEMETRY</button>
+              <button class="btn" onclick="copyLink()">SHARE SCENARIO URL</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><span>LIVE EQUITY CURVE & COMPOUNDING SPREAD</span><span id="stMsg">INTERACTIVE</span></div>
+            <div class="kpi-strip">
+              <div class="kpi-card"><div class="kpi-label">BASELINE TERMINAL</div><div class="kpi-num" id="kA" style="color:#3b82f6;">$0</div></div>
+              <div class="kpi-card"><div class="kpi-label">ALPHA STRATEGY TERMINAL</div><div class="kpi-num" id="kB" style="color:#10b981;">$0</div></div>
+              <div class="kpi-card"><div class="kpi-label">NET WEALTH SPREAD</div><div class="kpi-num" id="kD" style="color:#facc15;">$0</div></div>
+            </div>
+            <canvas id="qCan" class="canvas-stage" width="880" height="400"></canvas>
+          </div>
+        </div>
+        <script>
+        let rows = [];
+        function runQuant() {
+          const cap = Number(document.getElementById('inCap').value);
+          const mo = Number(document.getElementById('inMo').value);
+          const rA = Number(document.getElementById('inRA').value)/100;
+          const rB = Number(document.getElementById('inRB').value)/100;
+          const yrs = Number(document.getElementById('inYrs').value);
+          document.getElementById('lblCap').innerText = '$' + cap.toLocaleString();
+          document.getElementById('lblMo').innerText = '$' + mo.toLocaleString();
+          document.getElementById('lblRA').innerText = (rA*100).toFixed(1) + '%';
+          document.getElementById('lblRB').innerText = (rB*100).toFixed(1) + '%';
+          document.getElementById('lblYrs').innerText = yrs + ' YRS';
+          rows = [];
+          let a = cap, b = cap;
+          for (let y=0; y<=yrs; y++) {
+            rows.push({y, a: Math.round(a), b: Math.round(b)});
+            for (let m=0; m<12; m++) { a = (a+mo)*(1+rA/12); b = (b+mo)*(1+rB/12); }
+          }
+          const last = rows[rows.length-1];
+          document.getElementById('kA').innerText = '$' + last.a.toLocaleString();
+          document.getElementById('kB').innerText = '$' + last.b.toLocaleString();
+          document.getElementById('kD').innerText = '+$' + Math.abs(last.b - last.a).toLocaleString();
+          const c = document.getElementById('qCan'), ctx = c.getContext('2d');
+          ctx.fillStyle = '#030508'; ctx.fillRect(0,0,c.width,c.height);
+          const mx = Math.max(...rows.map(r => Math.max(r.a, r.b, 1))) * 1.1;
+          ['a','b'].forEach((k, idx) => {
+            ctx.beginPath();
+            rows.forEach((r, i) => {
+              const x = 50 + (i/Math.max(rows.length-1,1))*(c.width-80);
+              const y = c.height - 35 - (r[k]/mx)*(c.height-65);
+              if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            });
+            ctx.strokeStyle = idx===0 ? '#3b82f6' : '#10b981'; ctx.lineWidth = 3.5; ctx.stroke();
+          });
+        }
+        function exportCSV() {
+          let csv = 'Year,Baseline_USD,Alpha_Strategy_USD\n';
+          rows.forEach(r => csv += `${r.y},${r.a},${r.b}\n`);
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+          a.download = 'netflix-vs-gym-5-day-showdown.csv'; a.click();
+        }
+        function copyLink() {
+          navigator.clipboard.writeText(window.location.href);
+          document.getElementById('stMsg').innerText = 'URL COPIED';
+        }
+        window.addEventListener('DOMContentLoaded', runQuant);
+        </script>
+        
+    <div class="workstation-grid">
+      <div class="panel">
+        <div class="panel-title"><span>RELATED SIMULATION WORKSTATIONS</span><span>INDEX</span></div>
+        <a href="./5-day-coffee-vs-nvidia-stock-15-year-backtest.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#10b981;font-family:monospace;">$5/Day Coffee vs Nvidia Stock: 15-Year Backtest</a>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span>OFFICIAL BROADCAST STREAM</span><span>YOUTUBE</span></div>
+        <iframe style="width:100%;height:380px;border:1px solid #1e293b;border-radius:6px;" src="https://www.youtube.com/embed/WZ0LNgShnc4" allowfullscreen></iframe>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
