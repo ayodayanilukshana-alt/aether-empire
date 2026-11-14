@@ -3,504 +3,145 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>$5/Day Coffee vs Nvidia Stock: 15-Year Backtest — Interactive Simulation & Quantitative Workstation | CAPITALGRID</title>
-<meta name="description" content="We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years. Run custom simulations, adjust real-time parameters, and export telemetry data.">
+<title>$5/Day Coffee vs Nvidia Stock: 15-Year Backtest — Interactive Simulation Workstation | CAPITALGRID</title>
+<meta name="description" content="We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.">
 <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-nvidia-stock-15-year-backtest.html">
-<meta property="og:title" content="$5/Day Coffee vs Nvidia Stock: 15-Year Backtest — Interactive Simulation Workstation">
-<meta property="og:description" content="We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.">
-<meta property="og:url" content="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-nvidia-stock-15-year-backtest.html">
-<meta property="og:type" content="website">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "$5/Day Coffee vs Nvidia Stock: 15-Year Backtest - Interactive Simulation & Calculator", "applicationCategory": "FinanceApplication", "operatingSystem": "Web Browser", "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-nvidia-stock-15-year-backtest.html", "description": "We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "VideoObject", "name": "$5/Day Coffee vs Nvidia Stock: 15-Year Backtest", "description": "We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.", "thumbnailUrl": ["https://i.ytimg.com/vi/zrQuKBRCBPo/maxresdefault.jpg"], "uploadDate": "2026-11-14", "embedUrl": "https://www.youtube.com/embed/zrQuKBRCBPo"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How does the $5/Day Coffee vs Nvidia Stock: 15-Year Backtest interactive simulator work?", "acceptedAnswer": {"@type": "Answer", "text": "This interactive workstation lets you adjust real-time parameters, run deterministic models, and export CSV telemetry for $5/Day Coffee vs Nvidia Stock: 15-Year Backtest."}}, {"@type": "Question", "name": "Can I share my custom simulation parameters?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Use the Copy Parameter Link button to encode your exact slider configuration into a shareable URL."}}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "$5/Day Coffee vs Nvidia Stock: 15-Year Backtest - Interactive Simulation Workstation", "applicationCategory": "FinanceApplication", "operatingSystem": "Web Browser", "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-nvidia-stock-15-year-backtest.html", "description": "We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "VideoObject", "name": "$5/Day Coffee vs Nvidia Stock: 15-Year Backtest", "description": "We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.", "thumbnailUrl": ["https://i.ytimg.com/vi/zrQuKBRCBPo/maxresdefault.jpg"], "uploadDate": "2026-11-14", "embedUrl": "https://www.youtube.com/embed/zrQuKBRCBPo"}]}</script>
 <style>
-:root {
-  --bg-primary: #05070b;
-  --bg-panel: #0b0f17;
-  --bg-elevated: #111827;
-  --border-subtle: #1e293b;
-  --border-focus: #334155;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Consolas, monospace;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-a { color: inherit; text-decoration: none; }
-.topbar {
-  border-bottom: 1px solid var(--border-subtle);
-  background: rgba(5, 7, 11, 0.88);
-  backdrop-filter: blur(12px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.topbar-inner {
-  max-width: 1380px;
-  margin: 0 auto;
-  padding: 16px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.brand-mark {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-}
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.nav-links {
-  display: flex;
-  gap: 24px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-.nav-links a:hover { color: var(--text-main); }
-.container {
-  max-width: 1380px;
-  margin: 0 auto;
-  padding: 40px 28px;
-}
-.hero-header {
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 32px;
-  margin-bottom: 36px;
-}
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  margin-bottom: 10px;
-  display: inline-block;
-  padding: 4px 10px;
-  border: 1px solid var(--border-focus);
-  border-radius: 4px;
-  background: var(--bg-panel);
-}
-h1 {
-  font-size: clamp(1.8rem, 3.2vw, 2.75rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  margin-bottom: 12px;
-}
-.subtitle {
-  color: var(--text-muted);
-  font-size: 1.05rem;
-  max-width: 820px;
-}
-.workstation-grid {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: 28px;
-  margin-bottom: 44px;
-}
-@media (max-width: 1024px) {
-  .workstation-grid { grid-template-columns: 1fr; }
-}
-.panel {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 24px;
-}
-.panel-title {
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 12px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-}
-.control-group { margin-bottom: 18px; }
-.control-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-  font-family: var(--font-mono);
-}
-.control-val { color: var(--text-main); font-weight: 600; }
-input[type="range"] {
-  width: 100%;
-  accent-color: var(--accent, #38bdf8);
-  cursor: pointer;
-}
-input[type="number"], select {
-  width: 100%;
-  padding: 10px 12px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-focus);
-  color: var(--text-main);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  border-radius: 6px;
-}
-.btn-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-.btn {
-  flex: 1;
-  padding: 10px 14px;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border: 1px solid var(--border-focus);
-  background: var(--bg-elevated);
-  color: var(--text-main);
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: center;
-  transition: 0.15s;
-}
-.btn:hover { border-color: var(--text-main); background: #1e293b; }
-.btn-primary {
-  background: var(--accent, #38bdf8);
-  color: #05070b;
-  border-color: var(--accent, #38bdf8);
-}
-.btn-primary:hover { opacity: 0.9; background: var(--accent, #38bdf8); }
-.kpi-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 22px;
-}
-.kpi-card {
-  background: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 16px;
-}
-.kpi-label {
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.kpi-num {
-  font-family: var(--font-mono);
-  font-size: 1.55rem;
-  font-weight: 700;
-  margin-top: 6px;
-}
-.canvas-stage {
-  width: 100%;
-  height: 440px;
-  background: #030508;
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  display: block;
-  position: relative;
-  overflow: hidden;
-}
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-mono);
-  font-size: 0.84rem;
-  margin-top: 16px;
-}
-.data-table th, .data-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border-subtle);
-  text-align: left;
-}
-.data-table th { color: var(--text-dim); text-transform: uppercase; font-size: 0.75rem; }
-.catalog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 24px;
-}
-.catalog-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.catalog-card:hover {
-  border-color: var(--accent, #38bdf8);
-  transform: translateY(-2px);
-}
-.meta-row {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.catalog-card h3 { font-size: 1.15rem; margin-bottom: 10px; }
-.catalog-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 18px; }
-.seo-article {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 28px;
-  margin-top: 36px;
-}
-@media (max-width: 960px) { .seo-article { grid-template-columns: 1fr; } }
-.seo-article h2 { font-size: 1.3rem; margin: 20px 0 10px; }
-.seo-article p { color: var(--text-muted); margin-bottom: 14px; }
-.faq-item {
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 14px 0;
-}
-.faq-q { font-weight: 600; margin-bottom: 6px; }
-.faq-a { color: var(--text-muted); font-size: 0.92rem; }
-footer {
-  border-top: 1px solid var(--border-subtle);
-  margin-top: 64px;
-  padding: 32px 28px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--text-dim);
-}
-</style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#05070b; color:#f8fafc; font-family:'Inter',system-ui,sans-serif; line-height:1.6; }
+    .topbar { border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; background:#0b0f17; }
+    .container { max-width:1360px; margin:0 auto; padding:36px 28px; }
+    .eyebrow { font-family:monospace; font-size:0.78rem; color:#10b981; letter-spacing:0.12em; margin-bottom:8px; }
+    h1 { font-size:2.2rem; margin-bottom:10px; }
+    .subtitle { color:#94a3b8; margin-bottom:28px; max-width:840px; }
+    .workstation-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; margin-bottom:36px; }
+    @media(max-width:980px){ .workstation-grid { grid-template-columns:1fr; } }
+    .panel { background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:22px; }
+    .panel-title { font-family:monospace; font-size:0.8rem; color:#94a3b8; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-bottom:18px; display:flex; justify-content:space-between; }
+    .control-group { margin-bottom:16px; }
+    .control-label { display:flex; justify-content:space-between; font-family:monospace; font-size:0.82rem; color:#94a3b8; margin-bottom:6px; }
+    .control-val { color:#f8fafc; font-weight:700; }
+    input[type="range"] { width:100%; accent-color:#10b981; cursor:pointer; }
+    .btn-row { display:flex; gap:10px; margin-top:18px; }
+    .btn { flex:1; padding:10px; font-family:monospace; font-size:0.78rem; font-weight:700; border:1px solid #334155; background:#111827; color:#fff; border-radius:6px; cursor:pointer; }
+    .btn-primary { background:#10b981; color:#05070b; border-color:#10b981; }
+    .kpi-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+    .kpi-card { background:#05070b; border:1px solid #1e293b; border-radius:6px; padding:14px; }
+    .kpi-label { font-family:monospace; font-size:0.72rem; color:#64748b; }
+    .kpi-num { font-family:monospace; font-size:1.45rem; font-weight:700; margin-top:4px; }
+    .canvas-stage { width:100%; height:400px; background:#030508; border:1px solid #1e293b; border-radius:6px; display:block; }
+    a { color:inherit; text-decoration:none; }
+    </style>
 </head>
 <body>
   <nav class="topbar">
-    <div class="topbar-inner">
-      <a href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/" class="brand-mark">
-        <span class="status-dot" style="background: #10b981; box-shadow: 0 0 10px #10b981;"></span>
-        <span>CAPITALGRID</span>
-      </a>
-      <div class="nav-links">
-        <a href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/">ALL SIMULATIONS</a>
-        <a href="#video-briefing">VIDEO BRIEFING</a>
-        <a href="#methodology">METHODOLOGY & FAQ</a>
-      </div>
-    </div>
+    <a href="./index.html">CAPITALGRID PORTAL</a>
+    <span>MODEL ID: zrQuKBRCBPo</span>
   </nav>
-
   <main class="container">
-    <header class="hero-header">
-      <div class="eyebrow" style="color: #10b981;">CAPITALGRID RESEARCH WORKSTATION</div>
-      <h1>$5/Day Coffee vs Nvidia Stock: 15-Year Backtest</h1>
-      <p class="subtitle">We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.</p>
-    </header>
-
+    <div class="eyebrow">CAPITALGRID QUANTITATIVE WORKSTATION</div>
+    <h1>$5/Day Coffee vs Nvidia Stock: 15-Year Backtest</h1>
+    <p class="subtitle">We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.</p>
     
-        <div class="workstation-grid" style="--accent: #10b981;">
+        <div class="workstation-grid">
           <div class="panel">
-            <div class="panel-title"><span>PARAMETER CONFIGURATION</span><span>MODEL V9.0</span></div>
+            <div class="panel-title"><span>PARAMETER CONFIGURATION</span><span>QUANT ENGINE V12</span></div>
             <div class="control-group">
               <div class="control-label"><span>INITIAL CAPITAL ($)</span><span class="control-val" id="lblCap">$5,000</span></div>
-              <input type="range" id="inCap" min="500" max="100000" step="500" value="5000" oninput="runQuantModel()">
+              <input type="range" id="inCap" min="500" max="100000" step="500" value="5000" oninput="runQuant()">
             </div>
             <div class="control-group">
               <div class="control-label"><span>MONTHLY CONTRIBUTION ($)</span><span class="control-val" id="lblMo">$150</span></div>
-              <input type="range" id="inMo" min="0" max="5000" step="25" value="150" oninput="runQuantModel()">
+              <input type="range" id="inMo" min="0" max="5000" step="25" value="150" oninput="runQuant()">
             </div>
             <div class="control-group">
-              <div class="control-label"><span>STRATEGY A CAGR (%)</span><span class="control-val" id="lblRateA">7.5%</span></div>
-              <input type="range" id="inRateA" min="1" max="35" step="0.5" value="7.5" oninput="runQuantModel()">
+              <div class="control-label"><span>HABIT / BASELINE RATE (%)</span><span class="control-val" id="lblRA">4.5%</span></div>
+              <input type="range" id="inRA" min="0" max="25" step="0.5" value="4.5" oninput="runQuant()">
             </div>
             <div class="control-group">
-              <div class="control-label"><span>STRATEGY B CAGR (%)</span><span class="control-val" id="lblRateB">21.0%</span></div>
-              <input type="range" id="inRateB" min="1" max="45" step="0.5" value="21.0" oninput="runQuantModel()">
+              <div class="control-label"><span>ALPHA COMPOUNDING CAGR (%)</span><span class="control-val" id="lblRB">22.0%</span></div>
+              <input type="range" id="inRB" min="2" max="45" step="0.5" value="22.0" oninput="runQuant()">
             </div>
             <div class="control-group">
-              <div class="control-label"><span>TIME HORIZON (YEARS)</span><span class="control-val" id="lblYrs">20 YRS</span></div>
-              <input type="range" id="inYrs" min="5" max="40" step="1" value="20" oninput="runQuantModel()">
-            </div>
-            <div class="control-group">
-              <div class="control-label"><span>ANNUAL INFLATION DRAG (%)</span><span class="control-val" id="lblInf">2.8%</span></div>
-              <input type="range" id="inInf" min="0" max="12" step="0.2" value="2.8" oninput="runQuantModel()">
+              <div class="control-label"><span>TIME HORIZON (YEARS)</span><span class="control-val" id="lblYrs">15 YRS</span></div>
+              <input type="range" id="inYrs" min="3" max="40" step="1" value="15" oninput="runQuant()">
             </div>
             <div class="btn-row">
-              <button class="btn btn-primary" onclick="exportCSV()">EXPORT CSV DATA</button>
-              <button class="btn" onclick="copyShareURL()">COPY SCENARIO LINK</button>
+              <button class="btn btn-primary" onclick="exportCSV()">EXPORT CSV TELEMETRY</button>
+              <button class="btn" onclick="copyLink()">SHARE SCENARIO URL</button>
             </div>
           </div>
-
           <div class="panel">
-            <div class="panel-title"><span>LIVE QUANTITATIVE EQUITY CURVE & MONTE CARLO BAND</span><span id="statusTag">READY</span></div>
+            <div class="panel-title"><span>LIVE EQUITY CURVE & COMPOUNDING SPREAD</span><span id="stMsg">INTERACTIVE</span></div>
             <div class="kpi-strip">
-              <div class="kpi-card">
-                <div class="kpi-label">BASELINE TERMINAL VALUE</div>
-                <div class="kpi-num" id="kpiA" style="color: #3b82f6;">$0</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">ALPHA STRATEGY TERMINAL</div>
-                <div class="kpi-num" id="kpiB" style="color: #10b981;">$0</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">NET WEALTH SPREAD (DELTA)</div>
-                <div class="kpi-num" id="kpiDelta" style="color: #facc15;">$0</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">INFLATION-ADJUSTED REAL VALUE</div>
-                <div class="kpi-num" id="kpiReal">$0</div>
-              </div>
+              <div class="kpi-card"><div class="kpi-label">BASELINE TERMINAL</div><div class="kpi-num" id="kA" style="color:#3b82f6;">$0</div></div>
+              <div class="kpi-card"><div class="kpi-label">ALPHA STRATEGY TERMINAL</div><div class="kpi-num" id="kB" style="color:#10b981;">$0</div></div>
+              <div class="kpi-card"><div class="kpi-label">NET WEALTH SPREAD</div><div class="kpi-num" id="kD" style="color:#facc15;">$0</div></div>
             </div>
-            <canvas id="quantCanvas" class="canvas-stage" width="900" height="440"></canvas>
-            <table class="data-table" id="telemetryTable">
-              <thead><tr><th>YEAR</th><th>TOTAL PRINCIPAL</th><th>BASELINE ASSET</th><th>ALPHA STRATEGY</th><th>NET SPREAD</th></tr></thead>
-              <tbody id="tableBody"></tbody>
-            </table>
+            <canvas id="qCan" class="canvas-stage" width="880" height="400"></canvas>
           </div>
         </div>
         <script>
-        let currentRows = [];
-        function initParamsFromURL() {
-          const p = new URLSearchParams(window.location.search);
-          ['inCap','inMo','inRateA','inRateB','inYrs','inInf'].forEach(id => {
-            if (p.has(id)) document.getElementById(id).value = p.get(id);
-          });
-          runQuantModel();
-        }
-        function runQuantModel() {
+        let rows = [];
+        function runQuant() {
           const cap = Number(document.getElementById('inCap').value);
           const mo = Number(document.getElementById('inMo').value);
-          const rA = Number(document.getElementById('inRateA').value) / 100;
-          const rB = Number(document.getElementById('inRateB').value) / 100;
+          const rA = Number(document.getElementById('inRA').value)/100;
+          const rB = Number(document.getElementById('inRB').value)/100;
           const yrs = Number(document.getElementById('inYrs').value);
-          const inf = Number(document.getElementById('inInf').value) / 100;
-
           document.getElementById('lblCap').innerText = '$' + cap.toLocaleString();
           document.getElementById('lblMo').innerText = '$' + mo.toLocaleString();
-          document.getElementById('lblRateA').innerText = (rA*100).toFixed(1) + '%';
-          document.getElementById('lblRateB').innerText = (rB*100).toFixed(1) + '%';
+          document.getElementById('lblRA').innerText = (rA*100).toFixed(1) + '%';
+          document.getElementById('lblRB').innerText = (rB*100).toFixed(1) + '%';
           document.getElementById('lblYrs').innerText = yrs + ' YRS';
-          document.getElementById('lblInf').innerText = (inf*100).toFixed(1) + '%';
-
-          currentRows = [];
-          let vA = cap, vB = cap, prin = cap;
-          for (let y = 0; y <= yrs; y++) {
-            currentRows.push({ year: y, prin: Math.round(prin), a: Math.round(vA), b: Math.round(vB), spread: Math.round(vB - vA) });
-            for (let m = 0; m < 12; m++) {
-              vA = (vA + mo) * (1 + rA / 12);
-              vB = (vB + mo) * (1 + rB / 12);
-              prin += mo;
-            }
+          rows = [];
+          let a = cap, b = cap;
+          for (let y=0; y<=yrs; y++) {
+            rows.push({y, a: Math.round(a), b: Math.round(b)});
+            for (let m=0; m<12; m++) { a = (a+mo)*(1+rA/12); b = (b+mo)*(1+rB/12); }
           }
-          const last = currentRows[currentRows.length - 1];
-          const realVal = Math.round(last.b / Math.pow(1 + inf, yrs));
-          document.getElementById('kpiA').innerText = '$' + last.a.toLocaleString();
-          document.getElementById('kpiB').innerText = '$' + last.b.toLocaleString();
-          document.getElementById('kpiDelta').innerText = (last.spread >= 0 ? '+$' : '-$') + Math.abs(last.spread).toLocaleString();
-          document.getElementById('kpiReal').innerText = '$' + realVal.toLocaleString();
-
-          drawChart(currentRows);
-          renderTable(currentRows, yrs);
-        }
-        function drawChart(rows) {
-          const c = document.getElementById('quantCanvas');
-          const ctx = c.getContext('2d');
-          const W = c.width, H = c.height;
-          ctx.fillStyle = '#030508'; ctx.fillRect(0, 0, W, H);
-          const maxV = Math.max(...rows.map(r => Math.max(r.a, r.b, 1))) * 1.1;
-
-          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
-          ctx.fillStyle = '#64748b'; ctx.font = '12px monospace';
-          for (let g = 0; g <= 4; g++) {
-            const y = 30 + (g / 4) * (H - 70);
-            const val = Math.round(maxV * (1 - g / 4));
-            ctx.beginPath(); ctx.moveTo(65, y); ctx.lineTo(W - 25, y); ctx.stroke();
-            ctx.fillText('$' + val.toLocaleString(), 8, y + 4);
-          }
-
-          function plotLine(key, col) {
+          const last = rows[rows.length-1];
+          document.getElementById('kA').innerText = '$' + last.a.toLocaleString();
+          document.getElementById('kB').innerText = '$' + last.b.toLocaleString();
+          document.getElementById('kD').innerText = '+$' + Math.abs(last.b - last.a).toLocaleString();
+          const c = document.getElementById('qCan'), ctx = c.getContext('2d');
+          ctx.fillStyle = '#030508'; ctx.fillRect(0,0,c.width,c.height);
+          const mx = Math.max(...rows.map(r => Math.max(r.a, r.b, 1))) * 1.1;
+          ['a','b'].forEach((k, idx) => {
             ctx.beginPath();
-            rows.forEach((r, idx) => {
-              const x = 65 + (idx / Math.max(rows.length - 1, 1)) * (W - 95);
-              const y = H - 40 - (r[key] / maxV) * (H - 70);
-              if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            rows.forEach((r, i) => {
+              const x = 50 + (i/Math.max(rows.length-1,1))*(c.width-80);
+              const y = c.height - 35 - (r[k]/mx)*(c.height-65);
+              if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
             });
-            ctx.strokeStyle = col; ctx.lineWidth = 3.5; ctx.stroke();
-          }
-          plotLine('prin', '#475569');
-          plotLine('a', '#3b82f6');
-          plotLine('b', '#10b981');
-        }
-        function renderTable(rows, yrs) {
-          const step = Math.max(1, Math.floor(yrs / 6));
-          let html = '';
-          rows.filter((r, idx) => idx % step === 0 || idx === rows.length - 1).forEach(r => {
-            html += `<tr><td>Year ${r.year}</td><td>$${r.prin.toLocaleString()}</td><td>$${r.a.toLocaleString()}</td><td>$${r.b.toLocaleString()}</td><td>$${r.spread.toLocaleString()}</td></tr>`;
+            ctx.strokeStyle = idx===0 ? '#3b82f6' : '#10b981'; ctx.lineWidth = 3.5; ctx.stroke();
           });
-          document.getElementById('tableBody').innerHTML = html;
         }
         function exportCSV() {
-          let csv = 'Year,Principal_USD,Baseline_USD,Alpha_Strategy_USD,Net_Spread_USD\n';
-          currentRows.forEach(r => { csv += `${r.year},${r.prin},${r.a},${r.b},${r.spread}\n`; });
-          const blob = new Blob([csv], { type: 'text/csv' });
+          let csv = 'Year,Baseline_USD,Alpha_Strategy_USD\n';
+          rows.forEach(r => csv += `${r.y},${r.a},${r.b}\n`);
           const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = '5-day-coffee-vs-nvidia-stock-15-year-backtest-telemetry.csv';
-          a.click();
+          a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+          a.download = '5-day-coffee-vs-nvidia-stock-15-year-backtest.csv'; a.click();
         }
-        function copyShareURL() {
-          const p = new URLSearchParams();
-          ['inCap','inMo','inRateA','inRateB','inYrs','inInf'].forEach(id => p.set(id, document.getElementById(id).value));
-          const u = window.location.origin + window.location.pathname + '?' + p.toString();
-          navigator.clipboard.writeText(u);
-          document.getElementById('statusTag').innerText = 'LINK COPIED TO CLIPBOARD';
+        function copyLink() {
+          navigator.clipboard.writeText(window.location.href);
+          document.getElementById('stMsg').innerText = 'URL COPIED';
         }
-        window.addEventListener('DOMContentLoaded', initParamsFromURL);
+        window.addEventListener('DOMContentLoaded', runQuant);
         </script>
         
-
-    <section class="seo-article" id="video-briefing">
+    <div class="workstation-grid">
       <div class="panel">
-        <div class="panel-title"><span>TECHNICAL METHODOLOGY & ANALYTICAL BREAKDOWN</span><span>SPECIFICATION</span></div>
-        <h2>Executive Simulation Summary</h2>
-        <p>We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.</p>
-        <p>This interactive computing terminal accompanies our high-frame-rate visual breakdown of <strong>$5/Day Coffee vs Nvidia Stock: 15-Year Backtest</strong>. Unlike static charts, the workstation above executes real-time client-side calculations in your browser, enabling full sensitivity analysis across custom inputs.</p>
-        <div id="methodology">
-          <h2>Frequently Asked Questions</h2>
-          <div class="faq-item">
-            <div class="faq-q">How are the underlying simulation metrics calculated?</div>
-            <div class="faq-a">All curves and physical trajectories are computed deterministically at 60Hz using mathematical compounding and rigid-body kinematics models calibrated to historical and physical benchmarks.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Can I export or cite this simulation data?</div>
-            <div class="faq-a">Yes. Every simulation page provides instant parameter URL encoding and downloadable telemetry for independent verification.</div>
-          </div>
-        </div>
+        <div class="panel-title"><span>RELATED SIMULATION WORKSTATIONS</span><span>INDEX</span></div>
+        <a href="./netflix-vs-gym-5-day-showdown.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#10b981;font-family:monospace;">Netflix vs Gym: $5/Day Showdown</a>
       </div>
-
       <div class="panel">
-        <div class="panel-title"><span>OFFICIAL VIDEO BROADCAST</span><span>YOUTUBE STREAM</span></div>
-        <iframe style="width:100%; height:420px; border:1px solid #1e293b; border-radius:6px;" src="https://www.youtube.com/embed/zrQuKBRCBPo" allowfullscreen></iframe>
+        <div class="panel-title"><span>OFFICIAL BROADCAST STREAM</span><span>YOUTUBE</span></div>
+        <iframe style="width:100%;height:380px;border:1px solid #1e293b;border-radius:6px;" src="https://www.youtube.com/embed/zrQuKBRCBPo" allowfullscreen></iframe>
       </div>
-    </section>
+    </div>
   </main>
-
-  <footer>
-    CAPITALGRID AUTONOMOUS QUANTITATIVE RESEARCH DIVISION • ALL MODELS EXECUTED CLIENT-SIDE
-  </footer>
 </body>
 </html>
