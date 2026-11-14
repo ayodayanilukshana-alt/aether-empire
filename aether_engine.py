@@ -1596,7 +1596,7 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
         1. Order the 5 `items` strictly from SMALLEST `meters` (Rank #1) to LARGEST `meters` (Rank #5).
         2. Set `"model_type"` for each item accurately: `"dome_palace"`, `"pyramid"`, `"lattice_tower"`, `"planet"`, `"star"`, `"rocket"`, `"mountain"`, `"trench"`, `"crater"`, `"skyscraper"`, `"statue"`, or `"vehicle"`.
         3. Include `"wiki_query"` with the exact Wikipedia article title so we fetch its real-world photograph!
-        4. Write 5 natural `narrations` ({word_rule} each) matching the 5 sorted items. NEVER say "Stage 1" or "Stage 2"!
+        4. Write 5 natural `narrations` ({word_rule} each) matching the 5 sorted items. NEVER say 'Stage 1' or 'Stage 2'! CRITICAL VIRAL RETENTION RULE: Make the final 5th narration sentence end with a cliffhanger phrase that grammatically flows directly back into the 1st narration sentence to create a seamless infinite loop! Also make `pinned_comment` point out a specific timestamp (e.g. 'Pause at 0:19 and look at the insane jump—did you expect that?') to trigger viewer replays!
 
         Output JSON ONLY:
         {{
@@ -1650,7 +1650,7 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
         CRITICAL RULES:
         1. `series_a` and `series_b` MUST each contain 6 numbers (`[initial_value, point_1, point_2, point_3, point_4, final_value]`).
         2. Include `"wiki_a"` and `"wiki_b"` with exact Wikipedia article titles so we display their real photos!
-        3. Each of the 5 `narrations` ({word_rule} each) MUST state the exact dollar figures in `series_a[i+1]` and `series_b[i+1]`. NEVER say "Stage 1" or "Stage 2"!
+        3. Each of the 5 `narrations` ({word_rule} each) MUST state the exact dollar figures in `series_a[i+1]` and `series_b[i+1]`. NEVER say 'Stage 1' or 'Stage 2'! CRITICAL VIRAL RETENTION RULE: Make the final 5th narration sentence end with a cliffhanger phrase that grammatically flows directly back into the 1st narration sentence to create a seamless infinite loop! Also make `pinned_comment` point out a specific timestamp (e.g. 'Pause at 0:19 and look at the insane jump—did you expect that?') to trigger viewer replays!
 
         Output JSON ONLY:
         {{
@@ -2058,6 +2058,57 @@ def get_video_workstation_url_and_slug(title):
     return ch_slug, v_slug, clean_t, base_u
 
 
+
+def build_ai_bespoke_workstation_html(video_id, clean_t, v_slug, summary, ch_slug, brand_name, accent, canonical_url, plan):
+    """
+    Uses our AI Coding Models to architect a 100% custom, topic-specific interactive
+    web application tailored to the exact entities, chapters, and numbers of THIS video!
+    """
+    plan_summary_json = json.dumps({
+        "title": clean_t,
+        "summary": summary,
+        "items": [
+            {"name": it.get("name"), "meters": it.get("meters"), "metric": it.get("metric")}
+            for it in (plan or {}).get("items", [])
+        ],
+        "asset_a": (plan or {}).get("asset_a_name"),
+        "asset_b": (plan or {}).get("asset_b_name"),
+        "series_a": (plan or {}).get("series_a"),
+        "series_b": (plan or {}).get("series_b"),
+        "team_a": (plan or {}).get("team_a_name"),
+        "team_b": (plan or {}).get("team_b_name")
+    })
+
+    sys_p = (
+        "You are an elite Quantitative Web Application Engineer. Output ONLY a complete, valid HTML5 document (<!DOCTYPE html>...</html>). "
+        "NEVER use emojis. Use a sleek dark institutional UI (#05070b background, #0b0f17 cards, #1e293b borders, monospace numbers). "
+        "All sliders, preset buttons, canvas visualizations, and CSV export buttons must be 100% functional with zero unimplemented stubs."
+    )
+    usr_p = f"""
+    Create a custom, deeply interactive web simulation workstation specifically engineered for this video's exact data:
+    DATA PAYLOAD: {plan_summary_json}
+    BRAND: {brand_name} (Accent: {accent}, Portal Link: ./index.html, Canonical: {canonical_url})
+    YOUTUBE EMBED: https://www.youtube.com/embed/{video_id}
+
+    REQUIREMENTS:
+    1. Build interactive controls, scenario preset buttons, KPI readouts, and an interactive HTML5 <canvas> (or Three.js WebGL view) that directly model the exact items/assets/teams in DATA PAYLOAD!
+    2. Include a working 'Export CSV Telemetry' button and 'Copy Scenario Link' button.
+    3. Include a detailed analytical breakdown table, FAQ section, JSON-LD SoftwareApplication schema, and the embedded YouTube stream (`https://www.youtube.com/embed/{video_id}`).
+    """
+    try:
+        raw_html = call_ai(SCRIPT_MODELS, sys_p, usr_p, 0.45)
+        if "```html" in raw_html:
+            raw_html = raw_html.split("```html")[1].split("```")[0].strip()
+        elif "```" in raw_html:
+            raw_html = raw_html.split("```")[1].split("```")[0].strip()
+        if "<!DOCTYPE html>" in raw_html and "</html>" in raw_html and len(raw_html) > 1200:
+            print(f"🧠 [{POD_NAME} AI Web Architect] Generated bespoke workstation for '{clean_t}'!", flush=True)
+            return raw_html
+    except Exception as e:
+        print(f"[AI Web Architect Note] {e}", flush=True)
+    return ""
+
+
 def update_interactive_micro_saas_portal(video_id, title, summary, plan=None):
     """
     V10.0 Institutional Programmatic SEO Workstation Engine:
@@ -2417,7 +2468,8 @@ def update_interactive_micro_saas_portal(video_id, title, summary, plan=None):
   </main>
 </body>
 </html>"""
-    (ch_dir / f"{v_slug}.html").write_text(page_html, encoding="utf-8")
+    ai_custom_page = build_ai_bespoke_workstation_html(video_id, clean_t, v_slug, summary, ch_slug, brand_name, accent, canonical_url, plan)
+    (ch_dir / f"{v_slug}.html").write_text(ai_custom_page if ai_custom_page else page_html, encoding="utf-8")
 
     # Rebuild Channel Portal Index
     cards = ""
@@ -2821,7 +2873,7 @@ def upload_pod_video(video_path, title, description, tags, pinned_comment, is_lo
     add_to_official_pod_playlist(youtube, video_id)
     auto_ab_test_underperforming_videos(youtube)
     seed_telegraph_backlink(video_id, title, description)
-    trigger_cross_channel_views_blast_swarm(video_id, title, description[:160])
+    print(f'🛡️ [{POD_NAME} Safe-Viral Mode] Skipped cross-channel self-likes to protect 100% account safety.', flush=True)
 
 
 
