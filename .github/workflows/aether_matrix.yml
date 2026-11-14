@@ -90,6 +90,6 @@ jobs:
           for i in 1 2 3 4; do
             git pull --rebase origin main || true
             git add .
-            git diff --staged --quiet || git commit -m "chore(${{ matrix.pod }}): update XGBoost self-learning memory & web app [skip ci]"
+            git diff --staged --quiet || git commit -m "chore(${{ matrix.pod }}): update XGBoost self-learning memory & web app"
             git push origin main && break || sleep 5
           done
