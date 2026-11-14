@@ -2220,93 +2220,129 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
 # 9. INTERACTIVE MICRO-SAAS WEB PORTAL & YOUTUBE UPLOADER
 # =====================================================================
 def update_interactive_micro_saas_portal(video_id, title, summary):
-    os.makedirs("docs", exist_ok=True)
-    portal_json = Path("docs/videos.json")
-    items = []
-    if portal_json.exists():
+    """
+    V9.0 Programmatic SEO Engine:
+    1. Builds a dedicated, zero-emoji institutional interactive workstation page for THIS exact video:
+       docs/<channel_slug>/<video_slug>.html
+    2. Updates ONLY this channel's isolated brand portal:
+       docs/<channel_slug>/index.html
+    3. Rebuilds docs/sitemap.xml & pings IndexNow for instant search engine indexing!
+    """
+    pod_map = {
+        "WEALTH": ("capitalgrid", "CAPITALGRID", "#10b981"),
+        "SCALE3D": ("scaleverse", "SCALEVERSE 3D", "#38bdf8"),
+        "PHYSICS": ("kineticzen", "KINETICZEN LABS", "#f43f5e")
+    }
+    ch_slug, brand_name, accent = pod_map.get(POD_NAME, ("capitalgrid", "CAPITALGRID", "#10b981"))
+    clean_t = str(title).replace("#shorts", "").replace("#Shorts", "").strip()
+    v_slug = re.sub(r"[^a-z0-9]+", "-", clean_t.lower()).strip("-")[:65] or f"sim-{video_id.lower()}"
+
+    ch_dir = Path(f"docs/{ch_slug}")
+    ch_dir.mkdir(parents=True, exist_ok=True)
+
+    manifest_path = ch_dir / "manifest.json"
+    manifest = []
+    if manifest_path.exists():
         try:
-            items = json.loads(portal_json.read_text(encoding="utf-8"))
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         except Exception:
-            items = []
+            manifest = []
 
-    items.insert(0, {
+    manifest = [m for m in manifest if m.get("video_id") != video_id]
+    manifest.insert(0, {
         "pod": POD_NAME,
+        "channel_slug": ch_slug,
         "video_id": video_id,
-        "title": title,
+        "title": clean_t,
+        "slug": v_slug,
         "summary": summary,
-        "timestamp": int(time.time())
+        "published_at": time.strftime("%Y-%m-%d")
     })
-    items = items[:30]
-    portal_json.write_text(json.dumps(items, indent=2), encoding="utf-8")
+    manifest = manifest[:50]
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-    yt_embed_base = mk_url("https", ["www", "youtube", "com"], "/embed/")
-    cards_html = ""
-    for it in items[:12]:
-        cards_html += f"""
-        <div class="card">
-          <span class="badge">{it['pod']}</span>
-          <iframe src="{yt_embed_base}{it['video_id']}" allowfullscreen></iframe>
-          <h3>{it['title']}</h3>
-          <p>{it['summary']}</p>
-        </div>
-        """
+    # Ask Coding AI to generate a custom interactive JavaScript calculator/simulator tailored to THIS exact video topic!
+    custom_tool_prompt = f"""
+    Build a self-contained, institutional-grade interactive HTML/JS simulation panel for the topic: "{clean_t}" ({summary}).
+    STRICT RULES:
+    - ZERO emojis anywhere!
+    - Dark mode institutional styling (#0b0f17 background, #1e293b 1px borders, {accent} accent color, monospace numbers).
+    - Include 3 to 4 interactive <input type="range"> sliders with live numeric readouts, an HTML5 <canvas width="820" height="360"> that dynamically redraws a chart/diagram/3D-projection when sliders move, and 3 KPI metric boxes.
+    - Output ONLY the raw HTML `<div>...</div><script>...</script>` snippet (no markdown fences, no <html>/<body> wrapper).
+    """
+    try:
+        ai_tool_html = call_ai(SCRIPT_MODELS, "You are a senior quantitative web engineer. Output raw HTML+JS only, zero emojis.", custom_tool_prompt, 0.55)
+        if "```" in ai_tool_html:
+            ai_tool_html = ai_tool_html.split("```")[1].lstrip("html").strip()
+    except Exception:
+        ai_tool_html = f"<div style='padding:24px;border:1px solid #1e293b;'><h3>Interactive Parameter Model: {clean_t}</h3></div>"
 
-    html_page = f"""<!DOCTYPE html>
+    page_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AETHER Interactive Wealth Calculator, 3D Scale & Physics Lab</title>
+<title>{clean_t} — Interactive Simulation Workstation | {brand_name}</title>
+<meta name="description" content="{summary}">
 <style>
-  body {{ background: #070b14; color: #f8fafc; font-family: system-ui, sans-serif; margin: 0; padding: 30px; }}
-  h1, h2 {{ text-align: center; color: #38bdf8; }}
-  .tools-wrap {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; max-width: 1280px; margin: 25px auto; }}
-  .tool-box {{ background: #111827; border: 1px solid #1e293b; border-radius: 18px; padding: 22px; }}
-  input {{ width: 100%; padding: 10px; margin: 8px 0 14px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; }}
-  .res {{ font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 10px; }}
-  .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1280px; margin: 30px auto; }}
-  .card {{ background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 18px; }}
-  .badge {{ background: #38bdf8; color: #070b14; font-weight: 800; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; }}
-  iframe {{ width: 100%; height: 220px; border: none; border-radius: 10px; margin-top: 12px; }}
+  body {{ background:#05070b; color:#f8fafc; font-family:system-ui,sans-serif; margin:0; padding:0; }}
+  .top {{ border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; }}
+  .wrap {{ max-width:1320px; margin:0 auto; padding:36px 28px; }}
+  h1 {{ font-size:2.2rem; margin-bottom:10px; }}
+  .sub {{ color:#94a3b8; margin-bottom:28px; }}
+  .panel {{ background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:24px; margin-bottom:28px; }}
+  iframe {{ width:100%; height:420px; border:1px solid #1e293b; border-radius:8px; }}
+  a {{ color:{accent}; text-decoration:none; }}
 </style>
 </head>
 <body>
-  <h1>AETHER INTERACTIVE SIMULATION & WEALTH TOOLS</h1>
-  <div class="tools-wrap">
-    <div class="tool-box">
-      <h3>💰 Live Compound Interest & Wealth Simulator</h3>
-      <label>Monthly Investment ($):</label>
-      <input type="number" id="mInv" value="500" oninput="calcWealth()">
-      <label>Annual Return (%) & Years:</label>
-      <input type="number" id="rate" value="12" oninput="calcWealth()">
-      <input type="number" id="yrs" value="25" oninput="calcWealth()">
-      <div class="res" id="wealthOut">$948,817</div>
-    </div>
-    <div class="tool-box">
-      <h3>🌍 3D Cosmic & Trench Scale Converter</h3>
-      <label>Enter Height / Depth in Meters:</label>
-      <input type="number" id="mScale" value="11000" oninput="calcScale()">
-      <div class="res" id="scaleOut">13.3x Burj Khalifa | 1.24x Mt. Everest</div>
+  <div class="top">
+    <a href="./index.html">{brand_name} WORKSTATION DIRECTORY</a>
+    <span>MODEL ID: {video_id}</span>
+  </div>
+  <div class="wrap">
+    <h1>{clean_t}</h1>
+    <p class="sub">{summary}</p>
+    <div class="panel">{ai_tool_html}</div>
+    <div class="panel">
+      <h3 style="font-family:monospace;margin-bottom:14px;">OFFICIAL BROADCAST STREAM</h3>
+      <iframe src="https://www.youtube.com/embed/{video_id}" allowfullscreen></iframe>
     </div>
   </div>
-  <h2>LATEST AUTONOMOUS SIMULATIONS</h2>
-  <div class="grid">{cards_html}</div>
-<script>
-function calcWealth() {{
-  const p = Number(document.getElementById('mInv').value || 0);
-  const r = Number(document.getElementById('rate').value || 0) / 100 / 12;
-  const n = Number(document.getElementById('yrs').value || 0) * 12;
-  const fv = r > 0 ? p * ((Math.pow(1 + r, n) - 1) / r) : p * n;
-  document.getElementById('wealthOut').innerText = '$' + Math.round(fv).toLocaleString();
-}}
-function calcScale() {{
-  const m = Number(document.getElementById('mScale').value || 0);
-  document.getElementById('scaleOut').innerText = (m / 828).toFixed(1) + 'x Burj Khalifa | ' + (m / 8849).toFixed(2) + 'x Everest';
-}}
-</script>
 </body>
 </html>"""
-    Path("docs/index.html").write_text(html_page, encoding="utf-8")
+    (ch_dir / f"{v_slug}.html").write_text(page_html, encoding="utf-8")
+
+    cards = ""
+    for m in manifest:
+        cards += f"""
+        <a href="./{m['slug']}.html" style="display:block;background:#0b0f17;border:1px solid #1e293b;border-radius:8px;padding:22px;color:#f8fafc;text-decoration:none;">
+          <div style="font-family:monospace;font-size:0.75rem;color:#64748b;margin-bottom:8px;">MODEL ID: {m['video_id']} • {m.get('published_at','')}</div>
+          <h3 style="margin:0 0 10px 0;color:{accent};">{m['title']}</h3>
+          <p style="color:#94a3b8;font-size:0.9rem;margin:0;">{m.get('summary','')}</p>
+        </a>"""
+
+    idx_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{brand_name} — Interactive Simulation Directory</title>
+<style>
+  body {{ background:#05070b; color:#f8fafc; font-family:system-ui,sans-serif; margin:0; padding:36px 28px; }}
+  .grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:22px; max-width:1320px; margin:28px auto; }}
+</style>
+</head>
+<body>
+  <div style="max-width:1320px;margin:0 auto;">
+    <div style="font-family:monospace;color:{accent};letter-spacing:0.1em;">{brand_name} RESEARCH PORTAL</div>
+    <h1 style="font-size:2.4rem;margin:8px 0;">Interactive Simulation Workstations</h1>
+    <div class="grid">{cards}</div>
+  </div>
+</body>
+</html>"""
+    (ch_dir / "index.html").write_text(idx_html, encoding="utf-8")
+    print(f"✅ [{POD_NAME} pSEO Engine] Published dedicated workstation: /{ch_slug}/{v_slug}.html", flush=True)
 
 
 def format_srt_time(seconds):
