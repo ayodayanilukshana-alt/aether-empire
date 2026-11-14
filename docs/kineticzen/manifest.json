@@ -2,11 +2,23 @@
   {
     "pod": "PHYSICS",
     "channel_slug": "kineticzen",
+    "video_id": "e1AHADWfI5o",
+    "raw_title": "BITCOIN vs ETHEREUM: Ball Maze Escape!",
+    "title": "BITCOIN vs ETHEREUM: Ball Maze Escape!",
+    "slug": "bitcoin-vs-ethereum-ball-maze-escape",
+    "summary": "60FPS Matter.js rigid-body physics rivalry simulation.",
+    "views": 2,
+    "published_at": "2026-11-14"
+  },
+  {
+    "pod": "PHYSICS",
+    "channel_slug": "kineticzen",
     "video_id": "dmVcdCg6p84",
+    "raw_title": "IPHONE vs ANDROID: Hexagon Cage Escape! #shorts",
     "title": "IPHONE vs ANDROID: Hexagon Cage Escape!",
     "slug": "iphone-vs-android-hexagon-cage-escape",
     "summary": "60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.",
-    "views": 790,
+    "views": 1094,
     "published_at": "2026-11-14"
   }
 ]
