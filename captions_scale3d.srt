@@ -1,6 +1,6 @@
 1
 00:00:00,096 --> 00:00:02,094
-The V 2 rocket just fourteen
+The V 2 rocket just 14
 
 2
 00:00:02,106 --> 00:00:03,905
@@ -12,44 +12,40 @@ made object to reach space Falcon
 
 4
 00:00:06,863 --> 00:00:08,802
-9 stands seventy meters high and
+9 stands 70 meters high and
 
 5
 00:00:08,814 --> 00:00:11,349
 revolutionized spaceflight with its reusable first
 
 6
-00:00:11,361 --> 00:00:14,685
-stage NASA's Space Launch System at
+00:00:11,361 --> 00:00:14,872
+stage Saturn V the legendary moon
 
 7
-00:00:14,696 --> 00:00:16,534
-ninety eight meters is built to
+00:00:14,883 --> 00:00:18,166
+rocket measured 110.6 meters and remains
 
 8
-00:00:16,531 --> 00:00:18,003
-carry humans back to the Moon
+00:00:18,178 --> 00:00:20,955
+a symbol of Apollo NASA's Space
 
 9
-00:00:18,936 --> 00:00:21,156
-Saturn V a colossal one hundred
+00:00:20,966 --> 00:00:24,833
+Launch System reaches 111.25 meters designed
 
 10
-00:00:21,168 --> 00:00:23,446
-ten meters remains the most powerful
+00:00:24,845 --> 00:00:26,285
+to carry astronauts back to the
 
 11
-00:00:23,457 --> 00:00:26,877
-rocket ever flown Starship towering one
+00:00:26,247 --> 00:00:30,379
+Moon Starship towering at 121 meters
 
 12
-00:00:26,888 --> 00:00:28,679
-hundred twenty one meters is the
+00:00:30,659 --> 00:00:32,213
+is the tallest and most powerful
 
 13
-00:00:28,664 --> 00:00:30,568
-tallest and most powerful rocket ever
-
-14
-00:00:30,580 --> 00:00:30,954
-built
+00:00:32,225 --> 00:00:33,463
+rocket ever constructed
