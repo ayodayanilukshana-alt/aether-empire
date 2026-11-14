@@ -7,7 +7,6 @@ import time
 import wave
 import random
 import asyncio
-import datetime
 import subprocess
 import urllib.parse
 from pathlib import Path
@@ -69,7 +68,7 @@ POD_CREDS = {
         "client_id": os.environ.get("PHYSICS_CLIENT_ID", "").strip(),
         "client_secret": os.environ.get("PHYSICS_CLIENT_SECRET", "").strip(),
         "refresh_token": os.environ.get("PHYSICS_REFRESH_TOKEN", "").strip(),
-        "voice": None,  # 100% ZERO-LANGUAGE GLOBAL ASMR (Pure Musical Collision Synth!)
+        "voice": None,
         "subreddits": ["oddlysatisfying", "Simulated", "physicsgifs"],
         "autocomplete_seeds": [
             "satisfying ball escape physics",
@@ -102,11 +101,11 @@ POD_CREDS = {
 ACTIVE_POD = POD_CREDS.get(POD_NAME, POD_CREDS["WEALTH"])
 
 SCRIPT_MODELS = [
-    "deepseek-v4-flash",       # x0.10
-    "qwen3.7-plus",            # x0.10
-    "qwen3.7-max",             # x0.20
-    "deepseek-v4.1-flash",     # x0.30
-    "gpt-6-luna"               # x0.38
+    "deepseek-v4-flash",
+    "qwen3.7-plus",
+    "qwen3.7-max",
+    "deepseek-v4.1-flash",
+    "gpt-6-luna"
 ]
 
 FPS = 24
@@ -199,30 +198,24 @@ def save_pod_memory(mem):
 
 
 # =====================================================================
-# 2. AGENT 1 & 4: MULTI-SOURCE HARVESTER + 18-FEATURE XGBOOST + SELF-LEARNING LOOP
+# 2. AGENT 1 & 4: MULTI-SOURCE HARVESTER + 18-FEATURE XGBOOST + SELF-LEARNING
 # =====================================================================
 def compute_18_xgboost_features(title, views=50000, subs=10000, likes=2000, comments=150, hours_age=48.0, source_weight=1.0):
-    """
-    Computes all 18 numerical features specified in the Project AETHER Master Plan!
-    """
     t_low = str(title).lower()
     words = t_low.split()
     char_len = float(len(title))
     word_cnt = float(len(words))
 
-    # 1-3: Velocity, Outlier Ratio, Engagement Rate
     view_velocity = float(views) / max(float(hours_age), 1.0)
     outlier_ratio = min(float(views) / max(float(subs), 500.0), 500.0)
     engagement_rate = min((float(likes) + float(comments) * 4.0) / max(float(views), 100.0), 0.35)
 
-    # 4-8: Structural & Typography Signals
     optimal_len_score = 1.0 - min(abs(char_len - 52.0) / 52.0, 1.0)
     has_number = 1.0 if re.search(r"\d+", t_low) else 0.0
     has_dollar_or_pct = 1.0 if re.search(r"[\$%]|million|billion", t_low) else 0.0
     has_question = 1.0 if "?" in title else 0.0
     has_vs_comparison = 1.0 if (" vs " in t_low or " compared" in t_low) else 0.0
 
-    # 9-14: Psychological & Curiosity Triggers
     curiosity_words = ["secret", "never", "impossible", "shocking", "truth", "actually", "happens", "survive", "escape"]
     curiosity_score = sum(1.0 for w in curiosity_words if w in t_low)
     urgency_words = ["now", "before", "warning", "crash", "final", "until", "wait"]
@@ -234,7 +227,6 @@ def compute_18_xgboost_features(title, views=50000, subs=10000, likes=2000, comm
     avg_word_len = sum(len(w) for w in words) / max(word_cnt, 1.0)
     caps_ratio = sum(1.0 for c in str(title) if c.isupper()) / max(char_len, 1.0)
 
-    # 15-18: Market & Competition Signals
     like_to_view = float(likes) / max(float(views), 100.0)
     comment_to_view = float(comments) / max(float(views), 100.0)
     competition_inv = 1.0 / (1.0 + math.log10(max(float(subs), 100.0)))
@@ -250,11 +242,6 @@ def compute_18_xgboost_features(title, views=50000, subs=10000, likes=2000, comm
 
 
 def run_global_harvester_and_18_feature_xgboost():
-    """
-    Executes Agent 1 (Multi-Source Harvester: YouTube API + Autocomplete + Reddit + HackerNews + Wikipedia),
-    Agent 4 (Self-Learning Feedback Loop from our own published videos),
-    and the 18-Feature XGBoost Viral Predictor with a >92nd Percentile Filter!
-    """
     mem = load_pod_memory()
     s_idx = mem.get("seed_idx", 0)
     mem["seed_idx"] = s_idx + 1
@@ -262,9 +249,6 @@ def run_global_harvester_and_18_feature_xgboost():
     candidates = []
     X_train, y_train = [], []
 
-    # -----------------------------------------------------------------
-    # AGENT 4: SELF-LEARNING FEEDBACK LOOP (Fetch our own channel stats!)
-    # -----------------------------------------------------------------
     yt = None
     try:
         yt = get_youtube_client()
@@ -281,13 +265,10 @@ def run_global_harvester_and_18_feature_xgboost():
                 score = math.log10(max(v_cnt * 10 + l_cnt * 50 + 10, 10))
                 X_train.append(f_vec)
                 y_train.append(score)
-            print(f"✅ [{POD_NAME} Agent 4 Self-Learning] Loaded {len(my_ids)} own channel performance records into XGBoost!", flush=True)
+            print(f"✅ [{POD_NAME} Agent 4 Self-Learning] Retrained XGBoost on {len(my_ids)} own channel videos!", flush=True)
     except Exception as e:
         print(f"[{POD_NAME} Self-Learning Note] {e}", flush=True)
 
-    # -----------------------------------------------------------------
-    # AGENT 1A: YOUTUBE AUTOCOMPLETE HARVESTER
-    # -----------------------------------------------------------------
     ac_base = mk_url("http", ["suggestqueries", "google", "com"], "/complete/search?client=youtube&ds=yt&q=")
     for pref in ACTIVE_POD["autocomplete_seeds"]:
         try:
@@ -299,9 +280,6 @@ def run_global_harvester_and_18_feature_xgboost():
         except Exception:
             pass
 
-    # -----------------------------------------------------------------
-    # AGENT 1B: REDDIT VIRAL HOT POSTS HARVESTER
-    # -----------------------------------------------------------------
     reddit_base = mk_url("https", ["www", "reddit", "com"], "/r/")
     for sub in ACTIVE_POD["subreddits"]:
         try:
@@ -319,23 +297,6 @@ def run_global_harvester_and_18_feature_xgboost():
         except Exception:
             pass
 
-    # -----------------------------------------------------------------
-    # AGENT 1C: HACKERNEWS & WIKIPEDIA TRENDING HARVESTER
-    # -----------------------------------------------------------------
-    try:
-        hn_url = mk_url("https", ["hn", "algolia", "com"], "/api/v1/search?tags=front_page&hitsPerPage=15")
-        r = requests.get(hn_url, headers=BROWSER_HEADERS, timeout=5)
-        if r.status_code == 200:
-            for hit in r.json().get("hits", []):
-                htitle = hit.get("title", "")
-                if len(htitle) > 12:
-                    candidates.append({"title": htitle, "source": "hackernews", "weight": 1.15})
-    except Exception:
-        pass
-
-    # -----------------------------------------------------------------
-    # AGENT 1D: YOUTUBE COMPETITOR OUTLIER HARVESTER
-    # -----------------------------------------------------------------
     outliers = []
     hijacked_tags = []
     if yt is not None:
@@ -370,7 +331,6 @@ def run_global_harvester_and_18_feature_xgboost():
         except Exception as e:
             print(f"[{POD_NAME} YouTube Harvester Note] {e}", flush=True)
 
-    # Ensure sufficient training rows for 18-feature XGBoost Regressor
     while len(X_train) < 12:
         X_train.append(compute_18_xgboost_features("What happens if you simulate $1,000 vs 100 balls in 3D?", 250000, 5000, 12000, 800))
         y_train.append(22.5)
@@ -378,7 +338,6 @@ def run_global_harvester_and_18_feature_xgboost():
     xgb_model = XGBRegressor(n_estimators=40, max_depth=4, learning_rate=0.08, verbosity=0)
     xgb_model.fit(np.array(X_train, dtype=np.float32), np.array(y_train, dtype=np.float32))
 
-    # Score all harvested candidates using the 18-feature XGBoost model & apply >92% Percentile Filter!
     scored = []
     seen = set()
     for c in candidates:
@@ -391,14 +350,11 @@ def run_global_harvester_and_18_feature_xgboost():
         scored.append({"title": t_str, "source": c["source"], "xgb_score": round(pred, 3)})
 
     scored.sort(key=lambda x: x["xgb_score"], reverse=True)
-    # Top 8% (>92nd percentile filter)
     cutoff = max(5, int(len(scored) * 0.08))
     elite_92_percentile = scored[:cutoff]
 
     save_pod_memory(mem)
     clean_tags = list(dict.fromkeys([re.sub(r"[^\w\s]", "", t).lower() for t in hijacked_tags if 2 < len(t) < 28]))[:15]
-    print(f"✅ [{POD_NAME} 18-Feature XGBoost] Harvested {len(scored)} candidates -> Selected {len(elite_92_percentile)} (>92nd Percentile Winners)!", flush=True)
-
     return {
         "elite_candidates": elite_92_percentile[:12],
         "outliers": outliers[:6],
@@ -407,7 +363,7 @@ def run_global_harvester_and_18_feature_xgboost():
 
 
 # =====================================================================
-# 3. BESPOKE ENGINE 1: SCALEVERSE 3D (REAL THREE.JS WEBGL 3D ENGINE!)
+# 3. BESPOKE ENGINE 1: SCALEVERSE 3D (ARCHITECTURAL PBR + WINDOW TEXTURES!)
 # =====================================================================
 THREEJS_SCALE3D_HTML = r"""<!DOCTYPE html>
 <html>
@@ -435,103 +391,164 @@ hudCanvas.width = W;
 hudCanvas.height = H;
 const ctx = hudCanvas.getContext('2d');
 
-// 1. Initialize Real Three.js WebGL 3D Scene, Camera & Shadow-Casting Sunlight
+// 1. Initialize Three.js WebGL 3D World with Bright Studio Daylight & Architectural Shadows
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87ceeb);
-scene.fog = new THREE.FogExp2(0x87ceeb, 0.0018);
+scene.background = new THREE.Color(0x1e3a8a);
+scene.fog = new THREE.FogExp2(0x1e3a8a, 0.0012);
 
-const camera = new THREE.PerspectiveCamera(48, W / H, 0.5, 50000);
+const camera = new THREE.PerspectiveCamera(45, W / H, 0.5, 50000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H);
 renderer.shadowMap.enabled = true;
 document.getElementById('webgl-container').appendChild(renderer.domElement);
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 0.85);
-hemiLight.position.set(0, 500, 0);
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x3b82f6, 1.15);
+hemiLight.position.set(0, 600, 0);
 scene.add(hemiLight);
 
-const dirLight = new THREE.DirectionalLight(0xfff4e6, 1.15);
-dirLight.position.set(180, 350, 220);
+const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.35);
+dirLight.position.set(220, 450, 300);
 scene.add(dirLight);
 
-// 2. Realistic 3D Ground Plane & Reference Grid (MetaBallStudios Architectural Style)
+const backLight = new THREE.DirectionalLight(0x38bdf8, 0.75);
+backLight.position.set(-200, 200, -250);
+scene.add(backLight);
+
+// 2. Procedural Illuminated Skyscraper Window Texture Generator
+function createWindowTexture(baseHex, glowHex) {
+    const c = document.createElement('canvas');
+    c.width = 256; c.height = 512;
+    const g = c.getContext('2d');
+    g.fillStyle = baseHex;
+    g.fillRect(0, 0, 256, 512);
+    for (let y = 8; y < 504; y += 16) {
+        for (let x = 8; x < 248; x += 20) {
+            const lit = Math.sin(x * 12.3 + y * 45.6) > -0.2;
+            g.fillStyle = lit ? glowHex : '#0f172a';
+            g.fillRect(x, y, 12, 10);
+        }
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    return tex;
+}
+
+// 3. Reflective Architectural Ground & Grid
 const groundGeo = new THREE.PlaneGeometry(40000, 40000);
-const groundMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.65, metalness: 0.15 });
+const groundMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.3 });
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
-const gridHelper = new THREE.GridHelper(10000, 200, 0x38bdf8, 0x334155);
+const gridHelper = new THREE.GridHelper(12000, 240, 0x38bdf8, 0x1e293b);
 gridHelper.position.y = 0.2;
 scene.add(gridHelper);
 
-// 3. Build 5 Detailed 3D Comparison Models Along the X-Axis (Normalized to visual heights 12..240)
+// 4. Build 5 Distinct, Multi-Part 3D Models with Proportional Visual Heights!
 const items = DATA.items || [];
-const visualHeights = [14, 34, 75, 145, 260];
-const xPositions = [0, 55, 155, 320, 580];
-const palette = [0x10b981, 0x3b82f6, 0xf59e0b, 0xec4899, 0x8b5cf6];
+// Compute proportional visual heights from real meters (clamped smoothly from 18 to 260)
+const rawMeters = items.map((it, idx) => Math.max(Number(it.meters) || (idx + 1) * 100, 1));
+const minM = Math.min(...rawMeters);
+const maxM = Math.max(...rawMeters);
+
+const visualHeights = rawMeters.map((m, idx) => {
+    if (maxM / minM > 40) {
+        // Log-hybrid scale when comparing extreme ranges (e.g. 10m to 100,000m)
+        const ratio = Math.log10(m / minM + 1) / Math.log10(maxM / minM + 1);
+        return 18 + ratio * 240 + idx * 12;
+    } else {
+        // True linear proportion when comparing statues/towers (e.g. 38m to 240m)
+        return Math.max(18, (m / maxM) * 250);
+    }
+});
+
+const xPositions = [0, 65, 165, 315, 535];
+const colorPairs = [
+    ['#064e3b', '#34d399', 0x10b981],
+    ['#1e3a8a', '#60a5fa', 0x3b82f6],
+    ['#78350f', '#fbbf24', 0xf59e0b],
+    ['#701a75', '#f472b6', 0xec4899],
+    ['#311068', '#c084fc', 0xa855f7]
+];
+
+// Guarantee 5 DIFFERENT 3D architectural archetypes so NO two objects ever look the same!
+const archetypes = ['monument_statue', 'lattice_eiffel', 'stepped_skyscraper', 'futuristic_arcology', 'colossal_megaspire'];
 const meshes = [];
 
 for (let i = 0; i < 5; i++) {
     const h = visualHeights[i];
     const x = xPositions[i];
-    const col = palette[i % palette.length];
+    const [baseHex, glowHex, hexNum] = colorPairs[i];
+    const tex = createWindowTexture(baseHex, glowHex);
+    const matTex = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.25, metalness: 0.5 });
+    const matMetal = new THREE.MeshStandardMaterial({ color: hexNum, roughness: 0.2, metalness: 0.8 });
+    const matWire = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.28 });
+
     const group = new THREE.Group();
+    const arch = archetypes[i];
 
-    const shapeType = (items[i] && items[i].shape) ? items[i].shape : ['cylinder', 'skyscraper', 'pyramid', 'sphere', 'megatower'][i];
-    const matMain = new THREE.MeshStandardMaterial({ color: col, roughness: 0.28, metalness: 0.62 });
-    const matGlow = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: col, emissiveIntensity: 0.45, wireframe: true });
-
-    if (shapeType === 'sphere') {
-        const geo = new THREE.SphereGeometry(h * 0.5, 48, 48);
-        const m = new THREE.Mesh(geo, matMain);
-        m.position.y = h * 0.5;
-        group.add(m);
-        // Planetary ring
-        const rGeo = new THREE.RingGeometry(h * 0.65, h * 0.85, 64);
-        const rMat = new THREE.MeshBasicMaterial({ color: 0xfde047, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
-        const ring = new THREE.Mesh(rGeo, rMat);
-        ring.rotation.x = Math.PI / 2.4;
-        ring.position.y = h * 0.5;
-        group.add(ring);
-    } else if (shapeType === 'pyramid') {
-        const geo = new THREE.ConeGeometry(h * 0.48, h, 4);
-        const m = new THREE.Mesh(geo, matMain);
-        m.position.y = h * 0.5;
-        m.rotation.y = Math.PI / 4;
-        group.add(m);
-    } else if (shapeType === 'cylinder') {
-        const geo = new THREE.CylinderGeometry(h * 0.25, h * 0.32, h, 36);
-        const m = new THREE.Mesh(geo, matMain);
-        m.position.y = h * 0.5;
-        group.add(m);
-    } else {
-        // Stepped 3-tier architectural skyscraper / megastructure
-        const tiers = 3;
-        for (let t = 0; t < tiers; t++) {
-            const th = h / tiers;
-            const tw = h * 0.34 * (1 - t * 0.22);
-            const bGeo = new THREE.BoxGeometry(tw, th, tw);
-            const bMesh = new THREE.Mesh(bGeo, matMain);
-            bMesh.position.y = t * th + th * 0.5;
-            group.add(bMesh);
-
-            const wMesh = new THREE.Mesh(bGeo, matGlow);
-            wMesh.position.y = bMesh.position.y;
-            wMesh.scale.set(1.01, 1.01, 1.01);
-            group.add(wMesh);
+    if (arch === 'monument_statue') {
+        // Multi-tiered neoclassical pedestal + statue figure + raised torch/crown
+        const p1 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.42, h * 0.25, h * 0.42), matTex);
+        p1.position.y = h * 0.125; group.add(p1);
+        const p2 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.30, h * 0.20, h * 0.30), matMetal);
+        p2.position.y = h * 0.35; group.add(p2);
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.09, h * 0.14, h * 0.42, 24), matMetal);
+        body.position.y = h * 0.66; group.add(body);
+        const head = new THREE.Mesh(new THREE.SphereGeometry(h * 0.065, 24, 24), matMetal);
+        head.position.y = h * 0.91; group.add(head);
+        const torch = new THREE.Mesh(new THREE.SphereGeometry(h * 0.035, 16, 16), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+        torch.position.set(h * 0.08, h * 0.98, 0); group.add(torch);
+    } else if (arch === 'lattice_eiffel') {
+        // Tapered 4-leg observation tower + 3 decks + radio spire
+        const base = new THREE.Mesh(new THREE.ConeGeometry(h * 0.36, h * 0.82, 4), matTex);
+        base.position.y = h * 0.41; base.rotation.y = Math.PI / 4; group.add(base);
+        const wire = new THREE.Mesh(new THREE.ConeGeometry(h * 0.365, h * 0.82, 4, 12), matWire);
+        wire.position.y = h * 0.41; wire.rotation.y = Math.PI / 4; group.add(wire);
+        const deck = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.12, h * 0.12, h * 0.06, 24), matMetal);
+        deck.position.y = h * 0.78; group.add(deck);
+        const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.3, h * 0.025, h * 0.22, 16), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        spire.position.y = h * 0.90; group.add(spire);
+    } else if (arch === 'stepped_skyscraper') {
+        // Burj Khalifa / Willis style 5-setback illuminated glass tower
+        for (let s = 0; s < 5; s++) {
+            const sh = h * (0.85 / 5);
+            const sw = h * 0.28 * (1 - s * 0.16);
+            const seg = new THREE.Mesh(new THREE.BoxGeometry(sw, sh, sw), matTex);
+            seg.position.y = s * sh + sh * 0.5;
+            group.add(seg);
         }
-        // Spire
-        const sGeo = new THREE.CylinderGeometry(0.4, h * 0.04, h * 0.18, 16);
-        const sMesh = new THREE.Mesh(sGeo, new THREE.MeshBasicMaterial({ color: 0xfef08a }));
-        sMesh.position.y = h + h * 0.09;
-        group.add(sMesh);
+        const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.02, h * 0.16, 16), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+        needle.position.y = h * 0.92; group.add(needle);
+    } else if (arch === 'futuristic_arcology') {
+        // Twisted hexagonal mega-tower with glowing orbital sky-bridges
+        for (let s = 0; s < 8; s++) {
+            const sh = h * (0.88 / 8);
+            const sw = h * 0.24 * (1 - s * 0.07);
+            const hex = new THREE.Mesh(new THREE.CylinderGeometry(sw * 0.9, sw, sh, 6), matTex);
+            hex.position.y = s * sh + sh * 0.5;
+            hex.rotation.y = s * 0.22;
+            group.add(hex);
+        }
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(h * 0.22, h * 0.015, 16, 48), new THREE.MeshBasicMaterial({ color: 0xf472b6 }));
+        ring.rotation.x = Math.PI / 2; ring.position.y = h * 0.65; group.add(ring);
+    } else {
+        // Colossal Megaspire with 3 Buttress Cores, Geodesic Crown Sphere & Laser Beacon
+        const core = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.09, h * 0.22, h * 0.88, 32), matTex);
+        core.position.y = h * 0.44; group.add(core);
+        for (let b = 0; b < 3; b++) {
+            const ang = (b * Math.PI * 2) / 3;
+            const wing = new THREE.Mesh(new THREE.BoxGeometry(h * 0.12, h * 0.62, h * 0.12), matMetal);
+            wing.position.set(Math.cos(ang) * h * 0.16, h * 0.31, Math.sin(ang) * h * 0.16);
+            group.add(wing);
+        }
+        const orb = new THREE.Mesh(new THREE.SphereGeometry(h * 0.11, 32, 32), new THREE.MeshStandardMaterial({ color: 0xfef08a, emissive: 0xf59e0b, emissiveIntensity: 0.6, wireframe: true }));
+        orb.position.y = h * 0.91; group.add(orb);
     }
 
     // Glowing Pedestal Base Ring
-    const pedGeo = new THREE.CylinderGeometry(h * 0.42, h * 0.46, 1.5, 48);
-    const pedMat = new THREE.MeshBasicMaterial({ color: col });
-    const ped = new THREE.Mesh(pedGeo, pedMat);
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.38, h * 0.42, 1.5, 48), new THREE.MeshBasicMaterial({ color: hexNum }));
     ped.position.y = 0.75;
     group.add(ped);
 
@@ -540,24 +557,7 @@ for (let i = 0; i < 5; i++) {
     meshes.push(group);
 }
 
-// Starfield particles for high-altitude / space transition in later stages
-const starGeo = new THREE.BufferGeometry();
-const starPts = [];
-for (let s = 0; s < 1500; s++) {
-    const sx = (Math.sin(s * 12.9898) * 43758.54 % 1) * 4000 - 1500;
-    const sy = Math.abs((Math.cos(s * 78.233) * 23421.63 % 1)) * 2000 + 80;
-    const sz = (Math.sin(s * 45.164) * 19283.44 % 1) * 3000 - 1800;
-    starPts.push(sx, sy, sz);
-}
-starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPts, 3));
-const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 3.5 }));
-scene.add(stars);
-
 window.renderFrameAtTime = function(t) {
-    const totalDur = Math.max(DATA.total_duration, 0.1);
-    const progress = Math.min(Math.max(t / totalDur, 0.0), 1.0);
-
-    // Determine active stage (0..4) and smooth interpolation
     let stageIndex = 0;
     let stageProgress = 0.0;
     const timings = DATA.scene_timings;
@@ -569,7 +569,7 @@ window.renderFrameAtTime = function(t) {
         }
     }
 
-    const floatIdx = Math.min(4.0, stageIndex + stageProgress * 0.85);
+    const floatIdx = Math.min(4.0, stageIndex + Math.pow(stageProgress, 1.4) * 0.92);
     const i0 = Math.min(4, Math.floor(floatIdx));
     const i1 = Math.min(4, i0 + 1);
     const frac = floatIdx - i0;
@@ -578,46 +578,43 @@ window.renderFrameAtTime = function(t) {
     const curX = xPositions[i0] * (1 - smoothFrac) + xPositions[i1] * smoothFrac;
     const curH = visualHeights[i0] * (1 - smoothFrac) + visualHeights[i1] * smoothFrac;
 
-    // Sky transitions smoothly from bright atmospheric cyan-blue to deep stratosphere/cosmos
+    // Keep sky bright & high-contrast so every 3D structure is 100% visible!
     const skyColors = [
-        new THREE.Color(0x38bdf8),
         new THREE.Color(0x0284c7),
-        new THREE.Color(0x1e1b4b),
-        new THREE.Color(0x0f172a),
-        new THREE.Color(0x030712)
+        new THREE.Color(0x0369a1),
+        new THREE.Color(0x1d4ed8),
+        new THREE.Color(0x1e3a8a),
+        new THREE.Color(0x172554)
     ];
     const curSky = skyColors[i0].clone().lerp(skyColors[i1], smoothFrac);
     scene.background = curSky;
     scene.fog.color = curSky;
 
-    // Rotate 3D models subtly for lifelike depth
     meshes.forEach((m, idx) => {
-        m.rotation.y = t * 0.35 + idx * 0.5;
+        m.rotation.y = t * 0.4 + idx * 0.4;
     });
 
-    // Cinematic 3D Camera Orbit & Dolly Pullback
-    const camOrbit = Math.sin(t * 0.45) * 0.22;
-    const dist = curH * (isWide ? 2.15 : 3.1);
+    const camOrbit = Math.sin(t * 0.45) * 0.24;
+    const dist = Math.max(curH * (isWide ? 2.1 : 3.0), 45);
     camera.position.set(
-        curX + Math.sin(camOrbit) * dist * 0.55,
-        curH * 0.62 + 6,
+        curX + Math.sin(camOrbit) * dist * 0.55 - dist * 0.18,
+        curH * 0.58 + 8,
         Math.cos(camOrbit) * dist
     );
     camera.lookAt(curX, curH * 0.48, 0);
 
     renderer.render(scene, camera);
 
-    // Draw Sleek MetaBallStudios-Style Broadcast Lower-Third HUD (NO SyntaxGrid Box!)
+    // Draw MetaBallStudios-Style Broadcast HUD + Right-Side Altitude Ruler
     ctx.clearRect(0, 0, W, H);
-    const activeItem = items[stageIndex] || { name: 'STAGE ' + (stageIndex + 1), metric: '1,000 m', subtitle: '3D SCALE COMPARISON' };
+    const activeItem = items[stageIndex] || { name: 'OBJECT ' + (stageIndex + 1), metric: '100 m', subtitle: '3D SCALE' };
 
-    // Top Floating Broadcast Header
     const cardW = isWide ? 820 : (W - 90);
     const cardX = (W - cardW) / 2;
-    const cardY = isWide ? 48 : 110;
+    const cardY = isWide ? 48 : 95;
 
     ctx.save();
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 4;
     ctx.beginPath();
@@ -625,7 +622,6 @@ window.renderFrameAtTime = function(t) {
     ctx.fill();
     ctx.stroke();
 
-    // Rank Badge
     ctx.fillStyle = '#f59e0b';
     ctx.beginPath();
     ctx.roundRect(cardX + 26, cardY + 24, 155, 42, 10);
@@ -635,10 +631,9 @@ window.renderFrameAtTime = function(t) {
     ctx.textAlign = 'center';
     ctx.fillText('RANK #0' + (stageIndex + 1), cardX + 103, cardY + 53);
 
-    // Object Name & Real-World Metric
     ctx.textAlign = 'left';
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 38px sans-serif';
+    ctx.font = 'bold 36px sans-serif';
     ctx.fillText(String(activeItem.name || '').toUpperCase().slice(0, 26), cardX + 205, cardY + 58);
 
     ctx.fillStyle = '#38bdf8';
@@ -648,10 +643,22 @@ window.renderFrameAtTime = function(t) {
     ctx.fillStyle = '#cbd5e1';
     ctx.font = 'bold 24px sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(String(activeItem.subtitle || '').toUpperCase().slice(0, 28), cardX + cardW - 28, cardY + 135);
+    ctx.fillText(String(activeItem.subtitle || '').toUpperCase().slice(0, 26), cardX + cardW - 28, cardY + 135);
     ctx.restore();
 
-    // Clean Broadcast Captions at Bottom
+    // Right-Side Vertical Scale Elevation Ruler
+    ctx.save();
+    const rulerX = W - 45;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(rulerX, 340); ctx.lineTo(rulerX, H - 280); ctx.stroke();
+    for (let r = 0; r <= 10; r++) {
+        const ry = 340 + (r / 10) * (H - 620);
+        ctx.beginPath(); ctx.moveTo(rulerX - 16, ry); ctx.lineTo(rulerX, ry); ctx.stroke();
+    }
+    ctx.restore();
+
+    // Clean Broadcast Captions
     const chunks = DATA.chunks || [];
     let activeChunk = null;
     for (let c of chunks) {
@@ -663,10 +670,13 @@ window.renderFrameAtTime = function(t) {
         ctx.font = isWide ? 'bold 42px sans-serif' : 'bold 44px sans-serif';
         const tw = Math.min(ctx.measureText(words).width + 60, W - 80);
         const by = isWide ? (H - 135) : 1560;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.roundRect((W - tw) / 2, by - 52, tw, 76, 16);
         ctx.fill();
+        ctx.stroke();
         ctx.fillStyle = '#fef08a';
         ctx.textAlign = 'center';
         ctx.fillText(words, W / 2, by);
@@ -680,7 +690,7 @@ window.renderFrameAtTime = function(t) {
 
 
 # =====================================================================
-# 4. BESPOKE ENGINE 2: KINETICZEN (REAL MATTER.JS + ZERO-LANGUAGE ASMR!)
+# 4. BESPOKE ENGINE 2: KINETICZEN (6 SOLID SEQUENTIAL RINGS + CONTINUOUS SYNTH!)
 # =====================================================================
 MATTERJS_PHYSICS_HTML = r"""<!DOCTYPE html>
 <html>
@@ -704,7 +714,6 @@ canvas.width = W;
 canvas.height = H;
 const ctx = canvas.getContext('2d');
 
-// Initialize Real Matter.js 2D Rigid-Body Physics World
 const Engine = Matter.Engine,
       Bodies = Matter.Bodies,
       Body = Matter.Body,
@@ -712,21 +721,22 @@ const Engine = Matter.Engine,
       Events = Matter.Events;
 
 const engine = Engine.create();
-engine.gravity.y = 0.95;
+engine.gravity.y = 0.72;
 const world = engine.world;
 
 const cx = W / 2;
-const cy = H * 0.53;
-const ringRadii = [210, 295, 380, 465];
-const ringColors = ['#ff2a85', '#ffae00', '#00f5d4', '#9b5de5'];
+const cy = H * 0.54;
+// 6 Concentric Solid Armor Rings (Sequential inner-to-outer destruction!)
+const ringRadii = [155, 215, 275, 335, 395, 455];
+const ringColors = ['#ff2a85', '#ffae00', '#00f5d4', '#38bdf8', '#a855f7', '#10b981'];
 const rings = [];
 const particles = [];
 window.collisionEvents = [];
 
-// Build 4 Concentric Rotating Destructible Rings with Escape Gaps
+// Build 6 Solid Overlapping Wall Rings (72 segments per ring -> ZERO leaks between segments!)
 ringRadii.forEach((radius, rIdx) => {
-    const segments = 32;
-    const gapSegments = 4; // 45-degree escape gap
+    const segments = 72;
+    const gapSegments = 7; // 35-degree escape gap
     const segBodies = [];
     for (let s = gapSegments; s < segments; s++) {
         const a1 = (s / segments) * Math.PI * 2;
@@ -734,11 +744,11 @@ ringRadii.forEach((radius, rIdx) => {
         const midA = (a1 + a2) / 2;
         const sx = cx + Math.cos(midA) * radius;
         const sy = cy + Math.sin(midA) * radius;
-        const arcLen = (2 * Math.PI * radius) / segments + 4;
-        const seg = Bodies.rectangle(sx, sy, arcLen, 16, {
+        const arcLen = ((2 * Math.PI * radius) / segments) * 1.45; // 45% overlap guarantees zero tunneling!
+        const seg = Bodies.rectangle(sx, sy, arcLen, 26, {
             isStatic: true,
             angle: midA + Math.PI / 2,
-            restitution: 1.03,
+            restitution: 1.02,
             friction: 0.0,
             label: 'ring_' + rIdx
         });
@@ -749,40 +759,47 @@ ringRadii.forEach((radius, rIdx) => {
         idx: rIdx,
         radius: radius,
         color: ringColors[rIdx],
-        angleOffset: rIdx * 1.1,
-        speed: (rIdx % 2 === 0 ? 1 : -1) * (0.024 + rIdx * 0.005),
+        angleOffset: rIdx * 0.9,
+        speed: (rIdx % 2 === 0 ? 1 : -1) * (0.022 + rIdx * 0.004),
         segments: segBodies,
+        escapedCount: 0,
         destroyed: false
     });
 });
 
-// Spawn 24 Glossy Competing Physics Spheres (12 Team CRIMSON vs 12 Team GOLD)
+// Spawn 20 High-Energy Glossy Balls Inside the Innermost Ring (Radius < 110)
 const balls = [];
-for (let i = 0; i < 24; i++) {
+for (let i = 0; i < 20; i++) {
     const isGold = (i % 2 === 0);
-    const bx = cx + (Math.sin(i * 19.3) * 85);
-    const by = cy - 40 + (Math.cos(i * 31.7) * 65);
-    const ball = Bodies.circle(bx, by, 20, {
-        restitution: 1.02,
+    const angle = (i / 20) * Math.PI * 2;
+    const r = 35 + (i % 3) * 28;
+    const bx = cx + Math.cos(angle) * r;
+    const by = cy + Math.sin(angle) * r;
+    const ball = Bodies.circle(bx, by, 17, {
+        restitution: 1.015,
         friction: 0.0,
-        frictionAir: 0.0005,
-        density: 0.002,
+        frictionAir: 0.0002,
+        density: 0.0025,
         label: isGold ? 'ball_GOLD' : 'ball_CRIMSON'
     });
-    Body.setVelocity(ball, { x: Math.sin(i * 7) * 9, y: Math.cos(i * 11) * 9 });
+    Body.setVelocity(ball, { x: Math.cos(angle * 2.3) * 8.5, y: Math.sin(angle * 1.7) * 8.5 });
     Composite.add(world, ball);
-    balls.push({ body: ball, isGold: isGold, trail: [] });
+    balls.push({ body: ball, isGold: isGold, ringStage: 0, trail: [] });
 }
 
-// Record real Matter.js collision timestamps for our Musical Kalimba/Marimba Audio Synth!
+// Rate-limited musical collision recorder so notes play continuously across all 38 seconds!
 let simTime = 0.0;
+let lastNoteTime = -1.0;
+let noteCounter = 0;
 Events.on(engine, 'collisionStart', function(event) {
-    const pairs = event.pairs;
-    for (let i = 0; i < pairs.length; i++) {
-        const speed = pairs[i].collision.depth || 2.5;
-        if (window.collisionEvents.length < 450) {
-            window.collisionEvents.push({ time: Number(simTime.toFixed(3)), intensity: Math.min(speed / 5, 1.0), noteIdx: i % 6 });
-        }
+    if (simTime - lastNoteTime >= 0.075) {
+        lastNoteTime = simTime;
+        noteCounter++;
+        window.collisionEvents.push({
+            time: Number(simTime.toFixed(3)),
+            intensity: 0.85,
+            noteIdx: noteCounter % 9
+        });
     }
 });
 
@@ -791,11 +808,16 @@ let crimsonScore = 0;
 
 window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
     simTime = frameIdx / 24.0;
-    // Step Matter.js physics engine (2 substeps per frame for ultra-crisp elastic bounces)
-    for (let sub = 0; sub < 2; sub++) {
+
+    // Find current innermost active ring
+    let activeRingIdx = rings.findIndex(r => !r.destroyed);
+    if (activeRingIdx === -1) activeRingIdx = rings.length;
+
+    // 3 physics substeps per frame so balls NEVER tunnel through solid walls!
+    for (let sub = 0; sub < 3; sub++) {
         rings.forEach(r => {
             if (r.destroyed) return;
-            r.angleOffset += r.speed * 0.5;
+            r.angleOffset += r.speed * 0.333;
             r.segments.forEach(segObj => {
                 const newA = segObj.relAngle + r.angleOffset;
                 const nx = cx + Math.cos(newA) * segObj.radius;
@@ -804,46 +826,62 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
                 Body.setAngle(segObj.body, newA + Math.PI / 2);
             });
         });
-        Engine.update(engine, 1000 / 48);
+        Engine.update(engine, 1000 / 72);
     }
 
-    // Check ring escapes & shatter rings with particle bursts!
+    // Check sequential escapes & keep balls energetic!
     balls.forEach(b => {
         const pos = b.body.position;
+        const vel = b.body.velocity;
+        const spd = Math.hypot(vel.x, vel.y);
+        if (spd < 5.5) {
+            Body.setVelocity(b.body, { x: vel.x * 1.35 + (Math.random() - 0.5) * 2, y: vel.y * 1.35 - 1.5 });
+        }
+
         b.trail.push({ x: pos.x, y: pos.y });
-        if (b.trail.length > 9) b.trail.shift();
+        if (b.trail.length > 8) b.trail.shift();
 
         const dist = Math.hypot(pos.x - cx, pos.y - cy);
-        rings.forEach(r => {
-            if (!r.destroyed && dist > r.radius + 18) {
-                r.destroyed = true;
-                if (b.isGold) goldScore += 25; else crimsonScore += 25;
-                // Remove ring bodies and spawn 45 glowing shatter particles
-                r.segments.forEach(s => {
-                    Composite.remove(world, s.body);
-                    particles.push({
-                        x: s.body.position.x,
-                        y: s.body.position.y,
-                        vx: (Math.random() - 0.5) * 14,
-                        vy: (Math.random() - 0.5) * 14,
-                        color: r.color,
-                        alpha: 1.0
-                    });
-                });
-                window.collisionEvents.push({ time: Number(simTime.toFixed(3)), intensity: 1.0, noteIdx: 5 });
-            }
-        });
 
-        // Outer arena boundary bounce so escaped balls celebrate in orbit
-        if (dist > 515) {
+        // Sequential Ring Break Rule: Only the current active ring can be broken, and it takes 4 ball escapes (or time threshold) to shatter!
+        if (activeRingIdx < rings.length) {
+            const curRing = rings[activeRingIdx];
+            if (b.ringStage <= activeRingIdx && dist > curRing.radius + 14) {
+                b.ringStage = activeRingIdx + 1;
+                curRing.escapedCount += 1;
+                if (b.isGold) goldScore += 10; else crimsonScore += 10;
+
+                const minTimeForRing = (activeRingIdx + 1) * 4.8;
+                if (curRing.escapedCount >= 4 && simTime >= minTimeForRing) {
+                    curRing.destroyed = true;
+                    if (b.isGold) goldScore += 25; else crimsonScore += 25;
+                    curRing.segments.forEach(s => {
+                        Composite.remove(world, s.body);
+                        particles.push({
+                            x: s.body.position.x,
+                            y: s.body.position.y,
+                            vx: (Math.random() - 0.5) * 16,
+                            vy: (Math.random() - 0.5) * 16,
+                            color: curRing.color,
+                            alpha: 1.0
+                        });
+                    });
+                    window.collisionEvents.push({ time: Number(simTime.toFixed(3)), intensity: 1.0, noteIdx: 8 });
+                }
+            }
+        }
+
+        // Outer circular boundary bounce so balls stay inside the arena
+        if (dist > 495) {
             const ang = Math.atan2(pos.y - cy, pos.x - cx);
-            Body.setPosition(b.body, { x: cx + Math.cos(ang) * 510, y: cy + Math.sin(ang) * 510 });
-            Body.setVelocity(b.body, { x: -b.body.velocity.x * 0.9, y: -b.body.velocity.y * 0.9 });
-            if (b.isGold) goldScore += 1; else crimsonScore += 1;
+            const nx = Math.cos(ang), ny = Math.sin(ang);
+            Body.setPosition(b.body, { x: cx + nx * 490, y: cy + ny * 490 });
+            const dot = vel.x * nx + vel.y * ny;
+            Body.setVelocity(b.body, { x: (vel.x - 2 * dot * nx) * 0.98, y: (vel.y - 2 * dot * ny) * 0.98 - 2.0 });
         }
     });
 
-    // Warm Sunset / Velvet Studio Background (Completely distinct from SyntaxGrid!)
+    // Background
     const grad = ctx.createLinearGradient(0, 0, 0, H);
     grad.addColorStop(0, '#1a0b2e');
     grad.addColorStop(0.5, '#0f071e');
@@ -851,27 +889,25 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
-    // Top Clean Viral Scoreboard (Zero-Language Global Style: Icons + Numbers Only!)
+    // Top Viral Scoreboard
     ctx.save();
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.beginPath();
     ctx.roundRect(70, 95, W - 140, 150, 32);
     ctx.fill();
 
-    // Gold Team Score
     ctx.fillStyle = '#ffd700';
     ctx.beginPath(); ctx.arc(165, 170, 34, 0, Math.PI * 2); ctx.fill();
     ctx.font = 'bold 58px sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(String(goldScore), 220, 190);
 
-    // VS Divider
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px sans-serif';
+    ctx.font = 'bold 34px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('VS', cx, 184);
+    const ringsLeft = rings.filter(r => !r.destroyed).length;
+    ctx.fillText('RINGS: ' + ringsLeft, cx, 182);
 
-    // Crimson Team Score
     ctx.fillStyle = '#ff2a85';
     ctx.beginPath(); ctx.arc(W - 165, 170, 34, 0, Math.PI * 2); ctx.fill();
     ctx.font = 'bold 58px sans-serif';
@@ -879,41 +915,39 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
     ctx.fillText(String(crimsonScore), W - 220, 190);
     ctx.restore();
 
-    // Draw Intact Rotating Rings
+    // Draw Smooth Continuous Neon Arcs for Each Intact Ring!
     rings.forEach(r => {
         if (r.destroyed) return;
         ctx.save();
         ctx.strokeStyle = r.color;
         ctx.shadowBlur = 22;
         ctx.shadowColor = r.color;
-        ctx.lineWidth = 16;
+        ctx.lineWidth = 18;
         ctx.lineCap = 'round';
-        r.segments.forEach(segObj => {
-            const p = segObj.body.position;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
-            ctx.fillStyle = r.color;
-            ctx.fill();
-        });
+        const startA = r.angleOffset + (7 / 72) * Math.PI * 2;
+        const endA = r.angleOffset + Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r.radius, startA, endA);
+        ctx.stroke();
         ctx.restore();
     });
 
-    // Update & Draw Shatter Particles
+    // Draw Shatter Particles
     for (let p of particles) {
         if (p.alpha <= 0.02) continue;
         p.x += p.vx;
         p.y += p.vy;
-        p.alpha *= 0.92;
+        p.alpha *= 0.93;
         ctx.save();
         ctx.globalAlpha = p.alpha;
         ctx.fillStyle = p.color;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     }
 
-    // Draw Glossy 3D-Shaded Balls & Motion Trails
+    // Draw Glossy Spheres
     balls.forEach(b => {
         const col = b.isGold ? '#ffd700' : '#ff2a85';
         b.trail.forEach((tp, idx) => {
@@ -921,24 +955,23 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
             ctx.globalAlpha = (idx / b.trail.length) * 0.35;
             ctx.fillStyle = col;
             ctx.beginPath();
-            ctx.arc(tp.x, tp.y, 10 + idx, 0, Math.PI * 2);
+            ctx.arc(tp.x, tp.y, 8 + idx, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
         });
 
         const pos = b.body.position;
         ctx.save();
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 16;
         ctx.shadowColor = col;
         ctx.fillStyle = col;
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+        ctx.arc(pos.x, pos.y, 17, 0, Math.PI * 2);
         ctx.fill();
 
-        // 3D Specular Gloss Highlight
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
         ctx.beginPath();
-        ctx.arc(pos.x - 6, pos.y - 6, 6, 0, Math.PI * 2);
+        ctx.arc(pos.x - 5, pos.y - 5, 5, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     });
@@ -950,7 +983,7 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
 
 
 # =====================================================================
-# 5. BESPOKE ENGINE 3: CAPITALGRID (BLOOMBERG / TRADINGVIEW AUTO-SCALING UI!)
+# 5. BESPOKE ENGINE 3: CAPITALGRID (STAGE-LOCKED + REAL MARKET VOLATILITY!)
 # =====================================================================
 TRADINGVIEW_WEALTH_HTML = r"""<!DOCTYPE html>
 <html>
@@ -974,20 +1007,25 @@ canvas.width = W;
 canvas.height = H;
 const ctx = canvas.getContext('2d');
 
-const seriesA = DATA.series_a || [1000, 5000, 15000, 45000, 120000, 350000];
-const seriesB = DATA.series_b || [1000, 12000, 8000, 95000, 40000, 1450000];
-const nameA = String(DATA.asset_a_name || 'SAFE INDEX').toUpperCase();
-const nameB = String(DATA.asset_b_name || 'AGGRESSIVE ASSET').toUpperCase();
+const waypointsA = DATA.series_a || [10000, 14000, 11000, 32000, 68000, 145000];
+const waypointsB = DATA.series_b || [10000, 28000, 9500, 85000, 310000, 920000];
+const nameA = String(DATA.asset_a_name || 'S&P 500 INDEX').toUpperCase();
+const nameB = String(DATA.asset_b_name || 'NASDAQ TECH').toUpperCase();
 const startYear = Number(DATA.start_year || 2000);
 const endYear = Number(DATA.end_year || 2025);
 
-function interpSeries(arr, prog) {
-    const maxIdx = arr.length - 1;
-    const f = Math.min(Math.max(prog, 0.0), 1.0) * maxIdx;
-    const i0 = Math.floor(f);
-    const i1 = Math.min(maxIdx, i0 + 1);
-    const frac = f - i0;
-    return arr[i0] * (1 - frac) + arr[i1] * frac;
+// Interpolate along exact stage index (0.0 to 5.0) with realistic market tick jitter!
+function sampleMarketValue(waypoints, exactStageFloat, isVolatile) {
+    const clamped = Math.min(Math.max(exactStageFloat, 0.0), 5.0);
+    const i0 = Math.min(4, Math.floor(clamped));
+    const i1 = Math.min(5, i0 + 1);
+    const frac = clamped - i0;
+    const baseVal = waypoints[i0] * (1 - frac) + waypoints[i1] * frac;
+
+    // Add realistic market oscillation that zeroes out at exact stage endpoints (frac=0 or frac=1)
+    const pinEnvelope = Math.sin(frac * Math.PI);
+    const wave = (Math.sin(clamped * 28.0) * 0.045 + Math.cos(clamped * 67.0) * 0.025) * (isVolatile ? 1.6 : 0.7);
+    return Math.max(100, baseVal * (1 + wave * pinEnvelope));
 }
 
 function fmtMoney(val) {
@@ -998,31 +1036,39 @@ function fmtMoney(val) {
 }
 
 window.renderFrameAtTime = function(t) {
-    const totalDur = Math.max(DATA.total_duration, 0.1);
-    const progress = Math.min(Math.max(t / totalDur, 0.0), 1.0);
+    // Lock chart progress 100% to the active narration stage so spoken numbers match the screen at every second!
+    let stageIndex = 0;
+    let stageProgress = 0.0;
+    const timings = DATA.scene_timings || [];
+    for (let i = 0; i < timings.length; i++) {
+        if (t >= timings[i].start && t <= timings[i].end + 0.05) {
+            stageIndex = i;
+            stageProgress = Math.min(Math.max((t - timings[i].start) / Math.max(timings[i].duration, 0.1), 0.0), 1.0);
+            break;
+        }
+    }
+    const exactStageFloat = Math.min(5.0, stageIndex + stageProgress);
+    const normProg = exactStageFloat / 5.0;
 
-    // 1. Sleek Financial Terminal Backdrop (Emerald & Obsidian — NO SyntaxGrid box!)
     ctx.fillStyle = '#090d16';
     ctx.fillRect(0, 0, W, H);
 
-    // Top Live Wall Street Ticker Bar
     ctx.fillStyle = '#111827';
     ctx.fillRect(0, 0, W, 72);
     ctx.fillStyle = '#10b981';
     ctx.font = 'bold 24px sans-serif';
-    const curYear = Math.round(startYear + progress * (endYear - startYear));
+    const curYear = Math.round(startYear + normProg * (endYear - startYear));
     ctx.fillText('LIVE BACKTEST TERMINAL  •  YEAR: ' + curYear, 48, 45);
 
-    const curValA = interpSeries(seriesA, progress);
-    const curValB = interpSeries(seriesB, progress);
+    const curValA = sampleMarketValue(waypointsA, exactStageFloat, false);
+    const curValB = sampleMarketValue(waypointsB, exactStageFloat, true);
 
-    // 2. Dual Executive Asset Comparison Cards (Top Half)
     const padX = 48;
     const cardW = (W - padX * 3) / 2;
     const cardY = 105;
     const cardH = isWide ? 185 : 230;
 
-    // Card A (Conservative / Steady Asset)
+    // Card A
     ctx.fillStyle = '#111827';
     ctx.strokeStyle = '#3b82f6';
     ctx.lineWidth = 4;
@@ -1035,12 +1081,12 @@ window.renderFrameAtTime = function(t) {
     ctx.font = isWide ? 'bold 54px sans-serif' : 'bold 52px sans-serif';
     ctx.fillText(fmtMoney(curValA), padX + 26, cardY + 125);
 
-    const roiA = (((curValA - seriesA[0]) / Math.max(seriesA[0], 1)) * 100).toFixed(0);
-    ctx.fillStyle = '#3b82f6';
+    const roiA = (((curValA - waypointsA[0]) / Math.max(waypointsA[0], 1)) * 100).toFixed(0);
+    ctx.fillStyle = Number(roiA) >= 0 ? '#3b82f6' : '#ef4444';
     ctx.font = 'bold 24px sans-serif';
-    ctx.fillText('+' + Number(roiA).toLocaleString() + '% ROI', padX + 26, cardY + cardH - 24);
+    ctx.fillText((Number(roiA) >= 0 ? '+' : '') + Number(roiA).toLocaleString() + '% ROI', padX + 26, cardY + cardH - 24);
 
-    // Card B (High-Growth / Volatile Asset)
+    // Card B
     const cardBX = padX * 2 + cardW;
     ctx.fillStyle = '#111827';
     ctx.strokeStyle = '#10b981';
@@ -1054,12 +1100,12 @@ window.renderFrameAtTime = function(t) {
     ctx.font = isWide ? 'bold 54px sans-serif' : 'bold 52px sans-serif';
     ctx.fillText(fmtMoney(curValB), cardBX + 26, cardY + 125);
 
-    const roiB = (((curValB - seriesB[0]) / Math.max(seriesB[0], 1)) * 100).toFixed(0);
-    ctx.fillStyle = '#fbbf24';
+    const roiB = (((curValB - waypointsB[0]) / Math.max(waypointsB[0], 1)) * 100).toFixed(0);
+    ctx.fillStyle = Number(roiB) >= 0 ? '#fbbf24' : '#ef4444';
     ctx.font = 'bold 24px sans-serif';
-    ctx.fillText('+' + Number(roiB).toLocaleString() + '% ROI', cardBX + 26, cardY + cardH - 24);
+    ctx.fillText((Number(roiB) >= 0 ? '+' : '') + Number(roiB).toLocaleString() + '% ROI', cardBX + 26, cardY + cardH - 24);
 
-    // 3. Dynamic Auto-Scaling TradingView Area Chart (NEVER flat at the bottom!)
+    // Auto-Scaling TradingView Area Chart with 120 High-Resolution Market Ticks
     const chartX = padX;
     const chartY = cardY + cardH + 35;
     const chartW = W - padX * 2;
@@ -1070,23 +1116,21 @@ window.renderFrameAtTime = function(t) {
     ctx.lineWidth = 3;
     ctx.beginPath(); ctx.roundRect(chartX, chartY, chartW, chartH, 22); ctx.fill(); ctx.stroke();
 
-    // Sample 80 points up to current progress and dynamically scale Y-axis to current max!
-    const numSamples = 80;
+    const numSamples = 120;
     const ptsA = [];
     const ptsB = [];
-    let currentMax = Math.max(seriesA[0], seriesB[0]) * 1.2;
+    let currentMax = Math.max(waypointsA[0], waypointsB[0]) * 1.15;
 
     for (let i = 0; i <= numSamples; i++) {
-        const subProg = (i / numSamples) * Math.max(progress, 0.03);
-        const va = interpSeries(seriesA, subProg);
-        const vb = interpSeries(seriesB, subProg);
+        const subStage = (i / numSamples) * Math.max(exactStageFloat, 0.08);
+        const va = sampleMarketValue(waypointsA, subStage, false);
+        const vb = sampleMarketValue(waypointsB, subStage, true);
         if (va > currentMax) currentMax = va;
         if (vb > currentMax) currentMax = vb;
         ptsA.push({ sp: i / numSamples, v: va });
         ptsB.push({ sp: i / numSamples, v: vb });
     }
 
-    // Horizontal Y-Axis Gridlines & Price Labels
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
     ctx.fillStyle = '#64748b';
     ctx.font = 'bold 20px sans-serif';
@@ -1106,12 +1150,11 @@ window.renderFrameAtTime = function(t) {
             if (idx === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
         });
         ctx.strokeStyle = strokeCol;
-        ctx.lineWidth = 7;
-        ctx.shadowBlur = 16;
+        ctx.lineWidth = 6;
+        ctx.shadowBlur = 14;
         ctx.shadowColor = strokeCol;
         ctx.stroke();
 
-        // Gradient fill under curve
         const lastPt = pts[pts.length - 1];
         const lastX = chartX + 40 + lastPt.sp * (chartW - 95);
         const lastY = chartY + chartH - 45 - (lastPt.v / currentMax) * (chartH - 95);
@@ -1124,9 +1167,8 @@ window.renderFrameAtTime = function(t) {
         ctx.fillStyle = aGrad;
         ctx.fill();
 
-        // Pulsing Head Dot
         ctx.beginPath();
-        ctx.arc(lastX, lastY, 12, 0, Math.PI * 2);
+        ctx.arc(lastX, lastY, 11, 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
         ctx.fill();
         ctx.restore();
@@ -1135,7 +1177,6 @@ window.renderFrameAtTime = function(t) {
     drawAreaCurve(ptsA, '#3b82f6', 'rgba(59, 130, 246, 0.28)');
     drawAreaCurve(ptsB, '#10b981', 'rgba(16, 185, 129, 0.32)');
 
-    // 4. Clean Financial Broadcast Captions
     const chunks = DATA.chunks || [];
     let activeChunk = null;
     for (let c of chunks) {
@@ -1167,25 +1208,25 @@ window.renderFrameAtTime = function(t) {
 
 
 # =====================================================================
-# 6. AGENT 2: POD-SPECIFIC DATA & SCRIPT ARCHITECT
+# 6. AGENT 2: POD-SPECIFIC DATA & SCRIPT ARCHITECT (WITH STRICT SORTING)
 # =====================================================================
 def generate_pod_plan(spy_data, past_topics, is_long=False):
     elite_titles = [c["title"] for c in spy_data["elite_candidates"][:10]]
+    word_rule = "14 to 17 spoken words (strictly under 18 words so total Short is ~38 seconds!)" if not is_long else "30 to 36 spoken words"
 
     if POD_NAME == "PHYSICS":
-        # Zero-Language Global ASMR Physics Arena (No TTS needed!)
         prompt = f"""
         Top XGBoost-Scored Physics & Satisfaction Search Queries:
         {json.dumps(elite_titles)}
         Past Titles (DO NOT REPEAT):
         {json.dumps(past_topics[-30:])}
 
-        Design a viral, language-independent (Global ASMR) Bouncing Ball vs Concentric Spinning Rings video title, description, and engagement question.
+        Design a viral, language-independent (Global ASMR) Bouncing Ball vs 6 Concentric Spinning Rings video title, description, and engagement question.
         Output JSON ONLY:
         {{
-          "title": "Gold vs Crimson: Can 24 Balls Break All 4 Rings? #shorts",
-          "topic_summary": "Satisfying 60FPS Matter.js rigid-body physics battle between Gold and Crimson spheres with synchronized marimba collision chimes.",
-          "pinned_comment": "🟡 Team GOLD or 🔴 Team CRIMSON — which color did you bet on before the final ring shattered? Comment below! 👇"
+          "title": "Gold vs Crimson: Can 20 Balls Break All 6 Rings? #shorts",
+          "topic_summary": "Satisfying 60FPS Matter.js rigid-body physics battle between Gold and Crimson spheres breaking 6 solid neon rings with marimba collision chimes.",
+          "pinned_comment": "🟡 Team GOLD or 🔴 Team CRIMSON — which color scored higher when the final ring shattered? Comment below! 👇"
         }}
         """
         return extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.75))
@@ -1197,39 +1238,47 @@ def generate_pod_plan(spy_data, past_topics, is_long=False):
         Outliers: {json.dumps(spy_data['outliers'][:4])}
         Past Titles (DO NOT REPEAT): {json.dumps(past_topics[-30:])}
 
-        Create a 5-Stage 3D Size/Depth/Height Comparison video plan rendered in our Three.js WebGL 3D Engine.
-         CRITICAL: The metrics in `items` and the spoken numbers in `narrations` MUST match 100% word-for-word!
-        - For Shorts ({not is_long}): Each narration MUST be 16 to 20 spoken words.
-        - For Long ({is_long}): Each narration MUST be 32 to 38 spoken words.
+        Create a 5-Stage 3D Size/Height/Depth Comparison rendered in our Three.js WebGL 3D Engine.
+        CRITICAL RULES:
+        1. The 5 items in `items` MUST be ordered strictly from SMALLEST `meters` (Rank #1) to LARGEST `meters` (Rank #5)!
+        2. Include `"meters"` as a pure number (e.g. `38`, `93`, `330`, `828`, `2400`) so our 3D engine scales them proportionally!
+        3. Each of the 5 `narrations` MUST be {word_rule} and match the exact order and metric of `items`!
 
         Output JSON ONLY:
         {{
           "title": "High-CTR 3D Comparison Title under 58 chars",
           "topic_summary": "True 3D WebGL scale comparison from smallest to largest.",
-          "pinned_comment": "Which 3D scale jump blew your mind the most? Comment below!",
+          "pinned_comment": "Which of these 5 giant structures shocked you the most? Comment below!",
           "thumb_badge": "TRUE 3D SCALE!",
           "thumb_line_1": "SMALLEST TO",
           "thumb_line_2": "COLOSSAL",
           "items": [
-            {{"name": "Statue of Liberty", "metric": "93 m", "subtitle": "NEW YORK LANDMARK", "shape": "cylinder"}},
-            {{"name": "Eiffel Tower", "metric": "330 m", "subtitle": "3.5X TALLER", "shape": "pyramid"}},
-            {{"name": "Burj Khalifa", "metric": "828 m", "subtitle": "WORLD'S TALLEST TOWER", "shape": "skyscraper"}},
-            {{"name": "Mount Everest", "metric": "8,849 m", "subtitle": "10X BURJ KHALIFA", "shape": "pyramid"}},
-            {{"name": "Olympus Mons (Mars)", "metric": "21,900 m", "subtitle": "2.5X MOUNT EVEREST", "shape": "megatower"}}
+            {{"name": "Christ the Redeemer", "meters": 38, "metric": "38 m", "subtitle": "RIO DE JANEIRO"}},
+            {{"name": "Statue of Liberty", "meters": 93, "metric": "93 m", "subtitle": "2.4X TALLER"}},
+            {{"name": "Eiffel Tower", "meters": 330, "metric": "330 m", "subtitle": "PARIS ICON"}},
+            {{"name": "Empire State Building", "meters": 443, "metric": "443 m", "subtitle": "NEW YORK SKYSCRAPER"}},
+            {{"name": "Burj Khalifa", "meters": 828, "metric": "828 m", "subtitle": "WORLD'S TALLEST"}}
           ],
           "narrations": [
-            "Stage 1 narration matching item 1 exact metric...",
-            "Stage 2 narration matching item 2 exact metric...",
-            "Stage 3 narration matching item 3 exact metric...",
-            "Stage 4 narration matching item 4 exact metric...",
-            "Stage 5 narration matching item 5 exact metric..."
+            "Stage 1 narration matching item 1 ({word_rule})...",
+            "Stage 2 narration matching item 2 ({word_rule})...",
+            "Stage 3 narration matching item 3 ({word_rule})...",
+            "Stage 4 narration matching item 4 ({word_rule})...",
+            "Stage 5 narration matching item 5 ({word_rule})..."
           ]
         }}
         """
-        return extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.7))
+        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.7))
+        # Enforce strict ascending sort by meters if AI ever mixed two items
+        items = plan.get("items", [])
+        nars = plan.get("narrations", [])
+        if len(items) == 5 and len(nars) == 5:
+            paired = sorted(zip(items, nars), key=lambda x: float(re.sub(r"[^\d.]", "", str(x[0].get("meters", 10))) or 10))
+            plan["items"] = [p[0] for p in paired]
+            plan["narrations"] = [p[1] for p in paired]
+        return plan
 
     else:
-        # WEALTH Pod (Auto-Scaling Financial Backtest Terminal)
         prompt = f"""
         Top XGBoost-Scored Wealth & Investing Queries:
         {json.dumps(elite_titles)}
@@ -1237,30 +1286,30 @@ def generate_pod_plan(spy_data, past_topics, is_long=False):
         Past Titles (DO NOT REPEAT): {json.dumps(past_topics[-30:])}
 
         Design a 5-Stage Financial Backtest / Wealth Comparison between two assets or strategies (`asset_a_name` vs `asset_b_name`).
-        CRITICAL RULE: The 6 numbers in `series_a` and `series_b` MUST match the exact dollar amounts spoken in `narrations` 100%! Never say $10M if the array ends at $500M!
-        - For Shorts ({not is_long}): Each narration MUST be 16 to 20 spoken words.
-        - For Long ({is_long}): Each narration MUST be 32 to 38 spoken words.
+        CRITICAL RULES:
+        1. `series_a` and `series_b` MUST have 6 numbers (`[start, stage1_end, stage2_end, stage3_end, stage4_end, stage5_end]`).
+        2. Each of the 5 `narrations` MUST be {word_rule} and state the exact dollar amounts at the end of that stage (`series_a[i+1]` and `series_b[i+1]`)!
 
         Output JSON ONLY:
         {{
           "title": "High-CTR Wealth Simulation Title under 58 chars",
           "topic_summary": "Live historical portfolio backtest and compounding simulation.",
           "pinned_comment": "Would you have held through the crash or sold early? Be honest in the comments!",
-          "thumb_badge": "$1,000 TO $1.4M!",
-          "thumb_line_1": "S&P 500 VS",
-          "thumb_line_2": "TECH GIANTS",
+          "thumb_badge": "$1,000 TO $920K!",
+          "thumb_line_1": "SAFE INDEX VS",
+          "thumb_line_2": "HIGH GROWTH",
           "asset_a_name": "S&P 500 INDEX",
-          "asset_b_name": "NASDAQ / TECH",
+          "asset_b_name": "NASDAQ TECH",
           "start_year": 2000,
           "end_year": 2025,
           "series_a": [10000, 14000, 11000, 32000, 68000, 145000],
           "series_b": [10000, 28000, 9500, 85000, 310000, 920000],
           "narrations": [
-            "Stage 1 narration introducing the starting investment in start_year...",
-            "Stage 2 narration describing the first surge...",
-            "Stage 3 narration describing the market crash drawdown...",
-            "Stage 4 narration describing the recovery and compounding...",
-            "Stage 5 narration revealing the exact final numbers from series_a[5] and series_b[5]!"
+            "Stage 1 narration ({word_rule}) ending at series_a[1] and series_b[1]...",
+            "Stage 2 narration ({word_rule}) ending at series_a[2] and series_b[2]...",
+            "Stage 3 narration ({word_rule}) ending at series_a[3] and series_b[3]...",
+            "Stage 4 narration ({word_rule}) ending at series_a[4] and series_b[4]...",
+            "Stage 5 narration ({word_rule}) ending at series_a[5] and series_b[5]!"
           ]
         }}
         """
@@ -1268,41 +1317,38 @@ def generate_pod_plan(spy_data, past_topics, is_long=False):
 
 
 # =====================================================================
-# 7. AUDIO SYNTHESIS (POLYPHONIC MARIMBA/KALIMBA SYNTH + TTS)
+# 7. AUDIO SYNTHESIS (FULL-DURATION MARIMBA SYNTH + TTS)
 # =====================================================================
 def synthesize_collision_marimba_track(total_duration, collision_events, output_wav):
-    """
-    Builds a studio-grade polyphonic ASMR Marimba/Kalimba musical track where every
-    real Matter.js ball collision plays a resonant harmonic note at the exact millisecond!
-    """
     sr = 44100
     n_samples = int((total_duration + 0.3) * sr)
     audio = np.zeros(n_samples, dtype=np.float32)
 
-    # C-Major Pentatonic / Lydian Kalimba Scale (Hz)
+    # Warm ambient sub-bass drone so there is never dead silence between bounces
+    t_all = np.linspace(0, total_duration + 0.3, n_samples, endpoint=False)
+    audio += (np.sin(2 * np.pi * 130.81 * t_all) * 0.015 + np.sin(2 * np.pi * 196.00 * t_all) * 0.012)
+
     scale_hz = [261.63, 329.63, 392.00, 493.88, 523.25, 659.25, 783.99, 987.77, 1046.50]
 
     for ev in collision_events:
         t_sec = float(ev.get("time", 0.0))
-        intensity = float(ev.get("intensity", 0.7))
+        intensity = float(ev.get("intensity", 0.8))
         n_idx = int(ev.get("noteIdx", 0)) % len(scale_hz)
         freq = scale_hz[n_idx]
 
         start_i = int(t_sec * sr)
-        dur_s = 0.28
+        dur_s = 0.26
         c_len = int(dur_s * sr)
         if 0 <= start_i and start_i + c_len < n_samples:
             ct = np.linspace(0, dur_s, c_len, endpoint=False)
-            # Wooden marimba fundamental + 4x overtone + crisp attack click
-            env = np.exp(-ct * 16.0) * np.sin(np.pi * np.minimum(ct / 0.006, 1.0))
+            env = np.exp(-ct * 15.0) * np.sin(np.pi * np.minimum(ct / 0.005, 1.0))
             tone = (
                 np.sin(2 * np.pi * freq * ct) * 0.75 +
-                np.sin(2 * np.pi * (freq * 2.0) * ct) * np.exp(-ct * 35.0) * 0.20 +
-                np.sin(2 * np.pi * (freq * 4.0) * ct) * np.exp(-ct * 55.0) * 0.08
+                np.sin(2 * np.pi * (freq * 2.0) * ct) * np.exp(-ct * 32.0) * 0.22 +
+                np.sin(2 * np.pi * (freq * 4.0) * ct) * np.exp(-ct * 50.0) * 0.08
             )
-            audio[start_i:start_i + c_len] += tone * env * (0.14 * max(intensity, 0.35))
+            audio[start_i:start_i + c_len] += tone * env * (0.16 * max(intensity, 0.4))
 
-    # Normalize cleanly to prevent clipping
     peak = np.max(np.abs(audio))
     if peak > 0.01:
         audio = (audio / peak) * 0.88
@@ -1363,9 +1409,9 @@ async def fetch_tts_with_retries(narration):
         voice = voices[attempt % len(voices)]
         try:
             try:
-                comm = edge_tts.Communicate(text_to_speak, voice=voice, rate="+6%", boundary="WordBoundary")
+                comm = edge_tts.Communicate(text_to_speak, voice=voice, rate="+7%", boundary="WordBoundary")
             except TypeError:
-                comm = edge_tts.Communicate(text_to_speak, voice=voice, rate="+6%")
+                comm = edge_tts.Communicate(text_to_speak, voice=voice, rate="+7%")
 
             words, audio_bytes = [], bytearray()
             async for chunk in comm.stream():
@@ -1468,9 +1514,8 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
     output_mp4 = f"{prefix}.mp4"
     three_src, matter_src = ensure_local_js_libs()
 
-    # CASE A: KINETICZEN (REAL MATTER.JS + FRAME-ACCURATE COLLISION MARIMBA SYNTH)
     if POD_NAME == "PHYSICS":
-        total_dur = 38.0
+        total_dur = 36.0
         total_frames = int(total_dur * FPS)
         raw_mp4 = f"{prefix}_silent.mp4"
 
@@ -1486,7 +1531,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         proc = subprocess.Popen(ffmpeg_v, stdin=subprocess.PIPE)
         collision_events = []
 
-        print(f"[KineticZen Matter.js Engine] Simulating {total_frames} rigid-body frames...", flush=True)
+        print(f"[KineticZen Matter.js V2.1] Simulating {total_frames} frames with 6 Sequential Solid Rings...", flush=True)
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-gpu"])
             page = browser.new_page(viewport={"width": out_w, "height": out_h})
@@ -1496,7 +1541,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
             for f_idx in range(total_frames):
                 page.evaluate(f"window.stepAndRenderPhysics({f_idx}, {total_frames})")
                 proc.stdin.write(page.screenshot(type="jpeg", quality=92))
-                if f_idx == total_frames // 2 and ch_idx == 0:
+                if f_idx == total_frames // 3 and ch_idx == 0:
                     Path(f"thumb_{POD_NAME.lower()}.jpg").write_bytes(page.screenshot(type="jpeg", quality=95))
 
             collision_events = page.evaluate("window.collisionEvents || []")
@@ -1505,7 +1550,6 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         proc.stdin.close()
         proc.wait()
 
-        # Synthesize frame-accurate polyphonic Marimba/Kalimba collision soundtrack!
         marimba_wav = f"{prefix}_marimba.wav"
         synthesize_collision_marimba_track(total_dur, collision_events, marimba_wav)
         subprocess.run([
@@ -1518,7 +1562,6 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
                 os.remove(tmp)
         return output_mp4, total_dur
 
-    # CASE B & C: SCALEVERSE 3D (THREE.JS WEBGL) OR CAPITALGRID (TRADINGVIEW TERMINAL)
     bgm_wav = f"{prefix}_bgm.wav"
     generate_ambient_pad_audio(total_dur, bgm_wav)
 
@@ -1548,10 +1591,10 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         "chunks": chunks,
         "items": plan.get("items", []),
         "asset_a_name": plan.get("asset_a_name", "S&P 500"),
-        "asset_b_name": plan.get("asset_b_name", "BITCOIN"),
+        "asset_b_name": plan.get("asset_b_name", "NASDAQ TECH"),
         "start_year": plan.get("start_year", 2000),
         "end_year": plan.get("end_year", 2025),
-        "series_a": plan.get("series_a", [10000, 15000, 12000, 35000, 75000, 145000]),
+        "series_a": plan.get("series_a", [10000, 14000, 11000, 32000, 68000, 145000]),
         "series_b": plan.get("series_b", [10000, 28000, 9500, 85000, 310000, 920000])
     }
 
@@ -1571,7 +1614,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
     ]
     proc = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
 
-    print(f"[{POD_NAME} Bespoke Engine] Rendering {total_frames} frames ({out_w}x{out_h})...", flush=True)
+    print(f"[{POD_NAME} Bespoke Engine V2.1] Rendering {total_frames} frames ({out_w}x{out_h})...", flush=True)
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
@@ -1603,7 +1646,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
 
 
 # =====================================================================
-# 9. INTERACTIVE MICRO-SAAS WEB PORTAL (COMPOUND CALCULATOR + SANDBOX)
+# 9. INTERACTIVE MICRO-SAAS WEB PORTAL & YOUTUBE UPLOADER
 # =====================================================================
 def update_interactive_micro_saas_portal(video_id, title, summary):
     os.makedirs("docs", exist_ok=True)
@@ -1813,7 +1856,7 @@ def upload_pod_video(video_path, title, description, tags, pinned_comment, is_lo
     response = youtube.videos().insert(part="snippet,status", body=body, media_body=media).execute()
     video_id = response["id"]
     short_link = mk_url("https", ["youtu", "be"], f"/{video_id}")
-    print(f"🎉 [{POD_NAME} V2.0 PUBLISHED!] Video ID: {video_id} | URL: {short_link}", flush=True)
+    print(f"🎉 [{POD_NAME} V2.1 PUBLISHED!] Video ID: {video_id} | URL: {short_link}", flush=True)
 
     mem = load_pod_memory()
     pub = mem.get("published_videos", [])
