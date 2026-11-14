@@ -2,7 +2,8 @@
   "seed_idx": 0,
   "topics": [
     "Famous Statues Size Comparison: 3D Scale",
-    "Iconic Wonders: 3D Size Comparison"
+    "Iconic Wonders: 3D Size Comparison",
+    "Moon to Sun: 3D Universe Size Comparison"
   ],
   "playlist_id": "",
   "published_videos": [
@@ -15,6 +16,11 @@
       "video_id": "F3rTMk282rk",
       "title": "Iconic Wonders: 3D Size Comparison #shorts",
       "published_at": 1794638020
+    },
+    {
+      "video_id": "-2eoPA4x7bg",
+      "title": "Moon to Sun: 3D Universe Size Comparison #shorts",
+      "published_at": 1794639223
     }
   ],
   "xgb_feedback_rows": []
