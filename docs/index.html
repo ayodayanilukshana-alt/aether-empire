@@ -3,160 +3,332 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AETHER Interactive Simulation Network — Wealth, 3D Scale & Physics Lab</title>
+<title>AETHER QUANTITATIVE MEDIA & SIMULATION SYSTEMS</title>
 <style>
-  * { box-sizing: border-box; }
-  body { background: #060a12; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 24px; }
-  header { text-align: center; max-width: 900px; margin: 0 auto 28px; }
-  h1 { color: #38bdf8; font-size: 2.2rem; margin-bottom: 8px; }
-  .sub { color: #94a3b8; font-size: 1rem; }
-  .tabs { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 22px 0; }
-  .tab-btn { background: #111827; color: #cbd5e1; border: 1px solid #1e293b; padding: 10px 20px; border-radius: 999px; cursor: pointer; font-weight: 700; transition: 0.2s; }
-  .tab-btn.active, .tab-btn:hover { background: #38bdf8; color: #060a12; border-color: #38bdf8; }
-  .tools-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; max-width: 1280px; margin: 0 auto 36px; }
-  .tool-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-  .tool-box h3 { margin-top: 0; color: #facc15; }
-  label { font-size: 0.88rem; color: #94a3b8; display: block; margin-top: 8px; }
-  input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #334155; background: #060a12; color: #fff; font-size: 1rem; }
-  .res { font-size: 1.55rem; font-weight: 800; color: #10b981; margin-top: 14px; }
-  #miniPhysics { width: 100%; height: 180px; background: #060a12; border-radius: 12px; border: 1px solid #334155; margin-top: 10px; cursor: pointer; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 22px; max-width: 1280px; margin: 20px auto; }
-  .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 16px; transition: transform 0.2s; }
-  .card:hover { transform: translateY(-4px); border-color: #38bdf8; }
-  .card-top { display: flex; justify-content: space-between; align-items: center; }
-  .badge { font-weight: 800; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; }
-  .badge-wealth { background: #10b981; color: #052e16; }
-  .badge-physics { background: #f43f5e; color: #fff; }
-  .badge-scale3d { background: #38bdf8; color: #060a12; }
-  .views { color: #94a3b8; font-size: 0.85rem; }
-  iframe { width: 100%; height: 240px; border: none; border-radius: 10px; margin-top: 12px; }
+:root {
+  --bg-primary: #05070b;
+  --bg-panel: #0b0f17;
+  --bg-elevated: #111827;
+  --border-subtle: #1e293b;
+  --border-focus: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.topbar {
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(5, 7, 11, 0.88);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-inner {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.nav-links {
+  display: flex;
+  gap: 24px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.nav-links a:hover { color: var(--text-main); }
+.container {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 40px 28px;
+}
+.hero-header {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 32px;
+  margin-bottom: 36px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 10px;
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--border-focus);
+  border-radius: 4px;
+  background: var(--bg-panel);
+}
+h1 {
+  font-size: clamp(1.8rem, 3.2vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  max-width: 820px;
+}
+.workstation-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 28px;
+  margin-bottom: 44px;
+}
+@media (max-width: 1024px) {
+  .workstation-grid { grid-template-columns: 1fr; }
+}
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 24px;
+}
+.panel-title {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.control-group { margin-bottom: 18px; }
+.control-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+.control-val { color: var(--text-main); font-weight: 600; }
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent, #38bdf8);
+  cursor: pointer;
+}
+input[type="number"], select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-focus);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.btn {
+  flex: 1;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--border-focus);
+  background: var(--bg-elevated);
+  color: var(--text-main);
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.15s;
+}
+.btn:hover { border-color: var(--text-main); background: #1e293b; }
+.btn-primary {
+  background: var(--accent, #38bdf8);
+  color: #05070b;
+  border-color: var(--accent, #38bdf8);
+}
+.btn-primary:hover { opacity: 0.9; background: var(--accent, #38bdf8); }
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.kpi-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 16px;
+}
+.kpi-label {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.kpi-num {
+  font-family: var(--font-mono);
+  font-size: 1.55rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.canvas-stage {
+  width: 100%;
+  height: 440px;
+  background: #030508;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  margin-top: 16px;
+}
+.data-table th, .data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+}
+.data-table th { color: var(--text-dim); text-transform: uppercase; font-size: 0.75rem; }
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+.catalog-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.catalog-card:hover {
+  border-color: var(--accent, #38bdf8);
+  transform: translateY(-2px);
+}
+.meta-row {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.catalog-card h3 { font-size: 1.15rem; margin-bottom: 10px; }
+.catalog-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 18px; }
+.seo-article {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+  margin-top: 36px;
+}
+@media (max-width: 960px) { .seo-article { grid-template-columns: 1fr; } }
+.seo-article h2 { font-size: 1.3rem; margin: 20px 0 10px; }
+.seo-article p { color: var(--text-muted); margin-bottom: 14px; }
+.faq-item {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 14px 0;
+}
+.faq-q { font-weight: 600; margin-bottom: 6px; }
+.faq-a { color: var(--text-muted); font-size: 0.92rem; }
+footer {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 64px;
+  padding: 32px 28px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
 </style>
 </head>
 <body>
-  <header>
-    <h1>⚡ AETHER INTERACTIVE SIMULATION HUB</h1>
-    <div class="sub">Free Financial Backtest Calculators, 3D Cosmic Scale Converters & Interactive Physics Sandbox</div>
-  </header>
-
-  <div class="tools-wrap">
-    <div class="tool-box">
-      <h3>💰 CapitalGrid Compounding Simulator</h3>
-      <label>Monthly Investment ($):</label>
-      <input type="number" id="mInv" value="500" oninput="calcWealth()">
-      <label>Annual Return (%):</label>
-      <input type="number" id="rate" value="12" oninput="calcWealth()">
-      <label>Time Horizon (Years):</label>
-      <input type="number" id="yrs" value="25" oninput="calcWealth()">
-      <div class="res" id="wealthOut">$948,817</div>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <span class="brand-mark">
+        <span class="status-dot" style="background: #38bdf8;"></span>
+        <span>AETHER DIGITAL SYSTEMS</span>
+      </span>
+      <div class="nav-links">
+        <a href="./capitalgrid/index.html">CAPITALGRID</a>
+        <a href="./scaleverse/index.html">SCALEVERSE 3D</a>
+        <a href="./kineticzen/index.html">KINETICZEN LABS</a>
+      </div>
     </div>
-
-    <div class="tool-box">
-      <h3>🌍 ScaleVerse 3D Size Converter</h3>
-      <label>Enter Object Size / Depth (Meters):</label>
-      <input type="number" id="mScale" value="121" oninput="calcScale()">
-      <div class="res" id="scaleOut">8.6x V-2 Rocket | 0.15x Burj Khalifa</div>
+  </nav>
+  <main class="container">
+    <header class="hero-header">
+      <div class="eyebrow">INDEPENDENT SIMULATION DIVISIONS</div>
+      <h1>Autonomous Quantitative & Spatial Computing Portals</h1>
+      <p class="subtitle">Each media division operates its own dedicated interactive computing portal and per-video simulation workstations.</p>
+    </header>
+    <div class="catalog-grid">
+      <a href="./capitalgrid/index.html" class="catalog-card" style="--accent: #10b981;">
+        <div>
+          <div class="meta-row"><span>DIVISION 01</span><span>1 WORKSTATIONS</span></div>
+          <h3>CAPITALGRID</h3>
+          <p>Quantitative wealth telemetry, historical asset backtesting, and Monte Carlo compounding simulators.</p>
+        </div>
+        <div class="btn btn-primary" style="display:block;">ENTER CAPITALGRID PORTAL</div>
+      </a>
+      <a href="./scaleverse/index.html" class="catalog-card" style="--accent: #38bdf8;">
+        <div>
+          <div class="meta-row"><span>DIVISION 02</span><span>1 WORKSTATIONS</span></div>
+          <h3>SCALEVERSE 3D</h3>
+          <p>Interactive WebGL 3D CAD scale comparisons, aerospace telemetry, and volumetric dimension explorers.</p>
+        </div>
+        <div class="btn btn-primary" style="display:block;">ENTER SCALEVERSE 3D PORTAL</div>
+      </a>
+      <a href="./kineticzen/index.html" class="catalog-card" style="--accent: #f43f5e;">
+        <div>
+          <div class="meta-row"><span>DIVISION 03</span><span>1 WORKSTATIONS</span></div>
+          <h3>KINETICZEN LABS</h3>
+          <p>Deterministic 60Hz rigid-body physics arenas, collision impulse analyzers, and harmonic synth labs.</p>
+        </div>
+        <div class="btn btn-primary" style="display:block;">ENTER KINETICZEN PORTAL</div>
+      </a>
     </div>
-
-    <div class="tool-box">
-      <h3>🎮 KineticZen Physics Sandbox (Click to Spawn Balls!)</h3>
-      <canvas id="miniPhysics" width="360" height="180"></canvas>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab-btn active" onclick="filterPod('ALL', this)">All Channels (3)</button>
-    <button class="tab-btn" onclick="filterPod('WEALTH', this)">💰 CapitalGrid Wealth</button>
-    <button class="tab-btn" onclick="filterPod('SCALE3D', this)">🌍 ScaleVerse 3D</button>
-    <button class="tab-btn" onclick="filterPod('PHYSICS', this)">🔮 KineticZen Physics</button>
-  </div>
-
-  <div class="grid" id="videoGrid">
-        <div class="card" data-pod="WEALTH">
-          <div class="card-top">
-            <span class="badge badge-wealth">WEALTH</span>
-            <span class="views">👁️ 40 views</span>
-          </div>
-          <iframe src="https://www.youtube.com/embed/zrQuKBRCBPo" loading="lazy" allowfullscreen></iframe>
-          <h3>$5/Day Coffee vs Nvidia Stock: 15-Year Backtest #shorts</h3>
-          <p>We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.
-
-Subscribe for daily simulations!</p>
-        </div>
-        
-        <div class="card" data-pod="PHYSICS">
-          <div class="card-top">
-            <span class="badge badge-physics">PHYSICS</span>
-            <span class="views">👁️ 737 views</span>
-          </div>
-          <iframe src="https://www.youtube.com/embed/dmVcdCg6p84" loading="lazy" allowfullscreen></iframe>
-          <h3>IPHONE vs ANDROID: Hexagon Cage Escape! #shorts</h3>
-          <p>60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.
-
-Subscribe for da</p>
-        </div>
-        
-        <div class="card" data-pod="SCALE3D">
-          <div class="card-top">
-            <span class="badge badge-scale3d">SCALE3D</span>
-            <span class="views">👁️ 25 views</span>
-          </div>
-          <iframe src="https://www.youtube.com/embed/9t9fozNZEV4" loading="lazy" allowfullscreen></iframe>
-          <h3>Rockets: V-2 to Starship 3D Size Comparison #shorts</h3>
-          <p>A 3D scale comparison of the largest rockets and spacecraft in history, from the V-2 to Starship.
-
-Subscribe for daily simulations!</p>
-        </div>
-        </div>
-
-<script>
-function calcWealth() {
-  const p = Number(document.getElementById('mInv').value || 0);
-  const r = Number(document.getElementById('rate').value || 0) / 100 / 12;
-  const n = Number(document.getElementById('yrs').value || 0) * 12;
-  const fv = r > 0 ? p * ((Math.pow(1 + r, n) - 1) / r) : p * n;
-  document.getElementById('wealthOut').innerText = '$' + Math.round(fv).toLocaleString();
-}
-function calcScale() {
-  const m = Number(document.getElementById('mScale').value || 0);
-  document.getElementById('scaleOut').innerText = (m / 14).toFixed(1) + 'x V-2 Rocket | ' + (m / 828).toFixed(2) + 'x Burj Khalifa';
-}
-function filterPod(pod, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.card').forEach(c => {
-    c.style.display = (pod === 'ALL' || c.dataset.pod === pod) ? 'block' : 'none';
-  });
-}
-
-// Interactive Mini Physics Sandbox
-const pCan = document.getElementById('miniPhysics');
-const pCtx = pCan.getContext('2d');
-const pBalls = [
-  {x: 120, y: 50, vx: 3, vy: 2, r: 10, c: '#00e5ff'},
-  {x: 200, y: 80, vx: -3, vy: -2, r: 10, c: '#ff2a85'},
-  {x: 160, y: 110, vx: 2, vy: -3, r: 10, c: '#facc15'}
-];
-pCan.addEventListener('click', e => {
-  const rect = pCan.getBoundingClientRect();
-  pBalls.push({
-    x: e.clientX - rect.left, y: e.clientY - rect.top,
-    vx: (Math.random() - 0.5) * 7, vy: -4, r: 10,
-    c: ['#00e5ff', '#ff2a85', '#facc15', '#10b981'][pBalls.length % 4]
-  });
-});
-function stepSandbox() {
-  pCtx.fillStyle = 'rgba(6, 10, 18, 0.35)';
-  pCtx.fillRect(0, 0, pCan.width, pCan.height);
-  for (let b of pBalls) {
-    b.vy += 0.18; b.x += b.vx; b.y += b.vy;
-    if (b.x < b.r || b.x > pCan.width - b.r) b.vx *= -0.95;
-    if (b.y > pCan.height - b.r) { b.y = pCan.height - b.r; b.vy *= -0.88; }
-    pCtx.fillStyle = b.c;
-    pCtx.beginPath(); pCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2); pCtx.fill();
-  }
-  requestAnimationFrame(stepSandbox);
-}
-stepSandbox();
-</script>
+  </main>
+  <footer>AETHER QUANTITATIVE MEDIA CONGLOMERATE • SITEMAP & PSEO INDEX ACTIVE</footer>
 </body>
 </html>
