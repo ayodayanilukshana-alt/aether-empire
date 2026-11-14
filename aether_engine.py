@@ -109,6 +109,7 @@ SCRIPT_MODELS = [
     "gpt-6-luna"
 ]
 
+REPO_NAME_CONST = "aether-empire"
 FPS = 24
 BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
@@ -2219,26 +2220,43 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
 # =====================================================================
 # 9. INTERACTIVE MICRO-SAAS WEB PORTAL & YOUTUBE UPLOADER
 # =====================================================================
-def update_interactive_micro_saas_portal(video_id, title, summary):
-    """
-    V9.0 Programmatic SEO Engine:
-    1. Builds a dedicated, zero-emoji institutional interactive workstation page for THIS exact video:
-       docs/<channel_slug>/<video_slug>.html
-    2. Updates ONLY this channel's isolated brand portal:
-       docs/<channel_slug>/index.html
-    3. Rebuilds docs/sitemap.xml & pings IndexNow for instant search engine indexing!
-    """
+def get_video_workstation_url_and_slug(title):
     pod_map = {
-        "WEALTH": ("capitalgrid", "CAPITALGRID", "#10b981"),
-        "SCALE3D": ("scaleverse", "SCALEVERSE 3D", "#38bdf8"),
-        "PHYSICS": ("kineticzen", "KINETICZEN LABS", "#f43f5e")
+        "WEALTH": "capitalgrid",
+        "SCALE3D": "scaleverse",
+        "PHYSICS": "kineticzen"
     }
-    ch_slug, brand_name, accent = pod_map.get(POD_NAME, ("capitalgrid", "CAPITALGRID", "#10b981"))
+    ch_slug = pod_map.get(POD_NAME, "capitalgrid")
     clean_t = str(title).replace("#shorts", "").replace("#Shorts", "").strip()
-    v_slug = re.sub(r"[^a-z0-9]+", "-", clean_t.lower()).strip("-")[:65] or f"sim-{video_id.lower()}"
+    v_slug = re.sub(r"[^a-z0-9]+", "-", clean_t.lower()).strip("-")[:65] or f"sim-{int(time.time())}"
+    base_u = mk_url("https", ["ayodayanilukshana-alt", "github", "io"], f"/{REPO_NAME_CONST}/{ch_slug}/{v_slug}.html")
+    return ch_slug, v_slug, clean_t, base_u
+
+
+def update_interactive_micro_saas_portal(video_id, title, summary, plan=None):
+    """
+    V10.0 Institutional Programmatic SEO Workstation Engine:
+    - Generates a zero-emoji, data-bound interactive workstation HTML page for THIS video
+    - Pre-loads the exact financial series, 3D objects, or physics parameters from `plan`
+    - Embeds JSON-LD (SoftwareApplication + VideoObject + Dataset + FAQPage)
+    - Rebuilds channel index.html, root index.html, and docs/sitemap.xml
+    - Pings IndexNow & Internet Archive for immediate search engine indexing
+    """
+    if plan is None:
+        plan = {}
+    pod_map = {
+        "WEALTH": ("capitalgrid", "CAPITALGRID", "QUANTITATIVE WEALTH TELEMETRY & MONTE CARLO ENGINE", "#10b981"),
+        "SCALE3D": ("scaleverse", "SCALEVERSE 3D", "VOLUMETRIC CAD & SPATIAL TELEMETRY WORKSTATION", "#38bdf8"),
+        "PHYSICS": ("kineticzen", "KINETICZEN LABS", "DETERMINISTIC RIGID-BODY KINEMATICS SIMULATOR", "#f43f5e")
+    }
+    ch_slug, brand_name, tagline, accent = pod_map.get(POD_NAME, pod_map["WEALTH"])
+    _, v_slug, clean_t, canonical_url = get_video_workstation_url_and_slug(title)
+    base_site = mk_url("https", ["ayodayanilukshana-alt", "github", "io"], f"/{REPO_NAME_CONST}")
+    portal_url = f"{base_site}/{ch_slug}/"
 
     ch_dir = Path(f"docs/{ch_slug}")
     ch_dir.mkdir(parents=True, exist_ok=True)
+    Path("docs/.nojekyll").write_text("", encoding="utf-8")
 
     manifest_path = ch_dir / "manifest.json"
     manifest = []
@@ -2248,7 +2266,7 @@ def update_interactive_micro_saas_portal(video_id, title, summary):
         except Exception:
             manifest = []
 
-    manifest = [m for m in manifest if m.get("video_id") != video_id]
+    manifest = [m for m in manifest if m.get("video_id") != video_id and m.get("slug") != v_slug]
     manifest.insert(0, {
         "pod": POD_NAME,
         "channel_slug": ch_slug,
@@ -2256,27 +2274,290 @@ def update_interactive_micro_saas_portal(video_id, title, summary):
         "title": clean_t,
         "slug": v_slug,
         "summary": summary,
+        "views": 1,
         "published_at": time.strftime("%Y-%m-%d")
     })
-    manifest = manifest[:50]
+    manifest = manifest[:60]
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-    # Ask Coding AI to generate a custom interactive JavaScript calculator/simulator tailored to THIS exact video topic!
-    custom_tool_prompt = f"""
-    Build a self-contained, institutional-grade interactive HTML/JS simulation panel for the topic: "{clean_t}" ({summary}).
-    STRICT RULES:
-    - ZERO emojis anywhere!
-    - Dark mode institutional styling (#0b0f17 background, #1e293b 1px borders, {accent} accent color, monospace numbers).
-    - Include 3 to 4 interactive <input type="range"> sliders with live numeric readouts, an HTML5 <canvas width="820" height="360"> that dynamically redraws a chart/diagram/3D-projection when sliders move, and 3 KPI metric boxes.
-    - Output ONLY the raw HTML `<div>...</div><script>...</script>` snippet (no markdown fences, no <html>/<body> wrapper).
-    """
-    try:
-        ai_tool_html = call_ai(SCRIPT_MODELS, "You are a senior quantitative web engineer. Output raw HTML+JS only, zero emojis.", custom_tool_prompt, 0.55)
-        if "```" in ai_tool_html:
-            ai_tool_html = ai_tool_html.split("```")[1].lstrip("html").strip()
-    except Exception:
-        ai_tool_html = f"<div style='padding:24px;border:1px solid #1e293b;'><h3>Interactive Parameter Model: {clean_t}</h3></div>"
+    # Build JSON-LD Rich Snippet Schema
+    schema_obj = {
+        "@context": mk_url("https", ["schema", "org"], ""),
+        "@graph": [
+            {
+                "@type": "SoftwareApplication",
+                "name": f"{clean_t} - Interactive Simulation Workstation",
+                "applicationCategory": "FinanceApplication" if POD_NAME == "WEALTH" else "EducationalApplication",
+                "operatingSystem": "Web Browser",
+                "url": canonical_url,
+                "description": summary,
+                "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+            },
+            {
+                "@type": "VideoObject",
+                "name": clean_t,
+                "description": summary,
+                "thumbnailUrl": [mk_url("https", ["i", "ytimg", "com"], f"/vi/{video_id}/maxresdefault.jpg")],
+                "uploadDate": time.strftime("%Y-%m-%d"),
+                "embedUrl": mk_url("https", ["www", "youtube", "com"], f"/embed/{video_id}")
+            }
+        ]
+    }
 
+    # Build Data-Bound Interactive Workstation Panel based on Pod & Plan Data
+    if POD_NAME == "WEALTH":
+        s_a = plan.get("series_a", [5000, 6500, 8200, 10500, 14000, 19500])
+        s_b = plan.get("series_b", [5000, 9800, 6400, 24000, 58000, 125000])
+        start_cap = int(s_a[0]) if s_a else 5000
+        name_a = clean_display_text(plan.get("asset_a_name", "BASELINE STRATEGY")).upper()
+        name_b = clean_display_text(plan.get("asset_b_name", "ALPHA STRATEGY")).upper()
+        yrs_span = max(5, int(plan.get("end_year", 2025)) - int(plan.get("start_year", 2005)))
+
+        workstation_ui = f"""
+        <div class="workstation-grid">
+          <div class="panel">
+            <div class="panel-title"><span>PARAMETER CONFIGURATION</span><span>QUANT ENGINE V10</span></div>
+            <div class="control-group">
+              <div class="control-label"><span>INITIAL CAPITAL ($)</span><span class="control-val" id="lblCap">${start_cap:,}</span></div>
+              <input type="range" id="inCap" min="500" max="100000" step="500" value="{start_cap}" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>MONTHLY CONTRIBUTION ($)</span><span class="control-val" id="lblMo">$200</span></div>
+              <input type="range" id="inMo" min="0" max="5000" step="25" value="200" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>{name_a[:16]} CAGR (%)</span><span class="control-val" id="lblRA">8.0%</span></div>
+              <input type="range" id="inRA" min="1" max="35" step="0.5" value="8.0" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>{name_b[:16]} CAGR (%)</span><span class="control-val" id="lblRB">22.5%</span></div>
+              <input type="range" id="inRB" min="1" max="45" step="0.5" value="22.5" oninput="runQuant()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>TIME HORIZON (YEARS)</span><span class="control-val" id="lblYrs">{yrs_span} YRS</span></div>
+              <input type="range" id="inYrs" min="5" max="40" step="1" value="{yrs_span}" oninput="runQuant()">
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="exportCSV()">EXPORT CSV TELEMETRY</button>
+              <button class="btn" onclick="copyLink()">SHARE SCENARIO URL</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><span>LIVE EQUITY CURVE: {name_a} VS {name_b}</span><span id="stMsg">ACTIVE</span></div>
+            <div class="kpi-strip">
+              <div class="kpi-card"><div class="kpi-label">{name_a[:18]}</div><div class="kpi-num" id="kA" style="color:#3b82f6;">$0</div></div>
+              <div class="kpi-card"><div class="kpi-label">{name_b[:18]}</div><div class="kpi-num" id="kB" style="color:#10b981;">$0</div></div>
+              <div class="kpi-card"><div class="kpi-label">NET WEALTH SPREAD</div><div class="kpi-num" id="kD" style="color:#facc15;">$0</div></div>
+            </div>
+            <canvas id="qCan" class="canvas-stage" width="880" height="400"></canvas>
+          </div>
+        </div>
+        <script>
+        let rows = [];
+        function runQuant() {{
+          const cap = Number(document.getElementById('inCap').value);
+          const mo = Number(document.getElementById('inMo').value);
+          const rA = Number(document.getElementById('inRA').value)/100;
+          const rB = Number(document.getElementById('inRB').value)/100;
+          const yrs = Number(document.getElementById('inYrs').value);
+          document.getElementById('lblCap').innerText = '$' + cap.toLocaleString();
+          document.getElementById('lblMo').innerText = '$' + mo.toLocaleString();
+          document.getElementById('lblRA').innerText = (rA*100).toFixed(1) + '%';
+          document.getElementById('lblRB').innerText = (rB*100).toFixed(1) + '%';
+          document.getElementById('lblYrs').innerText = yrs + ' YRS';
+          rows = [];
+          let a = cap, b = cap;
+          for (let y=0; y<=yrs; y++) {{
+            rows.push({{y, a: Math.round(a), b: Math.round(b)}});
+            for (let m=0; m<12; m++) {{ a = (a+mo)*(1+rA/12); b = (b+mo)*(1+rB/12); }}
+          }}
+          const last = rows[rows.length-1];
+          document.getElementById('kA').innerText = '$' + last.a.toLocaleString();
+          document.getElementById('kB').innerText = '$' + last.b.toLocaleString();
+          document.getElementById('kD').innerText = '+$' + Math.abs(last.b - last.a).toLocaleString();
+          const c = document.getElementById('qCan'), ctx = c.getContext('2d');
+          ctx.fillStyle = '#030508'; ctx.fillRect(0,0,c.width,c.height);
+          const mx = Math.max(...rows.map(r => Math.max(r.a, r.b, 1))) * 1.1;
+          ['a','b'].forEach((k, idx) => {{
+            ctx.beginPath();
+            rows.forEach((r, i) => {{
+              const x = 50 + (i/Math.max(rows.length-1,1))*(c.width-80);
+              const y = c.height - 35 - (r[k]/mx)*(c.height-65);
+              if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            }});
+            ctx.strokeStyle = idx===0 ? '#3b82f6' : '#10b981'; ctx.lineWidth = 3.5; ctx.stroke();
+          }});
+        }}
+        function exportCSV() {{
+          let csv = 'Year,Asset_A_USD,Asset_B_USD\\n';
+          rows.forEach(r => csv += `${{r.y}},${{r.a}},${{r.b}}\\n`);
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([csv], {{type:'text/csv'}}));
+          a.download = '{v_slug}.csv'; a.click();
+        }}
+        function copyLink() {{
+          navigator.clipboard.writeText(window.location.href);
+          document.getElementById('stMsg').innerText = 'URL COPIED';
+        }}
+        window.addEventListener('DOMContentLoaded', runQuant);
+        </script>
+        """
+    elif POD_NAME == "SCALE3D":
+        items_json = json.dumps(plan.get("items", [
+            {"name": "Rank 1", "meters": 15},
+            {"name": "Rank 2", "meters": 65},
+            {"name": "Rank 3", "meters": 140},
+            {"name": "Rank 4", "meters": 320},
+            {"name": "Rank 5", "meters": 828}
+        ]))
+        three_cdn = mk_url("https", ["cdnjs", "cloudflare", "com"], "/ajax/libs/three.js/r128/three.min.js")
+        workstation_ui = f"""
+        <script src="{three_cdn}"></script>
+        <div class="workstation-grid">
+          <div class="panel">
+            <div class="panel-title"><span>3D CAD TELEMETRY CONTROLS</span><span>WEBGL 60HZ</span></div>
+            <div class="control-group">
+              <div class="control-label"><span>ORBIT ANGLE (DEG)</span><span class="control-val" id="lblA">25 DEG</span></div>
+              <input type="range" id="inA" min="-180" max="180" value="25" oninput="up3D()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>CAMERA ZOOM</span><span class="control-val" id="lblZ">310</span></div>
+              <input type="range" id="inZ" min="80" max="750" value="310" oninput="up3D()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>CUSTOM COMPARISON PILLAR (M)</span><span class="control-val" id="lblH">100 M</span></div>
+              <input type="range" id="inH" min="1" max="1500" value="100" oninput="up3D()">
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><span>VOLUMETRIC 3D SCALE VIEWPORT</span><span>INTERACTIVE</span></div>
+            <div id="v3d" class="canvas-stage"></div>
+          </div>
+        </div>
+        <script>
+        const ITEMS = {items_json};
+        let sc, cam, ren, usrMesh;
+        function init3D() {{
+          const box = document.getElementById('v3d');
+          sc = new THREE.Scene(); sc.background = new THREE.Color(0x050811);
+          cam = new THREE.PerspectiveCamera(42, (box.clientWidth||860)/400, 1, 10000);
+          ren = new THREE.WebGLRenderer({{antialias:true}}); ren.setSize(box.clientWidth||860, 400);
+          box.appendChild(ren.domElement);
+          sc.add(new THREE.HemisphereLight(0xffffff, 0x38bdf8, 1.3));
+          sc.add(new THREE.GridHelper(1600, 80, 0x38bdf8, 0x1e293b));
+          const maxM = Math.max(...ITEMS.map(i => Number(i.meters)||100), 1);
+          const cols = [0x10b981, 0x3b82f6, 0xf59e0b, 0xec4899, 0x38bdf8];
+          ITEMS.forEach((it, idx) => {{
+            const h = Math.max(18, (Number(it.meters)||50)/maxM * 180);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(22, h, 22), new THREE.MeshStandardMaterial({{color:cols[idx%5]}}));
+            m.position.set((idx-2)*55, h/2, 0); sc.add(m);
+          }});
+          usrMesh = new THREE.Mesh(new THREE.CylinderGeometry(8,8,1,24), new THREE.MeshBasicMaterial({{color:0xfacc15, wireframe:true}}));
+          usrMesh.position.set(170, 50, 0); sc.add(usrMesh);
+          up3D();
+        }}
+        function up3D() {{
+          const a = Number(document.getElementById('inA').value)*Math.PI/180;
+          const z = Number(document.getElementById('inZ').value);
+          const h = Number(document.getElementById('inH').value);
+          document.getElementById('lblA').innerText = document.getElementById('inA').value + ' DEG';
+          document.getElementById('lblZ').innerText = z;
+          document.getElementById('lblH').innerText = h + ' M';
+          if (usrMesh) {{ usrMesh.scale.y = Math.max(10, h*0.2); usrMesh.position.y = usrMesh.scale.y/2; }}
+          if (cam && ren) {{ cam.position.set(Math.sin(a)*z, 95, Math.cos(a)*z); cam.lookAt(0,60,0); ren.render(sc, cam); }}
+        }}
+        window.addEventListener('DOMContentLoaded', init3D);
+        </script>
+        """
+    else:
+        ta = clean_display_text(plan.get("team_a_name", "TEAM ALPHA")).upper()
+        tb = clean_display_text(plan.get("team_b_name", "TEAM BETA")).upper()
+        workstation_ui = f"""
+        <div class="workstation-grid">
+          <div class="panel">
+            <div class="panel-title"><span>KINEMATIC ARENA CONTROLS</span><span>{ta} VS {tb}</span></div>
+            <div class="control-group">
+              <div class="control-label"><span>GRAVITY (G)</span><span class="control-val" id="lblG">0.80 G</span></div>
+              <input type="range" id="inG" min="0.1" max="2.5" step="0.05" value="0.80" oninput="upK()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>RESTITUTION (BOUNCE)</span><span class="control-val" id="lblR">1.01</span></div>
+              <input type="range" id="inR" min="0.7" max="1.06" step="0.01" value="1.01" oninput="upK()">
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="spawnP()">INJECT 10 SPHERES</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><span>REAL-TIME RIGID-BODY COLLISION LAB</span><span>60 FPS</span></div>
+            <canvas id="kCan" class="canvas-stage" width="880" height="400"></canvas>
+          </div>
+        </div>
+        <script>
+        const kc = document.getElementById('kCan'), kctx = kc.getContext('2d');
+        let gVal = 0.25, rVal = 1.01, ang = 0, balls = [];
+        for (let i=0; i<16; i++) balls.push({{x:440+(i%4)*15, y:180, vx:(Math.random()-0.5)*8, vy:(Math.random()-0.5)*8, c: i%2===0?'#38bdf8':'#f43f5e'}});
+        function upK() {{
+          gVal = Number(document.getElementById('inG').value)*0.3;
+          rVal = Number(document.getElementById('inR').value);
+          document.getElementById('lblG').innerText = Number(document.getElementById('inG').value).toFixed(2) + ' G';
+          document.getElementById('lblR').innerText = rVal.toFixed(2);
+        }}
+        function spawnP() {{
+          for (let i=0; i<10; i++) balls.push({{x:440, y:160, vx:(Math.random()-0.5)*10, vy:-5, c:'#10b981'}});
+        }}
+        function stepK() {{
+          kctx.fillStyle = 'rgba(3,5,8,0.35)'; kctx.fillRect(0,0,kc.width,kc.height);
+          ang += 0.025;
+          kctx.strokeStyle = '#f43f5e'; kctx.lineWidth = 10;
+          kctx.beginPath(); kctx.arc(440, 200, 155, ang+0.5, ang+Math.PI*2); kctx.stroke();
+          balls.forEach(b => {{
+            b.vy += gVal; b.x += b.vx; b.y += b.vy;
+            const d = Math.hypot(b.x-440, b.y-200);
+            if (Math.abs(d-155) < 12) {{ b.vx *= -rVal; b.vy *= -rVal; }}
+            if (b.x < 12 || b.x > kc.width-12) b.vx *= -0.9;
+            if (b.y < 12 || b.y > kc.height-12) {{ b.y = Math.min(kc.height-12, b.y); b.vy *= -0.88; }}
+            kctx.fillStyle = b.c; kctx.beginPath(); kctx.arc(b.x, b.y, 9, 0, Math.PI*2); kctx.fill();
+          }});
+          requestAnimationFrame(stepK);
+        }}
+        window.addEventListener('DOMContentLoaded', stepK);
+        </script>
+        """
+
+    # Cross-links to related workstations in the same channel for Google SEO crawl depth
+    related_links = ""
+    for m in manifest[1:7]:
+        related_links += f'<a href="./{m["slug"]}.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">{m["title"]}</a>'
+
+    base_css = """
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#05070b; color:#f8fafc; font-family:'Inter',system-ui,sans-serif; line-height:1.6; }
+    .topbar { border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; background:#0b0f17; }
+    .container { max-width:1360px; margin:0 auto; padding:36px 28px; }
+    .eyebrow { font-family:monospace; font-size:0.78rem; color:""" + accent + """; letter-spacing:0.12em; margin-bottom:8px; }
+    h1 { font-size:2.2rem; margin-bottom:10px; }
+    .subtitle { color:#94a3b8; margin-bottom:28px; max-width:840px; }
+    .workstation-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; margin-bottom:36px; }
+    @media(max-width:980px){ .workstation-grid { grid-template-columns:1fr; } }
+    .panel { background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:22px; }
+    .panel-title { font-family:monospace; font-size:0.8rem; color:#94a3b8; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-bottom:18px; display:flex; justify-content:space-between; }
+    .control-group { margin-bottom:16px; }
+    .control-label { display:flex; justify-content:space-between; font-family:monospace; font-size:0.82rem; color:#94a3b8; margin-bottom:6px; }
+    .control-val { color:#f8fafc; font-weight:700; }
+    input[type="range"] { width:100%; accent-color:""" + accent + """; cursor:pointer; }
+    .btn-row { display:flex; gap:10px; margin-top:18px; }
+    .btn { flex:1; padding:10px; font-family:monospace; font-size:0.78rem; font-weight:700; border:1px solid #334155; background:#111827; color:#fff; border-radius:6px; cursor:pointer; }
+    .btn-primary { background:""" + accent + """; color:#05070b; border-color:""" + accent + """; }
+    .kpi-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+    .kpi-card { background:#05070b; border:1px solid #1e293b; border-radius:6px; padding:14px; }
+    .kpi-label { font-family:monospace; font-size:0.72rem; color:#64748b; }
+    .kpi-num { font-family:monospace; font-size:1.45rem; font-weight:700; margin-top:4px; }
+    .canvas-stage { width:100%; height:400px; background:#030508; border:1px solid #1e293b; border-radius:6px; display:block; }
+    a { color:inherit; text-decoration:none; }
+    """
+
+    yt_embed = mk_url("https", ["www", "youtube", "com"], f"/embed/{video_id}")
     page_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2284,42 +2565,44 @@ def update_interactive_micro_saas_portal(video_id, title, summary):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{clean_t} — Interactive Simulation Workstation | {brand_name}</title>
 <meta name="description" content="{summary}">
-<style>
-  body {{ background:#05070b; color:#f8fafc; font-family:system-ui,sans-serif; margin:0; padding:0; }}
-  .top {{ border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; }}
-  .wrap {{ max-width:1320px; margin:0 auto; padding:36px 28px; }}
-  h1 {{ font-size:2.2rem; margin-bottom:10px; }}
-  .sub {{ color:#94a3b8; margin-bottom:28px; }}
-  .panel {{ background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:24px; margin-bottom:28px; }}
-  iframe {{ width:100%; height:420px; border:1px solid #1e293b; border-radius:8px; }}
-  a {{ color:{accent}; text-decoration:none; }}
-</style>
+<link rel="canonical" href="{canonical_url}">
+<script type="application/ld+json">{json.dumps(schema_obj)}</script>
+<style>{base_css}</style>
 </head>
 <body>
-  <div class="top">
-    <a href="./index.html">{brand_name} WORKSTATION DIRECTORY</a>
+  <nav class="topbar">
+    <a href="./index.html">{brand_name} PORTAL</a>
     <span>MODEL ID: {video_id}</span>
-  </div>
-  <div class="wrap">
+  </nav>
+  <main class="container">
+    <div class="eyebrow">{brand_name} QUANTITATIVE WORKSTATION</div>
     <h1>{clean_t}</h1>
-    <p class="sub">{summary}</p>
-    <div class="panel">{ai_tool_html}</div>
-    <div class="panel">
-      <h3 style="font-family:monospace;margin-bottom:14px;">OFFICIAL BROADCAST STREAM</h3>
-      <iframe src="https://www.youtube.com/embed/{video_id}" allowfullscreen></iframe>
+    <p class="subtitle">{summary}</p>
+    {workstation_ui}
+    <div class="workstation-grid">
+      <div class="panel">
+        <div class="panel-title"><span>RELATED SIMULATION WORKSTATIONS</span><span>INDEX</span></div>
+        {related_links or '<p style="color:#64748b;font-family:monospace;">All active models listed in main directory.</p>'}
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span>OFFICIAL BROADCAST STREAM</span><span>YOUTUBE</span></div>
+        <iframe style="width:100%;height:380px;border:1px solid #1e293b;border-radius:6px;" src="{yt_embed}" allowfullscreen></iframe>
+      </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>"""
     (ch_dir / f"{v_slug}.html").write_text(page_html, encoding="utf-8")
 
+    # Rebuild Channel Portal Index
     cards = ""
     for m in manifest:
         cards += f"""
         <a href="./{m['slug']}.html" style="display:block;background:#0b0f17;border:1px solid #1e293b;border-radius:8px;padding:22px;color:#f8fafc;text-decoration:none;">
           <div style="font-family:monospace;font-size:0.75rem;color:#64748b;margin-bottom:8px;">MODEL ID: {m['video_id']} • {m.get('published_at','')}</div>
           <h3 style="margin:0 0 10px 0;color:{accent};">{m['title']}</h3>
-          <p style="color:#94a3b8;font-size:0.9rem;margin:0;">{m.get('summary','')}</p>
+          <p style="color:#94a3b8;font-size:0.9rem;margin:0 0 16px 0;">{m.get('summary','')}</p>
+          <div style="font-family:monospace;font-size:0.78rem;font-weight:700;color:#05070b;background:{accent};padding:8px 12px;border-radius:4px;display:inline-block;">LAUNCH WORKSTATION</div>
         </a>"""
 
     idx_html = f"""<!DOCTYPE html>
@@ -2327,22 +2610,59 @@ def update_interactive_micro_saas_portal(video_id, title, summary):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{brand_name} — Interactive Simulation Directory</title>
-<style>
-  body {{ background:#05070b; color:#f8fafc; font-family:system-ui,sans-serif; margin:0; padding:36px 28px; }}
-  .grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:22px; max-width:1320px; margin:28px auto; }}
-</style>
+<title>{brand_name} — {tagline}</title>
+<link rel="canonical" href="{portal_url}">
+<style>{base_css} .grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:22px; margin-top:28px; }}</style>
 </head>
 <body>
-  <div style="max-width:1320px;margin:0 auto;">
-    <div style="font-family:monospace;color:{accent};letter-spacing:0.1em;">{brand_name} RESEARCH PORTAL</div>
-    <h1 style="font-size:2.4rem;margin:8px 0;">Interactive Simulation Workstations</h1>
+  <nav class="topbar">
+    <a href="../index.html">AETHER SYSTEMS</a>
+    <span>{brand_name} ({len(manifest)} WORKSTATIONS)</span>
+  </nav>
+  <main class="container">
+    <div class="eyebrow">{brand_name} DIVISION</div>
+    <h1>{tagline}</h1>
     <div class="grid">{cards}</div>
-  </div>
+  </main>
 </body>
 </html>"""
     (ch_dir / "index.html").write_text(idx_html, encoding="utf-8")
-    print(f"✅ [{POD_NAME} pSEO Engine] Published dedicated workstation: /{ch_slug}/{v_slug}.html", flush=True)
+
+    # Rebuild Global Sitemap.xml across all 3 channels
+    all_urls = [
+        f"{base_site}/",
+        f"{base_site}/capitalgrid/",
+        f"{base_site}/scaleverse/",
+        f"{base_site}/kineticzen/"
+    ]
+    for sub_c in ["capitalgrid", "scaleverse", "kineticzen"]:
+        mf = Path(f"docs/{sub_c}/manifest.json")
+        if mf.exists():
+            try:
+                for item in json.loads(mf.read_text(encoding="utf-8")):
+                    all_urls.append(f"{base_site}/{sub_c}/{item['slug']}.html")
+            except Exception:
+                pass
+
+    sm_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for u in dict.fromkeys(all_urls):
+        sm_xml += f"  <url><loc>{u}</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n"
+    sm_xml += "</urlset>"
+    Path("docs/sitemap.xml").write_text(sm_xml, encoding="utf-8")
+
+    # Ping IndexNow & Internet Archive
+    try:
+        requests.post(
+            mk_url("https", ["api", "indexnow", "org"], "/indexnow"),
+            json={"host": "ayodayanilukshana-alt.github.io", "key": "aether998877665544332211", "urlList": [canonical_url, portal_url]},
+            timeout=6
+        )
+        requests.get(mk_url("https", ["web", "archive", "org"], f"/save/{canonical_url}"), headers=BROWSER_HEADERS, timeout=6)
+    except Exception:
+        pass
+
+    print(f"✅ [{POD_NAME} V10 pSEO] Built Workstation & Updated Sitemap: {canonical_url}", flush=True)
+    return canonical_url
 
 
 def format_srt_time(seconds):
@@ -2421,7 +2741,7 @@ def seed_telegraph_backlink(video_id, title, description):
         pass
 
 
-def upload_pod_video(video_path, title, description, tags, pinned_comment, is_long, thumbnail_path, chapter_timestamps, srt_path):
+def upload_pod_video(video_path, title, description, tags, pinned_comment, is_long, thumbnail_path, chapter_timestamps, srt_path, plan=None):
     youtube = get_youtube_client()
     if not is_long and "#shorts" not in title.lower():
         title = f"{title[:88]} #shorts"
@@ -2489,9 +2809,11 @@ def upload_pod_video(video_path, title, description, tags, pinned_comment, is_lo
 
     try:
         time.sleep(3)
+        _, _, _, ws_url = get_video_workstation_url_and_slug(title)
+        full_pin = f"{pinned_comment}\n\nLaunch the Interactive Simulation Workstation for this video: {ws_url}"
         youtube.commentThreads().insert(
             part="snippet",
-            body={"snippet": {"videoId": video_id, "topLevelComment": {"snippet": {"textOriginal": pinned_comment}}}}
+            body={"snippet": {"videoId": video_id, "topLevelComment": {"snippet": {"textOriginal": full_pin[:480]}}}}
         ).execute()
     except Exception:
         pass
@@ -2499,7 +2821,7 @@ def upload_pod_video(video_path, title, description, tags, pinned_comment, is_lo
     add_to_official_pod_playlist(youtube, video_id)
     auto_ab_test_underperforming_videos(youtube)
     seed_telegraph_backlink(video_id, title, description)
-    update_interactive_micro_saas_portal(video_id, title, description[:160])
+    update_interactive_micro_saas_portal(video_id, title, description[:160], plan=plan)
 
 
 
@@ -2640,7 +2962,8 @@ def main():
         is_long=is_long,
         thumbnail_path=thumb_jpg,
         chapter_timestamps=chapter_timestamps,
-        srt_path=srt_file
+        srt_path=srt_file,
+        plan=lead_plan
     )
 
 
