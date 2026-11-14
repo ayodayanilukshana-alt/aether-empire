@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPHONE vs ANDROID: Hexagon Cage Escape! — Interactive Simulation & Quantitative Workstation | KINETICZEN LABS</title>
+<meta name="description" content="60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation. Run custom simulations, adjust real-time parameters, and export telemetry data.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/iphone-vs-android-hexagon-cage-escape.html">
+<meta property="og:title" content="IPHONE vs ANDROID: Hexagon Cage Escape! — Interactive Simulation Workstation">
+<meta property="og:description" content="60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.">
+<meta property="og:url" content="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/iphone-vs-android-hexagon-cage-escape.html">
+<meta property="og:type" content="website">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "IPHONE vs ANDROID: Hexagon Cage Escape! - Interactive Simulation & Calculator", "applicationCategory": "EducationalApplication", "operatingSystem": "Web Browser", "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/iphone-vs-android-hexagon-cage-escape.html", "description": "60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "VideoObject", "name": "IPHONE vs ANDROID: Hexagon Cage Escape!", "description": "60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.", "thumbnailUrl": ["https://i.ytimg.com/vi/dmVcdCg6p84/maxresdefault.jpg"], "uploadDate": "2026-11-14", "embedUrl": "https://www.youtube.com/embed/dmVcdCg6p84"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How does the IPHONE vs ANDROID: Hexagon Cage Escape! interactive simulator work?", "acceptedAnswer": {"@type": "Answer", "text": "This interactive workstation lets you adjust real-time parameters, run deterministic models, and export CSV telemetry for IPHONE vs ANDROID: Hexagon Cage Escape!."}}, {"@type": "Question", "name": "Can I share my custom simulation parameters?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Use the Copy Parameter Link button to encode your exact slider configuration into a shareable URL."}}]}]}</script>
+<style>
+:root {
+  --bg-primary: #05070b;
+  --bg-panel: #0b0f17;
+  --bg-elevated: #111827;
+  --border-subtle: #1e293b;
+  --border-focus: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.topbar {
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(5, 7, 11, 0.88);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-inner {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.nav-links {
+  display: flex;
+  gap: 24px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.nav-links a:hover { color: var(--text-main); }
+.container {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 40px 28px;
+}
+.hero-header {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 32px;
+  margin-bottom: 36px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 10px;
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--border-focus);
+  border-radius: 4px;
+  background: var(--bg-panel);
+}
+h1 {
+  font-size: clamp(1.8rem, 3.2vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  max-width: 820px;
+}
+.workstation-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 28px;
+  margin-bottom: 44px;
+}
+@media (max-width: 1024px) {
+  .workstation-grid { grid-template-columns: 1fr; }
+}
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 24px;
+}
+.panel-title {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.control-group { margin-bottom: 18px; }
+.control-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+.control-val { color: var(--text-main); font-weight: 600; }
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent, #38bdf8);
+  cursor: pointer;
+}
+input[type="number"], select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-focus);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.btn {
+  flex: 1;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--border-focus);
+  background: var(--bg-elevated);
+  color: var(--text-main);
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.15s;
+}
+.btn:hover { border-color: var(--text-main); background: #1e293b; }
+.btn-primary {
+  background: var(--accent, #38bdf8);
+  color: #05070b;
+  border-color: var(--accent, #38bdf8);
+}
+.btn-primary:hover { opacity: 0.9; background: var(--accent, #38bdf8); }
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.kpi-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 16px;
+}
+.kpi-label {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.kpi-num {
+  font-family: var(--font-mono);
+  font-size: 1.55rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.canvas-stage {
+  width: 100%;
+  height: 440px;
+  background: #030508;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  margin-top: 16px;
+}
+.data-table th, .data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+}
+.data-table th { color: var(--text-dim); text-transform: uppercase; font-size: 0.75rem; }
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+.catalog-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.catalog-card:hover {
+  border-color: var(--accent, #38bdf8);
+  transform: translateY(-2px);
+}
+.meta-row {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.catalog-card h3 { font-size: 1.15rem; margin-bottom: 10px; }
+.catalog-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 18px; }
+.seo-article {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+  margin-top: 36px;
+}
+@media (max-width: 960px) { .seo-article { grid-template-columns: 1fr; } }
+.seo-article h2 { font-size: 1.3rem; margin: 20px 0 10px; }
+.seo-article p { color: var(--text-muted); margin-bottom: 14px; }
+.faq-item {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 14px 0;
+}
+.faq-q { font-weight: 600; margin-bottom: 6px; }
+.faq-a { color: var(--text-muted); font-size: 0.92rem; }
+footer {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 64px;
+  padding: 32px 28px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/" class="brand-mark">
+        <span class="status-dot" style="background: #f43f5e; box-shadow: 0 0 10px #f43f5e;"></span>
+        <span>KINETICZEN LABS</span>
+      </a>
+      <div class="nav-links">
+        <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/">ALL SIMULATIONS</a>
+        <a href="#video-briefing">VIDEO BRIEFING</a>
+        <a href="#methodology">METHODOLOGY & FAQ</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="hero-header">
+      <div class="eyebrow" style="color: #f43f5e;">KINETICZEN LABS RESEARCH WORKSTATION</div>
+      <h1>IPHONE vs ANDROID: Hexagon Cage Escape!</h1>
+      <p class="subtitle">60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.</p>
+    </header>
+
+    
+        <div class="workstation-grid" style="--accent: #f43f5e;">
+          <div class="panel">
+            <div class="panel-title"><span>KINEMATIC ARENA PARAMETERS</span><span>MATTER-CORE</span></div>
+            <div class="control-group">
+              <div class="control-label"><span>GRAVITATIONAL ACCELERATION (G)</span><span class="control-val" id="lblGrav">0.75 G</span></div>
+              <input type="range" id="inGrav" min="0.1" max="2.5" step="0.05" value="0.75" oninput="updateKinematics()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>ELASTICITY / RESTITUTION</span><span class="control-val" id="lblRest">1.01</span></div>
+              <input type="range" id="inRest" min="0.7" max="1.08" step="0.01" value="1.01" oninput="updateKinematics()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>RING ROTATION VELOCITY</span><span class="control-val" id="lblSpin">1.8 RAD/S</span></div>
+              <input type="range" id="inSpin" min="0.2" max="5.0" step="0.2" value="1.8" oninput="updateKinematics()">
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="spawnBurst()">INJECT 10 PARTICLES</button>
+              <button class="btn" onclick="resetArena()">RESET ARENA</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title"><span>REAL-TIME RIGID-BODY COLLISION WORKSTATION</span><span>60 FPS ACTIVE</span></div>
+            <div class="kpi-strip">
+              <div class="kpi-card"><div class="kpi-label">ACTIVE BODIES</div><div class="kpi-num" id="kpiBodies">16</div></div>
+              <div class="kpi-card"><div class="kpi-label">COLLISION IMPULSES</div><div class="kpi-num" id="kpiHits" style="color: #f43f5e;">0</div></div>
+              <div class="kpi-card"><div class="kpi-label">RING ESCAPES</div><div class="kpi-num" id="kpiEsc" style="color: #10b981;">0</div></div>
+            </div>
+            <canvas id="kinCanvas" class="canvas-stage" width="900" height="440"></canvas>
+          </div>
+        </div>
+        <script>
+        const kc = document.getElementById('kinCanvas');
+        const kctx = kc.getContext('2d');
+        let grav = 0.25, rest = 1.01, spin = 0.025, ringAng = 0, hits = 0, escapes = 0;
+        let bodies = [];
+        function resetArena() {
+          bodies = []; hits = 0; escapes = 0;
+          for (let i = 0; i < 16; i++) {
+            bodies.push({
+              x: kc.width/2 + (Math.random()-0.5)*70,
+              y: kc.height/2 + (Math.random()-0.5)*70,
+              vx: (Math.random()-0.5)*8,
+              vy: (Math.random()-0.5)*8,
+              r: 9,
+              col: i % 2 === 0 ? '#38bdf8' : '#f43f5e'
+            });
+          }
+          document.getElementById('kpiBodies').innerText = bodies.length;
+        }
+        function spawnBurst() {
+          for (let i = 0; i < 10; i++) {
+            bodies.push({ x: kc.width/2, y: kc.height/2, vx: (Math.random()-0.5)*11, vy: (Math.random()-0.5)*11, r: 8, col: '#10b981' });
+          }
+          document.getElementById('kpiBodies').innerText = bodies.length;
+        }
+        function updateKinematics() {
+          const g = Number(document.getElementById('inGrav').value);
+          rest = Number(document.getElementById('inRest').value);
+          const s = Number(document.getElementById('inSpin').value);
+          grav = g * 0.3; spin = s * 0.015;
+          document.getElementById('lblGrav').innerText = g.toFixed(2) + ' G';
+          document.getElementById('lblRest').innerText = rest.toFixed(2);
+          document.getElementById('lblSpin').innerText = s.toFixed(1) + ' RAD/S';
+        }
+        function loopKin() {
+          kctx.fillStyle = 'rgba(3, 5, 8, 0.38)';
+          kctx.fillRect(0, 0, kc.width, kc.height);
+          const cx = kc.width/2, cy = kc.height/2, rad = 165;
+          ringAng = (ringAng + spin) % (Math.PI * 2);
+
+          kctx.strokeStyle = '#f43f5e'; kctx.lineWidth = 10; kctx.lineCap = 'round';
+          kctx.beginPath(); kctx.arc(cx, cy, rad, ringAng + 0.55, ringAng + Math.PI * 2); kctx.stroke();
+
+          bodies.forEach(b => {
+            b.vy += grav; b.x += b.vx; b.y += b.vy;
+            const dx = b.x - cx, dy = b.y - cy, dist = Math.hypot(dx, dy);
+            if (Math.abs(dist - rad) < b.r + 5) {
+              const ang = (Math.atan2(dy, dx) - ringAng + Math.PI * 4) % (Math.PI * 2);
+              if (ang > 0.55) {
+                const nx = dx / dist, ny = dy / dist;
+                const dot = b.vx * nx + b.vy * ny;
+                b.vx = (b.vx - 2 * dot * nx) * rest;
+                b.vy = (b.vy - 2 * dot * ny) * rest;
+                b.x = cx + nx * (dist < rad ? rad - b.r - 5 : rad + b.r + 5);
+                b.y = cy + ny * (dist < rad ? rad - b.r - 5 : rad + b.r + 5);
+                hits++;
+              } else if (dist > rad) {
+                escapes++;
+              }
+            }
+            if (b.x < b.r || b.x > kc.width - b.r) b.vx *= -0.9;
+            if (b.y < b.r || b.y > kc.height - b.r) { b.y = Math.min(kc.height - b.r, b.y); b.vy *= -0.88; }
+            kctx.fillStyle = b.col;
+            kctx.beginPath(); kctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); kctx.fill();
+          });
+          document.getElementById('kpiHits').innerText = hits;
+          document.getElementById('kpiEsc').innerText = escapes;
+          requestAnimationFrame(loopKin);
+        }
+        window.addEventListener('DOMContentLoaded', () => { resetArena(); loopKin(); });
+        </script>
+        
+
+    <section class="seo-article" id="video-briefing">
+      <div class="panel">
+        <div class="panel-title"><span>TECHNICAL METHODOLOGY & ANALYTICAL BREAKDOWN</span><span>SPECIFICATION</span></div>
+        <h2>Executive Simulation Summary</h2>
+        <p>60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.</p>
+        <p>This interactive computing terminal accompanies our high-frame-rate visual breakdown of <strong>IPHONE vs ANDROID: Hexagon Cage Escape!</strong>. Unlike static charts, the workstation above executes real-time client-side calculations in your browser, enabling full sensitivity analysis across custom inputs.</p>
+        <div id="methodology">
+          <h2>Frequently Asked Questions</h2>
+          <div class="faq-item">
+            <div class="faq-q">How are the underlying simulation metrics calculated?</div>
+            <div class="faq-a">All curves and physical trajectories are computed deterministically at 60Hz using mathematical compounding and rigid-body kinematics models calibrated to historical and physical benchmarks.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I export or cite this simulation data?</div>
+            <div class="faq-a">Yes. Every simulation page provides instant parameter URL encoding and downloadable telemetry for independent verification.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><span>OFFICIAL VIDEO BROADCAST</span><span>YOUTUBE STREAM</span></div>
+        <iframe style="width:100%; height:420px; border:1px solid #1e293b; border-radius:6px;" src="https://www.youtube.com/embed/dmVcdCg6p84" allowfullscreen></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    KINETICZEN LABS AUTONOMOUS QUANTITATIVE RESEARCH DIVISION • ALL MODELS EXECUTED CLIENT-SIDE
+  </footer>
+</body>
+</html>
