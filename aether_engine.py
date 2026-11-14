@@ -53,7 +53,7 @@ POD_CREDS = {
         "voice": "en-US-ChristopherNeural",
         "subreddits": ["personalfinance", "investing", "dataisbeautiful", "fluentInFinance"],
         "autocomplete_seeds": [
-            "what happens if you invest",
+            "what happens if you invested 1000 in",
             "gold vs real estate vs stocks",
             "compound interest simulation",
             "how inflation destroys cash",
@@ -91,7 +91,7 @@ POD_CREDS = {
             "planets and stars size comparison 3d",
             "fastest rockets and jets speed comparison",
             "deepest ocean trenches 3d comparison",
-            "largest asteroids and craters 3d",
+            "famous wonders and megastructures size comparison",
             "tallest mountains in the solar system"
         ],
         "yt_search_query": "3d size comparison animation metaballstudios style"
@@ -108,6 +108,14 @@ SCRIPT_MODELS = [
     "gpt-6-luna"
 ]
 
+CODE_MODELS = [
+    "deepseek-v4-flash",
+    "qwen3.7-max",
+    "deepseek-v4.1-flash",
+    "kimi-k2.7-code",
+    "gemini-3.8-flash"
+]
+
 FPS = 24
 BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
@@ -115,7 +123,6 @@ BROWSER_HEADERS = {
 
 
 def strip_stage_prefix(text):
-    """Guarantees the narrator NEVER says 'Stage 1', 'Stage two', 'Step 1', or 'Rank 1' out loud!"""
     s = str(text).strip()
     s = re.sub(r"^(stage|step|part|rank|scene)\s*(one|two|three|four|five|six|\d+)\s*[:\-\.,]?\s*", "", s, flags=re.IGNORECASE)
     return s.strip()
@@ -173,6 +180,52 @@ def extract_json(text):
     if s != -1 and e != -1:
         text = text[s:e + 1]
     return json.loads(text)
+
+
+def extract_js_code(text):
+    text = text.strip()
+    if "```javascript" in text:
+        return text.split("```javascript")[1].split("```")[0].strip()
+    if "```js" in text:
+        return text.split("```js")[1].split("```")[0].strip()
+    if "```" in text:
+        return text.split("```")[1].split("```")[0].strip()
+    return text
+
+
+def fetch_wikipedia_image_b64(query_name):
+    """
+    Fetches the real-world photograph of any landmark, planet, vehicle, or financial asset
+    from Wikipedia's REST API and returns a Base64 Data URI for instant 3D/2D rendering!
+    """
+    if not query_name:
+        return ""
+    try:
+        search_u = mk_url("https", ["en", "wikipedia", "org"], "/w/api.php")
+        params = {
+            "action": "query",
+            "format": "json",
+            "prop": "pageimages",
+            "piprop": "thumbnail",
+            "pithumbsize": 500,
+            "generator": "search",
+            "gsrsearch": str(query_name),
+            "gsrlimit": 1
+        }
+        r = requests.get(search_u, params=params, headers=BROWSER_HEADERS, timeout=6)
+        if r.status_code == 200:
+            pages = r.json().get("query", {}).get("pages", {})
+            for _, pdata in pages.items():
+                thumb_url = pdata.get("thumbnail", {}).get("source", "")
+                if thumb_url:
+                    img_r = requests.get(thumb_url, headers=BROWSER_HEADERS, timeout=6)
+                    if img_r.status_code == 200 and len(img_r.content) > 1000:
+                        b64 = base64.b64encode(img_r.content).decode("utf-8")
+                        mime = "image/png" if thumb_url.lower().endswith(".png") else "image/jpeg"
+                        return f"data:{mime};base64,{b64}"
+    except Exception:
+        pass
+    return ""
 
 
 def get_youtube_client():
@@ -371,7 +424,7 @@ def run_global_harvester_and_18_feature_xgboost():
 
 
 # =====================================================================
-# 3. BESPOKE ENGINE 1: SCALEVERSE 3D (10 CATEGORY-MATCHED 3D GENERATORS!)
+# 3. BESPOKE ENGINE 1: SCALEVERSE 3D (AI 3D SCULPTOR + REAL WIKIPEDIA PHOTOS!)
 # =====================================================================
 THREEJS_SCALE3D_HTML = r"""<!DOCTYPE html>
 <html>
@@ -399,10 +452,9 @@ hudCanvas.width = W;
 hudCanvas.height = H;
 const ctx = hudCanvas.getContext('2d');
 
-// Environment Themes (Space, Ocean, Sunset City, Cyber Grid, Golden Desert)
 const ENV_THEMES = [
-    { sky: [0x090d16, 0x050814, 0x030712, 0x02040a, 0x000005], ground: 0x0b132b, grid: 0x38bdf8 },
-    { sky: [0x0284c7, 0x0369a1, 0x1d4ed8, 0x1e3a8a, 0x0f172a], ground: 0x0f172a, grid: 0x34d399 },
+    { sky: [0x0284c7, 0x0369a1, 0x1d4ed8, 0x1e3a8a, 0x090d16], ground: 0x0f172a, grid: 0x38bdf8 },
+    { sky: [0x090d16, 0x050814, 0x030712, 0x02040a, 0x000005], ground: 0x0b132b, grid: 0x34d399 },
     { sky: [0x3b0764, 0x4c1d95, 0x311068, 0x1e1b4b, 0x090d16], ground: 0x18092c, grid: 0xf472b6 },
     { sky: [0x064e3b, 0x065f46, 0x047857, 0x0f172a, 0x022c22], ground: 0x052e16, grid: 0xfacc15 }
 ];
@@ -410,7 +462,7 @@ const env = ENV_THEMES[(DATA.theme_seed || 0) % ENV_THEMES.length];
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(env.sky[0]);
-scene.fog = new THREE.FogExp2(env.sky[0], 0.0011);
+scene.fog = new THREE.FogExp2(env.sky[0], 0.0010);
 
 const camera = new THREE.PerspectiveCamera(45, W / H, 0.5, 50000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
@@ -418,15 +470,15 @@ renderer.setSize(W, H);
 renderer.shadowMap.enabled = true;
 document.getElementById('webgl-container').appendChild(renderer.domElement);
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x60a5fa, 1.25);
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x60a5fa, 1.3);
 hemiLight.position.set(0, 600, 0);
 scene.add(hemiLight);
 
-const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.45);
+const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.5);
 dirLight.position.set(220, 480, 320);
 scene.add(dirLight);
 
-const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.85);
+const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.9);
 rimLight.position.set(-220, 250, -240);
 scene.add(rimLight);
 
@@ -443,17 +495,19 @@ function createPatternTexture(baseHex, accentHex, mode) {
                 g.fillRect(x, y, 12, 10);
             }
         }
-    } else if (mode === 'planet') {
-        for (let y = 0; y < 512; y += 8) {
-            g.fillStyle = (y % 32 < 16) ? accentHex : baseHex;
-            g.globalAlpha = 0.35 + 0.25 * Math.sin(y * 0.05);
-            g.fillRect(0, y, 256, 8);
+    } else if (mode === 'marble') {
+        g.fillStyle = '#f8fafc';
+        g.fillRect(0, 0, 256, 512);
+        g.strokeStyle = '#cbd5e1';
+        g.lineWidth = 4;
+        for (let y = 20; y < 500; y += 45) {
+            g.strokeRect(18, y, 220, 35);
         }
     } else {
-        g.strokeStyle = accentHex;
-        g.lineWidth = 3;
-        for (let y = 0; y < 512; y += 24) {
-            g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke();
+        for (let y = 0; y < 512; y += 8) {
+            g.fillStyle = (y % 32 < 16) ? accentHex : baseHex;
+            g.globalAlpha = 0.4 + 0.25 * Math.sin(y * 0.05);
+            g.fillRect(0, y, 256, 8);
         }
     }
     return new THREE.CanvasTexture(c);
@@ -461,7 +515,7 @@ function createPatternTexture(baseHex, accentHex, mode) {
 
 const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(40000, 40000),
-    new THREE.MeshStandardMaterial({ color: env.ground, roughness: 0.4, metalness: 0.3 })
+    new THREE.MeshStandardMaterial({ color: env.ground, roughness: 0.35, metalness: 0.35 })
 );
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
@@ -478,12 +532,12 @@ const maxM = Math.max(...rawMeters);
 const visualHeights = rawMeters.map((m, idx) => {
     if (maxM / minM > 35) {
         const ratio = Math.log10(m / minM + 1) / Math.log10(maxM / minM + 1);
-        return 22 + ratio * 235 + idx * 14;
+        return 24 + ratio * 235 + idx * 14;
     }
-    return Math.max(22, (m / maxM) * 255);
+    return Math.max(24, (m / maxM) * 255);
 });
 
-const xPositions = [0, 75, 185, 340, 560];
+const xPositions = [0, 80, 195, 355, 580];
 const palettes = [
     ['#065f46', '#34d399', 0x10b981],
     ['#1e3a8a', '#60a5fa', 0x3b82f6],
@@ -492,103 +546,114 @@ const palettes = [
     ['#4c1d95', '#c084fc', 0xa855f7]
 ];
 
-// 10 True Category-Matched 3D Model Builders!
-function buildCategoryMatched3DModel(modelType, h, baseHex, glowHex, hexNum, idx) {
+// Preload Real Wikipedia Photos for 2D/3D HUD & Holographic Display!
+const loadedImages = items.map(it => {
+    if (it && it.image_b64) {
+        const img = new Image();
+        img.src = it.image_b64;
+        return img;
+    }
+    return null;
+});
+
+// Built-in rich architectural & landmark 3D builder (Taj Mahal domes, Rockets, Planets, Bridges, Statues, Towers)
+window.defaultLandmarkBuilder = function(THREE, itemObj, idx, h, baseHex, glowHex, hexNum) {
     const group = new THREE.Group();
+    const mType = String(itemObj.model_type || 'skyscraper').toLowerCase();
+    const nameLow = String(itemObj.name || '').toLowerCase();
     const matMetal = new THREE.MeshStandardMaterial({ color: hexNum, roughness: 0.22, metalness: 0.72 });
-    const matGlow = new THREE.MeshBasicMaterial({ color: glowHex, wireframe: true, transparent: true, opacity: 0.32 });
+    const matMarble = new THREE.MeshStandardMaterial({ map: createPatternTexture('#f8fafc', '#94a3b8', 'marble'), roughness: 0.25, metalness: 0.15 });
+    const matGlow = new THREE.MeshBasicMaterial({ color: glowHex, wireframe: true, transparent: true, opacity: 0.28 });
 
-    if (modelType === 'planet' || modelType === 'star') {
-        const tex = createPatternTexture(baseHex, glowHex, 'planet');
-        const matPlanet = new THREE.MeshStandardMaterial({
-            map: tex,
-            roughness: modelType === 'star' ? 0.1 : 0.5,
-            emissive: modelType === 'star' ? hexNum : 0x000000,
-            emissiveIntensity: modelType === 'star' ? 0.65 : 0.0
+    if (mType === 'dome_palace' || nameLow.includes('taj') || nameLow.includes('cathedral') || nameLow.includes('capitol') || nameLow.includes('mosque')) {
+        // Taj Mahal / Grand Dome Palace: Plinth + Main Marble Cube + Central Onion Dome + 4 Corner Minarets!
+        const plinth = new THREE.Mesh(new THREE.BoxGeometry(h * 1.15, h * 0.12, h * 1.15), matMarble);
+        plinth.position.y = h * 0.06; group.add(plinth);
+
+        const mainB = new THREE.Mesh(new THREE.BoxGeometry(h * 0.68, h * 0.45, h * 0.68), matMarble);
+        mainB.position.y = h * 0.34; group.add(mainB);
+
+        const drum = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.20, h * 0.22, h * 0.16, 32), matMarble);
+        drum.position.y = h * 0.62; group.add(drum);
+
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(h * 0.24, 36, 36), new THREE.MeshStandardMaterial({ color: 0xfffbeb, roughness: 0.18, metalness: 0.3 }));
+        dome.position.y = h * 0.76; dome.scale.set(1, 1.25, 1); group.add(dome);
+
+        const finial = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.02, h * 0.14, 16), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+        finial.position.y = h * 0.96; group.add(finial);
+
+        // 4 Iconic Corner Minarets
+        const mOff = h * 0.48;
+        [[-mOff, -mOff], [mOff, -mOff], [-mOff, mOff], [mOff, mOff]].forEach(([mx, mz]) => {
+            const minTower = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.035, h * 0.05, h * 0.72, 20), matMarble);
+            minTower.position.set(mx, h * 0.42, mz); group.add(minTower);
+            const minCap = new THREE.Mesh(new THREE.SphereGeometry(h * 0.048, 16, 16), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+            minCap.position.set(mx, h * 0.80, mz); group.add(minCap);
         });
+    } else if (mType === 'planet' || mType === 'star') {
+        const tex = createPatternTexture(baseHex, glowHex, 'planet');
         const r = h * 0.46;
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 48), matPlanet);
-        sphere.position.y = r + 4;
-        group.add(sphere);
-
-        if (idx % 2 === 1 || modelType === 'planet') {
-            const ring = new THREE.Mesh(
-                new THREE.RingGeometry(r * 1.25, r * 1.68, 64),
-                new THREE.MeshBasicMaterial({ color: glowHex, side: THREE.DoubleSide, transparent: true, opacity: 0.65 })
-            );
-            ring.rotation.x = Math.PI / 2.3;
-            ring.position.y = r + 4;
-            group.add(ring);
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 48), new THREE.MeshStandardMaterial({
+            map: tex, roughness: 0.35, emissive: mType === 'star' ? hexNum : 0x000000, emissiveIntensity: mType === 'star' ? 0.65 : 0.0
+        }));
+        sphere.position.y = r + 4; group.add(sphere);
+        if (idx % 2 === 1 || nameLow.includes('saturn')) {
+            const ring = new THREE.Mesh(new THREE.RingGeometry(r * 1.25, r * 1.72, 64), new THREE.MeshBasicMaterial({ color: glowHex, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+            ring.rotation.x = Math.PI / 2.3; ring.position.y = r + 4; group.add(ring);
         }
-    } else if (modelType === 'rocket' || modelType === 'vehicle') {
-        const bodyH = h * 0.68;
-        const rad = h * 0.12;
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad * 1.15, bodyH, 32), matMetal);
-        body.position.y = bodyH * 0.5 + h * 0.08;
-        group.add(body);
-
-        const nose = new THREE.Mesh(new THREE.ConeGeometry(rad, h * 0.24, 32), new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.6, roughness: 0.2 }));
-        nose.position.y = bodyH + h * 0.20;
-        group.add(nose);
-
+    } else if (mType === 'rocket' || mType === 'vehicle') {
+        const bodyH = h * 0.68, rad = h * 0.11;
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad * 1.15, bodyH, 32), matMarble);
+        body.position.y = bodyH * 0.5 + h * 0.08; group.add(body);
+        const nose = new THREE.Mesh(new THREE.ConeGeometry(rad, h * 0.24, 32), matMetal);
+        nose.position.y = bodyH + h * 0.20; group.add(nose);
         for (let f = 0; f < 4; f++) {
             const a = (f * Math.PI) / 2;
             const booster = new THREE.Mesh(new THREE.CylinderGeometry(rad * 0.35, rad * 0.45, h * 0.38, 16), matMetal);
-            booster.position.set(Math.cos(a) * rad * 1.2, h * 0.20, Math.sin(a) * rad * 1.2);
-            group.add(booster);
+            booster.position.set(Math.cos(a) * rad * 1.2, h * 0.20, Math.sin(a) * rad * 1.2); group.add(booster);
         }
-    } else if (modelType === 'mountain' || modelType === 'trench' || modelType === 'crater') {
-        const peak = new THREE.Mesh(new THREE.ConeGeometry(h * 0.52, h * 0.85, 7), matMetal);
-        peak.position.y = h * 0.425;
-        group.add(peak);
-        const snow = new THREE.Mesh(new THREE.ConeGeometry(h * 0.19, h * 0.30, 7), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 }));
-        snow.position.y = h * 0.72;
-        group.add(snow);
-        const wire = new THREE.Mesh(new THREE.ConeGeometry(h * 0.53, h * 0.86, 7), matGlow);
-        wire.position.y = h * 0.43;
-        group.add(wire);
-    } else if (modelType === 'pyramid') {
-        const pyr = new THREE.Mesh(new THREE.ConeGeometry(h * 0.55, h, 4), matMetal);
-        pyr.position.y = h * 0.5;
-        pyr.rotation.y = Math.PI / 4;
-        group.add(pyr);
-        const wire = new THREE.Mesh(new THREE.ConeGeometry(h * 0.555, h, 4, 10), matGlow);
-        wire.position.y = h * 0.5;
-        wire.rotation.y = Math.PI / 4;
-        group.add(wire);
-    } else if (modelType === 'statue') {
-        const p1 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.38, h * 0.22, h * 0.38), matMetal);
-        p1.position.y = h * 0.11; group.add(p1);
-        const p2 = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.18, h * 0.24, h * 0.16, 24), matMetal);
-        p2.position.y = h * 0.30; group.add(p2);
-        const torso = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.08, h * 0.13, h * 0.44, 24), new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.85, roughness: 0.18 }));
-        torso.position.y = h * 0.60; group.add(torso);
-        const head = new THREE.Mesh(new THREE.SphereGeometry(h * 0.065, 24, 24), new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.85, roughness: 0.18 }));
-        head.position.y = h * 0.88; group.add(head);
-        const halo = new THREE.Mesh(new THREE.RingGeometry(h * 0.09, h * 0.13, 32), new THREE.MeshBasicMaterial({ color: 0xfef08a, side: THREE.DoubleSide }));
-        halo.position.set(0, h * 0.90, -h * 0.03); group.add(halo);
+    } else if (mType === 'mountain' || mType === 'trench' || mType === 'crater') {
+        const peak = new THREE.Mesh(new THREE.ConeGeometry(h * 0.54, h * 0.86, 7), matMetal);
+        peak.position.y = h * 0.43; group.add(peak);
+        const snow = new THREE.Mesh(new THREE.ConeGeometry(h * 0.20, h * 0.32, 7), matMarble);
+        snow.position.y = h * 0.72; group.add(snow);
+        const wire = new THREE.Mesh(new THREE.ConeGeometry(h * 0.55, h * 0.87, 7), matGlow);
+        wire.position.y = h * 0.435; group.add(wire);
+    } else if (mType === 'pyramid') {
+        const pyr = new THREE.Mesh(new THREE.ConeGeometry(h * 0.56, h, 4), matMetal);
+        pyr.position.y = h * 0.5; pyr.rotation.y = Math.PI / 4; group.add(pyr);
+        const wire = new THREE.Mesh(new THREE.ConeGeometry(h * 0.565, h, 4, 12), matGlow);
+        wire.position.y = h * 0.5; wire.rotation.y = Math.PI / 4; group.add(wire);
+    } else if (mType === 'statue') {
+        const p1 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.38, h * 0.24, h * 0.38), matMarble);
+        p1.position.y = h * 0.12; group.add(p1);
+        const torso = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.08, h * 0.14, h * 0.50, 24), new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.85, roughness: 0.18 }));
+        torso.position.y = h * 0.49; group.add(torso);
+        const head = new THREE.Mesh(new THREE.SphereGeometry(h * 0.07, 24, 24), new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.85, roughness: 0.18 }));
+        head.position.y = h * 0.80; group.add(head);
     } else {
-        // Skyscraper / Tower with illuminated windows
         const tex = createPatternTexture(baseHex, glowHex, 'windows');
         const matWin = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.25, metalness: 0.55 });
-        const tiers = 4 + (idx % 3);
+        const tiers = 5;
         for (let s = 0; s < tiers; s++) {
             const sh = (h * 0.86) / tiers;
-            const sw = h * 0.28 * (1 - s * (0.65 / tiers));
+            const sw = h * 0.28 * (1 - s * 0.15);
             const seg = new THREE.Mesh(new THREE.BoxGeometry(sw, sh, sw), matWin);
             seg.position.y = s * sh + sh * 0.5;
-            seg.rotation.y = (idx % 2 === 1) ? s * 0.15 : 0;
+            seg.rotation.y = (idx % 2 === 1) ? s * 0.12 : 0;
             group.add(seg);
         }
         const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.02, h * 0.16, 16), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
-        spire.position.y = h * 0.94;
-        group.add(spire);
+        spire.position.y = h * 0.94; group.add(spire);
     }
-
-    const ped = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.40, h * 0.44, 1.5, 48), new THREE.MeshBasicMaterial({ color: hexNum }));
-    ped.position.y = 0.75;
-    group.add(ped);
     return group;
+};
+
+// Inject AI-generated bespoke 3D mesh sculptor if provided
+try {
+    __CUSTOM_3D_BUILDER_JS__
+} catch (e) {
+    console.error("Using default landmark builder:", e);
 }
 
 const meshes = [];
@@ -596,8 +661,44 @@ for (let i = 0; i < 5; i++) {
     const h = visualHeights[i];
     const x = xPositions[i];
     const [baseHex, glowHex, hexNum] = palettes[i % palettes.length];
-    const mType = (items[i] && items[i].model_type) ? String(items[i].model_type).toLowerCase() : 'skyscraper';
-    const grp = buildCategoryMatched3DModel(mType, h, baseHex, glowHex, hexNum, i);
+    const itemObj = items[i] || {};
+
+    let grp = null;
+    try {
+        if (typeof window.aiCustom3DMesh === 'function') {
+            grp = window.aiCustom3DMesh(THREE, i, h, hexNum, glowHex);
+        }
+    } catch (err) {
+        grp = null;
+    }
+    if (!grp || !(grp instanceof THREE.Object3D) || grp.children.length === 0) {
+        grp = window.defaultLandmarkBuilder(THREE, itemObj, i, h, baseHex, glowHex, hexNum);
+    }
+
+    // If real Wikipedia photo exists, mount a 3D Holographic Photo Billboard beside the 3D structure!
+    if (itemObj.image_b64) {
+        const imgTex = new THREE.TextureLoader().load(itemObj.image_b64);
+        const cardH = h * 0.38;
+        const cardW = cardH * 0.85;
+        const plane = new THREE.Mesh(
+            new THREE.PlaneGeometry(cardW, cardH),
+            new THREE.MeshBasicMaterial({ map: imgTex, side: THREE.DoubleSide })
+        );
+        plane.position.set(-h * 0.42, h * 0.62, h * 0.15);
+        grp.add(plane);
+
+        const border = new THREE.Mesh(
+            new THREE.PlaneGeometry(cardW * 1.06, cardH * 1.06),
+            new THREE.MeshBasicMaterial({ color: glowHex, side: THREE.DoubleSide })
+        );
+        border.position.set(-h * 0.42, h * 0.62, h * 0.14);
+        grp.add(border);
+    }
+
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.42, h * 0.46, 1.5, 48), new THREE.MeshBasicMaterial({ color: hexNum }));
+    ped.position.y = 0.75;
+    grp.add(ped);
+
     grp.position.set(x, 0, 0);
     scene.add(grp);
     meshes.push(grp);
@@ -631,58 +732,74 @@ window.renderFrameAtTime = function(t) {
     scene.fog.color = curSky;
 
     meshes.forEach((m, idx) => {
-        m.rotation.y = t * 0.42 + idx * 0.5;
+        m.rotation.y = Math.sin(t * 0.55 + idx) * 0.35;
     });
 
-    const camOrbit = Math.sin(t * 0.45) * 0.24;
+    const camOrbit = Math.sin(t * 0.45) * 0.22;
     const dist = Math.max(curH * (isWide ? 2.15 : 3.05), 48);
     camera.position.set(
-        curX + Math.sin(camOrbit) * dist * 0.55 - dist * 0.16,
-        curH * 0.58 + 8,
+        curX + Math.sin(camOrbit) * dist * 0.52 - dist * 0.14,
+        curH * 0.56 + 8,
         Math.cos(camOrbit) * dist
     );
     camera.lookAt(curX, curH * 0.48, 0);
 
     renderer.render(scene, camera);
 
+    // Draw MetaBallStudios Broadcast HUD + Real Photo Thumbnail Picture-in-Picture!
     ctx.clearRect(0, 0, W, H);
     const activeItem = items[stageIndex] || { name: 'OBJECT ' + (stageIndex + 1), metric: '100 m', subtitle: '3D SCALE' };
+    const activeImg = loadedImages[stageIndex];
 
-    const cardW = isWide ? 820 : (W - 90);
+    const cardW = isWide ? 860 : (W - 84);
     const cardX = (W - cardW) / 2;
-    const cardY = isWide ? 48 : 95;
+    const cardY = isWide ? 44 : 90;
 
     ctx.save();
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.roundRect(cardX, cardY, cardW, 175, 24);
+    ctx.roundRect(cardX, cardY, cardW, 185, 24);
     ctx.fill();
     ctx.stroke();
 
+    // Draw Real Wikipedia Photo inside Top HUD Card if loaded!
+    let textOffsetX = cardX + 28;
+    if (activeImg && activeImg.complete && activeImg.naturalWidth > 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(cardX + 20, cardY + 20, 145, 145, 16);
+        ctx.clip();
+        ctx.drawImage(activeImg, cardX + 20, cardY + 20, 145, 145);
+        ctx.restore();
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(cardX + 20, cardY + 20, 145, 145);
+        textOffsetX = cardX + 185;
+    }
+
     ctx.fillStyle = '#f59e0b';
     ctx.beginPath();
-    ctx.roundRect(cardX + 26, cardY + 24, 155, 42, 10);
+    ctx.roundRect(textOffsetX, cardY + 22, 150, 40, 10);
     ctx.fill();
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 22px sans-serif';
+    ctx.font = 'bold 21px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('RANK #0' + (stageIndex + 1), cardX + 103, cardY + 53);
+    ctx.fillText('RANK #0' + (stageIndex + 1), textOffsetX + 75, cardY + 49);
 
     ctx.textAlign = 'left';
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px sans-serif';
-    ctx.fillText(String(activeItem.name || '').toUpperCase().slice(0, 26), cardX + 205, cardY + 58);
+    ctx.font = 'bold 34px sans-serif';
+    ctx.fillText(String(activeItem.name || '').toUpperCase().slice(0, 22), textOffsetX + 165, cardY + 52);
 
     ctx.fillStyle = '#38bdf8';
     ctx.font = 'bold 54px sans-serif';
-    ctx.fillText(String(activeItem.metric || ''), cardX + 26, cardY + 138);
+    ctx.fillText(String(activeItem.metric || ''), textOffsetX, cardY + 132);
 
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(String(activeItem.subtitle || '').toUpperCase().slice(0, 26), cardX + cardW - 28, cardY + 135);
+    ctx.font = 'bold 22px sans-serif';
+    ctx.fillText(String(activeItem.subtitle || '').toUpperCase().slice(0, 32), textOffsetX, cardY + 166);
     ctx.restore();
 
     const chunks = DATA.chunks || [];
@@ -696,7 +813,7 @@ window.renderFrameAtTime = function(t) {
         ctx.font = isWide ? 'bold 42px sans-serif' : 'bold 44px sans-serif';
         const tw = Math.min(ctx.measureText(words).width + 60, W - 80);
         const by = isWide ? (H - 135) : 1560;
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
         ctx.strokeStyle = '#fef08a';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -716,7 +833,7 @@ window.renderFrameAtTime = function(t) {
 
 
 # =====================================================================
-# 4. BESPOKE ENGINE 2: KINETICZEN (5 DISTINCT MATTER.JS MODES + 6 PALETTES!)
+# 4. BESPOKE ENGINE 2: KINETICZEN (VIRAL RIVALRIES + SCREEN-SHAKE + SHOCKWAVES!)
 # =====================================================================
 MATTERJS_PHYSICS_HTML = r"""<!DOCTYPE html>
 <html>
@@ -736,19 +853,21 @@ const DATA = __PAYLOAD_JSON__;
 const W = DATA.width;
 const H = DATA.height;
 const modeIdx = (DATA.physics_mode || 0) % 5;
+const teamAName = String(DATA.team_a_name || 'GOLD').toUpperCase().slice(0, 10);
+const teamBName = String(DATA.team_b_name || 'CRIMSON').toUpperCase().slice(0, 10);
+const hookQuestion = String(DATA.hook_banner || (teamAName + ' VS ' + teamBName + ': WHO WINS?')).toUpperCase();
+
 const canvas = document.getElementById('zenCanvas');
 canvas.width = W;
 canvas.height = H;
 const ctx = canvas.getContext('2d');
 
-// 6 Distinct Studio Color Palettes so every KineticZen video looks unique!
 const PALETTES = [
-    { bg1: '#1a0b2e', bg2: '#0d051a', teamA: '#ffd700', teamB: '#ff2a85', nameA: 'GOLD', nameB: 'CRIMSON', rings: ['#ff2a85', '#ffae00', '#00f5d4', '#38bdf8', '#a855f7', '#10b981'] },
-    { bg1: '#041f1e', bg2: '#021014', teamA: '#00ff9d', teamB: '#ff6b00', nameA: 'EMERALD', nameB: 'SOLAR', rings: ['#00ff9d', '#00e5ff', '#ff6b00', '#facc15', '#38bdf8', '#a855f7'] },
-    { bg1: '#091931', bg2: '#040b18', teamA: '#00e5ff', teamB: '#f43f5e', nameA: 'CYAN', nameB: 'ROSE', rings: ['#00e5ff', '#f43f5e', '#fbbf24', '#8b5cf6', '#10b981', '#ec4899'] },
-    { bg1: '#230b1e', bg2: '#11040e', teamA: '#bef264', teamB: '#d946ef', nameA: 'LIME', nameB: 'MAGENTA', rings: ['#bef264', '#d946ef', '#06b6d4', '#f59e0b', '#ec4899', '#6366f1'] },
-    { bg1: '#18181b', bg2: '#09090b', teamA: '#facc15', teamB: '#38bdf8', nameA: 'GOLD', nameB: 'ICE', rings: ['#facc15', '#38bdf8', '#f43f5e', '#4ade80', '#c084fc', '#fb923c'] },
-    { bg1: '#171035', bg2: '#080518', teamA: '#ff4d6d', teamB: '#4cc9f0', nameA: 'NEON RED', nameB: 'AQUA', rings: ['#ff4d6d', '#4cc9f0', '#f72585', '#fee440', '#7209b7', '#06d6a0'] }
+    { bg1: '#1a0b2e', bg2: '#070312', teamA: '#ffd700', teamB: '#ff2a85', rings: ['#ff2a85', '#ffae00', '#00f5d4', '#38bdf8', '#a855f7', '#10b981'] },
+    { bg1: '#041f1e', bg2: '#020b0e', teamA: '#00ff9d', teamB: '#ff5500', rings: ['#00ff9d', '#00e5ff', '#ff5500', '#facc15', '#38bdf8', '#a855f7'] },
+    { bg1: '#091931', bg2: '#030814', teamA: '#00e5ff', teamB: '#f43f5e', rings: ['#00e5ff', '#f43f5e', '#fbbf24', '#8b5cf6', '#10b981', '#ec4899'] },
+    { bg1: '#230b1e', bg2: '#0e030c', teamA: '#bef264', teamB: '#d946ef', rings: ['#bef264', '#d946ef', '#06b6d4', '#f59e0b', '#ec4899', '#6366f1'] },
+    { bg1: '#18181b', bg2: '#060609', teamA: '#facc15', teamB: '#38bdf8', rings: ['#facc15', '#38bdf8', '#f43f5e', '#4ade80', '#c084fc', '#fb923c'] }
 ];
 const pal = PALETTES[(DATA.palette_seed || 0) % PALETTES.length];
 
@@ -763,19 +882,16 @@ engine.gravity.y = (modeIdx === 2) ? 0.85 : 0.72;
 const world = engine.world;
 
 const cx = W / 2;
-const cy = H * 0.55;
+const cy = H * 0.56;
 const rings = [];
 const pegs = [];
-const spinners = [];
 const particles = [];
+const shockwaves = [];
 const balls = [];
 window.collisionEvents = [];
+let shakeFrames = 0;
 
-// =====================================================================
-// 5 DISTINCT PROCEDURAL PHYSICS ARENA MODES!
-// =====================================================================
 if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
-    // Mode 0: 6 Concentric Rings | Mode 3: Growing Balls in Concentric Rings | Mode 4: Counter-Rotating Vortex Rings
     const ringRadii = [155, 215, 275, 335, 395, 455];
     ringRadii.forEach((radius, rIdx) => {
         const segments = 72;
@@ -787,33 +903,24 @@ if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
             const sy = cy + Math.sin(midA) * radius;
             const arcLen = ((2 * Math.PI * radius) / segments) * 1.45;
             const seg = Bodies.rectangle(sx, sy, arcLen, 26, {
-                isStatic: true,
-                angle: midA + Math.PI / 2,
-                restitution: 1.02,
-                friction: 0.0
+                isStatic: true, angle: midA + Math.PI / 2, restitution: 1.02, friction: 0.0
             });
             segBodies.push({ body: seg, relAngle: midA, radius: radius });
             Composite.add(world, seg);
         }
         rings.push({
-            idx: rIdx,
-            radius: radius,
-            color: pal.rings[rIdx % pal.rings.length],
-            angleOffset: rIdx * 1.05,
-            speed: (rIdx % 2 === 0 ? 1 : -1) * (0.024 + rIdx * 0.004),
-            segments: segBodies,
-            escapedCount: 0,
-            destroyed: false,
-            isPolygon: false
+            idx: rIdx, radius: radius, color: pal.rings[rIdx % pal.rings.length],
+            angleOffset: rIdx * 1.05, speed: (rIdx % 2 === 0 ? 1 : -1) * (0.024 + rIdx * 0.004),
+            segments: segBodies, escapedCount: 0, destroyed: false, isPolygon: false
         });
     });
 
-    const nBalls = (modeIdx === 3) ? 10 : 22;
+    const nBalls = (modeIdx === 3) ? 10 : 20;
     for (let i = 0; i < nBalls; i++) {
         const isA = (i % 2 === 0);
         const angle = (i / nBalls) * Math.PI * 2;
         const r = 30 + (i % 3) * 24;
-        const bRad = (modeIdx === 3) ? 13 : 17;
+        const bRad = (modeIdx === 3) ? 15 : 19;
         const ball = Bodies.circle(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r, bRad, {
             restitution: 1.02, friction: 0.0, frictionAir: 0.0002
         });
@@ -822,7 +929,6 @@ if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
         balls.push({ body: ball, isA: isA, rad: bRad, ringStage: 0, trail: [] });
     }
 } else if (modeIdx === 1) {
-    // Mode 1: Nested Spinning Hexagon / Octagon Polygon Tumbler Cage!
     const polyRadii = [180, 265, 355, 445];
     const sides = 6;
     polyRadii.forEach((radius, rIdx) => {
@@ -832,7 +938,6 @@ if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
             const a2 = ((s + 1) / sides) * Math.PI * 2;
             const midA = (a1 + a2) / 2;
             const sideLen = 2 * radius * Math.sin(Math.PI / sides);
-            // Leave an escape opening on side 0
             const actualLen = (s === 0) ? sideLen * 0.38 : sideLen * 1.06;
             const rDist = radius * Math.cos(Math.PI / sides);
             const sx = cx + Math.cos(midA) * rDist;
@@ -844,36 +949,29 @@ if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
             Composite.add(world, seg);
         }
         rings.push({
-            idx: rIdx,
-            radius: radius,
-            color: pal.rings[rIdx % pal.rings.length],
-            angleOffset: rIdx * 0.7,
-            speed: (rIdx % 2 === 0 ? 1 : -1) * 0.022,
-            segments: segBodies,
-            escapedCount: 0,
-            destroyed: false,
-            isPolygon: true
+            idx: rIdx, radius: radius, color: pal.rings[rIdx % pal.rings.length],
+            angleOffset: rIdx * 0.7, speed: (rIdx % 2 === 0 ? 1 : -1) * 0.022,
+            segments: segBodies, escapedCount: 0, destroyed: false, isPolygon: true
         });
     });
 
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 22; i++) {
         const isA = (i % 2 === 0);
-        const a = (i / 24) * Math.PI * 2;
-        const ball = Bodies.circle(cx + Math.cos(a) * 55, cy + Math.sin(a) * 55, 17, {
+        const a = (i / 22) * Math.PI * 2;
+        const ball = Bodies.circle(cx + Math.cos(a) * 55, cy + Math.sin(a) * 55, 19, {
             restitution: 1.02, friction: 0.0, frictionAir: 0.0002
         });
         Body.setVelocity(ball, { x: Math.cos(a) * 9, y: Math.sin(a) * 9 });
         Composite.add(world, ball);
-        balls.push({ body: ball, isA: isA, rad: 17, ringStage: 0, trail: [] });
+        balls.push({ body: ball, isA: isA, rad: 19, ringStage: 0, trail: [] });
     }
 } else {
-    // Mode 2: Galton Plinko Pegboard & Spinning Windmill Royale!
     const rows = 8;
     for (let r = 0; r < rows; r++) {
         const cols = (r % 2 === 0) ? 7 : 6;
         const spacingX = 115;
         const startX = cx - ((cols - 1) * spacingX) / 2;
-        const py = 380 + r * 115;
+        const py = 410 + r * 115;
         for (let c = 0; c < cols; c++) {
             const px = startX + c * spacingX;
             const peg = Bodies.circle(px, py, 14, { isStatic: true, restitution: 0.95, friction: 0.0 });
@@ -881,25 +979,24 @@ if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
             pegs.push({ x: px, y: py, r: 14, color: pal.rings[r % pal.rings.length] });
         }
     }
-    // Side walls
     Composite.add(world, Bodies.rectangle(75, H / 2, 30, H, { isStatic: true, restitution: 0.9 }));
     Composite.add(world, Bodies.rectangle(W - 75, H / 2, 30, H, { isStatic: true, restitution: 0.9 }));
 
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < 28; i++) {
         const isA = (i % 2 === 0);
         const bx = cx + (Math.sin(i * 17.3) * 260);
-        const by = 290 + (i % 5) * 18;
-        const ball = Bodies.circle(bx, by, 18, { restitution: 0.92, friction: 0.001, frictionAir: 0.001 });
+        const by = 310 + (i % 5) * 18;
+        const ball = Bodies.circle(bx, by, 19, { restitution: 0.92, friction: 0.001, frictionAir: 0.001 });
         Body.setVelocity(ball, { x: Math.cos(i * 5) * 4, y: 2 });
         Composite.add(world, ball);
-        balls.push({ body: ball, isA: isA, rad: 18, ringStage: 0, trail: [] });
+        balls.push({ body: ball, isA: isA, rad: 19, ringStage: 0, trail: [] });
     }
 }
 
 let simTime = 0.0;
 let lastNoteTime = -1.0;
 let noteCounter = 0;
-Events.on(engine, 'collisionStart', function() {
+Events.on(engine, 'collisionStart', function(ev) {
     if (simTime - lastNoteTime >= 0.072) {
         lastNoteTime = simTime;
         noteCounter++;
@@ -908,11 +1005,15 @@ Events.on(engine, 'collisionStart', function() {
             intensity: 0.85,
             noteIdx: noteCounter % 9
         });
+        if (ev.pairs && ev.pairs.length > 0 && shockwaves.length < 18) {
+            const pos = ev.pairs[0].bodyA.position;
+            shockwaves.push({ x: pos.x, y: pos.y, r: 12, alpha: 0.75, color: noteCounter % 2 === 0 ? pal.teamA : pal.teamB });
+        }
     }
 });
 
-let scoreA = 0;
-let scoreB = 0;
+let scoreA = 10;
+let scoreB = 10;
 
 window.stepAndRenderPhysics = function(frameIdx) {
     simTime = frameIdx / 24.0;
@@ -941,9 +1042,7 @@ window.stepAndRenderPhysics = function(frameIdx) {
         if (spd < 5.2 && modeIdx !== 2) {
             Body.setVelocity(b.body, { x: vel.x * 1.35 + (Math.random() - 0.5) * 2, y: vel.y * 1.35 - 1.5 });
         }
-
-        // Mode 3: Balls subtly grow over time!
-        if (modeIdx === 3 && b.rad < 32 && frameIdx % 18 === 0) {
+        if (modeIdx === 3 && b.rad < 34 && frameIdx % 18 === 0) {
             b.rad += 0.45;
             Body.scale(b.body, 1.025, 1.025);
         }
@@ -952,17 +1051,17 @@ window.stepAndRenderPhysics = function(frameIdx) {
         if (b.trail.length > 8) b.trail.shift();
 
         if (modeIdx === 2) {
-            // Plinko mode: respawn balls at top when they hit the bottom jackpot zone!
-            if (pos.y > 1420) {
+            if (pos.y > 1440) {
                 if (b.isA) scoreA += 15; else scoreB += 15;
-                for (let k = 0; k < 10; k++) {
+                shakeFrames = 5;
+                for (let k = 0; k < 12; k++) {
                     particles.push({
                         x: pos.x, y: pos.y,
-                        vx: (Math.random() - 0.5) * 14, vy: -Math.random() * 12,
+                        vx: (Math.random() - 0.5) * 16, vy: -Math.random() * 14,
                         color: b.isA ? pal.teamA : pal.teamB, alpha: 1.0
                     });
                 }
-                Body.setPosition(b.body, { x: cx + (Math.random() - 0.5) * 280, y: 285 });
+                Body.setPosition(b.body, { x: cx + (Math.random() - 0.5) * 280, y: 295 });
                 Body.setVelocity(b.body, { x: (Math.random() - 0.5) * 5, y: 2 });
             }
         } else {
@@ -972,17 +1071,18 @@ window.stepAndRenderPhysics = function(frameIdx) {
                 if (b.ringStage <= activeRingIdx && dist > curRing.radius + 14) {
                     b.ringStage = activeRingIdx + 1;
                     curRing.escapedCount += 1;
-                    if (b.isA) scoreA += 10; else scoreB += 10;
+                    if (b.isA) scoreA += 12; else scoreB += 12;
 
                     const minTime = (activeRingIdx + 1) * 4.5;
                     if (curRing.escapedCount >= 3 && simTime >= minTime) {
                         curRing.destroyed = true;
-                        if (b.isA) scoreA += 25; else scoreB += 25;
+                        shakeFrames = 10;
+                        if (b.isA) scoreA += 35; else scoreB += 35;
                         curRing.segments.forEach(s => {
                             Composite.remove(world, s.body);
                             particles.push({
                                 x: s.body.position.x, y: s.body.position.y,
-                                vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.5) * 16,
+                                vx: (Math.random() - 0.5) * 18, vy: (Math.random() - 0.5) * 18,
                                 color: curRing.color, alpha: 1.0
                             });
                         });
@@ -1000,39 +1100,76 @@ window.stepAndRenderPhysics = function(frameIdx) {
         }
     });
 
+    ctx.save();
+    if (shakeFrames > 0) {
+        shakeFrames--;
+        ctx.translate((Math.random() - 0.5) * 14, (Math.random() - 0.5) * 14);
+    }
+
     const grad = ctx.createLinearGradient(0, 0, 0, H);
     grad.addColorStop(0, pal.bg1);
     grad.addColorStop(1, pal.bg2);
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(-30, -30, W + 60, H + 60);
 
-    // Top Scoreboard
+    // Top Psychological Rivalry Header + Live Tug-of-War Probability Bar!
     ctx.save();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.roundRect(70, 95, W - 140, 150, 32);
+    ctx.roundRect(55, 65, W - 110, 215, 28);
     ctx.fill();
+    ctx.stroke();
 
-    ctx.fillStyle = pal.teamA;
-    ctx.beginPath(); ctx.arc(155, 170, 32, 0, Math.PI * 2); ctx.fill();
-    ctx.font = 'bold 56px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(String(scoreA), 205, 190);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 30px sans-serif';
+    // Hook Banner Question
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 27px sans-serif';
     ctx.textAlign = 'center';
-    const centerLabel = (modeIdx === 2) ? 'JACKPOT RACE' : ('STAGE: ' + rings.filter(r => !r.destroyed).length);
-    ctx.fillText(centerLabel, cx, 182);
+    ctx.fillText(hookQuestion.slice(0, 38), cx, 110);
+
+    // Team A vs Team B Score & Names
+    ctx.fillStyle = pal.teamA;
+    ctx.font = 'bold 34px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(teamAName + ': ' + scoreA, 88, 168);
 
     ctx.fillStyle = pal.teamB;
-    ctx.beginPath(); ctx.arc(W - 155, 170, 32, 0, Math.PI * 2); ctx.fill();
-    ctx.font = 'bold 56px sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(String(scoreB), W - 205, 190);
+    ctx.fillText(teamBName + ': ' + scoreB, W - 88, 168);
+
+    // Tug-of-War Live Win Probability Bar
+    const totalSc = Math.max(scoreA + scoreB, 1);
+    const pctA = scoreA / totalSc;
+    const barX = 88, barY = 195, barW = W - 176, barH = 34;
+
+    ctx.fillStyle = pal.teamB;
+    ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH, 16); ctx.fill();
+
+    ctx.fillStyle = pal.teamA;
+    ctx.beginPath(); ctx.roundRect(barX, barY, Math.max(40, barW * pctA), barH, 16); ctx.fill();
+
+    ctx.fillStyle = '#090d16';
+    ctx.font = 'bold 21px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(Math.round(pctA * 100) + '%', barX + 16, barY + 25);
+    ctx.textAlign = 'right';
+    ctx.fillText((100 - Math.round(pctA * 100)) + '%', barX + barW - 16, barY + 25);
     ctx.restore();
 
-    // Draw Rings / Polygons / Plinko Pegs
+    // Draw Collision Shockwaves
+    for (let sw of shockwaves) {
+        if (sw.alpha <= 0.03) continue;
+        sw.r += 4.5;
+        sw.alpha *= 0.86;
+        ctx.save();
+        ctx.globalAlpha = sw.alpha;
+        ctx.strokeStyle = sw.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore();
+    }
+
     rings.forEach(r => {
         if (r.destroyed) return;
         ctx.save();
@@ -1065,9 +1202,7 @@ window.stepAndRenderPhysics = function(frameIdx) {
         ctx.fillStyle = pg.color;
         ctx.shadowBlur = 14;
         ctx.shadowColor = pg.color;
-        ctx.beginPath();
-        ctx.arc(pg.x, pg.y, pg.r, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(pg.x, pg.y, pg.r, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
     });
 
@@ -1097,10 +1232,17 @@ window.stepAndRenderPhysics = function(frameIdx) {
         ctx.shadowColor = col;
         ctx.fillStyle = col;
         ctx.beginPath(); ctx.arc(pos.x, pos.y, b.rad, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
-        ctx.beginPath(); ctx.arc(pos.x - b.rad * 0.3, pos.y - b.rad * 0.3, b.rad * 0.28, 0, Math.PI * 2); ctx.fill();
+
+        // Team initial badge inside ball
+        ctx.fillStyle = '#090d16';
+        ctx.font = `bold ${Math.max(12, Math.floor(b.rad * 0.78))}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(b.isA ? teamAName.slice(0, 2) : teamBName.slice(0, 2), pos.x, pos.y + 1);
         ctx.restore();
     });
+
+    ctx.restore();
 };
 </script>
 </body>
@@ -1109,7 +1251,7 @@ window.stepAndRenderPhysics = function(frameIdx) {
 
 
 # =====================================================================
-# 5. BESPOKE ENGINE 3: CAPITALGRID (MULTI-PALETTE + VOLUME BARS TERMINAL)
+# 5. BESPOKE ENGINE 3: CAPITALGRID (REAL ASSET PHOTOS + CRASH STROBE + 3 MODES!)
 # =====================================================================
 TRADINGVIEW_WEALTH_HTML = r"""<!DOCTYPE html>
 <html>
@@ -1134,19 +1276,29 @@ canvas.height = H;
 const ctx = canvas.getContext('2d');
 
 const FIN_THEMES = [
-    { bg: '#090d16', colA: '#3b82f6', colB: '#10b981', fillA: 'rgba(59,130,246,0.26)', fillB: 'rgba(16,185,129,0.32)' },
-    { bg: '#110c1d', colA: '#f59e0b', colB: '#ec4899', fillA: 'rgba(245,158,11,0.26)', fillB: 'rgba(236,72,153,0.32)' },
-    { bg: '#07161b', colA: '#06b6d4', colB: '#facc15', fillA: 'rgba(6,182,212,0.26)', fillB: 'rgba(250,204,21,0.32)' },
-    { bg: '#140a0e', colA: '#a855f7', colB: '#22c55e', fillA: 'rgba(168,85,247,0.26)', fillB: 'rgba(34,197,94,0.32)' }
+    { bg: '#090d16', colA: '#3b82f6', colB: '#10b981', fillA: 'rgba(59,130,246,0.26)', fillB: 'rgba(16,185,129,0.34)' },
+    { bg: '#110c1d', colA: '#f59e0b', colB: '#ec4899', fillA: 'rgba(245,158,11,0.26)', fillB: 'rgba(236,72,153,0.34)' },
+    { bg: '#07161b', colA: '#06b6d4', colB: '#facc15', fillA: 'rgba(6,182,212,0.26)', fillB: 'rgba(250,204,21,0.34)' },
+    { bg: '#140a0e', colA: '#a855f7', colB: '#22c55e', fillA: 'rgba(168,85,247,0.26)', fillB: 'rgba(34,197,94,0.34)' }
 ];
 const theme = FIN_THEMES[(DATA.theme_seed || 0) % FIN_THEMES.length];
 
-const waypointsA = DATA.series_a || [1000, 2500, 4200, 6800, 11000, 18500];
-const waypointsB = DATA.series_b || [1000, 4800, 1900, 16000, 45000, 142000];
+const waypointsA = DATA.series_a || [5000, 6200, 7800, 9500, 12400, 16800];
+const waypointsB = DATA.series_b || [5000, 9400, 6100, 22000, 54000, 118000];
 const nameA = String(DATA.asset_a_name || 'ASSET A').toUpperCase();
 const nameB = String(DATA.asset_b_name || 'ASSET B').toUpperCase();
 const startYear = Number(DATA.start_year || 2005);
 const endYear = Number(DATA.end_year || 2025);
+
+const imgA = new Image();
+if (DATA.img_a_b64) imgA.src = DATA.img_a_b64;
+const imgB = new Image();
+if (DATA.img_b_b64) imgB.src = DATA.img_b_b64;
+
+const coins = [];
+for (let c = 0; c < 25; c++) {
+    coins.push({ x: (c * 73) % W, y: (c * 137) % H, speed: 2.5 + (c % 5), size: 6 + (c % 6) });
+}
 
 function sampleMarketValue(waypoints, exactStageFloat, isVolatile) {
     const clamped = Math.min(Math.max(exactStageFloat, 0.0), 5.0);
@@ -1180,65 +1332,113 @@ window.renderFrameAtTime = function(t) {
     const exactStageFloat = Math.min(5.0, stageIndex + stageProgress);
     const normProg = exactStageFloat / 5.0;
 
-    ctx.fillStyle = theme.bg;
-    ctx.fillRect(0, 0, W, H);
-
-    ctx.fillStyle = 'rgba(17, 24, 39, 0.92)';
-    ctx.fillRect(0, 0, W, 72);
-    ctx.fillStyle = theme.colB;
-    ctx.font = 'bold 24px sans-serif';
-    const curYear = Math.round(startYear + normProg * (endYear - startYear));
-    ctx.fillText('CAPITALGRID TERMINAL  •  YEAR: ' + curYear, 48, 45);
-
     const curValA = sampleMarketValue(waypointsA, exactStageFloat, false);
     const curValB = sampleMarketValue(waypointsB, exactStageFloat, true);
+    const prevValB = sampleMarketValue(waypointsB, Math.max(0, exactStageFloat - 0.15), true);
+    const isCrashing = (curValB < prevValB * 0.94);
+
+    ctx.save();
+    if (isCrashing) {
+        ctx.translate(Math.sin(t * 55) * 5, Math.cos(t * 48) * 5);
+    }
+
+    ctx.fillStyle = theme.bg;
+    ctx.fillRect(-20, -20, W + 40, H + 40);
+
+    // Red Crash Strobe Alert Vignette during Market Drawdowns!
+    if (isCrashing) {
+        const cGrad = ctx.createRadialGradient(W/2, H/2, W*0.2, W/2, H/2, W*0.9);
+        cGrad.addColorStop(0, 'rgba(239, 68, 68, 0)');
+        cGrad.addColorStop(1, `rgba(239, 68, 68, ${0.22 + 0.15 * Math.sin(t * 18)})`);
+        ctx.fillStyle = cGrad;
+        ctx.fillRect(0, 0, W, H);
+    }
+
+    // Subtle rising gold particles in background
+    ctx.fillStyle = 'rgba(250, 204, 21, 0.12)';
+    coins.forEach(c => {
+        const cyPos = (c.y - t * 45 * c.speed % H + H) % H;
+        ctx.beginPath(); ctx.arc(c.x, cyPos, c.size, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // Top Live Terminal Bar + Progress Timeline
+    ctx.fillStyle = 'rgba(17, 24, 39, 0.95)';
+    ctx.fillRect(0, 0, W, 76);
+    ctx.fillStyle = isCrashing ? '#ef4444' : theme.colB;
+    ctx.font = 'bold 24px sans-serif';
+    const curYear = Math.round(startYear + normProg * (endYear - startYear));
+    ctx.fillText((isCrashing ? '⚠️ MARKET DRAWDOWN ALERT  •  YEAR: ' : 'LIVE WEALTH BACKTEST  •  YEAR: ') + curYear, 48, 47);
 
     const padX = 48;
     const cardW = (W - padX * 3) / 2;
-    const cardY = 105;
-    const cardH = isWide ? 185 : 230;
+    const cardY = 102;
+    const cardH = isWide ? 190 : 240;
 
-    // Card A
+    // Card A with Real Asset Photo
     ctx.fillStyle = '#111827';
     ctx.strokeStyle = theme.colA;
     ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.roundRect(padX, cardY, cardW, cardH, 20); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(padX, cardY, cardW, cardH, 22); ctx.fill(); ctx.stroke();
+
+    if (imgA.complete && imgA.naturalWidth > 0) {
+        ctx.save();
+        ctx.beginPath(); ctx.arc(padX + cardW - 55, cardY + 55, 36, 0, Math.PI * 2); ctx.clip();
+        ctx.drawImage(imgA, padX + cardW - 91, cardY + 19, 72, 72);
+        ctx.restore();
+    }
 
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.fillText(nameA.slice(0, 18), padX + 26, cardY + 48);
+    ctx.font = 'bold 23px sans-serif';
+    ctx.fillText(nameA.slice(0, 16), padX + 26, cardY + 48);
     ctx.fillStyle = '#ffffff';
     ctx.font = isWide ? 'bold 54px sans-serif' : 'bold 52px sans-serif';
-    ctx.fillText(fmtMoney(curValA), padX + 26, cardY + 125);
+    ctx.fillText(fmtMoney(curValA), padX + 26, cardY + 130);
 
     const roiA = (((curValA - waypointsA[0]) / Math.max(waypointsA[0], 1)) * 100).toFixed(0);
     ctx.fillStyle = Number(roiA) >= 0 ? theme.colA : '#ef4444';
     ctx.font = 'bold 24px sans-serif';
-    ctx.fillText((Number(roiA) >= 0 ? '+' : '') + Number(roiA).toLocaleString() + '% ROI', padX + 26, cardY + cardH - 24);
+    ctx.fillText((Number(roiA) >= 0 ? '+' : '') + Number(roiA).toLocaleString() + '% ROI', padX + 26, cardY + cardH - 26);
 
-    // Card B
+    // Card B with Real Asset Photo
     const cardBX = padX * 2 + cardW;
     ctx.fillStyle = '#111827';
-    ctx.strokeStyle = theme.colB;
+    ctx.strokeStyle = isCrashing ? '#ef4444' : theme.colB;
     ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.roundRect(cardBX, cardY, cardW, cardH, 20); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(cardBX, cardY, cardW, cardH, 22); ctx.fill(); ctx.stroke();
+
+    if (imgB.complete && imgB.naturalWidth > 0) {
+        ctx.save();
+        ctx.beginPath(); ctx.arc(cardBX + cardW - 55, cardY + 55, 36, 0, Math.PI * 2); ctx.clip();
+        ctx.drawImage(imgB, cardBX + cardW - 91, cardY + 19, 72, 72);
+        ctx.restore();
+    }
 
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.fillText(nameB.slice(0, 18), cardBX + 26, cardY + 48);
-    ctx.fillStyle = theme.colB;
+    ctx.font = 'bold 23px sans-serif';
+    ctx.fillText(nameB.slice(0, 16), cardBX + 26, cardY + 48);
+    ctx.fillStyle = isCrashing ? '#ef4444' : theme.colB;
     ctx.font = isWide ? 'bold 54px sans-serif' : 'bold 52px sans-serif';
-    ctx.fillText(fmtMoney(curValB), cardBX + 26, cardY + 125);
+    ctx.fillText(fmtMoney(curValB), cardBX + 26, cardY + 130);
 
     const roiB = (((curValB - waypointsB[0]) / Math.max(waypointsB[0], 1)) * 100).toFixed(0);
     ctx.fillStyle = Number(roiB) >= 0 ? '#fbbf24' : '#ef4444';
     ctx.font = 'bold 24px sans-serif';
-    ctx.fillText((Number(roiB) >= 0 ? '+' : '') + Number(roiB).toLocaleString() + '% ROI', cardBX + 26, cardY + cardH - 24);
+    ctx.fillText((Number(roiB) >= 0 ? '+' : '') + Number(roiB).toLocaleString() + '% ROI', cardBX + 26, cardY + cardH - 26);
+
+    // Center Floating Wealth Multiplier Pill between Cards!
+    const mult = (Math.max(curValA, curValB) / Math.max(Math.min(curValA, curValB), 1)).toFixed(1);
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.roundRect(W / 2 - 115, cardY + cardH + 8, 230, 42, 20); ctx.fill();
+    ctx.fillStyle = '#090d16';
+    ctx.font = 'bold 22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('GAP: ' + mult + 'X WEALTHIER', W / 2, cardY + cardH + 36);
+    ctx.textAlign = 'left';
 
     const chartX = padX;
-    const chartY = cardY + cardH + 35;
+    const chartY = cardY + cardH + 62;
     const chartW = W - padX * 2;
-    const chartH = (isWide ? (H - 180) : 1380) - chartY;
+    const chartH = (isWide ? (H - 180) : 1385) - chartY;
 
     ctx.fillStyle = '#0d1322';
     ctx.strokeStyle = '#1f2937';
@@ -1270,7 +1470,6 @@ window.renderFrameAtTime = function(t) {
         ctx.fillText(fmtMoney(gVal), chartX + 32, gy - 8);
     }
 
-    // Bottom Volume Histogram Bars inside Chart
     for (let b = 0; b < 36; b++) {
         const bx = chartX + 40 + (b / 36) * (chartW - 95);
         const bh = 12 + Math.abs(Math.sin(b * 3.7 + exactStageFloat * 4)) * 45;
@@ -1278,22 +1477,22 @@ window.renderFrameAtTime = function(t) {
         ctx.fillRect(bx, chartY + chartH - 12 - bh, 14, bh);
     }
 
-    function drawAreaCurve(pts, strokeCol, fillTop) {
+    function drawAreaCurve(pts, strokeCol, fillTop, labelTxt) {
         ctx.save();
         ctx.beginPath();
         pts.forEach((pt, idx) => {
-            const px = chartX + 40 + pt.sp * (chartW - 95);
+            const px = chartX + 40 + pt.sp * (chartW - 115);
             const py = chartY + chartH - 55 - (pt.v / currentMax) * (chartH - 105);
             if (idx === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
         });
         ctx.strokeStyle = strokeCol;
-        ctx.lineWidth = 6;
-        ctx.shadowBlur = 14;
+        ctx.lineWidth = 7;
+        ctx.shadowBlur = 16;
         ctx.shadowColor = strokeCol;
         ctx.stroke();
 
         const lastPt = pts[pts.length - 1];
-        const lastX = chartX + 40 + lastPt.sp * (chartW - 95);
+        const lastX = chartX + 40 + lastPt.sp * (chartW - 115);
         const lastY = chartY + chartH - 55 - (lastPt.v / currentMax) * (chartH - 105);
         ctx.lineTo(lastX, chartY + chartH - 55);
         ctx.lineTo(chartX + 40, chartY + chartH - 55);
@@ -1305,14 +1504,14 @@ window.renderFrameAtTime = function(t) {
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(lastX, lastY, 11, 0, Math.PI * 2);
+        ctx.arc(lastX, lastY, 12, 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
         ctx.fill();
         ctx.restore();
     }
 
-    drawAreaCurve(ptsA, theme.colA, theme.fillA);
-    drawAreaCurve(ptsB, theme.colB, theme.fillB);
+    drawAreaCurve(ptsA, theme.colA, theme.fillA, nameA);
+    drawAreaCurve(ptsB, isCrashing ? '#ef4444' : theme.colB, theme.fillB, nameB);
 
     const chunks = DATA.chunks || [];
     let activeChunk = null;
@@ -1337,6 +1536,7 @@ window.renderFrameAtTime = function(t) {
         ctx.fillText(words, W / 2, by);
         ctx.restore();
     }
+    ctx.restore();
 };
 </script>
 </body>
@@ -1345,36 +1545,39 @@ window.renderFrameAtTime = function(t) {
 
 
 # =====================================================================
-# 6. AGENT 2: INFINITE VARIETY TOPIC WHEELS (NEVER REPEATS!)
+# 6. AGENT 2 & 3: DYNAMIC XGBOOST TOPIC ARCHITECT + 3D SCULPTOR AI
 # =====================================================================
 SCALE3D_THEME_WHEEL = [
-    ("Planets, Moons & Stars of the Universe (from Moon to UY Scuti)", "planet"),
-    ("Fastest Machines, Jets & Spacecraft Ever Built (from Bugatti to Parker Solar Probe)", "rocket"),
-    ("Deepest Ocean Trenches, Submarines & Shipwrecks (from Scuba Dive to Mariana Trench)", "trench"),
-    ("Tallest Mountains & Volcanoes in the Solar System (from Fuji to Olympus Mons)", "mountain"),
+    ("Iconic World Wonders & Domes (from Taj Mahal to Great Pyramid & Burj Khalifa)", "dome_palace"),
+    ("Planets, Moons & Stars of the Universe (from Moon to Earth, Saturn & Sun)", "planet"),
+    ("Fastest Machines, Jets & Spacecraft Ever Built (from Bugatti to Saturn V & Parker Probe)", "rocket"),
+    ("Deepest Ocean Trenches, Submarines & Shipwrecks (from Titanic Depth to Mariana Trench)", "trench"),
+    ("Tallest Mountains & Volcanoes in the Solar System (from Fuji to Everest & Olympus Mons)", "mountain"),
     ("Colossal Asteroid Impacts & Craters Compared to Cities", "crater"),
-    ("Ancient Wonders vs Modern Megastructures (from Giza Pyramid to Jeddah Tower)", "pyramid"),
-    ("Largest Rockets & Spaceships in History (from Falcon 1 to Starship & Sea Dragon)", "rocket"),
+    ("Largest Rockets & Spaceships in History (from V-2 to Saturn V & Starship)", "rocket"),
     ("Biggest Cruise Ships, Supertankers & Aircraft Carriers Compared", "vehicle")
 ]
 
 WEALTH_THEME_WHEEL = [
-    "Gold vs Real Estate: Investing $5,000 over 30 Years",
-    "$5/Day Coffee Habit vs Investing in Nvidia/Apple Stock over 15 Years",
+    "Gold Bullion vs Real Estate: Investing $5,000 over 30 Years",
+    "$5/Day Coffee Habit vs Investing in Nvidia Stock over 15 Years",
     "High-Yield Savings Account vs Dividend Aristocrats Snowball ($10,000 Start)",
-    "Cash Under the Mattress (Inflation Erosion) vs Gold Bullion over 40 Years",
+    "Cash Under the Mattress (Inflation Erosion) vs Bitcoin over 12 Years",
     "Warren Buffett Value Strategy vs Day Trading Meme Stocks ($10,000 Simulation)",
     "Renting & Investing the Difference vs Buying a Luxury House (25-Year Math)",
-    "1929 Great Depression Crash vs 2008 Financial Crisis Recovery Simulation",
+    "Apple Products Bought Every Year vs Buying Apple Stock Instead",
     "Investing $100/Month Starting at Age 20 vs Starting at Age 35 (Compounding Secret)"
 ]
 
-PHYSICS_MODE_DESCRIPTIONS = [
-    (0, "6 Concentric Spinning Neon Rings Escape Battle"),
-    (1, "Spinning Hexagon Tumbler Cage Physics Royale"),
-    (2, "32-Ball Galton Plinko Pegboard Jackpot Race"),
-    (3, "Growing Bouncing Balls Collision Arena (Balls Grow on Every Hit!)"),
-    (4, "High-Speed Counter-Rotating Vortex Rings Escape")
+PHYSICS_RIVALRY_WHEEL = [
+    (0, "RONALDO", "MESSI", "RONALDO VS MESSI: FIRST TO BREAK ALL 6 RINGS WINS!"),
+    (1, "IPHONE", "ANDROID", "IPHONE VS ANDROID: HEXAGON CAGE SURVIVAL!"),
+    (2, "DOGS", "CATS", "DOGS VS CATS: 28-BALL PLINKO JACKPOT RACE!"),
+    (3, "GOLD", "BITCOIN", "GOLD VS BITCOIN: BALLS GROW ON EVERY BOUNCE!"),
+    (4, "TESLA", "LAMBO", "TESLA VS LAMBO: COUNTER-ROTATING VORTEX ESCAPE!"),
+    (0, "GTA 6", "MINECRAFT", "GTA 6 VS MINECRAFT: 6-RING ELIMINATION ARENA!"),
+    (1, "NETFLIX", "YOUTUBE", "NETFLIX VS YOUTUBE: WHO ESCAPES THE HEXAGON?"),
+    (2, "USA", "JAPAN", "USA VS JAPAN: ULTIMATE PLINKO PHYSICS RACE!")
 ]
 
 
@@ -1384,40 +1587,43 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
     word_rule = "13 to 16 spoken words" if not is_long else "30 to 35 spoken words"
 
     if POD_NAME == "PHYSICS":
-        mode_id, mode_desc = PHYSICS_MODE_DESCRIPTIONS[run_idx % len(PHYSICS_MODE_DESCRIPTIONS)]
+        mode_id, team_a, team_b, hook_banner = PHYSICS_RIVALRY_WHEEL[run_idx % len(PHYSICS_RIVALRY_WHEEL)]
         prompt = f"""
-        We are generating a viral, zero-language ASMR Physics Short using Mode: "{mode_desc}".
+        We are generating a viral, zero-language ASMR Physics Short featuring the rivalry: "{team_a} vs {team_b}" ({hook_banner}).
         Top XGBoost Search Queries: {json.dumps(elite_titles[:6])}
-        PAST TITLES (DO NOT REPEAT ANY OF THESE): {json.dumps(past_topics[-35:])}
+        PAST TITLES (DO NOT REPEAT): {json.dumps(past_topics[-35:])}
 
-        Write a fresh, high-CTR title (under 58 chars with #shorts), summary, and interactive pinned comment matching "{mode_desc}".
+        Write a fresh, high-CTR title (under 58 chars with #shorts), summary, and interactive pinned comment asking viewers whether they backed {team_a} or {team_b}.
         Output JSON ONLY:
         {{
-          "title": "Unique Viral Title for {mode_desc} #shorts",
-          "topic_summary": "60FPS Matter.js simulation of {mode_desc}.",
-          "pinned_comment": "Which color won the {mode_desc}? Drop your prediction below! 👇"
+          "title": "{team_a} vs {team_b}: Can 20 Balls Break All Rings? #shorts",
+          "topic_summary": "60FPS Matter.js physics rivalry between {team_a} and {team_b}.",
+          "pinned_comment": "🔥 Team {team_a} or Team {team_b} — who did you bet on before the final ring shattered? Comment below! 👇"
         }}
         """
         plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.8))
         plan["physics_mode"] = mode_id
+        plan["team_a_name"] = team_a
+        plan["team_b_name"] = team_b
+        plan["hook_banner"] = hook_banner
         plan["palette_seed"] = random.randint(0, 999)
         return plan
 
     elif POD_NAME == "SCALE3D":
         theme_desc, default_model = SCALE3D_THEME_WHEEL[run_idx % len(SCALE3D_THEME_WHEEL)]
         prompt = f"""
-        MANDATORY 3D COMPARISON THEME FOR THIS VIDEO: "{theme_desc}"
-        (FORBIDDEN: Do NOT use Statues, Christ the Redeemer, or Statue of Liberty unless the theme above explicitly asks for statues!)
-        PAST TITLES (DO NOT REPEAT): {json.dumps(past_topics[-35:])}
+        Top XGBoost-Scored 3D Trends: {json.dumps(elite_titles[:8])}
+        Suggested Theme: "{theme_desc}"
+        (FORBIDDEN: Do NOT repeat past titles: {json.dumps(past_topics[-35:])})
 
-        Create a 5-step 3D scale comparison for "{theme_desc}".
+        Create a 5-step 3D scale comparison.
         CRITICAL RULES:
         1. Order the 5 `items` strictly from SMALLEST `meters` (Rank #1) to LARGEST `meters` (Rank #5).
-        2. Set `"model_type"` for each item to one of: `"planet"`, `"star"`, `"rocket"`, `"mountain"`, `"trench"`, `"crater"`, `"pyramid"`, `"skyscraper"`, `"statue"`, `"vehicle"`.
-        3. Write 5 natural `narrations` ({word_rule} each) matching the 5 sorted items.
-        4. NEVER write "Stage 1", "Stage 2", "Step 1", or "Rank 1" in the narration text! Start directly with the fascinating hook or object name!
+        2. Set `"model_type"` for each item to the closest match: `"dome_palace"` (for Taj Mahal, mosques, cathedrals, palaces), `"planet"`, `"star"`, `"rocket"`, `"mountain"`, `"trench"`, `"crater"`, `"pyramid"`, `"skyscraper"`, `"statue"`, `"vehicle"`.
+        3. Include `"wiki_query"` with the exact Wikipedia article title of that object so we can fetch its real-world photograph!
+        4. Write 5 natural `narrations` ({word_rule} each) matching the 5 sorted items. NEVER say "Stage 1" or "Stage 2"!
 
-        Output JSON ONLY (replace placeholders with real facts & numbers):
+        Output JSON ONLY:
         {{
           "title": "<Viral 3D Comparison Title under 58 chars>",
           "topic_summary": "<1-sentence summary>",
@@ -1426,18 +1632,18 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
           "thumb_line_1": "<WORD 1>",
           "thumb_line_2": "<WORD 2>",
           "items": [
-            {{"name": "<Smallest Object>", "meters": 10, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<2nd Object>", "meters": 50, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<3rd Object>", "meters": 250, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<4th Object>", "meters": 1200, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<5th Largest Object>", "meters": 8000, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}}
+            {{"name": "<Object 1>", "wiki_query": "<Exact Wikipedia Title>", "meters": 73, "metric": "73 m", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
+            {{"name": "<Object 2>", "wiki_query": "<Exact Wikipedia Title>", "meters": 138, "metric": "138 m", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
+            {{"name": "<Object 3>", "wiki_query": "<Exact Wikipedia Title>", "meters": 330, "metric": "330 m", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
+            {{"name": "<Object 4>", "wiki_query": "<Exact Wikipedia Title>", "meters": 632, "metric": "632 m", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
+            {{"name": "<Object 5>", "wiki_query": "<Exact Wikipedia Title>", "meters": 828, "metric": "828 m", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}}
           ],
           "narrations": [
-            "<Natural narration for item 1 without saying Stage 1>",
-            "<Natural narration for item 2 without saying Stage 2>",
-            "<Natural narration for item 3 without saying Stage 3>",
-            "<Natural narration for item 4 without saying Stage 4>",
-            "<Natural narration for item 5 without saying Stage 5>"
+            "<Natural narration for item 1>",
+            "<Natural narration for item 2>",
+            "<Natural narration for item 3>",
+            "<Natural narration for item 4>",
+            "<Natural narration for item 5>"
           ]
         }}
         """
@@ -1450,21 +1656,47 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
             plan["narrations"] = [p[1] for p in paired]
         else:
             plan["narrations"] = nars
+
+        # Fetch Real Wikipedia Photographs for each of the 5 objects!
+        for it in plan.get("items", []):
+            wq = it.get("wiki_query") or it.get("name", "")
+            it["image_b64"] = fetch_wikipedia_image_b64(wq)
+            if it["image_b64"]:
+                print(f"✅ [SCALE3D Real Photo] Loaded Wikipedia image for '{wq}'!", flush=True)
+
+        # Have Coding AI write bespoke Three.js procedural 3D geometry for these exact 5 items!
+        mesh_prompt = f"""
+        Write a pure JavaScript Three.js r128 function `window.aiCustom3DMesh = function(THREE, idx, h, hexColor, glowHex)` that returns a `new THREE.Group()` representing the 3D architectural/physical shape of item `idx` (0 to 4), scaled to total height `h` (with base at y=0 and top at y=h):
+        Item 0: {plan['items'][0].get('name')} ({plan['items'][0].get('model_type')})
+        Item 1: {plan['items'][1].get('name')} ({plan['items'][1].get('model_type')})
+        Item 2: {plan['items'][2].get('name')} ({plan['items'][2].get('model_type')})
+        Item 3: {plan['items'][3].get('name')} ({plan['items'][3].get('model_type')})
+        Item 4: {plan['items'][4].get('name')} ({plan['items'][4].get('model_type')})
+
+        RULES:
+        - Compose each item (`idx === 0`, `idx === 1`, etc.) out of 4 to 10 Three.js primitives (`BoxGeometry`, `CylinderGeometry`, `SphereGeometry`, `ConeGeometry`, `TorusGeometry`) with `MeshStandardMaterial` so it looks unmistakably like the real object (e.g. domes + minarets for Taj Mahal, hull + funnels for ships, multi-tier setbacks + spire for skyscrapers, ringed spheres for planets).
+        - Output ONLY valid JavaScript defining `window.aiCustom3DMesh = function(THREE, idx, h, hexColor, glowHex) {{ ... }};`.
+        """
+        try:
+            plan["custom_3d_js"] = extract_js_code(call_ai(CODE_MODELS, "Output pure JavaScript only.", mesh_prompt, 0.5))
+        except Exception:
+            plan["custom_3d_js"] = ""
+
         plan["theme_seed"] = random.randint(0, 999)
         return plan
 
     else:
         fin_theme = WEALTH_THEME_WHEEL[run_idx % len(WEALTH_THEME_WHEEL)]
         prompt = f"""
-        MANDATORY FINANCIAL SIMULATION THEME FOR THIS VIDEO: "{fin_theme}"
-        (FORBIDDEN: Do NOT repeat "S&P 500 vs Nasdaq"!)
-        PAST TITLES (DO NOT REPEAT): {json.dumps(past_topics[-35:])}
+        Top XGBoost-Scored Wealth & Investing Queries: {json.dumps(elite_titles[:8])}
+        Mandatory Theme: "{fin_theme}"
+        (FORBIDDEN: Do NOT repeat "S&P 500 vs Nasdaq" or past titles: {json.dumps(past_topics[-35:])})
 
-        Create a 5-part financial backtest comparing two assets or habits based on: "{fin_theme}".
+        Create a 5-part financial backtest comparing two assets or habits.
         CRITICAL RULES:
         1. `series_a` and `series_b` MUST each contain 6 numbers (`[initial_value, point_1, point_2, point_3, point_4, final_value]`).
-        2. Each of the 5 `narrations` ({word_rule} each) MUST state the exact dollar figures in `series_a[i+1]` and `series_b[i+1]`.
-        3. NEVER write the words "Stage 1", "Stage 2", "Stage 3", "Stage 4", or "Stage 5" in `narrations`! Speak like a natural human storyteller!
+        2. Include `"wiki_a"` and `"wiki_b"` with Wikipedia search terms for the two assets (e.g. `"Gold bar"`, `"Nvidia"`, `"Real estate"`, `"Bitcoin"`, `"Coffee"`) so we display their real photos!
+        3. Each of the 5 `narrations` ({word_rule} each) MUST state the exact dollar figures in `series_a[i+1]` and `series_b[i+1]`. NEVER say "Stage 1" or "Stage 2"!
 
         Output JSON ONLY:
         {{
@@ -1476,21 +1708,25 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
           "thumb_line_2": "<ASSET B>",
           "asset_a_name": "<Name of Strategy/Asset A>",
           "asset_b_name": "<Name of Strategy/Asset B>",
+          "wiki_a": "<Wikipedia object name for Asset A>",
+          "wiki_b": "<Wikipedia object name for Asset B>",
           "start_year": 2004,
           "end_year": 2026,
           "series_a": [5000, 6200, 7800, 9500, 12400, 16800],
           "series_b": [5000, 9400, 6100, 22000, 54000, 118000],
           "narrations": [
-            "<Natural narration 1 without saying Stage 1>",
-            "<Natural narration 2 without saying Stage 2>",
-            "<Natural narration 3 without saying Stage 3>",
-            "<Natural narration 4 without saying Stage 4>",
-            "<Natural narration 5 without saying Stage 5>"
+            "<Natural narration 1>",
+            "<Natural narration 2>",
+            "<Natural narration 3>",
+            "<Natural narration 4>",
+            "<Natural narration 5>"
           ]
         }}
         """
         plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.78))
         plan["narrations"] = [strip_stage_prefix(n) for n in plan.get("narrations", [])]
+        plan["img_a_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_a") or plan.get("asset_a_name", ""))
+        plan["img_b_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_b") or plan.get("asset_b_name", ""))
         plan["theme_seed"] = random.randint(0, 999)
         return plan
 
@@ -1503,12 +1739,11 @@ def synthesize_collision_marimba_track(total_duration, collision_events, output_
     n_samples = int((total_duration + 0.3) * sr)
     audio = np.zeros(n_samples, dtype=np.float32)
 
-    # Rotate across 4 musical scales so every KineticZen video has its own musical vibe!
-     musical_scales = [
-        [261.63, 329.63, 392.00, 493.88, 523.25, 659.25, 783.99, 987.77, 1046.50], # C Lydian Kalimba
-        [293.66, 349.23, 440.00, 523.25, 587.33, 698.46, 880.00, 1046.50, 1174.66], # D Dorian Crystal Harp
-        [220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25, 783.99, 880.00],  # A Minor Pentatonic Marimba
-        [329.63, 349.23, 440.00, 493.88, 659.25, 698.46, 880.00, 987.77, 1318.51]  # Japanese Hirajoshi Zen Pluck
+    musical_scales = [
+        [261.63, 329.63, 392.00, 493.88, 523.25, 659.25, 783.99, 987.77, 1046.50],
+        [293.66, 349.23, 440.00, 523.25, 587.33, 698.46, 880.00, 1046.50, 1174.66],
+        [220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25, 783.99, 880.00],
+        [329.63, 349.23, 440.00, 493.88, 659.25, 698.46, 880.00, 987.77, 1318.51]
     ]
     scale_hz = musical_scales[seed_val % len(musical_scales)]
 
@@ -1712,6 +1947,9 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
             "is_widescreen": is_widescreen,
             "total_duration": total_dur,
             "physics_mode": plan.get("physics_mode", 0),
+            "team_a_name": plan.get("team_a_name", "GOLD"),
+            "team_b_name": plan.get("team_b_name", "CRIMSON"),
+            "hook_banner": plan.get("hook_banner", "WHO WILL ESCAPE FIRST?"),
             "palette_seed": plan.get("palette_seed", 0)
         }
         html_str = MATTERJS_PHYSICS_HTML.replace("__MATTER_JS_SRC__", matter_src).replace("__PAYLOAD_JSON__", json.dumps(payload))
@@ -1725,7 +1963,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         proc = subprocess.Popen(ffmpeg_v, stdin=subprocess.PIPE)
         collision_events = []
 
-        print(f"[KineticZen Matter.js V3.0] Simulating Mode {payload['physics_mode']} ({total_frames} frames)...", flush=True)
+        print(f"[KineticZen Matter.js V4.0] Simulating Rivalry {payload['team_a_name']} vs {payload['team_b_name']}...", flush=True)
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-gpu"])
             page = browser.new_page(viewport={"width": out_w, "height": out_h})
@@ -1787,6 +2025,8 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         "items": plan.get("items", []),
         "asset_a_name": plan.get("asset_a_name", "STRATEGY A"),
         "asset_b_name": plan.get("asset_b_name", "STRATEGY B"),
+        "img_a_b64": plan.get("img_a_b64", ""),
+        "img_b_b64": plan.get("img_b_b64", ""),
         "start_year": plan.get("start_year", 2004),
         "end_year": plan.get("end_year", 2026),
         "series_a": plan.get("series_a", [5000, 6200, 7800, 9500, 12400, 16800]),
@@ -1794,7 +2034,12 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
     }
 
     if POD_NAME == "SCALE3D":
-        html_str = THREEJS_SCALE3D_HTML.replace("__THREE_JS_SRC__", three_src).replace("__PAYLOAD_JSON__", json.dumps(payload))
+        html_str = (
+            THREEJS_SCALE3D_HTML
+            .replace("__THREE_JS_SRC__", three_src)
+            .replace("__PAYLOAD_JSON__", json.dumps(payload))
+            .replace("__CUSTOM_3D_BUILDER_JS__", plan.get("custom_3d_js", ""))
+        )
     else:
         html_str = TRADINGVIEW_WEALTH_HTML.replace("__PAYLOAD_JSON__", json.dumps(payload))
 
@@ -1809,7 +2054,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
     ]
     proc = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
 
-    print(f"[{POD_NAME} Bespoke Engine V3.0] Rendering {total_frames} frames ({out_w}x{out_h})...", flush=True)
+    print(f"[{POD_NAME} Bespoke Engine V4.0] Rendering {total_frames} frames ({out_w}x{out_h})...", flush=True)
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
@@ -1817,7 +2062,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         )
         page = browser.new_page(viewport={"width": out_w, "height": out_h})
         page.goto(f"file://{html_file}")
-        page.wait_for_timeout(300)
+        page.wait_for_timeout(350)
 
         for f_idx in range(total_frames):
             t = f_idx / FPS
@@ -2051,7 +2296,7 @@ def upload_pod_video(video_path, title, description, tags, pinned_comment, is_lo
     response = youtube.videos().insert(part="snippet,status", body=body, media_body=media).execute()
     video_id = response["id"]
     short_link = mk_url("https", ["youtu", "be"], f"/{video_id}")
-    print(f"🎉 [{POD_NAME} V3.0 PUBLISHED!] Video ID: {video_id} | URL: {short_link}", flush=True)
+    print(f"🎉 [{POD_NAME} V4.0 PUBLISHED!] Video ID: {video_id} | URL: {short_link}", flush=True)
 
     mem = load_pod_memory()
     pub = mem.get("published_videos", [])
