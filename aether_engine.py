@@ -1563,7 +1563,7 @@ def fetch_omniscience_brain_directives():
 
 def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
     run_idx = spy_data.get("run_idx", 0) + unit_idx
-    elite_titles = [c["title"] for c in spy_data["elite_candidates"][:10]] + [fetch_omniscience_brain_directives()]
+    elite_titles = [c["title"] for c in spy_data["elite_candidates"][:10]]
     word_rule = "13 to 16 spoken words" if not is_long else "30 to 35 spoken words"
 
     if POD_NAME == "PHYSICS":
