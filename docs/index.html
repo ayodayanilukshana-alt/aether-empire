@@ -3,134 +3,111 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AETHER Interactive Wealth Calculator, 3D Scale & Physics Lab</title>
+<title>AETHER Interactive Simulation Network — Wealth, 3D Scale & Physics Lab</title>
 <style>
-  body { background: #070b14; color: #f8fafc; font-family: system-ui, sans-serif; margin: 0; padding: 30px; }
-  h1, h2 { text-align: center; color: #38bdf8; }
-  .tools-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; max-width: 1280px; margin: 25px auto; }
-  .tool-box { background: #111827; border: 1px solid #1e293b; border-radius: 18px; padding: 22px; }
-  input { width: 100%; padding: 10px; margin: 8px 0 14px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; }
-  .res { font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 10px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1280px; margin: 30px auto; }
-  .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 18px; }
-  .badge { background: #38bdf8; color: #070b14; font-weight: 800; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; }
-  iframe { width: 100%; height: 220px; border: none; border-radius: 10px; margin-top: 12px; }
+  * { box-sizing: border-box; }
+  body { background: #060a12; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 24px; }
+  header { text-align: center; max-width: 900px; margin: 0 auto 28px; }
+  h1 { color: #38bdf8; font-size: 2.2rem; margin-bottom: 8px; }
+  .sub { color: #94a3b8; font-size: 1rem; }
+  .tabs { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 22px 0; }
+  .tab-btn { background: #111827; color: #cbd5e1; border: 1px solid #1e293b; padding: 10px 20px; border-radius: 999px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+  .tab-btn.active, .tab-btn:hover { background: #38bdf8; color: #060a12; border-color: #38bdf8; }
+  .tools-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; max-width: 1280px; margin: 0 auto 36px; }
+  .tool-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .tool-box h3 { margin-top: 0; color: #facc15; }
+  label { font-size: 0.88rem; color: #94a3b8; display: block; margin-top: 8px; }
+  input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #334155; background: #060a12; color: #fff; font-size: 1rem; }
+  .res { font-size: 1.55rem; font-weight: 800; color: #10b981; margin-top: 14px; }
+  #miniPhysics { width: 100%; height: 180px; background: #060a12; border-radius: 12px; border: 1px solid #334155; margin-top: 10px; cursor: pointer; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 22px; max-width: 1280px; margin: 20px auto; }
+  .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 16px; transition: transform 0.2s; }
+  .card:hover { transform: translateY(-4px); border-color: #38bdf8; }
+  .card-top { display: flex; justify-content: space-between; align-items: center; }
+  .badge { font-weight: 800; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; }
+  .badge-wealth { background: #10b981; color: #052e16; }
+  .badge-physics { background: #f43f5e; color: #fff; }
+  .badge-scale3d { background: #38bdf8; color: #060a12; }
+  .views { color: #94a3b8; font-size: 0.85rem; }
+  iframe { width: 100%; height: 240px; border: none; border-radius: 10px; margin-top: 12px; }
 </style>
 </head>
 <body>
-  <h1>AETHER INTERACTIVE SIMULATION & WEALTH TOOLS</h1>
+  <header>
+    <h1>⚡ AETHER INTERACTIVE SIMULATION HUB</h1>
+    <div class="sub">Free Financial Backtest Calculators, 3D Cosmic Scale Converters & Interactive Physics Sandbox</div>
+  </header>
+
   <div class="tools-wrap">
     <div class="tool-box">
-      <h3>💰 Live Compound Interest & Wealth Simulator</h3>
+      <h3>💰 CapitalGrid Compounding Simulator</h3>
       <label>Monthly Investment ($):</label>
       <input type="number" id="mInv" value="500" oninput="calcWealth()">
-      <label>Annual Return (%) & Years:</label>
+      <label>Annual Return (%):</label>
       <input type="number" id="rate" value="12" oninput="calcWealth()">
+      <label>Time Horizon (Years):</label>
       <input type="number" id="yrs" value="25" oninput="calcWealth()">
       <div class="res" id="wealthOut">$948,817</div>
     </div>
+
     <div class="tool-box">
-      <h3>🌍 3D Cosmic & Trench Scale Converter</h3>
-      <label>Enter Height / Depth in Meters:</label>
-      <input type="number" id="mScale" value="11000" oninput="calcScale()">
-      <div class="res" id="scaleOut">13.3x Burj Khalifa | 1.24x Mt. Everest</div>
+      <h3>🌍 ScaleVerse 3D Size Converter</h3>
+      <label>Enter Object Size / Depth (Meters):</label>
+      <input type="number" id="mScale" value="121" oninput="calcScale()">
+      <div class="res" id="scaleOut">8.6x V-2 Rocket | 0.15x Burj Khalifa</div>
+    </div>
+
+    <div class="tool-box">
+      <h3>🎮 KineticZen Physics Sandbox (Click to Spawn Balls!)</h3>
+      <canvas id="miniPhysics" width="360" height="180"></canvas>
     </div>
   </div>
-  <h2>LATEST AUTONOMOUS SIMULATIONS</h2>
-  <div class="grid">
-        <div class="card">
-          <span class="badge">SCALE3D</span>
-          <iframe src="https://www.youtube.com/embed/9t9fozNZEV4" allowfullscreen></iframe>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="filterPod('ALL', this)">All Channels (3)</button>
+    <button class="tab-btn" onclick="filterPod('WEALTH', this)">💰 CapitalGrid Wealth</button>
+    <button class="tab-btn" onclick="filterPod('SCALE3D', this)">🌍 ScaleVerse 3D</button>
+    <button class="tab-btn" onclick="filterPod('PHYSICS', this)">🔮 KineticZen Physics</button>
+  </div>
+
+  <div class="grid" id="videoGrid">
+        <div class="card" data-pod="WEALTH">
+          <div class="card-top">
+            <span class="badge badge-wealth">WEALTH</span>
+            <span class="views">👁️ 40 views</span>
+          </div>
+          <iframe src="https://www.youtube.com/embed/zrQuKBRCBPo" loading="lazy" allowfullscreen></iframe>
+          <h3>$5/Day Coffee vs Nvidia Stock: 15-Year Backtest #shorts</h3>
+          <p>We compare spending $5 daily on coffee to investing that same $5 in Nvidia stock over 15 years.
+
+Subscribe for daily simulations!</p>
+        </div>
+        
+        <div class="card" data-pod="PHYSICS">
+          <div class="card-top">
+            <span class="badge badge-physics">PHYSICS</span>
+            <span class="views">👁️ 737 views</span>
+          </div>
+          <iframe src="https://www.youtube.com/embed/dmVcdCg6p84" loading="lazy" allowfullscreen></iframe>
+          <h3>IPHONE vs ANDROID: Hexagon Cage Escape! #shorts</h3>
+          <p>60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.
+
+Subscribe for da</p>
+        </div>
+        
+        <div class="card" data-pod="SCALE3D">
+          <div class="card-top">
+            <span class="badge badge-scale3d">SCALE3D</span>
+            <span class="views">👁️ 25 views</span>
+          </div>
+          <iframe src="https://www.youtube.com/embed/9t9fozNZEV4" loading="lazy" allowfullscreen></iframe>
           <h3>Rockets: V-2 to Starship 3D Size Comparison #shorts</h3>
           <p>A 3D scale comparison of the largest rockets and spacecraft in history, from the V-2 to Starship.
 
 Subscribe for daily simulations!</p>
         </div>
-        
-        <div class="card">
-          <span class="badge">SCALE3D</span>
-          <iframe src="https://www.youtube.com/embed/Ds5mqlwNyjQ" allowfullscreen></iframe>
-          <h3>Rockets: V-2 to Starship 3D Size Comparison #shorts</h3>
-          <p>A 3D size comparison of history's largest rockets and spacecraft, from the V-2 to the Starship.
+        </div>
 
-Subscribe for daily simulations!</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">SCALE3D</span>
-          <iframe src="https://www.youtube.com/embed/-2eoPA4x7bg" allowfullscreen></iframe>
-          <h3>Moon to Sun: 3D Universe Size Comparison #shorts</h3>
-          <p>Compare the sizes of the Moon, Earth, Saturn, and Sun in this 3D scale animation from small to giant.
-
-Subscribe for daily simulations!</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">PHYSICS</span>
-          <iframe src="https://www.youtube.com/embed/dmVcdCg6p84" allowfullscreen></iframe>
-          <h3>IPHONE vs ANDROID: Hexagon Cage Escape! #shorts</h3>
-          <p>60FPS Matter.js physics showdown: IPHONE and ANDROID balls battle a spinning hexagon cage in a zero-language ASMR escape simulation.
-
-Subscribe for daily simula</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">PHYSICS</span>
-          <iframe src="https://www.youtube.com/embed/x4X5Uq7hS98" allowfullscreen></iframe>
-          <h3>RONALDO vs MESSI: 20 Balls vs 6 Rings! #shorts</h3>
-          <p>60FPS slime-satisfying physics simulation where RONALDO and MESSI-colored balls race to shatter all 6 spinning rings first.
-
-Subscribe for daily simulations!</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">SCALE3D</span>
-          <iframe src="https://www.youtube.com/embed/F3rTMk282rk" allowfullscreen></iframe>
-          <h3>Iconic Wonders: 3D Size Comparison #shorts</h3>
-          <p>A 3D scale comparison of five iconic world wonders, from the Taj Mahal to the Burj Khalifa.
-
-Subscribe for daily simulations!</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">SCALE3D</span>
-          <iframe src="https://www.youtube.com/embed/UTTa87GGRbM" allowfullscreen></iframe>
-          <h3>Famous Statues Size Comparison: 3D Scale #shorts</h3>
-          <p>True 3D WebGL scale comparison from smallest to largest.
-
-Subscribe for daily simulations!</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">PHYSICS</span>
-          <iframe src="https://www.youtube.com/embed/WEc1EpvJF2I" allowfullscreen></iframe>
-          <h3>Gold vs Crimson: 20 Balls vs 6 Spinning Rings — Which Color Survives? #shorts</h3>
-          <p>Satisfying 60FPS rigid-body physics challenge: 20 gold and crimson balls bounce through 6 concentric spinning neon rings, with marimba collision chimes and colo</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">PHYSICS</span>
-          <iframe src="https://www.youtube.com/embed/gB7DHlLTggA" allowfullscreen></iframe>
-          <h3>Spinning Rings vs 24 Balls: Satisfying 60FPS Physics Escape #shorts</h3>
-          <p>Global ASMR satisfaction loop: 24 glowing spheres bounce through 4 concentric spinning rings in 60FPS Matter.js, with soft marimba collision chimes and no langu</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">WEALTH</span>
-          <iframe src="https://www.youtube.com/embed/unrjSI4toro" allowfullscreen></iframe>
-          <h3>Invest $10K in 2000: S&P 500 vs Nasdaq #shorts</h3>
-          <p>Live historical portfolio backtest and compounding simulation.
-
-Subscribe for daily simulations!</p>
-        </div>
-        
-        <div class="card">
-          <span class="badge">WEALTH</span>
-          <iframe src="https://www.youtube.com/embed/UShAjwFww9k" allowfullscreen></iframe>
-          <h3>$1,000/Month: S&P 500 vs Bitcoin (Insane) #shorts</h3>
-          <p>A 40-year simulation comparing $1,000/month invested in the S&P 500 vs Bitcoin, including a market crash and compounding growth, to reveal the final portfolio v</p>
-        </div>
-        </div>
 <script>
 function calcWealth() {
   const p = Number(document.getElementById('mInv').value || 0);
@@ -141,8 +118,45 @@ function calcWealth() {
 }
 function calcScale() {
   const m = Number(document.getElementById('mScale').value || 0);
-  document.getElementById('scaleOut').innerText = (m / 828).toFixed(1) + 'x Burj Khalifa | ' + (m / 8849).toFixed(2) + 'x Everest';
+  document.getElementById('scaleOut').innerText = (m / 14).toFixed(1) + 'x V-2 Rocket | ' + (m / 828).toFixed(2) + 'x Burj Khalifa';
 }
+function filterPod(pod, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = (pod === 'ALL' || c.dataset.pod === pod) ? 'block' : 'none';
+  });
+}
+
+// Interactive Mini Physics Sandbox
+const pCan = document.getElementById('miniPhysics');
+const pCtx = pCan.getContext('2d');
+const pBalls = [
+  {x: 120, y: 50, vx: 3, vy: 2, r: 10, c: '#00e5ff'},
+  {x: 200, y: 80, vx: -3, vy: -2, r: 10, c: '#ff2a85'},
+  {x: 160, y: 110, vx: 2, vy: -3, r: 10, c: '#facc15'}
+];
+pCan.addEventListener('click', e => {
+  const rect = pCan.getBoundingClientRect();
+  pBalls.push({
+    x: e.clientX - rect.left, y: e.clientY - rect.top,
+    vx: (Math.random() - 0.5) * 7, vy: -4, r: 10,
+    c: ['#00e5ff', '#ff2a85', '#facc15', '#10b981'][pBalls.length % 4]
+  });
+});
+function stepSandbox() {
+  pCtx.fillStyle = 'rgba(6, 10, 18, 0.35)';
+  pCtx.fillRect(0, 0, pCan.width, pCan.height);
+  for (let b of pBalls) {
+    b.vy += 0.18; b.x += b.vx; b.y += b.vy;
+    if (b.x < b.r || b.x > pCan.width - b.r) b.vx *= -0.95;
+    if (b.y > pCan.height - b.r) { b.y = pCan.height - b.r; b.vy *= -0.88; }
+    pCtx.fillStyle = b.c;
+    pCtx.beginPath(); pCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2); pCtx.fill();
+  }
+  requestAnimationFrame(stepSandbox);
+}
+stepSandbox();
 </script>
 </body>
 </html>
