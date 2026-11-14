@@ -1,9 +1,16 @@
 {
   "seed_idx": 0,
   "topics": [
-    "$1,000/Month: S&P 500 vs Bitcoin (Insane)"
+    "$1,000/Month: S&P 500 vs Bitcoin (Insane)",
+    "Invest $10K in 2000: S&P 500 vs Nasdaq"
   ],
   "playlist_id": "",
-  "published_videos": [],
+  "published_videos": [
+    {
+      "video_id": "unrjSI4toro",
+      "title": "Invest $10K in 2000: S&P 500 vs Nasdaq #shorts",
+      "published_at": 1794632883
+    }
+  ],
   "xgb_training_rows": []
 }

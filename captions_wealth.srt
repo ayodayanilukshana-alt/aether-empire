@@ -1,67 +1,119 @@
 1
-00:00:00,097 --> 00:00:02,243
-What happens if you invest $1,000
+00:00:00,097 --> 00:00:03,116
+In 2000 you invest $10,000 into two
 
 2
-00:00:02,255 --> 00:00:03,870
-a month in the S&P 500
+00:00:03,127 --> 00:00:06,229
+separate portfolios the S&P 500 index
 
 3
-00:00:03,882 --> 00:00:06,806
-or Bitcoin We simulate 40 years to
+00:00:06,241 --> 00:00:08,292
+and a concentrated Nasdaq tech basket
 
 4
-00:00:06,792 --> 00:00:09,650
-see the shocking difference You invest
+00:00:08,528 --> 00:00:11,485
+starting from identical dollar amounts Each
 
 5
-00:00:09,661 --> 00:00:14,093
-$1,000 monthly The S&P 500 grows steadily
+00:00:11,497 --> 00:00:13,820
+strategy faces its own volatility path
 
 6
-00:00:14,317 --> 00:00:16,828
-but Bitcoin surges ahead then crashes
+00:00:13,832 --> 00:00:15,601
+through the early 2000s dot com
 
 7
-00:00:17,642 --> 00:00:21,001
-Your portfolio value swings wildly A
+00:00:15,613 --> 00:00:18,170
+era and beyond By the first
 
 8
-00:00:20,987 --> 00:00:24,298
-massive market crash hits Bitcoin drops
+00:00:18,181 --> 00:00:20,646
+major peak the S&P 500 grows
 
 9
-00:00:24,309 --> 00:00:28,649
-80% S&P 500 falls 50% Your
+00:00:20,658 --> 00:00:23,832
+your $10,000 into $14,000 while the
 
 10
-00:00:28,661 --> 00:00:33,967
-$100,000 portfolio becomes $40,000 Panic sets in
+00:00:23,795 --> 00:00:26,802
+Nasdaq tech basket surges to $28,000
 
 11
-00:00:34,897 --> 00:00:37,665
-But you hold The market recovers
+00:00:27,026 --> 00:00:28,924
+nearly doubling the broader market's return
 
 12
-00:00:38,479 --> 00:00:41,946
-Bitcoin rebounds 10x S&P 500 climbs
+00:00:28,936 --> 00:00:31,858
+during that speculative technology bubble The
 
 13
-00:00:41,958 --> 00:00:45,472
-back Your portfolio value surpasses previous
+00:00:31,870 --> 00:00:34,787
+gap widens quickly Then the crash
 
 14
-00:00:45,483 --> 00:00:49,657
-highs After 40 years $1,000 a month
+00:00:34,799 --> 00:00:37,476
+hits the S&P 500 drawdown pulls
 
 15
-00:00:49,669 --> 00:00:55,208
-in S&P 500 becomes $1,450,000 Bitcoin
+00:00:37,488 --> 00:00:40,804
+your $14,000 down to $11,000 but the
 
 16
-00:00:56,010 --> 00:00:59,206
-Over $10 million But would you survive
+00:00:40,766 --> 00:00:43,078
+Nasdaq tech basket collapses far harder
 
 17
-00:00:59,218 --> 00:00:59,866
-the crash
+00:00:43,349 --> 00:00:47,146
+falling from $28,000 to just $9,500
+
+18
+00:00:47,346 --> 00:00:49,330
+now trailing the S&P 500 and
+
+19
+00:00:49,292 --> 00:00:51,997
+testing your conviction Through the long
+
+20
+00:00:52,009 --> 00:00:54,476
+recovery the S&P 500 climbs from
+
+21
+00:00:54,486 --> 00:00:59,476
+$11,000 to $32,000 then to $68,000 while the
+
+22
+00:00:59,439 --> 00:01:04,262
+Nasdaq tech basket rebounds from $9,500 to $85,000
+
+23
+00:01:04,486 --> 00:01:08,035
+then $310,000 as compounding rewards those
+
+24
+00:01:08,047 --> 00:01:11,201
+who held through extreme volatility Final
+
+25
+00:01:11,213 --> 00:01:14,385
+results after 25 years your S&P 500
+
+26
+00:01:14,397 --> 00:01:17,689
+investment ends at $145,000 while the
+
+27
+00:01:17,652 --> 00:01:21,343
+Nasdaq tech basket reaches $920,000 proving
+
+28
+00:01:21,355 --> 00:01:23,501
+that higher volatility can produce dramatically
+
+29
+00:01:23,513 --> 00:01:25,199
+higher terminal wealth if you survive
+
+30
+00:01:25,211 --> 00:01:26,013
+the drawdowns
