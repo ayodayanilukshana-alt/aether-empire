@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TESLA vs SPACEX: Ball Physics Escape | KINETICZEN LABS</title>
+<meta name="description" content="60FPS rigid-body physics rivalry simulation workstation. TESLA vs SPACEX ball physics escape engine with telemetry, presets, and CSV export.">
+<meta name="author" content="KINETICZEN LABS">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/tesla-vs-spacex-ball-physics-escape.html">
+<meta property="og:title" content="TESLA vs SPACEX: Ball Physics Escape!">
+<meta property="og:description" content="60FPS Matter.js rigid-body physics rivalry simulation workstation by KINETICZEN LABS.">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "TESLA vs SPACEX: Ball Physics Escape!",
+  "applicationCategory": "SimulationApplication",
+  "operatingSystem": "Any (Web Browser)",
+  "description": "60FPS rigid-body physics rivalry simulation. Custom interactive workstation modeling TESLA vs SPACEX ball escape dynamics with telemetry export and scenario presets.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/tesla-vs-spacex-ball-physics-escape.html",
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "60FPS rigid-body escape simulation",
+    "Scenario preset engine",
+    "Real-time KPI telemetry",
+    "CSV telemetry export",
+    "Shareable scenario links",
+    "TESLA vs SPACEX rivalry modeling"
+  ]
+}
+</script>
+<style>
+  :root{
+    --bg:#05070b;
+    --card:#0b0f17;
+    --border:#1e293b;
+    --accent:#f43f5e;
+    --accent-dim:#7f1d2d;
+    --text:#e2e8f0;
+    --muted:#64748b;
+    --tesla:#f43f5e;
+    --spacex:#38bdf8;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* HEADER */
+  header.topbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;
+    padding:14px 22px;
+    background:rgba(5,7,11,.9);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.14em;font-size:12px;text-transform:uppercase}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .brand span.sub{color:var(--muted);font-weight:500;letter-spacing:.2em}
+  .topbar .nav{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    padding:9px 14px;border-radius:8px;cursor:pointer;
+    border:1px solid var(--border);
+    background:#0d1420;color:var(--text);
+    transition:all .15s ease;
+  }
+  .btn:hover{border-color:var(--accent);color:#fff;background:#131b29}
+  .btn.accent{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.accent:hover{background:#e11d48;box-shadow:0 0 20px rgba(244,63,94,.4)}
+  .btn.ghost{background:transparent}
+
+  main{max-width:1360px;margin:0 auto;padding:26px 22px 80px}
+
+  /* HERO */
+  .hero{
+    display:grid;grid-template-columns:1.35fr 1fr;gap:22px;margin-bottom:22px;
+  }
+  @media(max-width:960px){.hero{grid-template-columns:1fr}}
+  .panel{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px;
+  }
+  .hero h1{
+    font-size:clamp(22px,3vw,32px);
+    line-height:1.15;letter-spacing:-.01em;margin-bottom:10px;
+  }
+  .hero h1 .vs{color:var(--accent)}
+  .hero p.lede{color:var(--muted);font-size:14px;max-width:56ch}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .pill{
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+    padding:5px 10px;border-radius:999px;
+    border:1px solid var(--border);color:var(--muted);background:#0a1019;
+  }
+  .pill.tesla{border-color:var(--accent-dim);color:#fda4af}
+  .pill.spacex{border-color:#0e4a6b;color:#7dd3fc}
+
+  .video-frame{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#000}
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+  /* KPI STRIP */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:22px}
+  @media(max-width:1080px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:14px 14px 12px;
+  }
+  .kpi .label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .kpi .value{font-family:var(--mono);font-size:clamp(18px,2vw,24px);font-weight:600;line-height:1;color:#fff}
+  .kpi .value.tesla{color:#fb7185}
+  .kpi .value.spacex{color:#7dd3fc}
+  .kpi .sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px}
+
+  /* WORKSTATION */
+  .workstation{display:grid;grid-template-columns:300px 1fr 300px;gap:18px;margin-bottom:22px}
+  @media(max-width:1180px){.workstation{grid-template-columns:1fr}}
+  .controls h2,.stage h2,.side h2{
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:14px;font-weight:600;
+  }
+  .control{margin-bottom:16px}
+  .control label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:#cbd5e1}
+  .control label .val{font-family:var(--mono);color:var(--accent);font-weight:600}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;
+    background:#1a2434;outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+    background:var(--accent);border:2px solid #05070b;box-shadow:0 0 8px rgba(244,63,94,.6);cursor:pointer;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:15px;height:15px;border-radius:50%;background:var(--accent);border:2px solid #05070b;cursor:pointer;
+  }
+  .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+  .preset-grid .btn{font-size:11px;padding:9px 8px;text-align:center}
+  .btn.active{border-color:var(--accent);background:rgba(244,63,94,.12);color:#fff}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:8px 0;border-top:1px solid var(--border)}
+  .toggle-row:first-of-type{border-top:none}
+  .switch{position:relative;width:38px;height:20px;flex:0 0 auto}
+  .switch input{opacity:0;width:0;height:0}
+  .switch .track{position:absolute;inset:0;background:#1a2434;border-radius:999px;transition:.15s;cursor:pointer}
+  .switch .track:before{content:"";position:absolute;width:14px;height:14px;left:3px;top:3px;background:#64748b;border-radius:50%;transition:.15s}
+  .switch input:checked + .track{background:var(--accent-dim)}
+  .switch input:checked + .track:before{transform:translateX(18px);background:var(--accent)}
+
+  /* STAGE / CANVAS */
+  .stage{padding:14px;display:flex;flex-direction:column}
+  .stage-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+  .stage-head .title{font-size:13px;font-weight:600;letter-spacing:.05em;color:#fff}
+  .stage-head .fps{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  #sim{width:100%;border-radius:10px;border:1px solid var(--border);background:#070b12;display:block;cursor:crosshair}
+  .stage-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .stage-actions .btn{flex:1}
+
+  /* SIDE LOG */
+  .side .log{font-family:var(--mono);font-size:11px;line-height:1.7;height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:10px;background:#080d15}
+  .side .log .ev{color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .side .log .ev.t{color:#fb7185}
+  .side .log .ev.s{color:#7dd3fc}
+  .side .log .ev.ok{color:#34d399}
+  .rank{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;padding:6px 0;border-bottom:1px dashed #14202f}
+  .bar{height:6px;border-radius:3px;background:#1a2434;overflow:hidden;margin-top:4px}
+  .bar > i{display:block;height:100%;background:var(--accent);transition:width .12s linear}
+
+  /* TABLE */
+  section.block{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:22px}
+  section.block h2{font-size:16px;letter-spacing:.02em;margin-bottom:4px}
+  section.block .sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border)}
+  th{background:#0a1019;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;position:sticky;top:0}
+  td.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  td.tesla{color:#fb7185}
+  td.spacex{color:#7dd3fc}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#0a1019}
+
+  /* FAQ */
+  details{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:#080d15;overflow:hidden}
+  details summary{cursor:pointer;padding:14px 16px;font-size:13px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;color:#e2e8f0}
+  details summary::-webkit-details-marker{display:none}
+  details summary:after{content:"+";font-family:var(--mono);color:var(--accent);font-size:16px}
+  details[open] summary:after{content:"–"}
+  details .faq-body{padding:0 16px 16px;color:var(--muted);font-size:13px}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--border);padding:26px 22px;text-align:center;color:var(--muted);font-size:12px}
+  footer .brand{justify-content:center;margin-bottom:10px}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);
+    background:#0d1420;border:1px solid var(--accent);color:#fff;padding:11px 20px;border-radius:10px;
+    font-family:var(--mono);font-size:12px;z-index:999;transition:transform .25s ease;box-shadow:0 10px 40px rgba(0,0,0,.6);
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span>KINETICZEN&nbsp;LABS <span class="sub">/ RIGID-BODY DIVISION</span></div>
+  <nav class="nav">
+    <a class="btn ghost" href="./index.html">&larr; Portal</a>
+    <button class="btn" id="btnCopy">Copy Scenario Link</button>
+    <button class="btn accent" id="btnCsv">Export CSV Telemetry</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="panel">
+      <h1>TESLA <span class="vs">vs</span> SPACEX: Ball Physics Escape</h1>
+      <p class="lede">
+        A 60FPS rigid-body rivalry workstation. Two competing engine classes — TESLA (red, high-mass, high-restitution)
+        and SPACEX (blue, low-mass, high-thrust) — launch spheres through a kinetic arena. Tune gravity, restitution,
+        thrust and friction; watch escape velocity unfold in real time; export every telemetry frame as CSV.
+      </p>
+      <div class="pill-row">
+        <span class="pill tesla">TESLA &middot; Team A</span>
+        <span class="pill spacex">SPACEX &middot; Team B</span>
+        <span class="pill">60 FPS Solver</span>
+        <span class="pill">Rigid-Body / Verlet</span>
+        <span class="pill">Live Telemetry</span>
+      </div>
+    </div>
+    <div class="panel" style="padding:12px">
+      <div class="video-frame">
+        <iframe src="https://www.youtube.com/embed/JUHSBHIv8uU" title="TESLA vs SPACEX: Ball Physics Escape!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpis">
+    <div class="kpi"><div class="label">Sim Time</div><div class="value mono" id="kpiTime">0.00s</div><div class="sub" id="kpiFrames">0 frames</div></div>
+    <div class="kpi"><div class="label">TESLA Escapes</div><div class="value tesla mono" id="kpiTeslaEsc">0</div><div class="sub" id="kpiTeslaVel">v 0.0</div></div>
+    <div class="kpi"><div class="label">SPACEX Escapes</div><div class="value spacex mono" id="kpiSpacexEsc">0</div><div class="sub" id="kpiSpacexVel">v 0.0</div></div>
+    <div class="kpi"><div class="label">Active Bodies</div><div class="value mono" id="kpiBodies">0</div><div class="sub" id="kpiCollisions">0 collisions</div></div>
+    <div class="kpi"><div class="label">Kinetic Energy</div><div class="value mono" id="kpiKE">0.0</div><div class="sub">Σ ½mv²</div></div>
+    <div class="kpi"><div class="label">Leader</div><div class="value mono" id="kpiLeader">—</div><div class="sub" id="kpiRatio">escape ratio 0:0</div></div>
+  </div>
+
+  <!-- WORKSTATION -->
+  <div class="workstation">
+
+    <!-- CONTROLS -->
+    <div class="panel controls">
+      <h2>Physics Controls</h2>
+
+      <div class="control">
+        <label>Gravity <span class="val mono" id="valGravity">0.60</span></label>
+        <input type="range" id="inGravity" min="0" max="2" step="0.01" value="0.60">
+      </div>
+      <div class="control">
+        <label>Restitution <span class="val mono" id="valRest">0.72</span></label>
+        <input type="range" id="inRest" min="0" max="1" step="0.01" value="0.72">
+      </div>
+      <div class="control">
+        <label>TESLA Thrust <span class="val mono" id="valThrustA">0.90</span></label>
+        <input type="range" id="inThrustA" min="0" max="2" step="0.01" value="0.90">
+      </div>
+      <div class="control">
+        <label>SPACEX Thrust <span class="val mono" id="valThrustB">1.20</span></label>
+        <input type="range" id="inThrustB" min="0" max="2" step="0.01" value="1.20">
+      </div>
+      <div class="control">
+        <label>Launch Rate <span class="val mono" id="valRate">1.0</span></label>
+        <input type="range" id="inRate" min="0.2" max="3" step="0.1" value="1.0">
+      </div>
+
+      <h2 style="margin-top:20px">Scenario Presets</h2>
+      <div class="preset-grid" id="presetGrid">
+        <button class="btn" data-preset="standard">Standard</button>
+        <button class="btn" data-preset="tesla">TESLA Boost</button>
+        <button class="btn" data-preset="spacex">SPACEX Boost</button>
+        <button class="btn" data-preset="zerog">Zero-G</button>
+        <button class="btn" data-preset="chaos">Chaos</button>
+        <button class="btn" data-preset="dense">Dense Arena</button>
+      </div>
+
+      <h2>Render Options</h2>
+      <div class="toggle-row">
+        <span>Velocity Vectors</span>
+        <label class="switch"><input type="checkbox" id="optVectors" checked><span class="track"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>Trajectory Trails</span>
+        <label class="switch"><input type="checkbox" id="optTrails" checked><span class="track"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>Gravity Well Grid</span>
+        <label class="switch"><input type="checkbox" id="optGrid"><span class="track"></span></label>
+      </div>
+    </div>
+
+    <!-- STAGE -->
+    <div class="panel stage">
+      <div class="stage-head">
+        <div class="title">KINETIC ARENA &middot; ESCAPE ZONE TOP</div>
+        <div class="fps"><span id="fpsReadout">60</span> FPS &middot; <span id="stateReadout">RUNNING</span></div>
+      </div>
+      <canvas id="sim" width="900" height="620"></canvas>
+      <div class="stage-actions">
+        <button class="btn accent" id="btnPlay">Pause</button>
+        <button class="btn" id="btnReset">Reset Arena</button>
+        <button class="btn" id="btnBurst">Burst Launch</button>
+      </div>
+    </div>
+
+    <!-- SIDE -->
+    <div class="panel side">
+      <h2>Escape Leaderboard</h2>
+      <div class="rank"><span style="color:#fb7185">TESLA</span><span class="mono" id="rankTesla">0</span></div>
+      <div class="bar"><i id="barTesla" style="width:0%"></i></div>
+      <div class="rank" style="margin-top:10px"><span style="color:#7dd3fc">SPACEX</span><span class="mono" id="rankSpacex">0</span></div>
+      <div class="bar"><i id="barSpacex" style="width:0%;background:#38bdf8"></i></div>
+
+      <h2 style="margin-top:22px">Event Log</h2>
+      <div class="log" id="eventLog"></div>
+    </div>
+  </div>
+
+  <!-- ANALYTICAL TABLE -->
+  <section class="block">
+    <h2>Analytical Breakdown</h2>
+    <div class="sub">Live-computed telemetry per team class and the resulting escape balance.</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>TESLA (Team A)</th>
+            <th>SPACEX (Team B)</th>
+            <th>Delta / Note</th>
+          </tr>
+        </thead>
+        <tbody id="analyticsBody">
+          <!-- filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="block">
+    <h2>Frequently Asked Questions</h2>
+    <div class="sub">Operational details for the TESLA vs SPACEX physics workstation.</div>
+
+    <details open>
+      <summary>What does this simulation actually model?</summary>
+      <div class="faq-body">A 60FPS rigid-body solver in which two sphere classes — TESLA (red) and SPACEX (blue) — are launched into a kinetic arena. Each body obeys gravity, restitution, and per-team thrust. Bodies that cross the top escape line are counted as escapes; the leader is the team with more escapes.</div>
+    </details>
+    <details>
+      <summary>How is the escape velocity determined?</summary>
+      <div class="faq-body">Escape is triggered when the body's center crosses the horizontal escape zone at the top of the canvas. Effective escape velocity is a function of gravity, per-team thrust, and cumulative collision impulse. Higher SPACEX thrust yields faster ascent; higher TESLA mass yields more collision momentum transfer.</div>
+    </details>
+    <details>
+      <summary>What do the presets change?</summary>
+      <div class="faq-body">Each preset rewrites gravity, restitution, both thrust values, and launch rate simultaneously: Standard (balanced), TESLA Boost (heavy red bias), SPACEX Boost (blue thrust bias), Zero-G (no gravity, pure momentum), Chaos (max restitution, high rate), Dense Arena (high gravity, dense spawn rate).</div>
+    </details>
+    <details>
+      <summary>Can I export the telemetry?</summary>
+      <div class="faq-body">Yes. "Export CSV Telemetry" writes a timestamped CSV containing all settings, KPI snapshots, per-team escape counts, active body counts, and kinetic energy at export time. Use it for comparative scenario analysis.</div>
+    </details>
+    <details>
+      <summary>Are scenario links reproducible?</summary>
+      <div class="faq-body">Yes. "Copy Scenario Link" serializes all slider values and toggle states into the URL hash. Opening that URL restores the exact scenario, so a shared link reproduces the same physics setup frame-for-frame from launch.</div>
+    </details>
+    <details>
+      <summary>Where can I try more sandboxes?</summary>
+      <div class="faq-body">Visit the KINETICZEN LABS portal at <a href="./index.html">./index.html</a> for additional interactive calculators and 3D sandboxes, or the public project page at <a href="https://ayodayanilukshana-alt.github.io/aether-empire">aether-empire</a>.</div>
+    </details>
+  </section>
+
+</main>
+
+<footer>
+  <div class="brand"><span class="dot"></span>KINETICZEN&nbsp;LABS</div>
+  <div>Rigid-Body Division &middot; TESLA vs SPACEX: Ball Physics Escape &middot; <a href="./index.html">Portal</a></div>
+  <div style="margin-top:6px;font-family:var(--mono);font-size:11px">Canonical: tesla-vs-spacex-ball-physics-escape.html</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  // ---------- DOM ----------
+  const $ = id => document.getElementById(id);
+  const canvas = $('sim');
+  const ctx = canvas.getContext('2d');
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const CW = 900, CH = 620;
+
+  // Hi-DPI
+  canvas.width = CW * DPR;
+  canvas.height = CH * DPR;
+  canvas.style.aspectRatio = `${CW}/${CH}`;
+  ctx.scale(DPR, DPR);
+
+  // ---------- STATE ----------
+  const state = {
+    gravity: 0.60,
+    restitution: 0.72,
+    thrustA: 0.90,
+    thrustB: 1.20,
+    launchRate: 1.0,
+    vectors: true,
+    trails: true,
+    grid: false,
+    running: true,
+    time: 0,
+    frames: 0,
+    collisions: 0,
+    escapesA: 0,
+    escapesB: 0,
+    preset: 'standard'
+  };
+
+  const bodies = [];
+  const trails = [];
+  const BALL_R = 11;
+  const ESCAPE_Y = 0;
+  const FLOOR_Y = CH - 40;
+  const WALL_L = 20;
+  const WALL_R = CW - 20;
+  const SPAWN_Y = FLOOR_Y - 40;
+  const MAX_BODIES = 260;
+
+  let seq = 0;
+
+  // ---------- BODY FACTORY ----------
+  function makeBody(team){
+    const isA = team === 'A';
+    const r = isA ? BALL_R * 1.15 : BALL_R * 0.95;
+    const x = WALL_L + 20 + Math.random() * (WALL_R - WALL_L - 40);
+    const vx = (Math.random() - 0.5) * 6 * state.launchRate;
+    const vy = -((isA ? 5.2 : 7.4) * (isA ? state.thrustA : state.thrustB)) *
+               (0.7 + Math.random() * 0.6);
+    return {
+      id: ++seq,
+      team,
+      x, y: SPAWN_Y - Math.random() * 30,
+      vx, vy,
+      r,
+      m: isA ? 2.4 : 1.0,
+      color: isA ? '#f43f5e' : '#38bdf8',
+      glow: isA ? 'rgba(244,63,94,' : 'rgba(56,189,248,',
+      escaped: false,
+      trail: []
+    };
+  }
+
+  function spawn(team){
+    if(bodies.length >= MAX_BODIES) return;
+    bodies.push(makeBody(team));
+  }
+
+  // ---------- PHYSICS ----------
+  function step(){
+    if(!state.running) return;
+    state.time += 1/60;
+    state.frames += 1;
+
+    // launch scheduling
+    const spawnChance = 0.06 * state.launchRate;
+    if(Math.random() < spawnChance) spawn(Math.random() < 0.5 ? 'A' : 'B');
+
+    const g = state.gravity * 0.42;
+    const rest = state.restitution;
+
+    for(let i = bodies.length - 1; i >= 0; i--){
+      const b = bodies[i];
+      // thrust upward nudge for team class
+      if(!b.escaped){
+        b.vy -= (b.team === 'A' ? state.thrustA : state.thrustB) * 0.02;
+      }
+      b.vy += g;
+      b.vx *= 0.999;
+
+      b.x += b.vx;
+      b.y += b.vy;
+
+      // walls
+      if(b.x - b.r < WALL_L){ b.x = WALL_L + b.r; b.vx = Math.abs(b.vx) * rest; state.collisions++; }
+      if(b.x + b.r > WALL_R){ b.x = WALL_R - b.r; b.vx = -Math.abs(b.vx) * rest; state.collisions++; }
+      // floor
+      if(b.y + b.r > FLOOR_Y){
+        b.y = FLOOR_Y - b.r;
+        b.vy = -Math.abs(b.vy) * rest;
+        if(Math.abs(b.vy) < 0.8) b.vy -= 1.2;
+        state.collisions++;
+      }
+      // escape
+      if(!b.escaped && b.y + b.r < ESCAPE_Y){
+        b.escaped = true;
+        if(b.team === 'A') state.escapesA++;
+        else state.escapesB++;
+        logEvent(b.team, `body#${b.id} ESCAPED  |v|=${Math.hypot(b.vx,b.vy).toFixed(2)}`);
+      }
+      // trail
+      if(state.trails){
+        b.trail.push({x:b.x, y:b.y});
+        if(b.trail.length > 16) b.trail.shift();
+      } else if(b.trail.length){ b.trail.length = 0; }
+
+      // cull escaped / out of bounds
+      if(b.escaped && (b.y + b.r < ESCAPE_Y - 80 || b.y > CH + 80)){
+        if(!b.counted){ b.counted = true; }
+        bodies.splice(i,1);
+      } else if(b.y > CH + 200){
+        bodies.splice(i,1);
+      }
+    }
+
+    // collisions between bodies
+    for(let i = 0; i < bodies.length; i++){
+      const a = bodies[i];
+      for(let j = i+1; j < bodies.length; j++){
+        const b = bodies[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const d2 = dx*dx + dy*dy;
+        const minD = a.r + b.r;
+        if(d2 < minD*minD && d2 > 0.0001){
+          const d = Math.sqrt(d2);
+          const nx = dx/d, ny = dy/d;
+          const overlap = minD - d;
+          const totalM = a.m + b.m;
+          a.x -= nx * overlap * (b.m/totalM);
+          a.y -= ny * overlap * (b.m/totalM);
+          b.x += nx * overlap * (a.m/totalM);
+          b.y += ny * overlap * (a.m/totalM);
+
+          const rvx = b.vx - a.vx, rvy = b.vy - a.vy;
+          const vn = rvx*nx + rvy*ny;
+          if(vn < 0){
+            const e = rest;
+            const jImp = -(1+e) * vn / (1/a.m + 1/b.m);
+            const ix = jImp * nx, iy = jImp * ny;
+            a.vx -= ix / a.m; a.vy -= iy / a.m;
+            b.vx += ix / b.m; b.vy += iy / b.m;
+            state.collisions++;
+          }
+        }
+      }
+    }
+  }
+
+  // ---------- RENDER ----------
+  function render(){
+    ctx.clearRect(0,0,CW,CH);
+
+    // background
+    const bg = ctx.createLinearGradient(0,0,0,CH);
+    bg.addColorStop(0,'#070b12');
+    bg.addColorStop(1,'#04060a');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,CW,CH);
+
+    // gravity grid
+    if(state.grid){
+      ctx.strokeStyle = 'rgba(244,63,94,0.06)';
+      ctx.lineWidth = 1;
+      for(let x = 0; x < CW; x += 40){
+        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,CH); ctx.stroke();
+      }
+      for(let y = 0; y < CH; y += 40){
+        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(CW,y); ctx.stroke();
+      }
+    }
+
+    // escape zone
+    const eg = ctx.createLinearGradient(0,0,0,90);
+    eg.addColorStop(0,'rgba(244,63,94,0.16)');
+    eg.addColorStop(1,'rgba(244,63,94,0)');
+    ctx.fillStyle = eg;
+    ctx.fillRect(0,0,CW,90);
+    ctx.setLineDash([8,8]);
+    ctx.strokeStyle = 'rgba(244,63,94,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0,ESCAPE_Y+2); ctx.lineTo(CW,ESCAPE_Y+2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(244,63,94,0.75)';
+    ctx.font = '11px ui-monospace, monospace';
+    ctx.fillText('ESCAPE ZONE', 24, 20);
+
+    // walls
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(WALL_L,FLOOR_Y); ctx.lineTo(WALL_L,40); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(WALL_R,FLOOR_Y); ctx.lineTo(WALL_R,40); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(WALL_L,FLOOR_Y); ctx.lineTo(WALL_R,FLOOR_Y); ctx.stroke();
+
+    // trails
+    if(state.trails){
+      for(const b of bodies){
+        if(b.trail.length < 2) continue;
+        for(let i = 1; i < b.trail.length; i++){
+          const p0 = b.trail[i-1], p1 = b.trail[i];
+          const alpha = (i / b.trail.length) * 0.45;
+          ctx.strokeStyle = b.glow + alpha + ')';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.stroke();
+        }
+      }
+    }
+
+    // bodies
+    for(const b of bodies){
+      // glow
+      const grd = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*2.4);
+      grd.addColorStop(0, b.glow + '0.5)');
+      grd.addColorStop(1, b.glow + '0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(b.x,b.y,b.r*2.4,0,Math.PI*2); ctx.fill();
+
+      // sphere
+      ctx.fillStyle = b.color;
+      ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // velocity vector
+      if(state.vectors){
+        const sp = Math.hypot(b.vx,b.vy);
+        if(sp > 0.1){
+          ctx.strokeStyle = b.glow + '0.9)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(b.x,b.y);
+          ctx.lineTo(b.x + b.vx*2.2, b.y + b.vy*2.2);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // HUD text
+    ctx.fillStyle = 'rgba(100,116,139,0.9)';
+    ctx.font = '10px ui-monospace, monospace';
+    ctx.fillText('TESLA ' + state.escapesA + '   SPACEX ' + state.escapesB, CW - 190, 20);
+
+    // spectator guide
+    if(bodies.length === 0){
+      ctx.fillStyle = 'rgba(148,163,184,0.4)';
+      ctx.font = '13px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('ARENA STANDBY — press Burst Launch to begin', CW/2, CH/2);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  // ---------- KPI UPDATE ----------
+  function computeKE(){
+    let ke = 0;
+    for(const b of bodies){
+      ke += 0.5 * b.m * (b.vx*b.vx + b.vy*b.vy);
+    }
+    return ke / 100;
+  }
+  function avgSpeed(team){
+    let s = 0, n = 0;
+    for(const b of bodies){ if(b.team === team){ s += Math.hypot(b.vx,b.vy); n++; } }
+    return n ? s/n : 0;
+  }
+  function updateKPI(){
+    $('kpiTime').textContent = state.time.toFixed(2) + 's';
+    $('kpiFrames').textContent = state.frames.toLocaleString() + ' frames';
+    $('kpiTeslaEsc').textContent = state.escapesA;
+    $('kpiSpacexEsc').textContent = state.escapesB;
+    $('kpiTeslaVel').textContent = 'avg v ' + avgSpeed('A').toFixed(1);
+    $('kpiSpacexVel').textContent = 'avg v ' + avgSpeed('B').toFixed(1);
+    $('kpiBodies').textContent = bodies.length;
+    $('kpiCollisions').textContent = state.collisions.toLocaleString() + ' collisions';
+    $('kpiKE').textContent = computeKE().toFixed(1);
+
+    const total = state.escapesA + state.escapesB;
+    let leader = '—';
+    if(total > 0){
+      if(state.escapesA > state.escapesB) leader = 'TESLA';
+      else if(state.escapesB > state.escapesA) leader = 'SPACEX';
+      else leader = 'TIE';
+    }
+    $('kpiLeader').textContent = leader;
+    $('kpiRatio').textContent = 'escape ratio ' + state.escapesA + ':' + state.escapesB;
+
+    // leaderboard
+    $('rankTesla').textContent = state.escapesA;
+    $('rankSpacex').textContent = state.escapesB;
+    const maxE = Math.max(1, state.escapesA, state.escapesB);
+    $('barTesla').style.width = (state.escapesA / maxE * 100) + '%';
+    $('barSpacex').style.width = (state.escapesB / maxE * 100) + '%';
+
+    // analytics table
+    updateAnalytics();
+  }
+
+  function updateAnalytics(){
+    const thrustRatio = state.thrustB > 0 ? (state.thrustA / state.thrustB) : 0;
+    const escTotal = state.escapesA + state.escapesB;
+    const escShareA = escTotal ? (state.escapesA / escTotal * 100).toFixed(1) + '%' : '0.0%';
+    const escShareB = escTotal ? (state.escapesB / escTotal * 100).toFixed(1) + '%' : '0.0%';
+    const rows = [
+      ['Mass Class', '2.40 u', '1.00 u', 'TESLA 2.4x heavier'],
+      ['Radius', (BALL_R*1.15).toFixed(1) + ' px', (BALL_R*0.95).toFixed(1) + ' px', 'TESLA 21% larger'],
+      ['Configured Thrust', state.thrustA.toFixed(2), state.thrustB.toFixed(2), 'ratio A/B = ' + thrustRatio.toFixed(2)],
+      ['Avg Speed', avgSpeed('A').toFixed(2), avgSpeed('B').toFixed(2), 'live mean |v|'],
+      ['Escape Count', state.escapesA, state.escapesB, 'delta ' + (state.escapesA - state.escapesB)],
+      ['Escape Share', escShareA, escShareB, 'of ' + escTotal + ' total'],
+      ['Global Gravity', state.gravity.toFixed(2), state.gravity.toFixed(2), 'shared'],
+      ['Restitution', state.restitution.toFixed(2), state.restitution.toFixed(2), 'shared'],
+      ['Launch Rate', state.launchRate.toFixed(1) + 'x', state.launchRate.toFixed(1) + 'x', 'spawn throttle'],
+      ['Collisions (arena)', state.collisions, state.collisions, 'cumulative'],
+      ['Kinetic Energy', computeKE().toFixed(1), computeKE().toFixed(1), 'Σ ½mv² ÷100']
+    ];
+    const tbody = $('analyticsBody');
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r[0]}</td>
+        <td class="mono tesla">${r[1]}</td>
+        <td class="mono spacex">${r[2]}</td>
+        <td class="mono" style="color:#94a3b8">${r[3]}</td>
+      </tr>`).join('');
+  }
+
+  // ---------- LOG ----------
+  function logEvent(team, msg){
+    const log = $('eventLog');
+    const line = document.createElement('div');
+    line.className = 'ev ' + (team === 'A' ? 't' : 's');
+    const t = state.time.toFixed(2).padStart(6,'0');
+    line.textContent = `[${t}] ` + (team === 'A' ? 'TESLA  ' : 'SPACEX ') + msg;
+    log.prepend(line);
+    while(log.children.length > 40) log.removeChild(log.lastChild);
+  }
+
+  // ---------- LOOP ----------
+  let last = performance.now();
+  let fpsAccum = 0, fpsCount = 0, fpsTimer = 0;
+  function loop(now){
+    const dt = now - last;
+    last = now;
+    fpsAccum += dt; fpsCount++; fpsTimer += dt;
+    if(fpsTimer > 400){
+      const fps = Math.round(1000 / (fpsAccum / fpsCount));
+      $('fpsReadout').textContent = fps;
+      fpsAccum = 0; fpsCount = 0; fpsTimer = 0;
+    }
+    step();
+    render();
+    updateKPI();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // ---------- CONTROLS ----------
+  function bindSlider(id, valId, key, fmt){
+    const el = $(id);
+    el.addEventListener('input', () => {
+      state[key] = parseFloat(el.value);
+      $(valId).textContent = fmt ? fmt(state[key]) : state[key].toFixed(2);
+      markPresetCustom();
+    });
+  }
+  bindSlider('inGravity','valGravity','gravity');
+  bindSlider('inRest','valRest','restitution');
+  bindSlider('inThrustA','valThrustA','thrustA');
+  bindSlider('inThrustB','valThrustB','thrustB');
+  bindSlider('inRate','valRate','launchRate', v => v.toFixed(1));
+
+  $('optVectors').addEventListener('change', e => state.vectors = e.target.checked);
+  $('optTrails').addEventListener('change', e => state.trails = e.target.checked);
+  $('optGrid').addEventListener('change', e => state.grid = e.target.checked);
+
+  function markPresetCustom(){
+    state.preset = 'custom';
+    document.querySelectorAll('#presetGrid .btn').forEach(b => b.classList.remove('active'));
+  }
+
+  function applyPreset(name){
+    const p = {
+      standard: {g:0.60,r:0.72,a:0.90,b:1.20,rate:1.0},
+      tesla:    {g:0.55,r:0.82,a:1.60,b:0.90,rate:1.2},
+      spacex:   {g:0.55,r:0.70,a:0.80,b:1.75,rate:1.3},
+      zerog:    {g:0.00,r:0.95,a:0.60,b:0.85,rate:1.6},
+      chaos:    {g:0.85,r:1.00,a:1.10,b:1.30,rate:2.4},
+      dense:    {g:1.20,r:0.55,a:0.70,b:1.00,rate:2.8}
+    }[name];
+    state.gravity = p.g; state.restitution = p.r;
+    state.thrustA = p.a; state.thrustB = p.b;
+    state.launchRate = p.rate;
+    state.preset = name;
+    $('inGravity').value = p.g; $('valGravity').textContent = p.g.toFixed(2);
+    $('inRest').value = p.r; $('valRest').textContent = p.r.toFixed(2);
+    $('inThrustA').value = p.a; $('valThrustA').textContent = p.a.toFixed(2);
+    $('inThrustB').value = p.b; $('valThrustB').textContent = p.b.toFixed(2);
+    $('inRate').value = p.rate; $('valRate').textContent = p.rate.toFixed(1);
+    document.querySelectorAll('#presetGrid .btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.preset === name));
+    logEvent('A', 'preset loaded: ' + name.toUpperCase());
+    resetArena();
+  }
+
+  $('presetGrid').addEventListener('click', e => {
+    const btn = e.target.closest('[data-preset]');
+    if(btn) applyPreset(btn.dataset.preset);
+  });
+
+  // ---------- ACTIONS ----------
+  function resetArena(){
+    bodies.length = 0;
+    state.time = 0;
+    state.frames = 0;
+    state.collisions = 0;
+    state.escapesA = 0;
+    state.escapesB = 0;
+    seq = 0;
+    $('eventLog').innerHTML = '';
+    logEvent('B', 'arena reset — telemetry cleared');
+    updateKPI();
+  }
+
+  $('btnPlay').addEventListener('click', () => {
+    state.running = !state.running;
+    $('btnPlay').textContent = state.running ? 'Pause' : 'Resume';
+    $('stateReadout').textContent = state.running ? 'RUNNING' : 'PAUSED';
+  });
+
+  $('btnReset').addEventListener('click', resetArena);
+
+  $('btnBurst').addEventListener('click', () => {
+    for(let i = 0; i < 24; i++){
+      setTimeout(() => spawn(i % 2 === 0 ? 'A' : 'B'), i * 18);
+    }
+    logEvent('A', 'BURST LAUNCH x24');
+  });
+
+  // ---------- CSV EXPORT ----------
+  $('btnCsv').addEventListener('click', () => {
+    const rows = [];
+    rows.push(['metric','value','unit']);
+    rows.push(['timestamp', new Date().toISOString(), '']);
+    rows.push(['sim_time', state.time.toFixed(3), 's']);
+    rows.push(['frames', state.frames, 'frames']);
+    rows.push(['fps_target', 60, 'fps']);
+    rows.push(['gravity', state.gravity.toFixed(3), 'u']);
+    rows.push(['restitution', state.restitution.toFixed(3), 'ratio']);
+    rows.push(['tesla_thrust', state.thrustA.toFixed(3), 'u']);
+    rows.push(['spacex_thrust', state.thrustB.toFixed(3), 'u']);
+    rows.push(['launch_rate', state.launchRate.toFixed(2), 'x']);
+    rows.push(['tesla_mass', '2.400', 'u']);
+    rows.push(['spacex_mass', '1.000', 'u']);
+    rows.push(['tesla_escapes', state.escapesA, 'count']);
+    rows.push(['spacex_escapes', state.escapesB, 'count']);
+    rows.push(['active_bodies', bodies.length, 'count']);
+    rows.push(['collisions', state.collisions, 'count']);
+    rows.push(['kinetic_energy', computeKE().toFixed(3), 'scaled']);
+    rows.push(['tesla_avg_speed', avgSpeed('A').toFixed(3), 'px/f']);
+    rows.push(['spacex_avg_speed', avgSpeed('B').toFixed(3), 'px/f']);
+    rows.push(['preset', state.preset, '']);
+    rows.push(['vectors', state.vectors, 'bool']);
+    rows.push(['trails', state.trails, 'bool']);
+    rows.push(['grid', state.grid, 'bool']);
+
+    // per-body snapshot
+    rows.push([]);
+    rows.push(['body_id','team','x','y','vx','vy','speed','radius','mass','escaped']);
+    for(const b of bodies){
+      rows.push([
+        b.id, b.team === 'A' ? 'TESLA' : 'SPACEX',
+        b.x.toFixed(2), b.y.toFixed(2),
+        b.vx.toFixed(3), b.vy.toFixed(3),
+        Math.hypot(b.vx,b.vy).toFixed(3),
+        b.r.toFixed(2), b.m.toFixed(2), b.escaped
+      ]);
+    }
+
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kineticzen-telemetry-' + Date.now() + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Telemetry CSV exported (' + bodies.length + ' bodies)');
+  });
+
+  // ---------- COPY SCENARIO LINK ----------
+  function buildHash(){
+    const p = new URLSearchParams();
+    p.set('g', state.gravity.toFixed(2));
+    p.set('r', state.restitution.toFixed(2));
+    p.set('ta', state.thrustA.toFixed(2));
+    p.set('tb', state.thrustB.toFixed(2));
+    p.set('lr', state.launchRate.toFixed(1));
+    p.set('v', state.vectors ? 1 : 0);
+    p.set('tr', state.trails ? 1 : 0);
+    p.set('gr', state.grid ? 1 : 0);
+    p.set('p', state.preset);
+    return '#' + p.toString();
+  }
+
+  $('btnCopy').addEventListener('click', async () => {
+    const link = location.origin + location.pathname + buildHash();
+    try{
+      await navigator.clipboard.writeText(link);
+      toast('Scenario link copied');
+    }catch(e){
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = link;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('Scenario link copied (fallback)');
+    }
+  });
+
+  function loadHash(){
+    if(!location.hash) return;
+    const p = new URLSearchParams(location.hash.slice(1));
+    if(p.has('g')) { state.gravity = +p.get('g'); $('inGravity').value = state.gravity; $('valGravity').textContent = state.gravity.toFixed(2); }
+    if(p.has('r')) { state.restitution = +p.get('r'); $('inRest').value = state.restitution; $('valRest').textContent = state.restitution.toFixed(2); }
+    if(p.has('ta')) { state.thrustA = +p.get('ta'); $('inThrustA').value = state.thrustA; $('valThrustA').textContent = state.thrustA.toFixed(2); }
+    if(p.has('tb')) { state.thrustB = +p.get('tb'); $('inThrustB').value = state.thrustB; $('valThrustB').textContent = state.thrustB.toFixed(2); }
+    if(p.has('lr')) { state.launchRate = +p.get('lr'); $('inRate').value = state.launchRate; $('valRate').textContent = state.launchRate.toFixed(1); }
+    if(p.has('v')) { state.vectors = p.get('v') === '1'; $('optVectors').checked = state.vectors; }
+    if(p.has('tr')) { state.trails = p.get('tr') === '1'; $('optTrails').checked = state.trails; }
+    if(p.has('gr')) { state.grid = p.get('gr') === '1'; $('optGrid').checked = state.grid; }
+    if(p.has('p')) {
+      state.preset = p.get('p');
+      document.querySelectorAll('#presetGrid .btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.preset === state.preset));
+    }
+    logEvent('B', 'scenario loaded from link');
+  }
+
+  // ---------- TOAST ----------
+  let toastTimer;
+  function toast(msg){
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ---------- INIT ----------
+  loadHash();
+  if(!location.hash) applyPreset('standard');
+  updateAnalytics();
+
+  // seed some bodies
+  for(let i = 0; i < 10; i++) spawn(i % 2 === 0 ? 'A' : 'B');
+  logEvent('A','workstation initialized — 60FPS solver online');
+
+  // keep canvas crisp on resize
+  window.addEventListener('resize', () => {
+    // CSS handles scaling; canvas internal resolution fixed to CW*DPR
+  });
+})();
+</script>
+</body>
+</html>
