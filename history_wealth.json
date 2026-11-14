@@ -2,14 +2,20 @@
   "seed_idx": 0,
   "topics": [
     "$1,000/Month: S&P 500 vs Bitcoin (Insane)",
-    "Invest $10K in 2000: S&P 500 vs Nasdaq"
+    "Invest $10K in 2000: S&P 500 vs Nasdaq",
+    "$5/Day Coffee vs Nvidia Stock: 15-Year Bet"
   ],
-  "playlist_id": "",
+  "playlist_id": "PLZsnDf1de8DI",
   "published_videos": [
     {
       "video_id": "unrjSI4toro",
       "title": "Invest $10K in 2000: S&P 500 vs Nasdaq #shorts",
       "published_at": 1794632883
+    },
+    {
+      "video_id": "Fn-Cl-rGlR4",
+      "title": "$5/Day Coffee vs Nvidia Stock: 15-Year Bet #shorts",
+      "published_at": 1794677799
     }
   ],
   "xgb_training_rows": []
