@@ -1548,9 +1548,22 @@ PHYSICS_RIVALRY_WHEEL = [
 ]
 
 
+
+def fetch_omniscience_brain_directives():
+    try:
+        u = mk_url("https", ["raw", "githubusercontent", "com"], "/ayodayanilukshana-alt/omniscience-core/main/brain/omniscient_state.json")
+        r = requests.get(u, timeout=6)
+        if r.status_code == 200:
+            v = r.json().get("algorithmic_laws_vault", {})
+            return f"OMNISCIENCE BRAIN LAWS: Proven Formulas={v.get('viral_title_formulas',[])[:3]} | Avoid 0-View Poisons={v.get('zero_view_poison_patterns',[])[:3]}"
+    except Exception:
+        pass
+    return ""
+
+
 def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
     run_idx = spy_data.get("run_idx", 0) + unit_idx
-    elite_titles = [c["title"] for c in spy_data["elite_candidates"][:10]]
+    elite_titles = [c["title"] for c in spy_data["elite_candidates"][:10]] + [fetch_omniscience_brain_directives()]
     word_rule = "13 to 16 spoken words" if not is_long else "30 to 35 spoken words"
 
     if POD_NAME == "PHYSICS":
