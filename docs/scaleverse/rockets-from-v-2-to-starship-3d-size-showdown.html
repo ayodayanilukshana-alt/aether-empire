@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCALEVERSE 3D — Rockets From V-2 to Starship: 3D Size Showdown</title>
+<meta name="description" content="Interactive 3D scale comparison workstation for historic rockets — V-2, Falcon 9, Saturn V, SpaceX Starship, and Starship with Super Heavy. Adjust scale, spacing, and viewport to compare meter-by-meter.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-from-v-2-to-starship-3d-size-showdown.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D — Rockets From V-2 to Starship: 3D Size Showdown",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (Web Browser)",
+  "description": "A custom interactive workstation for comparing the physical scale of five historic rockets: V-2 (14 m), Falcon 9 (70 m), Saturn V (110.6 m), SpaceX Starship (121 m), and the full Starship with Super Heavy stack (121 m). Includes real-time canvas rendering, KPI telemetry, preset scenarios, and CSV export.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-from-v-2-to-starship-3d-size-showdown.html",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Interactive scale-rendered rocket comparison canvas",
+    "Adjustable meters-per-pixel scale and viewport controls",
+    "Scenario presets for each rocket height",
+    "Live KPI telemetry readouts",
+    "CSV telemetry export",
+    "Shareable scenario link"
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "SCALEVERSE 3D",
+    "url": "./index.html"
+  }
+}
+</script>
+<style>
+  :root {
+    --bg: #05070b;
+    --card: #0b0f17;
+    --border: #1e293b;
+    --border-hi: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --dim: #64748b;
+    --accent: #38bdf8;
+    --accent-dim: #0ea5e9;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 20px 24px 60px; }
+
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    background: linear-gradient(180deg, #0d131d 0%, #0b0f17 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    font-size: 15px;
+  }
+  .brand .logo {
+    width: 30px; height: 30px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    display: grid; place-items: center;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 900;
+    background: rgba(56,189,248,0.08);
+  }
+  .brand small { color: var(--dim); font-weight: 400; letter-spacing: 0.02em; }
+  .top-nav { display: flex; gap: 10px; align-items: center; }
+  .top-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+  }
+  .top-nav a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+  h1.hero {
+    font-size: 22px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  p.sub {
+    color: var(--muted);
+    margin: 0 0 20px;
+    max-width: 900px;
+    font-size: 13px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 980px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .card h2, .card h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+    font-weight: 700;
+  }
+
+  /* Controls */
+  .ctrl-group { margin-bottom: 18px; }
+  .ctrl-group:last-child { margin-bottom: 0; }
+  .ctrl-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .ctrl-label span.val {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #1a2230;
+    border-radius: 2px;
+    outline: none;
+    margin: 0;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid #071018;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(56,189,248,0.5);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid #071018;
+    cursor: pointer;
+  }
+
+  .preset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    background: #0e1520;
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.15s;
+    text-align: center;
+    line-height: 1.25;
+  }
+  .btn:hover { border-color: var(--border-hi); color: var(--text); }
+  .btn.active { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,0.08); }
+  .btn.accent {
+    background: rgba(56,189,248,0.1);
+    border-color: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .btn.accent:hover { background: rgba(56,189,248,0.18); }
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; }
+  .btn-row .btn { flex: 1; }
+
+  /* Canvas stage */
+  .stage {
+    position: relative;
+    background: radial-gradient(ellipse at 50% 0%, #0d1826 0%, #060a11 70%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  canvas#scene {
+    display: block;
+    width: 100%;
+    height: 560px;
+    cursor: grab;
+  }
+  canvas#scene:active { cursor: grabbing; }
+  .stage-badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--dim);
+    background: rgba(5,7,11,0.7);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+  .stage-badge b { color: var(--accent); }
+
+  /* KPIs */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+  }
+  @media (max-width: 700px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .kpi .k-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .kpi .k-val {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .kpi .k-val small { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 2px; }
+  .kpi .k-sub { font-family: var(--mono); font-size: 10px; color: var(--dim); margin-top: 3px; }
+
+  /* Legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  .legend .lg {
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+  }
+  .legend .sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.15); }
+
+  /* Table */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  table.data th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+    border-bottom: 1px solid var(--border-hi);
+    padding: 8px 10px;
+    font-weight: 700;
+  }
+  table.data td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.num { text-align: right; color: var(--accent); font-weight: 700; }
+  table.data td.dim { color: var(--muted); }
+  table.data tr.hl td { background: rgba(56,189,248,0.05); }
+
+  .section { margin-top: 24px; }
+  .section h2.head {
+    font-size: 15px;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Video */
+  .video-frame {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+  }
+  .video-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* FAQ */
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    padding: 14px 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 0.01em;
+  }
+  .faq-q:hover { color: var(--accent); }
+  .faq-q .plus { color: var(--accent); font-size: 16px; font-weight: 700; transition: transform 0.2s; }
+  .faq-item.open .plus { transform: rotate(45deg); }
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 0 4px;
+  }
+  .faq-item.open .faq-a { max-height: 260px; padding-bottom: 14px; }
+
+  .footnote {
+    color: var(--dim);
+    font-size: 11px;
+    font-family: var(--mono);
+    margin-top: 26px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #0e1520;
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: all 0.25s ease;
+    z-index: 999;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">SV</div>
+      <div>SCALEVERSE 3D <small>// ROCKET SCALE WORKSTATION</small></div>
+    </div>
+    <nav class="top-nav">
+      <a href="./index.html">← PORTAL</a>
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-from-v-2-to-starship-3d-size-showdown.html">CANONICAL</a>
+    </nav>
+  </header>
+
+  <h1 class="hero">Rockets From V-2 to Starship: 3D Size Showdown</h1>
+  <p class="sub">A 3D scale comparison of five historic rockets, from the V-2 to SpaceX Starship, revealing their mind-blowing size differences. Manipulate the scale, select a focus rocket, and inspect live telemetry from the exact dataset.</p>
+
+  <div class="layout">
+
+    <!-- CONTROL PANEL -->
+    <aside class="card">
+      <h2>Control Panel</h2>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label"><span>Viewport Scale</span><span class="val" id="scaleVal">28.0 px/m</span></div>
+        <input type="range" id="scaleSlider" min="6" max="60" step="0.5" value="28">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label"><span>Rocket Spacing</span><span class="val" id="spacingVal">100 px</span></div>
+        <input type="range" id="spacingSlider" min="50" max="220" step="5" value="100">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label"><span>Ground Offset</span><span class="val" id="groundVal">40 px</span></div>
+        <input type="range" id="groundSlider" min="10" max="120" step="2" value="40">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label"><span>Opacity / Ghost</span><span class="val" id="opacityVal">100 %</span></div>
+        <input type="range" id="opacitySlider" min="20" max="100" step="1" value="100">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label"><span>Reference Rocket</span></div>
+        <div class="preset-grid" id="presetGrid">
+          <button class="btn" data-ref="0">V-2<br><span style="font-size:9px;color:var(--dim)">14 m</span></button>
+          <button class="btn" data-ref="1">Falcon 9<br><span style="font-size:9px;color:var(--dim)">70 m</span></button>
+          <button class="btn" data-ref="2">Saturn V<br><span style="font-size:9px;color:var(--dim)">110.6 m</span></button>
+          <button class="btn" data-ref="3">Starship<br><span style="font-size:9px;color:var(--dim)">121 m</span></button>
+          <button class="btn" data-ref="4" style="grid-column: span 2;">Starship + Super Heavy<br><span style="font-size:9px;color:var(--dim)">121 m (full stack)</span></button>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label"><span>Scenario</span></div>
+        <div class="preset-grid">
+          <button class="btn" id="scnAll">Show All<br><span style="font-size:9px;color:var(--dim)">5 rockets</span></button>
+          <button class="btn" id="scnApex">Apex<br><span style="font-size:9px;color:var(--dim)">fit tallest</span></button>
+          <button class="btn" id="scnWide" style="grid-column: span 2;">Wide Compare<br><span style="font-size:9px;color:var(--dim)">max spacing</span></button>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <div class="btn-row">
+          <button class="btn accent" id="exportBtn">EXPORT CSV TELEMETRY</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="copyLinkBtn">COPY SCENARIO LINK</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="resetBtn">RESET</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- STAGE + KPIS -->
+    <div>
+      <div class="stage">
+        <div class="stage-badge" id="stageBadge">REFERENCE: <b>V-2 ROCKET</b> · SCALE <b>28.0 px/m</b></div>
+        <canvas id="scene" width="900" height="560"></canvas>
+      </div>
+
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi">
+          <div class="k-label">Reference</div>
+          <div class="k-val" id="kpiRef">V-2</div>
+          <div class="k-sub" id="kpiRefSub">14 m baseline</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Tallest</div>
+          <div class="k-val" id="kpiTallest">121 <small>m</small></div>
+          <div class="k-sub" id="kpiTallestSub">Starship + Super Heavy</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Ratio (Tallest / V-2)</div>
+          <div class="k-val" id="kpiRatio">8.64 <small>×</small></div>
+          <div class="k-sub">metric size multiple</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Total Stack Height</div>
+          <div class="k-val" id="kpiStack">436.6 <small>m</small></div>
+          <div class="k-sub">sum of 5 rockets</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="lg"><span class="sw" style="background:#f97316"></span>V-2</div>
+        <div class="lg"><span class="sw" style="background:#22d3ee"></span>Falcon 9</div>
+        <div class="lg"><span class="sw" style="background:#a78bfa"></span>Saturn V</div>
+        <div class="lg"><span class="sw" style="background:#38bdf8"></span>Starship</div>
+        <div class="lg"><span class="sw" style="background:#f43f5e"></span>Starship + Super Heavy</div>
+      </div>
+
+      <div class="section">
+        <h2 class="head">Analytical Breakdown</h2>
+        <table class="data" id="dataTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Rocket</th>
+              <th style="text-align:right">Height (m)</th>
+              <th style="text-align:right">Height (ft)</th>
+              <th style="text-align:right">× V-2</th>
+              <th style="text-align:right">Rendered (px)</th>
+              <th style="text-align:right">Share</th>
+            </tr>
+          </thead>
+          <tbody id="dataBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEO -->
+  <div class="section">
+    <h2 class="head">Source Stream — 3D Size Showdown</h2>
+    <div class="video-frame">
+      <iframe src="https://www.youtube.com/embed/fv45STPO1W4" title="Rockets From V-2 to Starship: 3D Size Showdown" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section card">
+    <h2 class="head" style="margin-bottom:0">Frequently Asked Questions</h2>
+    <div id="faq">
+      <div class="faq-item open">
+        <button class="faq-q">What exactly does this workstation compare? <span class="plus">+</span></button>
+        <div class="faq-a">It compares the physical stacked height (in meters) of five historic launch vehicles from the video dataset: V-2 Rocket (14 m), Falcon 9 (70 m), Saturn V (110.6 m), SpaceX Starship (121 m), and Starship with Super Heavy (121 m). All values are drawn directly from the DATA payload, and the canvas renders them to a common ground baseline at an adjustable pixels-per-meter scale.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Why do "Starship" and "Starship with Super Heavy" share 121 m? <span class="plus">+</span></button>
+        <div class="faq-a">The dataset records both entries at 121 m (397 ft). This reflects the video's simplified comparison metric. In this workstation they are rendered as distinct items so you can inspect each independently — the "with Super Heavy" preset is treated as the apex reference in the stack.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How is the ratio calculation performed? <span class="plus">+</span></button>
+        <div class="faq-a">The KPI "Ratio (Tallest / V-2)" = tallest height ÷ V-2 height = 121 ÷ 14 = 8.643×. This is computed dynamically from the dataset on every reload, never hardcoded, so adjusting the reference in future versions updates the readout automatically.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What do the sliders actually change? <span class="plus">+</span></button>
+        <div class="faq-a">Viewport Scale (px/m) sets how many pixels represent one meter on the canvas. Rocket Spacing sets the horizontal gap between rendered vehicles. Ground Offset shifts the shared ground baseline. Opacity / Ghost fades non-reference rockets so the selected baseline stands out. Every control re-renders immediately and updates the "Rendered (px)" column.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What is in the CSV telemetry export? <span class="plus">+</span></button>
+        <div class="faq-a">The export contains one row per rocket with index, name, height in meters, height in feet, ratio vs V-2, rendered pixel height at the current scale, and percentage share of the total stack (436.6 m). It also includes a header with the active scenario parameters (scale, spacing, ground offset, opacity, reference rocket) so the exact scenario can be reproduced.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How does "Copy Scenario Link" work? <span class="plus">+</span></button>
+        <div class="faq-a">It serializes the current control state (scale, spacing, ground offset, opacity, and selected reference) into URL query parameters and copies the resulting canonical URL to your clipboard. Opening that link restores the scenario on load via URL parameter parsing.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footnote">
+    <span>SCALEVERSE 3D · DATA-DRIVEN SCALE WORKSTATION</span>
+    <span>DATA: 5 ROCKETS · TOTAL STACK 436.6 m</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- DATA PAYLOAD (exact) ----
+  var DATA = [
+    { name: "V-2 Rocket",              meters: 14,    metric: "14 m (46 ft)",    color: "#f97316" },
+    { name: "Falcon 9",                meters: 70,    metric: "70 m (230 ft)",   color: "#22d3ee" },
+    { name: "Saturn V",                meters: 110.6, metric: "110.6 m (363 ft)",color: "#a78bfa" },
+    { name: "SpaceX Starship",         meters: 121,   metric: "121 m (397 ft)",  color: "#38bdf8" },
+    { name: "Starship with Super Heavy", meters: 121, metric: "121 m (397 ft)", color: "#f43f5e" }
+  ];
+  var FT = 3.28084;
+
+  // ---- STATE ----
+  var state = {
+    scale: 28,      // px per meter
+    spacing: 100,   // px between rockets
+    ground: 40,     // px ground offset
+    opacity: 1.0,   // ghost opacity for non-reference
+    ref: 0          // reference index
+  };
+
+  // ---- DOM ----
+  var canvas = document.getElementById("scene");
+  var ctx = canvas.getContext("2d");
+  var scaleSlider = document.getElementById("scaleSlider");
+  var spacingSlider = document.getElementById("spacingSlider");
+  var groundSlider = document.getElementById("groundSlider");
+  var opacitySlider = document.getElementById("opacitySlider");
+  var scaleVal = document.getElementById("scaleVal");
+  var spacingVal = document.getElementById("spacingVal");
+  var groundVal = document.getElementById("groundVal");
+  var opacityVal = document.getElementById("opacityVal");
+  var stageBadge = document.getElementById("stageBadge");
+
+  // ---- COMPUTE ----
+  function tallest() {
+    return DATA.reduce(function(m, r){ return r.meters > m.meters ? r : m; }, DATA[0]);
+  }
+  function totalStack() {
+    return DATA.reduce(function(s, r){ return s + r.meters; }, 0);
+  }
+
+  // ---- KPI + TABLE UPDATE ----
+  function renderKPIs() {
+    var t = tallest();
+    var ratio = t.meters / DATA[0].meters;
+    document.getElementById("kpiRef").textContent = DATA[state.ref].name.indexOf("with") > -1 ? "SS + SH" : DATA[state.ref].name;
+    document.getElementById("kpiRefSub").textContent = DATA[state.ref].meters + " m baseline";
+    document.getElementById("kpiTallest").innerHTML = t.meters + ' <small>m</small>';
+    document.getElementById("kpiTallestSub").textContent = t.name;
+    document.getElementById("kpiRatio").innerHTML = ratio.toFixed(2) + ' <small>×</small>';
+    document.getElementById("kpiStack").innerHTML = totalStack().toFixed(1) + ' <small>m</small>';
+    stageBadge.innerHTML = 'REFERENCE: <b>' + DATA[state.ref].name.toUpperCase() + '</b> · SCALE <b>' + state.scale.toFixed(1) + ' px/m</b>';
+  }
+
+  function renderTable() {
+    var body = document.getElementById("dataBody");
+    var total = totalStack();
+    var rows = "";
+    DATA.forEach(function(r, i){
+      var ft = (r.meters * FT).toFixed(1);
+      var share = ((r.meters / total) * 100).toFixed(1);
+      var px = (r.meters * state.scale).toFixed(1);
+      var isRef = (i === state.ref);
+      rows += '<tr class="' + (isRef ? 'hl' : '') + '">' +
+        '<td class="dim">' + (i+1) + '</td>' +
+        '<td>' + r.name + (isRef ? ' <span style="color:var(--accent);font-size:9px">◆REF</span>' : '') + '</td>' +
+        '<td class="num">' + r.meters.toFixed(1) + '</td>' +
+        '<td class="dim" style="text-align:right">' + ft + '</td>' +
+        '<td class="num">' + (r.meters / DATA[0].meters).toFixed(2) + '</td>' +
+        '<td class="dim" style="text-align:right">' + px + '</td>' +
+        '<td class="dim" style="text-align:right">' + share + '%</td>' +
+      '</tr>';
+    });
+    body.innerHTML = rows;
+  }
+
+  // ---- CANVAS RENDER ----
+  function draw() {
+    var W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // background grid
+    ctx.strokeStyle = "#0f1722";
+    ctx.lineWidth = 1;
+    var step = 40;
+    for (var gx = 0; gx < W; gx += step) {
+      ctx.beginPath(); ctx.moveTo(gx + 0.5, 0); ctx.lineTo(gx + 0.5, H); ctx.stroke();
+    }
+    for (var gy = 0; gy < H; gy += step) {
+      ctx.beginPath(); ctx.moveTo(0, gy + 0.5); ctx.lineTo(W, gy + 0.5); ctx.stroke();
+    }
+
+    // ground line
+    var groundY = H - state.ground;
+    ctx.strokeStyle = "#334155";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(20, groundY + 0.5);
+    ctx.lineTo(W - 20, groundY + 0.5);
+    ctx.stroke();
+
+    // metric ruler on left
+    var maxM = tallest().meters;
+    var pxPerM = state.scale;
+    var rulerX = 34;
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 1;
+    var tickStepM = 10;
+    // choose tick step so labels are legible
+    while (tickStepM * pxPerM < 24) { tickStepM *= 2; }
+    for (var m = 0; m <= maxM; m += tickStepM) {
+      var y = groundY - m * pxPerM;
+      if (y < 8) break;
+      ctx.strokeStyle = "#1e293b";
+      ctx.beginPath(); ctx.moveTo(rulerX - 6, y + 0.5); ctx.lineTo(rulerX, y + 0.5); ctx.stroke();
+      ctx.fillStyle = "#334155";
+      ctx.font = "9px ui-monospace, monospace";
+      ctx.textAlign = "right";
+      ctx.fillText(m + "m", rulerX - 9, y + 3);
+    }
+
+    // rockets
+    var n = DATA.length;
+    var availW = W - 90;
+    var gap = state.spacing;
+    var totalW = (n - 1) * gap;
+    if (totalW > availW - 80) {
+      gap = (availW - 80) / (n - 1);
+    }
+    var startX = (W - totalW) / 2 + 10;
+
+    for (var i = 0; i < n; i++) {
+      var r = DATA[i];
+      var hPx = r.meters * pxPerM;
+      var x = startX + i * gap;
+      var wPx = Math.max(14, Math.min(34, gap * 0.42));
+      var topY = groundY - hPx;
+
+      var isRef = (i === state.ref);
+      var alpha = isRef ? 1.0 : state.opacity;
+
+      // body gradient
+      var grad = ctx.createLinearGradient(x - wPx/2, 0, x + wPx/2, 0);
+      grad.addColorStop(0, shade(r.color, -0.35));
+      grad.addColorStop(0.45, r.color);
+      grad.addColorStop(0.55, r.color);
+      grad.addColorStop(1, shade(r.color, -0.45));
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = grad;
+      roundRect(ctx, x - wPx/2, topY, wPx, hPx, wPx * 0.42);
+      ctx.fill();
+
+      // nose highlight
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      ctx.beginPath();
+      ctx.ellipse(x - wPx*0.18, topY + wPx*0.5, wPx*0.14, wPx*0.28, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      // hover reference glow
+      if (isRef) {
+        ctx.globalAlpha = 1;
+        ctx.shadowColor = r.color;
+        ctx.shadowBlur = 18;
+        ctx.strokeStyle = r.color;
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, x - wPx/2, topY, wPx, hPx, wPx * 0.42);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      // measurement line
+      ctx.globalAlpha = Math.max(0.35, alpha);
+      ctx.strokeStyle = r.color;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x + wPx/2 + 6, topY);
+      ctx.lineTo(x + wPx/2 + 22, topY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // height label
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = r.color;
+      ctx.font = "700 10px ui-monospace, monospace";
+      ctx.textAlign = "left";
+      ctx.fillText(r.meters.toFixed(r.meters % 1 === 0 ? 0 : 1) + "m", x + wPx/2 + 8, topY - 4);
+
+      // name label at ground
+      ctx.globalAlpha = Math.max(0.5, alpha);
+      ctx.fillStyle = isRef ? "#e2e8f0" : "#64748b";
+      ctx.font = (isRef ? "700 " : "") + "9px ui-monospace, monospace";
+      ctx.textAlign = "center";
+      var label = r.name.length > 16 ? r.name.slice(0, 14) + "…" : r.name;
+      ctx.fillText(label, x, groundY + 16);
+      if (isRef) {
+        ctx.fillStyle = r.color;
+        ctx.font = "9px ui-monospace, monospace";
+        ctx.fillText("◆ REFERENCE", x, groundY + 28);
+      }
+    }
+
+    ctx.globalAlpha = 1;
+
+    // scale marker
+    ctx.fillStyle = "#475569";
+    ctx.font = "9px ui-monospace, monospace";
+    ctx.textAlign = "left";
+    ctx.fillText(state.scale.toFixed(1) + " px / meter", 20, H - 12);
+  }
+
+  function roundRect(ctx, x, y, w, h, radius) {
+    var r = Math.min(radius, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function shade(hex, amt) {
+    var c = hex.replace("#", "");
+    var num = parseInt(c, 16);
+    var r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255;
+    r = Math.max(0, Math.min(255, Math.round(r + r * amt)));
+    g = Math.max(0, Math.min(255, Math.round(g + g * amt)));
+    b = Math.max(0, Math.min(255, Math.round(b + b * amt)));
+    return "rgb(" + r + "," + g + "," + b + ")";
+  }
+
+  // ---- UPDATE ALL ----
+  function updateAll() {
+    scaleVal.textContent = state.scale.toFixed(1) + " px/m";
+    spacingVal.textContent = Math.round(state.spacing) + " px";
+    groundVal.textContent = Math.round(state.ground) + " px";
+    opacityVal.textContent = Math.round(state.opacity * 100) + " %";
+    renderKPIs();
+    renderTable();
+    draw();
+  }
+
+  // ---- EVENTS ----
+  scaleSlider.addEventListener("input", function(){
+    state.scale = parseFloat(this.value);
+    updateAll();
+  });
+  spacingSlider.addEventListener("input", function(){
+    state.spacing = parseFloat(this.value);
+    updateAll();
+  });
+  groundSlider.addEventListener("input", function(){
+    state.ground = parseFloat(this.value);
+    updateAll();
+  });
+  opacitySlider.addEventListener("input", function(){
+    state.opacity = parseFloat(this.value) / 100;
+    updateAll();
+  });
+
+  // preset (reference rocket)
+  document.querySelectorAll("#presetGrid .btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      state.ref = parseInt(this.getAttribute("data-ref"), 10);
+      document.querySelectorAll("#presetGrid .btn").forEach(function(b){ b.classList.remove("active"); });
+      this.classList.add("active");
+      updateAll();
+    });
+  });
+
+  // scenarios
+  document.getElementById("scnAll").addEventListener("click", function(){
+    state.scale = 28; state.spacing = 100; state.ground = 40; state.opacity = 1;
+    scaleSlider.value = 28; spacingSlider.value = 100; groundSlider.value = 40; opacitySlider.value = 100;
+    updateAll();
+    toast("Scenario: Show All");
+  });
+  document.getElementById("scnApex").addEventListener("click", function(){
+    // fit tallest rocket within 560px height minus ground and padding
+    var usable = canvas.height - 120;
+    state.scale = Math.floor((usable / tallest().meters) * 10) / 10;
+    state.spacing = 90; state.ground = 50; state.opacity = 0.85;
+    scaleSlider.value = state.scale; spacingSlider.value = 90; groundSlider.value = 50; opacitySlider.value = 85;
+    updateAll();
+    toast("Scenario: Apex Fit");
+  });
+  document.getElementById("scnWide").addEventListener("click", function(){
+    state.scale = 18; state.spacing = 200; state.ground = 30; state.opacity = 1;
+    scaleSlider.value = 18; spacingSlider.value = 200; groundSlider.value = 30; opacitySlider.value = 100;
+    updateAll();
+    toast("Scenario: Wide Compare");
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    state = { scale: 28, spacing: 100, ground: 40, opacity: 1.0, ref: 0 };
+    scaleSlider.value = 28; spacingSlider.value = 100; groundSlider.value = 40; opacitySlider.value = 100;
+    document.querySelectorAll("#presetGrid .btn").forEach(function(b){ b.classList.remove("active"); });
+    document.querySelector('#presetGrid .btn[data-ref="0"]').classList.add("active");
+    updateAll();
+    toast("Reset to default");
+  });
+
+  // ---- EXPORT CSV ----
+  document.getElementById("exportBtn").addEventListener("click", function(){
+    var total = totalStack();
+    var lines = [];
+    lines.push("# SCALEVERSE 3D — Rocket Scale Telemetry");
+    lines.push("# Scenario: scale_px_per_m=" + state.scale.toFixed(2) + ", spacing_px=" + state.spacing + ", ground_offset_px=" + state.ground + ", opacity=" + state.opacity.toFixed(2) + ", reference=" + DATA[state.ref].name);
+    lines.push("# Totals: stack_m=" + total.toFixed(1) + ", tallest_m=" + tallest().meters + ", ratio_tallest_vs_v2=" + (tallest().meters / DATA[0].meters).toFixed(4));
+    lines.push("index,name,meters,feet,ratio_vs_v2,rendered_px,share_pct");
+    DATA.forEach(function(r, i){
+      lines.push([
+        i + 1,
+        '"' + r.name + '"',
+        r.meters.toFixed(1),
+        (r.meters * FT).toFixed(2),
+        (r.meters / DATA[0].meters).toFixed(4),
+        (r.meters * state.scale).toFixed(2),
+        ((r.meters / total) * 100).toFixed(2)
+      ].join(","));
+    });
+
+    var blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "scaleverse-rockets-telemetry.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("CSV exported");
+  });
+
+  // ---- COPY LINK ----
+  document.getElementById("copyLinkBtn").addEventListener("click", function(){
+    var base = window.location.href.split("?")[0];
+    var params = new URLSearchParams();
+    params.set("scale", state.scale.toFixed(2));
+    params.set("spacing", Math.round(state.spacing));
+    params.set("ground", Math.round(state.ground));
+    params.set("opacity", Math.round(state.opacity * 100));
+    params.set("ref", state.ref);
+    var link = base + "?" + params.toString();
+
+    function fallbackCopy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch(e) {}
+      document.body.removeChild(ta);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function(){
+        toast("Scenario link copied");
+      }).catch(function(){
+        fallbackCopy(link);
+        toast("Scenario link copied");
+      });
+    } else {
+      fallbackCopy(link);
+      toast("Scenario link copied");
+    }
+  });
+
+  // ---- URL PARAMS LOAD ----
+  function loadFromURL() {
+    try {
+      var p = new URLSearchParams(window.location.search);
+      if (p.has("scale")) { state.scale = parseFloat(p.get("scale")); }
+      if (p.has("spacing")) { state.spacing = parseFloat(p.get("spacing")); }
+      if (p.has("ground")) { state.ground = parseFloat(p.get("ground")); }
+      if (p.has("opacity")) { state.opacity = Math.max(0.2, Math.min(1, parseFloat(p.get("opacity")) / 100)); }
+      if (p.has("ref")) { state.ref = Math.max(0, Math.min(DATA.length - 1, parseInt(p.get("ref"), 10) || 0)); }
+      scaleSlider.value = state.scale;
+      spacingSlider.value = state.spacing;
+      groundSlider.value = state.ground;
+      opacitySlider.value = Math.round(state.opacity * 100);
+    } catch (e) {}
+  }
+
+  // ---- FAQ ----
+  document.querySelectorAll(".faq-q").forEach(function(q){
+    q.addEventListener("click", function(){
+      var item = this.parentElement;
+      item.classList.toggle("open");
+    });
+  });
+
+  // ---- TOAST ----
+  var toastEl = document.getElementById("toast");
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 1800);
+  }
+
+  // ---- RESIZE ----
+  function fitCanvas() {
+    var parent = canvas.parentElement;
+    var rect = parent.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    var cssW = Math.max(500, rect.width);
+    var cssH = 560;
+    canvas.style.width = cssW + "px";
+    canvas.style.height = cssH + "px";
+    canvas.width = Math.floor(cssW * dpr);
+    canvas.height = Math.floor(cssH * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // store logical dims
+    canvas.logicalW = cssW;
+    canvas.logicalH = cssH;
+    // Redefine draw coordinate space to logical
+    drawLogical();
+  }
+
+  // We need draw to use logical W/H; wrap
+  var _draw = draw;
+  function drawLogical() {
+    // temporarily override canvas dimensions in draw via patched variables
+    var W = canvas.logicalW || canvas.width;
+    var H = canvas.logicalH || canvas.height;
+    // call an inline renderer that mirrors draw() but with logical W/H
+    drawWith(W, H);
+  }
+
+  function drawWith(W, H) {
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.strokeStyle = "#0f1722";
+    ctx.lineWidth = 1;
+    var step = 40;
+    for (var gx = 0; gx < W; gx += step) {
+      ctx.beginPath(); ctx.moveTo(gx + 0.5, 0); ctx.lineTo(gx + 0.5, H); ctx.stroke();
+    }
+    for (var gy = 0; gy < H; gy += step) {
+      ctx.beginPath(); ctx.moveTo(0, gy + 0.5); ctx.lineTo(W, gy + 0.5); ctx.stroke();
+    }
+
+    var groundY = H - state.ground;
+    ctx.strokeStyle = "#334155";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(20, groundY + 0.5);
+    ctx.lineTo(W - 20, groundY + 0.5);
+    ctx.stroke();
+
+    var maxM = tallest().meters;
+    var pxPerM = state.scale;
+    var rulerX = 34;
+    var tickStepM = 10;
+    while (tickStepM * pxPerM < 24) { tickStepM *= 2; }
+    for (var m = 0; m <= maxM; m += tickStepM) {
+      var y = groundY - m * pxPerM;
+      if (y < 8) break;
+      ctx.strokeStyle = "#1e293b";
+      ctx.beginPath(); ctx.moveTo(rulerX - 6, y + 0.5); ctx.lineTo(rulerX, y + 0.5); ctx.stroke();
+      ctx.fillStyle = "#334155";
+      ctx.font = "9px ui-monospace, monospace";
+      ctx.textAlign = "right";
+      ctx.fillText(m + "m", rulerX - 9, y + 3);
+    }
+
+    var n = DATA.length;
+    var availW = W - 90;
+    var gap = state.spacing;
+    var totalW = (n - 1) * gap;
+    if (totalW > availW - 80) { gap = (availW - 80) / (n - 1); }
+    var startX = (W - totalW) / 2 + 10;
+
+    for (var i = 0; i < n; i++) {
+      var r = DATA[i];
+      var hPx = r.meters * pxPerM;
+      var x = startX + i * gap;
+      var wPx = Math.max(14, Math.min(34, gap * 0.42));
+      var topY = groundY - hPx;
+      var isRef = (i === state.ref);
+      var alpha = isRef ? 1.0 : state.opacity;
+
+      var grad = ctx.createLinearGradient(x - wPx/2, 0, x + wPx/2, 0);
+      grad.addColorStop(0, shade(r.color, -0.35));
+      grad.addColorStop(0.45, r.color);
+      grad.addColorStop(0.55, r.color);
+      grad.addColorStop(1, shade(r.color, -0.45));
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = grad;
+      roundRect(ctx, x - wPx/2, topY, wPx, hPx, wPx * 0.42);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      ctx.beginPath();
+      ctx.ellipse(x - wPx*0.18, topY + wPx*0.5, wPx*0.14, wPx*0.28, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      if (isRef) {
+        ctx.globalAlpha = 1;
+        ctx.shadowColor = r.color;
+        ctx.shadowBlur = 18;
+        ctx.strokeStyle = r.color;
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, x - wPx/2, topY, wPx, hPx, wPx * 0.42);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.globalAlpha = Math.max(0.35, alpha);
+      ctx.strokeStyle = r.color;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x + wPx/2 + 6, topY);
+      ctx.lineTo(x + wPx/2 + 22, topY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = r.color;
+      ctx.font = "700 10px ui-monospace, monospace";
+      ctx.textAlign = "left";
+      ctx.fillText(r.meters.toFixed(r.meters % 1 === 0 ? 0 : 1) + "m", x + wPx/2 + 8, topY - 4);
+
+      ctx.globalAlpha = Math.max(0.5, alpha);
+      ctx.fillStyle = isRef ? "#e2e8f0" : "#64748b";
+      ctx.font = (isRef ? "700 " : "") + "9px ui-monospace, monospace";
+      ctx.textAlign = "center";
+      var label = r.name.length > 16 ? r.name.slice(0, 14) + "…" : r.name;
+      ctx.fillText(label, x, groundY + 16);
+      if (isRef) {
+        ctx.fillStyle = r.color;
+        ctx.font = "9px ui-monospace, monospace";
+        ctx.fillText("◆ REFERENCE", x, groundY + 28);
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "#475569";
+    ctx.font = "9px ui-monospace, monospace";
+    ctx.textAlign = "left";
+    ctx.fillText(state.scale.toFixed(1) + " px / meter", 20, H - 12);
+  }
+
+  // patch draw() to delegate to drawLogical
+  draw = function(){ drawLogical(); };
+
+  // ---- INIT ----
+  loadFromURL();
+  document.querySelector('#presetGrid .btn[data-ref="' + state.ref + '"]').classList.add("active");
+  updateAll();
+
+  var resizeTimer;
+  window.addEventListener("resize", function(){
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitCanvas, 100);
+  });
+  // initial fit
+  fitCanvas();
+})();
+</script>
+</body>
+</html>
