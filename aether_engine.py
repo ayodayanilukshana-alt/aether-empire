@@ -1735,27 +1735,33 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
     word_rule = "13 to 16 spoken words" if not is_long else "30 to 35 spoken words"
 
     if POD_NAME == "PHYSICS":
-        mode_id, team_a, team_b, wiki_a, wiki_b, hook_banner = PHYSICS_RIVALRY_WHEEL[run_idx % len(PHYSICS_RIVALRY_WHEEL)]
+        mode_id = run_idx % 5
         prompt = f"""
-        We are generating a viral, zero-language ASMR Physics Short featuring the rivalry: "{team_a} vs {team_b}" ({hook_banner}).
-        Top XGBoost Search Queries: {json.dumps(elite_titles[:6])}
-        PAST TITLES (DO NOT REPEAT): {json.dumps(past_topics[-35:])}
+        We are generating a viral, zero-language ASMR Physics Short featuring a head-to-head rivalry between two iconic competitors, brands, countries, games, cryptocurrencies, cars, or celebrities!
+        Live XGBoost Trending Topics Today: {json.dumps(elite_titles[:8])}
+        PAST TITLES (STRICTLY FORBIDDEN — DO NOT REPEAT ANY OF THESE RIVALRIES):
+        {json.dumps(past_topics[-50:])}
 
-        Write a fresh, high-CTR title (under 58 chars with #shorts), summary, and interactive pinned comment asking viewers whether they backed {team_a} or {team_b}.
+        Choose a 100% BRAND NEW, ultra-viral 2-way rivalry that has NEVER been used in PAST TITLES!
         Output JSON ONLY:
         {{
-          "title": "{team_a} vs {team_b}: Who Escapes the Physics Cage? #shorts",
-          "topic_summary": "60FPS Matter.js physics rivalry between {team_a} and {team_b}.",
-          "pinned_comment": "🔥 Team {team_a} or Team {team_b} — who did you bet on before the final winner banner appeared? Comment below! 👇"
+          "team_a": "<Short Name A under 9 chars, e.g. NVIDIA>",
+          "team_b": "<Short Name B under 9 chars, e.g. INTEL>",
+          "wiki_a": "<Exact Wikipedia Article Title for A so we fetch its real photo/logo>",
+          "wiki_b": "<Exact Wikipedia Article Title for B so we fetch its real photo/logo>",
+          "hook_banner": "<TEAM A VS TEAM B: SHORT EXCITING ARENA HOOK>",
+          "title": "<Team A vs Team B: Viral Physics Title under 58 chars> #shorts",
+          "topic_summary": "60FPS Matter.js rigid-body physics rivalry simulation.",
+          "pinned_comment": "Team A or Team B — which side did you bet on before the final winner banner appeared? Comment below!"
         }}
         """
-        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.8))
+        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.85))
         plan["physics_mode"] = mode_id
-        plan["team_a_name"] = team_a
-        plan["team_b_name"] = team_b
-        plan["hook_banner"] = hook_banner
-        plan["img_a_b64"] = fetch_wikipedia_image_b64(wiki_a)
-        plan["img_b_b64"] = fetch_wikipedia_image_b64(wiki_b)
+        plan["team_a_name"] = str(plan.get("team_a", "ALPHA")).upper()[:10]
+        plan["team_b_name"] = str(plan.get("team_b", "OMEGA")).upper()[:10]
+        plan["hook_banner"] = str(plan.get("hook_banner", f"{plan['team_a_name']} VS {plan['team_b_name']}")).upper()
+        plan["img_a_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_a") or plan["team_a_name"])
+        plan["img_b_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_b") or plan["team_b_name"])
         plan["palette_seed"] = random.randint(0, 999)
         return plan
 
