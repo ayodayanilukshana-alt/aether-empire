@@ -65,6 +65,7 @@ jobs:
         if: steps.filter.outputs.should_run == 'true'
         env:
           POD_NAME: ${{ matrix.pod }}
+          GH_PAT: ${{ secrets.GITHUB_TOKEN }}
           VIDEO_MODE: ${{ github.event.inputs.video_mode || 'short' }}
           AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
