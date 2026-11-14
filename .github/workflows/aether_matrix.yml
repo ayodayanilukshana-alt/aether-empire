@@ -18,7 +18,7 @@ permissions:
 jobs:
   aether-pod-runner:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     concurrency:
       group: aether-pod-${{ matrix.pod }}
       cancel-in-progress: false
@@ -61,7 +61,7 @@ jobs:
           pip install requests numpy pillow edge-tts playwright xgboost scikit-learn google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
           playwright install --with-deps chromium
 
-      - name: Run AETHER Engine for Pod ${{ matrix.pod }}
+      - name: Run AETHER V11.0 Engine for Pod ${{ matrix.pod }}
         if: steps.filter.outputs.should_run == 'true'
         env:
           POD_NAME: ${{ matrix.pod }}
@@ -80,14 +80,14 @@ jobs:
         run: |
           python aether_engine.py
 
-      - name: Save Self-Learning XGBoost Memory & Micro-SaaS Web Portal
+      - name: Conflict-Free Push of Workstation Page & Pod Memory
         if: steps.filter.outputs.should_run == 'true'
         run: |
           git config user.name "AETHER Autonomous Swarm"
           git config user.email "swarm@aether.ai"
-          for i in 1 2 3 4 5; do
-            git pull --rebase origin main || true
-            git add .
-            git diff --staged --quiet || git commit -m "chore(${{ matrix.pod }}): update XGBoost memory & pSEO workstation"
-            git push origin main && break || sleep 4
+          git add .
+          git diff --staged --quiet || git commit -m "feat(${{ matrix.pod }}): publish workstation page & update ML memory"
+          for i in 1 2 3 4 5 6; do
+            git pull --rebase -X theirs origin main || true
+            git push origin main && break || sleep 5
           done
