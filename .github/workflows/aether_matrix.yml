@@ -50,11 +50,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install FFmpeg, Fonts & WebGL Libraries
+      - name: Install FFmpeg & Fonts
         if: steps.filter.outputs.should_run == 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation libgl1-mesa-dri libgl1-mesa-glx libegl1-mesa
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation libgl1 libegl1
 
       - name: Install AI, XGBoost & Playwright Chromium
         if: steps.filter.outputs.should_run == 'true'
