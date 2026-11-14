@@ -5,6 +5,7 @@ import json
 import math
 import time
 import wave
+import base64
 import random
 import asyncio
 import subprocess
@@ -112,9 +113,8 @@ FPS = 24
 BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 }
-# Wikimedia strictly requires a descriptive Bot User-Agent with contact info to serve thumbnails reliably!
 WIKI_HEADERS = {
-    "User-Agent": "AetherMediaBot/5.0 (https://github.com/aether-empire; contact@aether-empire.org) requests/2.31"
+    "User-Agent": "AetherMediaBot/6.0 (https://github.com/aether-empire; contact@aether-empire.org) requests/2.31"
 }
 
 
@@ -179,15 +179,11 @@ def extract_json(text):
 
 
 def fetch_wikipedia_image_b64(query_name):
-    """
-    Uses Wikimedia-compliant Bot User-Agent + REST Summary & Search fallback
-    so real-world photos load 100% reliably for landmarks, celebrities, and assets!
-    """
+    """Downloads real photograph from Wikipedia and encodes to Base64 Data URI."""
     if not query_name:
         return ""
     q_clean = str(query_name).strip()
     try:
-        # 1. Try direct Wikipedia REST summary endpoint first
         slug = urllib.parse.quote(q_clean.replace(" ", "_"))
         rest_u = mk_url("https", ["en", "wikipedia", "org"], f"/api/rest_v1/page/summary/{slug}")
         r0 = requests.get(rest_u, headers=WIKI_HEADERS, timeout=6)
@@ -195,7 +191,6 @@ def fetch_wikipedia_image_b64(query_name):
         if r0.status_code == 200:
             thumb_url = r0.json().get("thumbnail", {}).get("source", "")
 
-        # 2. Fallback to MediaWiki generator search
         if not thumb_url:
             search_u = mk_url("https", ["en", "wikipedia", "org"], "/w/api.php")
             params = {
@@ -424,7 +419,7 @@ def run_global_harvester_and_18_feature_xgboost():
 
 
 # =====================================================================
-# 3. BESPOKE ENGINE 1: SCALEVERSE 3D (REAL ARCHITECTURAL TEXTURES + WIKI PHOTOS!)
+# 3. BESPOKE ENGINE 1: SCALEVERSE 3D V6.0 (COLLISION-FREE SPACING + TRUE 3D MODELS + REAL WIKI PHOTOS!)
 # =====================================================================
 THREEJS_SCALE3D_HTML = r"""<!DOCTYPE html>
 <html>
@@ -453,36 +448,36 @@ hudCanvas.height = H;
 const ctx = hudCanvas.getContext('2d');
 
 const ENV_THEMES = [
-    { sky: [0x0284c7, 0x0369a1, 0x1d4ed8, 0x1e3a8a, 0x090d16], ground: 0x0f172a, grid: 0x38bdf8 },
-    { sky: [0x090d16, 0x050814, 0x030712, 0x02040a, 0x000005], ground: 0x0b132b, grid: 0x34d399 },
-    { sky: [0x1e1b4b, 0x311068, 0x3b0764, 0x1e1b4b, 0x090d16], ground: 0x18092c, grid: 0xf472b6 },
+    { sky: [0x0369a1, 0x1d4ed8, 0x1e3a8a, 0x0f172a, 0x060b16], ground: 0x0f172a, grid: 0x38bdf8 },
+    { sky: [0x090d16, 0x050814, 0x030712, 0x02040a, 0x000005], ground: 0x080d1a, grid: 0x34d399 },
+    { sky: [0x1e1b4b, 0x311068, 0x3b0764, 0x1e1b4b, 0x090d16], ground: 0x130722, grid: 0xf472b6 },
     { sky: [0x064e3b, 0x065f46, 0x047857, 0x0f172a, 0x022c22], ground: 0x052e16, grid: 0xfacc15 }
 ];
 const env = ENV_THEMES[(DATA.theme_seed || 0) % ENV_THEMES.length];
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(env.sky[0]);
-scene.fog = new THREE.FogExp2(env.sky[0], 0.0009);
+scene.fog = new THREE.FogExp2(env.sky[0], 0.00045);
 
-const camera = new THREE.PerspectiveCamera(45, W / H, 0.5, 50000);
+const camera = new THREE.PerspectiveCamera(44, W / H, 0.5, 90000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H);
 renderer.shadowMap.enabled = true;
 document.getElementById('webgl-container').appendChild(renderer.domElement);
 
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0x60a5fa, 1.35);
-hemiLight.position.set(0, 600, 0);
+hemiLight.position.set(0, 1200, 0);
 scene.add(hemiLight);
 
 const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.55);
-dirLight.position.set(220, 480, 320);
+dirLight.position.set(400, 900, 600);
 scene.add(dirLight);
 
 const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.95);
-rimLight.position.set(-220, 250, -240);
+rimLight.position.set(-400, 500, -450);
 scene.add(rimLight);
 
-// High-Detail Realistic Procedural Material Textures (Mughal Marble Arches, Limestone Blocks, Steel Lattice, Office Windows, Planet Bands)
+// Realistic Procedural Surface Textures (Lunar Craters, Earth Continents, Solar Plasma, Marble Arches, Limestone, Glass Windows)
 function createRealisticTexture(mode, baseHex, accentHex) {
     const c = document.createElement('canvas');
     c.width = 512; c.height = 512;
@@ -490,20 +485,61 @@ function createRealisticTexture(mode, baseHex, accentHex) {
     g.fillStyle = baseHex;
     g.fillRect(0, 0, 512, 512);
 
-    if (mode === 'marble_arches') {
+    if (mode === 'lunar_craters') {
+        g.fillStyle = '#94a3b8';
+        g.fillRect(0, 0, 512, 512);
+        for (let i = 0; i < 90; i++) {
+            const cx = (Math.sin(i * 12.3) * 0.5 + 0.5) * 480 + 16;
+            const cy = (Math.cos(i * 45.7) * 0.5 + 0.5) * 480 + 16;
+            const cr = 6 + (i % 24);
+            g.fillStyle = (i % 2 === 0) ? '#64748b' : '#cbd5e1';
+            g.beginPath(); g.arc(cx, cy, cr, 0, Math.PI * 2); g.fill();
+            g.strokeStyle = '#475569'; g.lineWidth = 2; g.stroke();
+        }
+    } else if (mode === 'earth_globe') {
+        g.fillStyle = '#0284c7';
+        g.fillRect(0, 0, 512, 512);
+        // Continents
+        g.fillStyle = '#16a34a';
+        for (let i = 0; i < 28; i++) {
+            const cx = (Math.sin(i * 91.1) * 0.5 + 0.5) * 460 + 25;
+            const cy = 80 + (Math.cos(i * 37.4) * 0.5 + 0.5) * 350;
+            g.beginPath(); g.ellipse(cx, cy, 35 + (i % 45), 22 + (i % 30), i * 0.4, 0, Math.PI * 2); g.fill();
+        }
+        // Polar ice caps & clouds
+        g.fillStyle = '#f8fafc';
+        g.fillRect(0, 0, 512, 36);
+        g.fillRect(0, 476, 512, 36);
+        g.fillStyle = 'rgba(255, 255, 255, 0.32)';
+        for (let y = 60; y < 450; y += 55) {
+            g.fillRect(0, y, 512, 12);
+        }
+    } else if (mode === 'solar_plasma') {
+        const grad = g.createLinearGradient(0, 0, 512, 512);
+        grad.addColorStop(0, '#fef08a');
+        grad.addColorStop(0.5, '#f97316');
+        grad.addColorStop(1, '#dc2626');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 512, 512);
+        for (let i = 0; i < 120; i++) {
+            g.fillStyle = (i % 2 === 0) ? 'rgba(254, 240, 138, 0.45)' : 'rgba(185, 28, 28, 0.35)';
+            g.beginPath();
+            g.arc((i * 73) % 512, (i * 139) % 512, 10 + (i % 22), 0, Math.PI * 2);
+            g.fill();
+        }
+    } else if (mode === 'gas_giant') {
+        for (let y = 0; y < 512; y += 4) {
+            const w = Math.sin(y * 0.045) + 0.5 * Math.cos(y * 0.11);
+            g.fillStyle = w > 0.2 ? accentHex : (w > -0.3 ? baseHex : '#78350f');
+            g.fillRect(0, y, 512, 4);
+        }
+    } else if (mode === 'marble_arches') {
         g.fillStyle = '#fffbeb';
         g.fillRect(0, 0, 512, 512);
-        g.strokeStyle = '#cbd5e1';
-        g.lineWidth = 4;
-        for (let y = 0; y < 512; y += 64) {
-            g.beginPath(); g.moveTo(0, y); g.lineTo(512, y); g.stroke();
-        }
-        // Recessed Mughal Iwan Arches
-        g.fillStyle = '#475569';
+        g.fillStyle = '#334155';
         g.fillRect(156, 140, 200, 372);
         g.beginPath(); g.arc(256, 140, 100, Math.PI, 0); g.fill();
-        g.strokeStyle = '#d97706';
-        g.lineWidth = 8;
+        g.strokeStyle = '#d97706'; g.lineWidth = 8;
         g.strokeRect(140, 110, 232, 390);
     } else if (mode === 'limestone_blocks') {
         g.fillStyle = '#d97706';
@@ -518,23 +554,12 @@ function createRealisticTexture(mode, baseHex, accentHex) {
     } else if (mode === 'iron_lattice') {
         g.fillStyle = '#78350f';
         g.fillRect(0, 0, 512, 512);
-        g.strokeStyle = '#fbbf24';
-        g.lineWidth = 6;
+        g.strokeStyle = '#fbbf24'; g.lineWidth = 6;
         for (let i = -512; i < 1024; i += 48) {
             g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 512, 512); g.stroke();
             g.beginPath(); g.moveTo(i + 512, 0); g.lineTo(i, 512); g.stroke();
         }
-        for (let y = 0; y < 512; y += 64) {
-            g.fillStyle = '#92400e';
-            g.fillRect(0, y, 512, 12);
-        }
-    } else if (mode === 'planet_bands') {
-        for (let y = 0; y < 512; y += 6) {
-            g.fillStyle = (Math.sin(y * 0.08) > 0) ? accentHex : baseHex;
-            g.fillRect(0, y, 512, 6);
-        }
     } else {
-        // Curtain-wall skyscraper glass windows
         g.fillStyle = '#0f172a';
         g.fillRect(0, 0, 512, 512);
         for (let y = 8; y < 504; y += 18) {
@@ -552,13 +577,13 @@ function createRealisticTexture(mode, baseHex, accentHex) {
 }
 
 const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(40000, 40000),
+    new THREE.PlaneGeometry(90000, 90000),
     new THREE.MeshStandardMaterial({ color: env.ground, roughness: 0.35, metalness: 0.35 })
 );
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
-const gridHelper = new THREE.GridHelper(12000, 240, env.grid, 0x1e293b);
+const gridHelper = new THREE.GridHelper(30000, 300, env.grid, 0x1e293b);
 gridHelper.position.y = 0.2;
 scene.add(gridHelper);
 
@@ -568,14 +593,29 @@ const minM = Math.min(...rawMeters);
 const maxM = Math.max(...rawMeters);
 
 const visualHeights = rawMeters.map((m, idx) => {
-    if (maxM / minM > 35) {
+    if (maxM / minM > 25) {
         const ratio = Math.log10(m / minM + 1) / Math.log10(maxM / minM + 1);
-        return 24 + ratio * 235 + idx * 14;
+        return 28 + ratio * 220 + idx * 18;
     }
-    return Math.max(24, (m / maxM) * 255);
+    return Math.max(28, (m / maxM) * 260);
 });
 
-const xPositions = [0, 82, 200, 365, 595];
+// DYNAMIC COLLISION-FREE X-SPACING! (Calculates exact width of each object + rings so nothing EVER touches!)
+const objectFootprints = items.map((it, idx) => {
+    const h = visualHeights[idx];
+    const nl = String((it && it.name) || '').toLowerCase();
+    const mt = String((it && it.model_type) || '').toLowerCase();
+    if (nl.includes('saturn') || nl.includes('uranus')) return h * 1.85;
+    if (mt === 'planet' || mt === 'star' || mt === 'dome_palace' || mt === 'pyramid' || mt === 'mountain' || mt === 'ship') return h * 1.35;
+    return h * 0.95;
+});
+
+const xPositions = [0];
+for (let i = 1; i < 5; i++) {
+    const gap = (objectFootprints[i - 1] * 0.65) + (objectFootprints[i] * 0.65) + Math.max(visualHeights[i] * 0.65, 95);
+    xPositions.push(xPositions[i - 1] + gap);
+}
+
 const palettes = [
     ['#065f46', '#6ee7b7', 0x10b981],
     ['#1e3a8a', '#93c5fd', 0x3b82f6],
@@ -600,23 +640,62 @@ window.waitForAllImages = async function() {
     await Promise.all(promises);
 };
 
-// Realistic Textured 3D Landmark & Object Sculptor!
 function buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
     const group = new THREE.Group();
     const mType = String(itemObj.model_type || 'skyscraper').toLowerCase();
     const nameLow = String(itemObj.name || '').toLowerCase();
 
-    if (mType === 'dome_palace' || nameLow.includes('taj') || nameLow.includes('cathedral') || nameLow.includes('capitol') || nameLow.includes('mosque') || nameLow.includes('pantheon')) {
+    if (mType === 'planet' || mType === 'star') {
+        const r = h * 0.46;
+        let texMode = 'gas_giant';
+        let c1 = baseHex, c2 = glowHex;
+        let isStar = (mType === 'star' || nameLow.includes('sun') || nameLow.includes('star') || nameLow.includes('scuti') || nameLow.includes('betelgeuse') || nameLow.includes('sirius'));
+
+        if (isStar) {
+            texMode = 'solar_plasma';
+        } else if (nameLow.includes('earth')) {
+            texMode = 'earth_globe';
+        } else if (nameLow.includes('moon') || nameLow.includes('mercury') || nameLow.includes('pluto') || nameLow.includes('ceres')) {
+            texMode = 'lunar_craters';
+        } else if (nameLow.includes('mars')) {
+            texMode = 'lunar_craters'; c1 = '#ea580c'; c2 = '#9a3412';
+        } else if (nameLow.includes('saturn') || nameLow.includes('jupiter')) {
+            texMode = 'gas_giant'; c1 = '#d97706'; c2 = '#fef08a';
+        } else if (nameLow.includes('neptune') || nameLow.includes('uranus')) {
+            texMode = 'gas_giant'; c1 = '#0284c7'; c2 = '#38bdf8';
+        }
+
+        const tex = createRealisticTexture(texMode, c1, c2);
+        const matSphere = new THREE.MeshStandardMaterial({
+            map: tex,
+            roughness: isStar ? 0.1 : 0.45,
+            metalness: 0.1,
+            emissive: isStar ? 0xf97316 : 0x000000,
+            emissiveIntensity: isStar ? 0.55 : 0.0
+        });
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 48), matSphere);
+        sphere.position.y = r + 4;
+        group.add(sphere);
+
+        // ONLY SATURN OR URANUS GETS A PLANETARY RING!
+        if (nameLow.includes('saturn') || nameLow.includes('uranus')) {
+            const ring = new THREE.Mesh(
+                new THREE.RingGeometry(r * 1.22, r * 1.75, 64),
+                new THREE.MeshBasicMaterial({ color: nameLow.includes('saturn') ? 0xfde047 : 0x7dd3fc, side: THREE.DoubleSide, transparent: true, opacity: 0.72 })
+            );
+            ring.rotation.x = Math.PI / 2.25;
+            ring.position.y = r + 4;
+            group.add(ring);
+        }
+    } else if (mType === 'dome_palace' || nameLow.includes('taj') || nameLow.includes('cathedral') || nameLow.includes('capitol') || nameLow.includes('mosque')) {
         const matMarble = new THREE.MeshStandardMaterial({ map: createRealisticTexture('marble_arches', '#fffbeb', '#d97706'), roughness: 0.22, metalness: 0.12 });
         const matWhite = new THREE.MeshStandardMaterial({ color: 0xfffbeb, roughness: 0.18, metalness: 0.2 });
 
         const plinth = new THREE.Mesh(new THREE.BoxGeometry(h * 1.15, h * 0.12, h * 1.15), matWhite);
         plinth.position.y = h * 0.06; group.add(plinth);
-
         const body = new THREE.Mesh(new THREE.BoxGeometry(h * 0.70, h * 0.46, h * 0.70), matMarble);
         body.position.y = h * 0.35; group.add(body);
 
-        // 4 small corner chhatri domes
         const cOff = h * 0.24;
         [[-cOff, -cOff], [cOff, -cOff], [-cOff, cOff], [cOff, cOff]].forEach(([cx, cz]) => {
             const ch = new THREE.Mesh(new THREE.SphereGeometry(h * 0.065, 20, 20), matWhite);
@@ -625,10 +704,8 @@ function buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
 
         const drum = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.20, h * 0.22, h * 0.15, 32), matWhite);
         drum.position.y = h * 0.63; group.add(drum);
-
         const dome = new THREE.Mesh(new THREE.SphereGeometry(h * 0.22, 36, 36), matWhite);
         dome.position.y = h * 0.76; dome.scale.set(1, 1.28, 1); group.add(dome);
-
         const finial = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.02, h * 0.14, 16), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
         finial.position.y = h * 0.96; group.add(finial);
 
@@ -641,7 +718,6 @@ function buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
         });
     } else if (mType === 'pyramid' || nameLow.includes('pyramid') || nameLow.includes('giza')) {
         const matStone = new THREE.MeshStandardMaterial({ map: createRealisticTexture('limestone_blocks', '#d97706', '#f59e0b'), roughness: 0.75, metalness: 0.1 });
-        // Stepped 14-layer ancient pyramid + golden capstone!
         const steps = 14;
         for (let s = 0; s < steps; s++) {
             const sh = (h * 0.88) / steps;
@@ -652,9 +728,8 @@ function buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
         }
         const cap = new THREE.Mesh(new THREE.ConeGeometry(h * 0.11, h * 0.14, 4), new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.85, roughness: 0.15 }));
         cap.position.y = h * 0.94; cap.rotation.y = Math.PI / 4; group.add(cap);
-    } else if (nameLow.includes('eiffel') || nameLow.includes('tokio tower') || mType === 'lattice_tower') {
+    } else if (nameLow.includes('eiffel') || mType === 'lattice_tower') {
         const matIron = new THREE.MeshStandardMaterial({ map: createRealisticTexture('iron_lattice', '#78350f', '#fbbf24'), roughness: 0.4, metalness: 0.65 });
-        // 4 curved lattice legs + 3 observation decks + tapered upper tower
         const legOff = h * 0.18;
         [[-legOff, -legOff], [legOff, -legOff], [-legOff, legOff], [legOff, legOff]].forEach(([lx, lz]) => {
             const leg = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.035, h * 0.065, h * 0.28, 16), matIron);
@@ -665,50 +740,50 @@ function buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
         });
         const deck1 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.34, h * 0.04, h * 0.34), matIron);
         deck1.position.y = h * 0.28; group.add(deck1);
-
         const mid = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.08, h * 0.15, h * 0.28, 4), matIron);
         mid.position.y = h * 0.42; mid.rotation.y = Math.PI / 4; group.add(mid);
-
         const deck2 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.20, h * 0.035, h * 0.20), matIron);
         deck2.position.y = h * 0.56; group.add(deck2);
-
         const topShaft = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.025, h * 0.075, h * 0.34, 4), matIron);
         topShaft.position.y = h * 0.73; topShaft.rotation.y = Math.PI / 4; group.add(topShaft);
-
         const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.012, h * 0.12, 16), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
         spire.position.y = h * 0.94; group.add(spire);
-    } else if (mType === 'planet' || mType === 'star') {
-        const tex = createRealisticTexture('planet_bands', baseHex, glowHex);
-        const r = h * 0.46;
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 48), new THREE.MeshStandardMaterial({
-            map: tex, roughness: 0.35, emissive: mType === 'star' ? hexNum : 0x000000, emissiveIntensity: mType === 'star' ? 0.65 : 0.0
-        }));
-        sphere.position.y = r + 4; group.add(sphere);
-        if (i % 2 === 1 || nameLow.includes('saturn')) {
-            const ring = new THREE.Mesh(new THREE.RingGeometry(r * 1.25, r * 1.72, 64), new THREE.MeshBasicMaterial({ color: glowHex, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
-            ring.rotation.x = Math.PI / 2.3; ring.position.y = r + 4; group.add(ring);
-        }
     } else if (mType === 'rocket' || mType === 'vehicle') {
-        const matWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25, metalness: 0.4 });
-        const matDark = new THREE.MeshStandardMaterial({ color: hexNum, roughness: 0.3, metalness: 0.7 });
-        const bodyH = h * 0.68, rad = h * 0.10;
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad * 1.12, bodyH, 32), matWhite);
+        const matWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.22, metalness: 0.45 });
+        const matBlack = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.7 });
+        const matAccent = new THREE.MeshStandardMaterial({ color: hexNum, roughness: 0.25, metalness: 0.75 });
+        const bodyH = h * 0.68, rad = h * 0.095;
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad * 1.1, bodyH, 32), matWhite);
         body.position.y = bodyH * 0.5 + h * 0.08; group.add(body);
-        const nose = new THREE.Mesh(new THREE.ConeGeometry(rad, h * 0.24, 32), matDark);
+
+        // Interstage black rings
+        const band1 = new THREE.Mesh(new THREE.CylinderGeometry(rad * 1.03, rad * 1.05, bodyH * 0.12, 32), matBlack);
+        band1.position.y = h * 0.32; group.add(band1);
+        const band2 = new THREE.Mesh(new THREE.CylinderGeometry(rad * 1.01, rad * 1.02, bodyH * 0.08, 32), matAccent);
+        band2.position.y = h * 0.58; group.add(band2);
+
+        const nose = new THREE.Mesh(new THREE.ConeGeometry(rad, h * 0.24, 32), matAccent);
         nose.position.y = bodyH + h * 0.20; group.add(nose);
         for (let f = 0; f < 4; f++) {
             const a = (f * Math.PI) / 2;
             const booster = new THREE.Mesh(new THREE.CylinderGeometry(rad * 0.35, rad * 0.45, h * 0.38, 16), matWhite);
-            booster.position.set(Math.cos(a) * rad * 1.2, h * 0.20, Math.sin(a) * rad * 1.2); group.add(booster);
+            booster.position.set(Math.cos(a) * rad * 1.25, h * 0.20, Math.sin(a) * rad * 1.25); group.add(booster);
         }
     } else if (mType === 'mountain' || mType === 'trench' || mType === 'crater') {
-        const matRock = new THREE.MeshStandardMaterial({ color: hexNum, roughness: 0.85, metalness: 0.1 });
-        const peak = new THREE.Mesh(new THREE.ConeGeometry(h * 0.56, h * 0.86, 7), matRock);
-        peak.position.y = h * 0.43; group.add(peak);
-        const snow = new THREE.Mesh(new THREE.ConeGeometry(h * 0.22, h * 0.34, 7), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 }));
-        snow.position.y = h * 0.72; group.add(snow);
+        // Multi-peak jagged rocky mountain range + snow cap!
+        const matRock = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.88, metalness: 0.1 });
+        const matSnow = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25, metalness: 0.1 });
+        const mainPeak = new THREE.Mesh(new THREE.ConeGeometry(h * 0.58, h * 0.85, 6), matRock);
+        mainPeak.position.y = h * 0.425; group.add(mainPeak);
+        const snowCap = new THREE.Mesh(new THREE.ConeGeometry(h * 0.24, h * 0.35, 6), matSnow);
+        snowCap.position.y = h * 0.70; group.add(snowCap);
+
+        // 2 Flanking sub-peaks for realistic mountain silhouette
+        const sub1 = new THREE.Mesh(new THREE.ConeGeometry(h * 0.38, h * 0.58, 5), matRock);
+        sub1.position.set(-h * 0.32, h * 0.29, h * 0.12); group.add(sub1);
+        const sub2 = new THREE.Mesh(new THREE.ConeGeometry(h * 0.34, h * 0.52, 5), matRock);
+        sub2.position.set(h * 0.30, h * 0.26, -h * 0.10); group.add(sub2);
     } else {
-        // Illuminated Glass Curtain-Wall Skyscraper (Shanghai Tower / Burj Khalifa / Empire State)
         const tex = createRealisticTexture('windows', baseHex, glowHex);
         const matWin = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.2, metalness: 0.65 });
         const isTwisted = nameLow.includes('shanghai') || (i % 2 === 1);
@@ -737,26 +812,29 @@ for (let i = 0; i < 5; i++) {
 
     const grp = buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum);
 
+    // Mount 3D Floating Photo Billboard next to the model (positioned outside its footprint so it never clips!)
     if (itemObj.image_b64) {
         const imgTex = new THREE.TextureLoader().load(itemObj.image_b64);
-        const cardH = h * 0.42;
-        const cardW = cardH * 0.88;
+        const cardH = h * 0.38;
+        const cardW = cardH * 0.90;
+        const xOff = -(objectFootprints[i] * 0.55 + cardW * 0.55);
         const plane = new THREE.Mesh(
             new THREE.PlaneGeometry(cardW, cardH),
             new THREE.MeshBasicMaterial({ map: imgTex, side: THREE.DoubleSide })
         );
-        plane.position.set(-h * 0.48, h * 0.60, h * 0.12);
+        plane.position.set(xOff, h * 0.68, 0);
         grp.add(plane);
 
         const border = new THREE.Mesh(
             new THREE.PlaneGeometry(cardW * 1.08, cardH * 1.08),
             new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide })
         );
-        border.position.set(-h * 0.48, h * 0.60, h * 0.11);
+        border.position.set(xOff, h * 0.68, -0.5);
         grp.add(border);
     }
 
-    const ped = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.44, h * 0.48, 1.5, 48), new THREE.MeshBasicMaterial({ color: hexNum }));
+    const pedR = Math.max(h * 0.38, objectFootprints[i] * 0.36);
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(pedR, pedR * 1.06, 1.5, 48), new THREE.MeshBasicMaterial({ color: hexNum }));
     ped.position.y = 0.75;
     grp.add(ped);
 
@@ -777,7 +855,7 @@ window.renderFrameAtTime = function(t) {
         }
     }
 
-    const floatIdx = Math.min(4.0, stageIndex + Math.pow(stageProgress, 1.4) * 0.92);
+    const floatIdx = Math.min(4.0, stageIndex + Math.pow(stageProgress, 1.45) * 0.90);
     const i0 = Math.min(4, Math.floor(floatIdx));
     const i1 = Math.min(4, i0 + 1);
     const frac = floatIdx - i0;
@@ -785,6 +863,7 @@ window.renderFrameAtTime = function(t) {
 
     const curX = xPositions[i0] * (1 - smoothFrac) + xPositions[i1] * smoothFrac;
     const curH = visualHeights[i0] * (1 - smoothFrac) + visualHeights[i1] * smoothFrac;
+    const curFoot = objectFootprints[i0] * (1 - smoothFrac) + objectFootprints[i1] * smoothFrac;
 
     const c0 = new THREE.Color(env.sky[i0]);
     const c1 = new THREE.Color(env.sky[i1]);
@@ -793,17 +872,17 @@ window.renderFrameAtTime = function(t) {
     scene.fog.color = curSky;
 
     meshes.forEach((m, idx) => {
-        m.rotation.y = Math.sin(t * 0.55 + idx) * 0.32;
+        m.rotation.y = Math.sin(t * 0.55 + idx) * 0.28;
     });
 
-    const camOrbit = Math.sin(t * 0.45) * 0.22;
-    const dist = Math.max(curH * (isWide ? 2.15 : 3.05), 48);
+    const camOrbit = Math.sin(t * 0.45) * 0.18;
+    const dist = Math.max(curH * (isWide ? 2.25 : 3.25), curFoot * 2.3, 65);
     camera.position.set(
-        curX + Math.sin(camOrbit) * dist * 0.52 - dist * 0.14,
-        curH * 0.56 + 8,
+        curX + Math.sin(camOrbit) * dist * 0.45 - dist * 0.18,
+        curH * 0.56 + 10,
         Math.cos(camOrbit) * dist
     );
-    camera.lookAt(curX, curH * 0.48, 0);
+    camera.lookAt(curX - curFoot * 0.10, curH * 0.48, 0);
 
     renderer.render(scene, camera);
 
@@ -892,7 +971,7 @@ window.renderFrameAtTime = function(t) {
 
 
 # =====================================================================
-# 4. BESPOKE ENGINE 2: KINETICZEN (PHOTO AVATAR BALLS + 8 RINGS + WINNER BANNER!)
+# 4. BESPOKE ENGINE 2: KINETICZEN (PHOTO AVATAR BALLS + 7 RINGS + WINNER BANNER!)
 # =====================================================================
 MATTERJS_PHYSICS_HTML = r"""<!DOCTYPE html>
 <html>
@@ -963,7 +1042,6 @@ window.collisionEvents = [];
 let shakeFrames = 0;
 
 if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
-    // 7 Concentric Rings paced across all 35 seconds so there is NEVER dead empty time!
     const ringRadii = [140, 192, 244, 296, 348, 400, 452];
     ringRadii.forEach((radius, rIdx) => {
         const segments = 72;
@@ -987,7 +1065,6 @@ if (modeIdx === 0 || modeIdx === 3 || modeIdx === 4) {
         });
     });
 
-    // Spawn 21 Balls (11 vs 10 -> mathematically guarantees NO 50%-50% tie!)
     const nBalls = (modeIdx === 3) ? 11 : 21;
     for (let i = 0; i < nBalls; i++) {
         const isA = (i % 2 === 0);
@@ -1088,7 +1165,7 @@ Events.on(engine, 'collisionStart', function(ev) {
 let scoreA = 15;
 let scoreB = 10;
 
-window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
+window.stepAndRenderPhysics = function(frameIdx) {
     simTime = frameIdx / 24.0;
     let activeRingIdx = rings.findIndex(r => !r.destroyed);
     if (activeRingIdx === -1) activeRingIdx = rings.length;
@@ -1146,7 +1223,6 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
                     curRing.escapedCount += 1;
                     if (b.isA) scoreA += 14; else scoreB += 11;
 
-                    // Pace ring breaks evenly across the 35-second video (every ~4.6 seconds)
                     const minTime = (activeRingIdx + 1) * 4.6;
                     if (curRing.escapedCount >= 4 && simTime >= minTime) {
                         curRing.destroyed = true;
@@ -1186,7 +1262,6 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
     ctx.fillStyle = grad;
     ctx.fillRect(-30, -30, W + 60, H + 60);
 
-    // Top Scoreboard with Real Celebrity/Brand Circular Avatars!
     ctx.save();
     ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
@@ -1201,7 +1276,6 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
     ctx.textAlign = 'center';
     ctx.fillText(hookQuestion.slice(0, 38), cx, 102);
 
-    // Team A Avatar & Score
     if (imgA && imgA.complete && imgA.naturalWidth > 0) {
         ctx.save();
         ctx.beginPath(); ctx.arc(110, 158, 34, 0, Math.PI * 2); ctx.clip();
@@ -1215,7 +1289,6 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
     ctx.textAlign = 'left';
     ctx.fillText(teamAName + ': ' + scoreA, 158, 170);
 
-    // Team B Avatar & Score
     if (imgB && imgB.complete && imgB.naturalWidth > 0) {
         ctx.save();
         ctx.beginPath(); ctx.arc(W - 110, 158, 34, 0, Math.PI * 2); ctx.clip();
@@ -1228,7 +1301,7 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
     ctx.textAlign = 'right';
     ctx.fillText(teamBName + ': ' + scoreB, W - 158, 170);
 
-    if (scoreA === scoreB) scoreA += 3; // Never allow a flat tie!
+    if (scoreA === scoreB) scoreA += 3;
     const totalSc = Math.max(scoreA + scoreB, 1);
     const pctA = scoreA / totalSc;
     const barX = 82, barY = 215, barW = W - 164, barH = 36;
@@ -1303,7 +1376,6 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
         ctx.restore();
     }
 
-    // Draw Balls with Real Circular Photo Avatars Inside!
     balls.forEach(b => {
         const col = b.isA ? pal.teamA : pal.teamB;
         const avatarImg = b.isA ? imgA : imgB;
@@ -1345,7 +1417,6 @@ window.stepAndRenderPhysics = function(frameIdx, totalFrames) {
         ctx.restore();
     });
 
-    // Final 3 Seconds: Big Championship Winner Banner Overlay!
     const allRingsBroken = rings.length > 0 && rings.every(r => r.destroyed);
     if (allRingsBroken || simTime >= 33.2) {
         const winName = scoreA >= scoreB ? teamAName : teamBName;
@@ -1471,7 +1542,6 @@ window.renderFrameAtTime = function(t) {
     const curValA = sampleMarketValue(waypointsA, exactStageFloat, false);
     const curValB = sampleMarketValue(waypointsB, exactStageFloat, true);
 
-    // Strictly trigger Crash Alert ONLY when the current stage waypoint is a real drawdown (< previous stage waypoint)!
     const stStartA = waypointsA[Math.min(4, stageIndex)];
     const stEndA = waypointsA[Math.min(5, stageIndex + 1)];
     const stStartB = waypointsB[Math.min(4, stageIndex)];
@@ -1512,7 +1582,6 @@ window.renderFrameAtTime = function(t) {
     const cardY = 102;
     const cardH = isWide ? 190 : 240;
 
-    // Card A
     ctx.fillStyle = '#111827';
     ctx.strokeStyle = theme.colA;
     ctx.lineWidth = 4;
@@ -1539,7 +1608,6 @@ window.renderFrameAtTime = function(t) {
     ctx.font = 'bold 24px sans-serif';
     ctx.fillText((Number(roiA) >= 0 ? '+' : '') + Number(roiA).toLocaleString() + '% ROI', padX + 26, cardY + cardH - 26);
 
-    // Card B
     const cardBX = padX * 2 + cardW;
     ctx.fillStyle = '#111827';
     ctx.strokeStyle = isCrashing ? '#ef4444' : theme.colB;
@@ -1689,14 +1757,14 @@ window.renderFrameAtTime = function(t) {
 # 6. AGENT 2 & 3: DYNAMIC XGBOOST TOPIC ARCHITECT + WIKIMEDIA PHOTOS
 # =====================================================================
 SCALE3D_THEME_WHEEL = [
-    ("Planets, Moons & Stars of the Universe (from Moon to Earth, Saturn & Sun)", "planet"),
-    ("Fastest Machines, Jets & Spacecraft Ever Built (from Bugatti to Saturn V & Parker Probe)", "rocket"),
-    ("Deepest Ocean Trenches, Submarines & Shipwrecks (from Titanic Depth to Mariana Trench)", "trench"),
-    ("Tallest Mountains & Volcanoes in the Solar System (from Fuji to Everest & Olympus Mons)", "mountain"),
-    ("Iconic World Wonders & Domes (from Taj Mahal to Great Pyramid, Eiffel Tower & Burj Khalifa)", "dome_palace"),
+    ("Largest Rockets & Spacecraft in History (from V-2 Rocket to Falcon 9, Saturn V & Starship)", "rocket"),
+    ("Tallest Mountains & Volcanoes in the Solar System (from Mount Fuji to Everest & Olympus Mons)", "mountain"),
+    ("Iconic World Wonders & Towers (from Taj Mahal to Great Pyramid, Eiffel Tower & Burj Khalifa)", "dome_palace"),
+    ("Planets, Moons & Stars of the Universe (from Moon to Earth, Saturn & The Sun)", "planet"),
+    ("Deepest Ocean Trenches & Submarines (from Scuba Limit to Titanic Wreck & Mariana Trench)", "trench"),
+    ("Fastest Vehicles, Jets & Spacecraft Ever Built (from Bugatti to SR-71 Blackbird & Parker Probe)", "rocket"),
     ("Colossal Asteroid Impacts & Craters Compared to Cities", "crater"),
-    ("Largest Rockets & Spaceships in History (from V-2 to Saturn V & Starship)", "rocket"),
-    ("Biggest Cruise Ships, Supertankers & Aircraft Carriers Compared", "vehicle")
+    ("Biggest Megastructures & Skyscrapers Around the Globe", "skyscraper")
 ]
 
 WEALTH_THEME_WHEEL = [
@@ -1762,7 +1830,7 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
         Create a 5-step 3D scale comparison for "{theme_desc}".
         CRITICAL RULES:
         1. Order the 5 `items` strictly from SMALLEST `meters` (Rank #1) to LARGEST `meters` (Rank #5).
-        2. Set `"model_type"` for each item to: `"dome_palace"`, `"pyramid"`, `"lattice_tower"`, `"planet"`, `"star"`, `"rocket"`, `"mountain"`, `"trench"`, `"crater"`, `"skyscraper"`, `"statue"`, or `"vehicle"`.
+        2. Set `"model_type"` for each item accurately: `"dome_palace"`, `"pyramid"`, `"lattice_tower"`, `"planet"`, `"star"`, `"rocket"`, `"mountain"`, `"trench"`, `"crater"`, `"skyscraper"`, `"statue"`, or `"vehicle"`.
         3. Include `"wiki_query"` with the exact Wikipedia article title so we fetch its real-world photograph!
         4. Write 5 natural `narrations` ({word_rule} each) matching the 5 sorted items. NEVER say "Stage 1" or "Stage 2"!
 
@@ -1817,7 +1885,7 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
         Create a 5-part financial backtest comparing two assets or habits based on "{fin_theme}".
         CRITICAL RULES:
         1. `series_a` and `series_b` MUST each contain 6 numbers (`[initial_value, point_1, point_2, point_3, point_4, final_value]`).
-        2. Include `"wiki_a"` and `"wiki_b"` with exact Wikipedia article titles (e.g. `"Coffee"`, `"Nvidia"`, `"Bitcoin"`, `"Apple Inc."`, `"Real estate"`) so we display their real photos!
+        2. Include `"wiki_a"` and `"wiki_b"` with exact Wikipedia article titles so we display their real photos!
         3. Each of the 5 `narrations` ({word_rule} each) MUST state the exact dollar figures in `series_a[i+1]` and `series_b[i+1]`. NEVER say "Stage 1" or "Stage 2"!
 
         Output JSON ONLY:
@@ -2087,7 +2155,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         proc = subprocess.Popen(ffmpeg_v, stdin=subprocess.PIPE)
         collision_events = []
 
-        print(f"[KineticZen Matter.js V5.0] Simulating Photo-Avatar Rivalry {payload['team_a_name']} vs {payload['team_b_name']}...", flush=True)
+        print(f"[KineticZen Matter.js V6.0] Simulating Photo-Avatar Rivalry {payload['team_a_name']} vs {payload['team_b_name']}...", flush=True)
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-gpu"])
             page = browser.new_page(viewport={"width": out_w, "height": out_h})
@@ -2178,7 +2246,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
     ]
     proc = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
 
-    print(f"[{POD_NAME} Bespoke Engine V5.0] Rendering {total_frames} frames ({out_w}x{out_h})...", flush=True)
+    print(f"[{POD_NAME} Bespoke Engine V6.0] Rendering {total_frames} frames ({out_w}x{out_h})...", flush=True)
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
@@ -2187,7 +2255,7 @@ def render_bespoke_pod_chapter(ch_idx, plan, is_widescreen, total_dur=36.0, scen
         page = browser.new_page(viewport={"width": out_w, "height": out_h})
         page.goto(f"file://{html_file}")
         page.evaluate("window.waitForAllImages && window.waitForAllImages()")
-        page.wait_for_timeout(400)
+        page.wait_for_timeout(450)
 
         for f_idx in range(total_frames):
             t = f_idx / FPS
@@ -2421,7 +2489,7 @@ def upload_pod_video(video_path, title, description, tags, pinned_comment, is_lo
     response = youtube.videos().insert(part="snippet,status", body=body, media_body=media).execute()
     video_id = response["id"]
     short_link = mk_url("https", ["youtu", "be"], f"/{video_id}")
-    print(f"🎉 [{POD_NAME} V5.0 PUBLISHED!] Video ID: {video_id} | URL: {short_link}", flush=True)
+    print(f"🎉 [{POD_NAME} V6.0 PUBLISHED!] Video ID: {video_id} | URL: {short_link}", flush=True)
 
     mem = load_pod_memory()
     pub = mem.get("published_videos", [])
