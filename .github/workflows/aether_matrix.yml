@@ -1,0 +1,96 @@
+name: Project AETHER Multi-Channel Matrix
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_pod:
+        description: 'Pod to run: "ALL", "WEALTH", "PHYSICS", or "SCALE3D"'
+        required: false
+        default: 'ALL'
+      video_mode:
+        description: 'Mode: "short" or "long"'
+        required: false
+        default: 'short'
+
+  # Runs 3 times a day (07:00 AM, 06:00 PM, 11:00 PM SL Time)
+  schedule:
+    - cron: '30 1 * * *'
+    - cron: '30 12 * * *'
+    - cron: '30 17 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  aether-pod-runner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        pod: ['WEALTH', 'PHYSICS', 'SCALE3D']
+
+    steps:
+      - name: Check Pod Filter
+        id: filter
+        run: |
+          INPUT_POD="${{ github.event.inputs.target_pod || 'ALL' }}"
+          if [ "$INPUT_POD" = "ALL" ] || [ "$INPUT_POD" = "${{ matrix.pod }}" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout Repository
+        if: steps.filter.outputs.should_run == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        if: steps.filter.outputs.should_run == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install FFmpeg & Fonts
+        if: steps.filter.outputs.should_run == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation
+
+      - name: Install AI, XGBoost & Playwright Chromium
+        if: steps.filter.outputs.should_run == 'true'
+        run: |
+          pip install --upgrade pip
+          pip install requests numpy pillow edge-tts playwright xgboost scikit-learn google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
+          playwright install --with-deps chromium
+
+      - name: Run AETHER Engine for Pod ${{ matrix.pod }}
+        if: steps.filter.outputs.should_run == 'true'
+        env:
+          POD_NAME: ${{ matrix.pod }}
+          VIDEO_MODE: ${{ github.event.inputs.video_mode || (github.event.schedule == '30 12 * * *' && 'long' || 'short') }}
+          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          WEALTH_CLIENT_ID: ${{ secrets.WEALTH_CLIENT_ID }}
+          WEALTH_CLIENT_SECRET: ${{ secrets.WEALTH_CLIENT_SECRET }}
+          WEALTH_REFRESH_TOKEN: ${{ secrets.WEALTH_REFRESH_TOKEN }}
+          PHYSICS_CLIENT_ID: ${{ secrets.PHYSICS_CLIENT_ID }}
+          PHYSICS_CLIENT_SECRET: ${{ secrets.PHYSICS_CLIENT_SECRET }}
+          PHYSICS_REFRESH_TOKEN: ${{ secrets.PHYSICS_REFRESH_TOKEN }}
+          SCALE3D_CLIENT_ID: ${{ secrets.SCALE3D_CLIENT_ID }}
+          SCALE3D_CLIENT_SECRET: ${{ secrets.SCALE3D_CLIENT_SECRET }}
+          SCALE3D_REFRESH_TOKEN: ${{ secrets.SCALE3D_REFRESH_TOKEN }}
+        run: |
+          python aether_engine.py
+
+      - name: Save Pod History & Auto-Website Portal
+        if: steps.filter.outputs.should_run == 'true'
+        run: |
+          git config user.name "AETHER Autonomous Swarm"
+          git config user.email "swarm@aether.ai"
+          for i in 1 2 3; do
+            git pull --rebase origin main || true
+            git add .
+            git diff --staged --quiet || git commit -m "chore(${{ matrix.pod }}): update ML memory & web portal [skip ci]"
+            git push origin main && break || sleep 5
+          done
