@@ -1,7 +1,8 @@
 {
   "seed_idx": 0,
   "topics": [
-    "Famous Statues Size Comparison: 3D Scale"
+    "Famous Statues Size Comparison: 3D Scale",
+    "Iconic Wonders: 3D Size Comparison"
   ],
   "playlist_id": "",
   "published_videos": [
@@ -9,6 +10,11 @@
       "video_id": "UTTa87GGRbM",
       "title": "Famous Statues Size Comparison: 3D Scale #shorts",
       "published_at": 1794635101
+    },
+    {
+      "video_id": "F3rTMk282rk",
+      "title": "Iconic Wonders: 3D Size Comparison #shorts",
+      "published_at": 1794638020
     }
   ],
   "xgb_feedback_rows": []
