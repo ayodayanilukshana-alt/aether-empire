@@ -658,7 +658,7 @@ function buildDistinct3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
             stage2.position.y = h * 0.80; group.add(stage2);
             const fairing = new THREE.Mesh(new THREE.ConeGeometry(rad * 1.25, h * 0.14, 32), matWhite);
             fairing.position.y = h * 0.94; group.add(fairing);
-        } else if (nameLow.includes('sls') || nameLow.includes('launch system') || nameLow.includes('shuttle') || i === 2) {
+        } else if (nameLow.includes('sls') || nameLow.includes('launch system') || nameLow.includes('shuttle')) {
             // NASA SLS: Rust-Orange Cryogenic Core Stage + 2 White Solid Rocket Boosters (SRBs)!
             const rad = h * 0.075;
             const core = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, h * 0.72, 32), matOrange);
@@ -1762,7 +1762,7 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
         theme_desc, default_model = SCALE3D_THEME_WHEEL[run_idx % len(SCALE3D_THEME_WHEEL)]
         prompt = f"""
         Top XGBoost-Scored 3D Trends: {json.dumps(elite_titles[:8])}
-        Mandatory Theme for this Video: "{theme_desc}"
+        Choose a 100% BRAND NEW topic inspired by these live XGBoost trends (or any viral 3D comparison concept NOT in Past Titles). Reference theme idea only if helpful: "{theme_desc}"
         (FORBIDDEN: Do NOT repeat past titles: {json.dumps(past_topics[-35:])})
 
         Create a 5-step 3D scale comparison for "{theme_desc}".
@@ -1817,7 +1817,7 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
         fin_theme = WEALTH_THEME_WHEEL[run_idx % len(WEALTH_THEME_WHEEL)]
         prompt = f"""
         Top XGBoost-Scored Wealth & Investing Queries: {json.dumps(elite_titles[:8])}
-        Mandatory Theme for this Video: "{fin_theme}"
+        Choose a 100% BRAND NEW financial comparison inspired by these live XGBoost trends (or any viral wealth backtest NOT in Past Titles). Reference idea only if helpful: "{fin_theme}"
         (FORBIDDEN: Do NOT repeat past titles: {json.dumps(past_topics[-35:])})
 
         Create a 5-part financial backtest comparing two assets or habits based on "{fin_theme}".
@@ -2460,8 +2460,91 @@ def upload_pod_video(video_path, title, description, tags, pinned_comment, is_lo
     except Exception:
         pass
 
+    add_to_official_pod_playlist(youtube, video_id)
+    auto_ab_test_underperforming_videos(youtube)
     seed_telegraph_backlink(video_id, title, description)
     update_interactive_micro_saas_portal(video_id, title, description[:160])
+
+
+
+# =====================================================================
+# V8.0 MASTER PLAN COMPLETION: GOOGLE TRENDS + AUTO A/B TESTER + PLAYLISTS
+# =====================================================================
+def fetch_google_trends_and_yahoo_live():
+    live_trends = []
+    try:
+        gt_url = mk_url("https", ["trends", "google", "com"], "/trending/rss?geo=US")
+        r = requests.get(gt_url, headers=BROWSER_HEADERS, timeout=6)
+        if r.status_code == 200:
+            titles = re.findall(r"<title>([^<]+)</title>", r.text)
+            for t in titles[1:18]:
+                if len(t) > 3:
+                    live_trends.append(t.strip())
+    except Exception:
+        pass
+    return live_trends
+
+
+def auto_ab_test_underperforming_videos(youtube):
+    mem = load_pod_memory()
+    pub = mem.get("published_videos", [])
+    now_ts = int(time.time())
+    changed = False
+    for v in pub[-10:]:
+        if v.get("ab_tested"):
+            continue
+        age_hrs = (now_ts - int(v.get("published_at", now_ts))) / 3600.0
+        if age_hrs >= 12.0:
+            try:
+                vr = youtube.videos().list(id=v["video_id"], part="snippet,statistics").execute()
+                items = vr.get("items", [])
+                if items:
+                    views = int(items[0].get("statistics", {}).get("viewCount", 0))
+                    snip = items[0]["snippet"]
+                    if views < 100:
+                        new_t = call_ai(
+                            SCRIPT_MODELS,
+                            "Output ONLY a single viral YouTube title under 58 chars.",
+                            f"Rewrite this title for higher CTR (keep #shorts if present): {snip['title']}",
+                            0.85
+                        ).strip().strip('"')
+                        if len(new_t) > 10:
+                            snip["title"] = new_t[:95]
+                            youtube.videos().update(part="snippet", body={"id": v["video_id"], "snippet": snip}).execute()
+                            print(f"✅ [{POD_NAME} Auto A/B Title Optimizer] Boosted {v['video_id']} -> {new_t}", flush=True)
+                    v["ab_tested"] = True
+                    changed = True
+            except Exception:
+                pass
+    if changed:
+        save_pod_memory(mem)
+
+
+def add_to_official_pod_playlist(youtube, video_id):
+    mem = load_pod_memory()
+    pl_id = mem.get("playlist_id", "")
+    try:
+        if not pl_id:
+            pl_r = youtube.playlists().insert(
+                part="snippet,status",
+                body={
+                    "snippet": {
+                        "title": f"{POD_NAME} Official Simulations & Breakdowns",
+                        "description": f"Official {POD_NAME} high-retention visual simulations."
+                    },
+                    "status": {"privacyStatus": "public"}
+                }
+            ).execute()
+            pl_id = pl_r["id"]
+            mem["playlist_id"] = pl_id
+            save_pod_memory(mem)
+        youtube.playlistItems().insert(
+            part="snippet",
+            body={"snippet": {"playlistId": pl_id, "resourceId": {"kind": "youtube#video", "videoId": video_id}}}
+        ).execute()
+        print(f"✅ [{POD_NAME} Playlist] Added {video_id} to Official Playlist!", flush=True)
+    except Exception:
+        pass
 
 
 def main():
@@ -2515,7 +2598,7 @@ def main():
     upload_pod_video(
         final_mp4,
         title=lead_plan.get("title", "Live Simulation Experiment"),
-        description=f"{lead_plan.get('topic_summary', '')}\n\nSubscribe for daily simulations!",
+        description=f"{lead_plan.get('topic_summary', '')}\n\nTry our Free Interactive Calculators & 3D Sandbox: https://ayodayanilukshana-alt.github.io/aether-empire/\n\nSubscribe for daily simulations!",
         tags=tags,
         pinned_comment=lead_plan.get("pinned_comment", "What did you think of this simulation? Comment below!"),
         is_long=is_long,
