@@ -447,19 +447,11 @@ hudCanvas.width = W;
 hudCanvas.height = H;
 const ctx = hudCanvas.getContext('2d');
 
-const ENV_THEMES = [
-    { sky: [0x0369a1, 0x1d4ed8, 0x1e3a8a, 0x0f172a, 0x060b16], ground: 0x0f172a, grid: 0x38bdf8 },
-    { sky: [0x090d16, 0x050814, 0x030712, 0x02040a, 0x000005], ground: 0x080d1a, grid: 0x34d399 },
-    { sky: [0x1e1b4b, 0x311068, 0x3b0764, 0x1e1b4b, 0x090d16], ground: 0x130722, grid: 0xf472b6 },
-    { sky: [0x064e3b, 0x065f46, 0x047857, 0x0f172a, 0x022c22], ground: 0x052e16, grid: 0xfacc15 }
-];
-const env = ENV_THEMES[(DATA.theme_seed || 0) % ENV_THEMES.length];
-
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(env.sky[0]);
-scene.fog = new THREE.FogExp2(env.sky[0], 0.00045);
+scene.background = new THREE.Color(0x0b132b);
+scene.fog = new THREE.FogExp2(0x0b132b, 0.00035);
 
-const camera = new THREE.PerspectiveCamera(44, W / H, 0.5, 90000);
+const camera = new THREE.PerspectiveCamera(42, W / H, 0.5, 90000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H);
 renderer.shadowMap.enabled = true;
@@ -469,15 +461,14 @@ const hemiLight = new THREE.HemisphereLight(0xffffff, 0x60a5fa, 1.35);
 hemiLight.position.set(0, 1200, 0);
 scene.add(hemiLight);
 
-const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.55);
-dirLight.position.set(400, 900, 600);
+const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.6);
+dirLight.position.set(350, 800, 700);
 scene.add(dirLight);
 
-const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.95);
-rimLight.position.set(-400, 500, -450);
+const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.9);
+rimLight.position.set(-350, 400, -400);
 scene.add(rimLight);
 
-// Realistic Procedural Surface Textures (Lunar Craters, Earth Continents, Solar Plasma, Marble Arches, Limestone, Glass Windows)
 function createRealisticTexture(mode, baseHex, accentHex) {
     const c = document.createElement('canvas');
     c.width = 512; c.height = 512;
@@ -485,48 +476,48 @@ function createRealisticTexture(mode, baseHex, accentHex) {
     g.fillStyle = baseHex;
     g.fillRect(0, 0, 512, 512);
 
-    if (mode === 'lunar_craters') {
-        g.fillStyle = '#94a3b8';
-        g.fillRect(0, 0, 512, 512);
+    if (mode === 'v2_checkered') {
+        g.fillStyle = '#f8fafc'; g.fillRect(0, 0, 512, 512);
+        g.fillStyle = '#0f172a';
+        for (let y = 0; y < 512; y += 128) {
+            for (let x = 0; x < 512; x += 128) {
+                if ((x + y) % 256 === 0) g.fillRect(x, y, 128, 128);
+            }
+        }
+    } else if (mode === 'saturn_stages') {
+        g.fillStyle = '#f8fafc'; g.fillRect(0, 0, 512, 512);
+        g.fillStyle = '#0f172a';
+        g.fillRect(0, 80, 512, 55);
+        g.fillRect(0, 260, 512, 65);
+        g.fillStyle = '#dc2626';
+        g.fillRect(0, 430, 512, 30);
+    } else if (mode === 'stainless_steel') {
+        const gr = g.createLinearGradient(0, 0, 512, 0);
+        gr.addColorStop(0, '#64748b'); gr.addColorStop(0.5, '#f1f5f9'); gr.addColorStop(1, '#475569');
+        g.fillStyle = gr; g.fillRect(0, 0, 512, 512);
+        g.strokeStyle = 'rgba(15,23,42,0.25)'; g.lineWidth = 2;
+        for (let y = 0; y < 512; y += 32) { g.beginPath(); g.moveTo(0, y); g.lineTo(512, y); g.stroke(); }
+    } else if (mode === 'lunar_craters') {
+        g.fillStyle = '#94a3b8'; g.fillRect(0, 0, 512, 512);
         for (let i = 0; i < 90; i++) {
             const cx = (Math.sin(i * 12.3) * 0.5 + 0.5) * 480 + 16;
             const cy = (Math.cos(i * 45.7) * 0.5 + 0.5) * 480 + 16;
-            const cr = 6 + (i % 24);
             g.fillStyle = (i % 2 === 0) ? '#64748b' : '#cbd5e1';
-            g.beginPath(); g.arc(cx, cy, cr, 0, Math.PI * 2); g.fill();
-            g.strokeStyle = '#475569'; g.lineWidth = 2; g.stroke();
+            g.beginPath(); g.arc(cx, cy, 6 + (i % 22), 0, Math.PI * 2); g.fill();
         }
     } else if (mode === 'earth_globe') {
-        g.fillStyle = '#0284c7';
-        g.fillRect(0, 0, 512, 512);
-        // Continents
+        g.fillStyle = '#0284c7'; g.fillRect(0, 0, 512, 512);
         g.fillStyle = '#16a34a';
         for (let i = 0; i < 28; i++) {
             const cx = (Math.sin(i * 91.1) * 0.5 + 0.5) * 460 + 25;
             const cy = 80 + (Math.cos(i * 37.4) * 0.5 + 0.5) * 350;
             g.beginPath(); g.ellipse(cx, cy, 35 + (i % 45), 22 + (i % 30), i * 0.4, 0, Math.PI * 2); g.fill();
         }
-        // Polar ice caps & clouds
-        g.fillStyle = '#f8fafc';
-        g.fillRect(0, 0, 512, 36);
-        g.fillRect(0, 476, 512, 36);
-        g.fillStyle = 'rgba(255, 255, 255, 0.32)';
-        for (let y = 60; y < 450; y += 55) {
-            g.fillRect(0, y, 512, 12);
-        }
+        g.fillStyle = '#f8fafc'; g.fillRect(0, 0, 512, 36); g.fillRect(0, 476, 512, 36);
     } else if (mode === 'solar_plasma') {
         const grad = g.createLinearGradient(0, 0, 512, 512);
-        grad.addColorStop(0, '#fef08a');
-        grad.addColorStop(0.5, '#f97316');
-        grad.addColorStop(1, '#dc2626');
-        g.fillStyle = grad;
-        g.fillRect(0, 0, 512, 512);
-        for (let i = 0; i < 120; i++) {
-            g.fillStyle = (i % 2 === 0) ? 'rgba(254, 240, 138, 0.45)' : 'rgba(185, 28, 28, 0.35)';
-            g.beginPath();
-            g.arc((i * 73) % 512, (i * 139) % 512, 10 + (i % 22), 0, Math.PI * 2);
-            g.fill();
-        }
+        grad.addColorStop(0, '#fef08a'); grad.addColorStop(0.5, '#f97316'); grad.addColorStop(1, '#dc2626');
+        g.fillStyle = grad; g.fillRect(0, 0, 512, 512);
     } else if (mode === 'gas_giant') {
         for (let y = 0; y < 512; y += 4) {
             const w = Math.sin(y * 0.045) + 0.5 * Math.cos(y * 0.11);
@@ -534,16 +525,12 @@ function createRealisticTexture(mode, baseHex, accentHex) {
             g.fillRect(0, y, 512, 4);
         }
     } else if (mode === 'marble_arches') {
-        g.fillStyle = '#fffbeb';
-        g.fillRect(0, 0, 512, 512);
-        g.fillStyle = '#334155';
-        g.fillRect(156, 140, 200, 372);
+        g.fillStyle = '#fffbeb'; g.fillRect(0, 0, 512, 512);
+        g.fillStyle = '#334155'; g.fillRect(156, 140, 200, 372);
         g.beginPath(); g.arc(256, 140, 100, Math.PI, 0); g.fill();
-        g.strokeStyle = '#d97706'; g.lineWidth = 8;
-        g.strokeRect(140, 110, 232, 390);
+        g.strokeStyle = '#d97706'; g.lineWidth = 8; g.strokeRect(140, 110, 232, 390);
     } else if (mode === 'limestone_blocks') {
-        g.fillStyle = '#d97706';
-        g.fillRect(0, 0, 512, 512);
+        g.fillStyle = '#d97706'; g.fillRect(0, 0, 512, 512);
         for (let y = 0; y < 512; y += 24) {
             const off = (y % 48 === 0) ? 0 : 24;
             for (let x = -24; x < 512; x += 48) {
@@ -551,69 +538,66 @@ function createRealisticTexture(mode, baseHex, accentHex) {
                 g.fillRect(x + off, y, 46, 22);
             }
         }
-    } else if (mode === 'iron_lattice') {
-        g.fillStyle = '#78350f';
-        g.fillRect(0, 0, 512, 512);
-        g.strokeStyle = '#fbbf24'; g.lineWidth = 6;
-        for (let i = -512; i < 1024; i += 48) {
-            g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 512, 512); g.stroke();
-            g.beginPath(); g.moveTo(i + 512, 0); g.lineTo(i, 512); g.stroke();
-        }
     } else {
-        g.fillStyle = '#0f172a';
-        g.fillRect(0, 0, 512, 512);
+        g.fillStyle = '#0f172a'; g.fillRect(0, 0, 512, 512);
         for (let y = 8; y < 504; y += 18) {
             for (let x = 8; x < 504; x += 22) {
-                const isLit = Math.sin(x * 19.3 + y * 71.7) > -0.25;
-                g.fillStyle = isLit ? accentHex : '#1e293b';
+                g.fillStyle = (Math.sin(x * 19.3 + y * 71.7) > -0.25) ? accentHex : '#1e293b';
                 g.fillRect(x, y, 15, 12);
             }
         }
     }
     const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
+    tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
     return tex;
 }
 
+// Reflective Studio Floor + Vertical 3D Scale Measurement Backdrop Wall!
 const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(90000, 90000),
-    new THREE.MeshStandardMaterial({ color: env.ground, roughness: 0.35, metalness: 0.35 })
+    new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.4 })
 );
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
-const gridHelper = new THREE.GridHelper(30000, 300, env.grid, 0x1e293b);
+const gridHelper = new THREE.GridHelper(16000, 320, 0x38bdf8, 0x1e293b);
 gridHelper.position.y = 0.2;
 scene.add(gridHelper);
 
+// Vertical Measurement Grid Wall behind the objects so camera pans NEVER look empty and scale is unmistakable!
+const backGrid = new THREE.GridHelper(4000, 100, 0x38bdf8, 0x1e3a8a);
+backGrid.rotation.x = Math.PI / 2;
+backGrid.position.set(400, 400, -140);
+scene.add(backGrid);
+
 const items = DATA.items || [];
-const rawMeters = items.map((it, idx) => Math.max(Number(it.meters) || (idx + 1) * 100, 0.1));
+const rawMeters = items.map((it, idx) => Math.max(Number(it.meters) || (idx + 1) * 20, 0.1));
 const minM = Math.min(...rawMeters);
 const maxM = Math.max(...rawMeters);
 
+// True visual height progression so Rank #1 looks visibly smaller beside Rank #2, #3, #4, #5!
 const visualHeights = rawMeters.map((m, idx) => {
     if (maxM / minM > 25) {
         const ratio = Math.log10(m / minM + 1) / Math.log10(maxM / minM + 1);
-        return 28 + ratio * 220 + idx * 18;
+        return 26 + ratio * 230 + idx * 18;
     }
-    return Math.max(28, (m / maxM) * 260);
+    return Math.max(26, (m / maxM) * 260);
 });
 
-// DYNAMIC COLLISION-FREE X-SPACING! (Calculates exact width of each object + rings so nothing EVER touches!)
-const objectFootprints = items.map((it, idx) => {
+const objectWidths = items.map((it, idx) => {
     const h = visualHeights[idx];
     const nl = String((it && it.name) || '').toLowerCase();
     const mt = String((it && it.model_type) || '').toLowerCase();
-    if (nl.includes('saturn') || nl.includes('uranus')) return h * 1.85;
-    if (mt === 'planet' || mt === 'star' || mt === 'dome_palace' || mt === 'pyramid' || mt === 'mountain' || mt === 'ship') return h * 1.35;
-    return h * 0.95;
+    if (nl.includes('saturn') && mt === 'planet') return h * 1.65;
+    if (mt === 'planet' || mt === 'star' || mt === 'dome_palace' || mt === 'pyramid' || mt === 'mountain') return h * 1.05;
+    return h * 0.42;
 });
 
+// Tight Side-by-Side Architectural Lineup Spacing so previous smaller objects stay IN FRAME on the left!
 const xPositions = [0];
 for (let i = 1; i < 5; i++) {
-    const gap = (objectFootprints[i - 1] * 0.65) + (objectFootprints[i] * 0.65) + Math.max(visualHeights[i] * 0.65, 95);
-    xPositions.push(xPositions[i - 1] + gap);
+    const stepX = (objectWidths[i - 1] * 0.58) + (objectWidths[i] * 0.58) + Math.max(visualHeights[i] * 0.24, 28);
+    xPositions.push(xPositions[i - 1] + stepX);
 }
 
 const palettes = [
@@ -640,161 +624,137 @@ window.waitForAllImages = async function() {
     await Promise.all(promises);
 };
 
-function buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
+function buildDistinct3DObject(itemObj, i, h, baseHex, glowHex, hexNum) {
     const group = new THREE.Group();
     const mType = String(itemObj.model_type || 'skyscraper').toLowerCase();
     const nameLow = String(itemObj.name || '').toLowerCase();
 
-    if (mType === 'planet' || mType === 'star') {
-        const r = h * 0.46;
-        let texMode = 'gas_giant';
-        let c1 = baseHex, c2 = glowHex;
-        let isStar = (mType === 'star' || nameLow.includes('sun') || nameLow.includes('star') || nameLow.includes('scuti') || nameLow.includes('betelgeuse') || nameLow.includes('sirius'));
+    if (mType === 'rocket' || mType === 'vehicle') {
+        // 5 Distinct Rocket/Spacecraft Architectures so they NEVER look like clones!
+        const matWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.22, metalness: 0.4 });
+        const matDark = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.6 });
+        const matOrange = new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.35, metalness: 0.3 });
+        const matSteel = new THREE.MeshStandardMaterial({ map: createRealisticTexture('stainless_steel', '#cbd5e1', '#64748b'), roughness: 0.15, metalness: 0.88 });
 
-        if (isStar) {
-            texMode = 'solar_plasma';
-        } else if (nameLow.includes('earth')) {
-            texMode = 'earth_globe';
-        } else if (nameLow.includes('moon') || nameLow.includes('mercury') || nameLow.includes('pluto') || nameLow.includes('ceres')) {
-            texMode = 'lunar_craters';
-        } else if (nameLow.includes('mars')) {
-            texMode = 'lunar_craters'; c1 = '#ea580c'; c2 = '#9a3412';
-        } else if (nameLow.includes('saturn') || nameLow.includes('jupiter')) {
-            texMode = 'gas_giant'; c1 = '#d97706'; c2 = '#fef08a';
-        } else if (nameLow.includes('neptune') || nameLow.includes('uranus')) {
-            texMode = 'gas_giant'; c1 = '#0284c7'; c2 = '#38bdf8';
+        if (nameLow.includes('v-2') || nameLow.includes('v2') || i === 0) {
+            // V-2 Ballistic Missile: Checkered black/white tapered hull + 4 cruciform tail fins (NO side boosters!)
+            const matV2 = new THREE.MeshStandardMaterial({ map: createRealisticTexture('v2_checkered', '#ffffff', '#000000'), roughness: 0.3 });
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.08, h * 0.10, h * 0.68, 32), matV2);
+            body.position.y = h * 0.38; group.add(body);
+            const nose = new THREE.Mesh(new THREE.ConeGeometry(h * 0.08, h * 0.28, 32), matDark);
+            nose.position.y = h * 0.86; group.add(nose);
+            for (let f = 0; f < 4; f++) {
+                const fin = new THREE.Mesh(new THREE.BoxGeometry(h * 0.26, h * 0.18, h * 0.02), matDark);
+                fin.position.y = h * 0.11; fin.rotation.y = (f * Math.PI) / 2; group.add(fin);
+            }
+        } else if (nameLow.includes('falcon') || i === 1) {
+            // SpaceX Falcon 9: Slender white core + black interstage + 4 black landing legs + payload fairing!
+            const rad = h * 0.055;
+            const stage1 = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, h * 0.62, 32), matWhite);
+            stage1.position.y = h * 0.33; group.add(stage1);
+            const inter = new THREE.Mesh(new THREE.CylinderGeometry(rad * 1.02, rad * 1.02, h * 0.08, 32), matDark);
+            inter.position.y = h * 0.68; group.add(inter);
+            const stage2 = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, h * 0.16, 32), matWhite);
+            stage2.position.y = h * 0.80; group.add(stage2);
+            const fairing = new THREE.Mesh(new THREE.ConeGeometry(rad * 1.25, h * 0.14, 32), matWhite);
+            fairing.position.y = h * 0.94; group.add(fairing);
+        } else if (nameLow.includes('sls') || nameLow.includes('launch system') || nameLow.includes('shuttle') || i === 2) {
+            // NASA SLS: Rust-Orange Cryogenic Core Stage + 2 White Solid Rocket Boosters (SRBs)!
+            const rad = h * 0.075;
+            const core = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, h * 0.72, 32), matOrange);
+            core.position.y = h * 0.38; group.add(core);
+            const upper = new THREE.Mesh(new THREE.ConeGeometry(rad, h * 0.26, 32), matWhite);
+            upper.position.y = h * 0.87; group.add(upper);
+            [-1, 1].forEach(dir => {
+                const srb = new THREE.Mesh(new THREE.CylinderGeometry(rad * 0.48, rad * 0.52, h * 0.54, 24), matWhite);
+                srb.position.set(dir * rad * 1.55, h * 0.28, 0); group.add(srb);
+                const srbCone = new THREE.Mesh(new THREE.ConeGeometry(rad * 0.48, h * 0.10, 24), matWhite);
+                srbCone.position.set(dir * rad * 1.55, h * 0.60, 0); group.add(srbCone);
+            });
+        } else if (nameLow.includes('saturn') || i === 3) {
+            // Apollo Saturn V: Stepped 3-Stage White/Black Heavy Lift Vehicle + Red Launch Escape Tower!
+            const matSat = new THREE.MeshStandardMaterial({ map: createRealisticTexture('saturn_stages', '#ffffff', '#000000'), roughness: 0.28 });
+            const s1 = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.085, h * 0.095, h * 0.45, 32), matSat);
+            s1.position.y = h * 0.225; group.add(s1);
+            const s2 = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.072, h * 0.085, h * 0.26, 32), matSat);
+            s2.position.y = h * 0.58; group.add(s2);
+            const s3 = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.052, h * 0.072, h * 0.16, 32), matWhite);
+            s3.position.y = h * 0.79; group.add(s3);
+            const les = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.012, h * 0.035, h * 0.13, 16), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+            les.position.y = h * 0.935; group.add(les);
+        } else {
+            // SpaceX Starship & Super Heavy: Gleaming Stainless Steel Cylinder + Black Heatshield Nose + Aerodynamic Flaps!
+            const rad = h * 0.082;
+            const booster = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, h * 0.56, 36), matSteel);
+            booster.position.y = h * 0.28; group.add(booster);
+            const ship = new THREE.Mesh(new THREE.CylinderGeometry(rad * 0.98, rad, h * 0.28, 36), matSteel);
+            ship.position.y = h * 0.70; group.add(ship);
+            const nose = new THREE.Mesh(new THREE.ConeGeometry(rad * 0.98, h * 0.16, 36), matSteel);
+            nose.position.y = h * 0.92; group.add(nose);
+            const flap = new THREE.Mesh(new THREE.BoxGeometry(rad * 2.5, h * 0.12, h * 0.015), matDark);
+            flap.position.y = h * 0.64; group.add(flap);
         }
+    } else if (mType === 'planet' || mType === 'star') {
+        const r = h * 0.46;
+        let texMode = 'gas_giant', c1 = baseHex, c2 = glowHex;
+        const isStar = (mType === 'star' || nameLow.includes('sun') || nameLow.includes('star') || nameLow.includes('scuti') || nameLow.includes('betelgeuse'));
+        if (isStar) texMode = 'solar_plasma';
+        else if (nameLow.includes('earth')) texMode = 'earth_globe';
+        else if (nameLow.includes('moon') || nameLow.includes('mercury') || nameLow.includes('pluto')) texMode = 'lunar_craters';
+        else if (nameLow.includes('mars')) { texMode = 'lunar_craters'; c1 = '#ea580c'; c2 = '#9a3412'; }
+        else if (nameLow.includes('saturn') || nameLow.includes('jupiter')) { texMode = 'gas_giant'; c1 = '#d97706'; c2 = '#fef08a'; }
 
-        const tex = createRealisticTexture(texMode, c1, c2);
-        const matSphere = new THREE.MeshStandardMaterial({
-            map: tex,
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 48), new THREE.MeshStandardMaterial({
+            map: createRealisticTexture(texMode, c1, c2),
             roughness: isStar ? 0.1 : 0.45,
-            metalness: 0.1,
             emissive: isStar ? 0xf97316 : 0x000000,
             emissiveIntensity: isStar ? 0.55 : 0.0
-        });
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 48), matSphere);
-        sphere.position.y = r + 4;
-        group.add(sphere);
+        }));
+        sphere.position.y = r + 3; group.add(sphere);
 
-        // ONLY SATURN OR URANUS GETS A PLANETARY RING!
         if (nameLow.includes('saturn') || nameLow.includes('uranus')) {
-            const ring = new THREE.Mesh(
-                new THREE.RingGeometry(r * 1.22, r * 1.75, 64),
-                new THREE.MeshBasicMaterial({ color: nameLow.includes('saturn') ? 0xfde047 : 0x7dd3fc, side: THREE.DoubleSide, transparent: true, opacity: 0.72 })
-            );
-            ring.rotation.x = Math.PI / 2.25;
-            ring.position.y = r + 4;
-            group.add(ring);
+            const ring = new THREE.Mesh(new THREE.RingGeometry(r * 1.22, r * 1.72, 64), new THREE.MeshBasicMaterial({ color: 0xfde047, side: THREE.DoubleSide, transparent: true, opacity: 0.72 }));
+            ring.rotation.x = Math.PI / 2.25; ring.position.y = r + 3; group.add(ring);
         }
-    } else if (mType === 'dome_palace' || nameLow.includes('taj') || nameLow.includes('cathedral') || nameLow.includes('capitol') || nameLow.includes('mosque')) {
-        const matMarble = new THREE.MeshStandardMaterial({ map: createRealisticTexture('marble_arches', '#fffbeb', '#d97706'), roughness: 0.22, metalness: 0.12 });
-        const matWhite = new THREE.MeshStandardMaterial({ color: 0xfffbeb, roughness: 0.18, metalness: 0.2 });
-
-        const plinth = new THREE.Mesh(new THREE.BoxGeometry(h * 1.15, h * 0.12, h * 1.15), matWhite);
+    } else if (mType === 'dome_palace' || nameLow.includes('taj') || nameLow.includes('cathedral') || nameLow.includes('capitol')) {
+        const matMarble = new THREE.MeshStandardMaterial({ map: createRealisticTexture('marble_arches', '#fffbeb', '#d97706'), roughness: 0.22 });
+        const matWhite = new THREE.MeshStandardMaterial({ color: 0xfffbeb, roughness: 0.18 });
+        const plinth = new THREE.Mesh(new THREE.BoxGeometry(h * 0.95, h * 0.12, h * 0.95), matWhite);
         plinth.position.y = h * 0.06; group.add(plinth);
-        const body = new THREE.Mesh(new THREE.BoxGeometry(h * 0.70, h * 0.46, h * 0.70), matMarble);
+        const body = new THREE.Mesh(new THREE.BoxGeometry(h * 0.62, h * 0.46, h * 0.62), matMarble);
         body.position.y = h * 0.35; group.add(body);
-
-        const cOff = h * 0.24;
-        [[-cOff, -cOff], [cOff, -cOff], [-cOff, cOff], [cOff, cOff]].forEach(([cx, cz]) => {
-            const ch = new THREE.Mesh(new THREE.SphereGeometry(h * 0.065, 20, 20), matWhite);
-            ch.position.set(cx, h * 0.61, cz); group.add(ch);
-        });
-
-        const drum = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.20, h * 0.22, h * 0.15, 32), matWhite);
-        drum.position.y = h * 0.63; group.add(drum);
-        const dome = new THREE.Mesh(new THREE.SphereGeometry(h * 0.22, 36, 36), matWhite);
-        dome.position.y = h * 0.76; dome.scale.set(1, 1.28, 1); group.add(dome);
-        const finial = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.02, h * 0.14, 16), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
-        finial.position.y = h * 0.96; group.add(finial);
-
-        const mOff = h * 0.50;
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(h * 0.21, 36, 36), matWhite);
+        dome.position.y = h * 0.75; dome.scale.set(1, 1.28, 1); group.add(dome);
+        const mOff = h * 0.42;
         [[-mOff, -mOff], [mOff, -mOff], [-mOff, mOff], [mOff, mOff]].forEach(([mx, mz]) => {
-            const minT = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.035, h * 0.052, h * 0.74, 24), matWhite);
-            minT.position.set(mx, h * 0.43, mz); group.add(minT);
-            const minCap = new THREE.Mesh(new THREE.SphereGeometry(h * 0.048, 16, 16), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
-            minCap.position.set(mx, h * 0.82, mz); group.add(minCap);
+            const minT = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.032, h * 0.048, h * 0.72, 24), matWhite);
+            minT.position.set(mx, h * 0.42, mz); group.add(minT);
         });
-    } else if (mType === 'pyramid' || nameLow.includes('pyramid') || nameLow.includes('giza')) {
-        const matStone = new THREE.MeshStandardMaterial({ map: createRealisticTexture('limestone_blocks', '#d97706', '#f59e0b'), roughness: 0.75, metalness: 0.1 });
-        const steps = 14;
-        for (let s = 0; s < steps; s++) {
-            const sh = (h * 0.88) / steps;
-            const sw = h * 1.05 * (1 - s / (steps * 1.08));
+    } else if (mType === 'pyramid' || nameLow.includes('pyramid')) {
+        const matStone = new THREE.MeshStandardMaterial({ map: createRealisticTexture('limestone_blocks', '#d97706', '#f59e0b'), roughness: 0.75 });
+        for (let s = 0; s < 14; s++) {
+            const sh = (h * 0.88) / 14;
+            const sw = h * 0.95 * (1 - s / 15.2);
             const tier = new THREE.Mesh(new THREE.BoxGeometry(sw, sh, sw), matStone);
-            tier.position.y = s * sh + sh * 0.5;
-            group.add(tier);
-        }
-        const cap = new THREE.Mesh(new THREE.ConeGeometry(h * 0.11, h * 0.14, 4), new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.85, roughness: 0.15 }));
-        cap.position.y = h * 0.94; cap.rotation.y = Math.PI / 4; group.add(cap);
-    } else if (nameLow.includes('eiffel') || mType === 'lattice_tower') {
-        const matIron = new THREE.MeshStandardMaterial({ map: createRealisticTexture('iron_lattice', '#78350f', '#fbbf24'), roughness: 0.4, metalness: 0.65 });
-        const legOff = h * 0.18;
-        [[-legOff, -legOff], [legOff, -legOff], [-legOff, legOff], [legOff, legOff]].forEach(([lx, lz]) => {
-            const leg = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.035, h * 0.065, h * 0.28, 16), matIron);
-            leg.position.set(lx * 0.75, h * 0.14, lz * 0.75);
-            leg.rotation.z = lx > 0 ? 0.22 : -0.22;
-            leg.rotation.x = lz > 0 ? -0.22 : 0.22;
-            group.add(leg);
-        });
-        const deck1 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.34, h * 0.04, h * 0.34), matIron);
-        deck1.position.y = h * 0.28; group.add(deck1);
-        const mid = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.08, h * 0.15, h * 0.28, 4), matIron);
-        mid.position.y = h * 0.42; mid.rotation.y = Math.PI / 4; group.add(mid);
-        const deck2 = new THREE.Mesh(new THREE.BoxGeometry(h * 0.20, h * 0.035, h * 0.20), matIron);
-        deck2.position.y = h * 0.56; group.add(deck2);
-        const topShaft = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.025, h * 0.075, h * 0.34, 4), matIron);
-        topShaft.position.y = h * 0.73; topShaft.rotation.y = Math.PI / 4; group.add(topShaft);
-        const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.012, h * 0.12, 16), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
-        spire.position.y = h * 0.94; group.add(spire);
-    } else if (mType === 'rocket' || mType === 'vehicle') {
-        const matWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.22, metalness: 0.45 });
-        const matBlack = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.7 });
-        const matAccent = new THREE.MeshStandardMaterial({ color: hexNum, roughness: 0.25, metalness: 0.75 });
-        const bodyH = h * 0.68, rad = h * 0.095;
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad * 1.1, bodyH, 32), matWhite);
-        body.position.y = bodyH * 0.5 + h * 0.08; group.add(body);
-
-        // Interstage black rings
-        const band1 = new THREE.Mesh(new THREE.CylinderGeometry(rad * 1.03, rad * 1.05, bodyH * 0.12, 32), matBlack);
-        band1.position.y = h * 0.32; group.add(band1);
-        const band2 = new THREE.Mesh(new THREE.CylinderGeometry(rad * 1.01, rad * 1.02, bodyH * 0.08, 32), matAccent);
-        band2.position.y = h * 0.58; group.add(band2);
-
-        const nose = new THREE.Mesh(new THREE.ConeGeometry(rad, h * 0.24, 32), matAccent);
-        nose.position.y = bodyH + h * 0.20; group.add(nose);
-        for (let f = 0; f < 4; f++) {
-            const a = (f * Math.PI) / 2;
-            const booster = new THREE.Mesh(new THREE.CylinderGeometry(rad * 0.35, rad * 0.45, h * 0.38, 16), matWhite);
-            booster.position.set(Math.cos(a) * rad * 1.25, h * 0.20, Math.sin(a) * rad * 1.25); group.add(booster);
+            tier.position.y = s * sh + sh * 0.5; group.add(tier);
         }
     } else if (mType === 'mountain' || mType === 'trench' || mType === 'crater') {
-        // Multi-peak jagged rocky mountain range + snow cap!
-        const matRock = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.88, metalness: 0.1 });
-        const matSnow = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25, metalness: 0.1 });
-        const mainPeak = new THREE.Mesh(new THREE.ConeGeometry(h * 0.58, h * 0.85, 6), matRock);
+        const matRock = new THREE.MeshStandardMaterial({ color: hexNum, roughness: 0.85 });
+        const mainPeak = new THREE.Mesh(new THREE.ConeGeometry(h * 0.52, h * 0.85, 6), matRock);
         mainPeak.position.y = h * 0.425; group.add(mainPeak);
-        const snowCap = new THREE.Mesh(new THREE.ConeGeometry(h * 0.24, h * 0.35, 6), matSnow);
-        snowCap.position.y = h * 0.70; group.add(snowCap);
-
-        // 2 Flanking sub-peaks for realistic mountain silhouette
-        const sub1 = new THREE.Mesh(new THREE.ConeGeometry(h * 0.38, h * 0.58, 5), matRock);
-        sub1.position.set(-h * 0.32, h * 0.29, h * 0.12); group.add(sub1);
-        const sub2 = new THREE.Mesh(new THREE.ConeGeometry(h * 0.34, h * 0.52, 5), matRock);
-        sub2.position.set(h * 0.30, h * 0.26, -h * 0.10); group.add(sub2);
+        const snowCap = new THREE.Mesh(new THREE.ConeGeometry(h * 0.22, h * 0.34, 6), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+        snowCap.position.y = h * 0.71; group.add(snowCap);
     } else {
         const tex = createRealisticTexture('windows', baseHex, glowHex);
         const matWin = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.2, metalness: 0.65 });
-        const isTwisted = nameLow.includes('shanghai') || (i % 2 === 1);
-        const tiers = isTwisted ? 10 : 7;
+        const tiers = 5 + i;
         for (let s = 0; s < tiers; s++) {
             const sh = (h * 0.86) / tiers;
             const sw = h * 0.28 * (1 - s * (0.68 / tiers));
-            const geo = isTwisted ? new THREE.CylinderGeometry(sw * 0.62, sw * 0.68, sh, 6) : new THREE.BoxGeometry(sw, sh, sw);
+            const geo = (i % 2 === 1) ? new THREE.CylinderGeometry(sw * 0.62, sw * 0.68, sh, 6) : new THREE.BoxGeometry(sw, sh, sw);
             const seg = new THREE.Mesh(geo, matWin);
             seg.position.y = s * sh + sh * 0.5;
-            if (isTwisted) seg.rotation.y = s * 0.18;
+            if (i % 2 === 1) seg.rotation.y = s * 0.18;
             group.add(seg);
         }
         const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.2, h * 0.018, h * 0.16, 16), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
@@ -810,32 +770,11 @@ for (let i = 0; i < 5; i++) {
     const [baseHex, glowHex, hexNum] = palettes[i % palettes.length];
     const itemObj = items[i] || {};
 
-    const grp = buildTextured3DObject(itemObj, i, h, baseHex, glowHex, hexNum);
+    const grp = buildDistinct3DObject(itemObj, i, h, baseHex, glowHex, hexNum);
 
-    // Mount 3D Floating Photo Billboard next to the model (positioned outside its footprint so it never clips!)
-    if (itemObj.image_b64) {
-        const imgTex = new THREE.TextureLoader().load(itemObj.image_b64);
-        const cardH = h * 0.38;
-        const cardW = cardH * 0.90;
-        const xOff = -(objectFootprints[i] * 0.55 + cardW * 0.55);
-        const plane = new THREE.Mesh(
-            new THREE.PlaneGeometry(cardW, cardH),
-            new THREE.MeshBasicMaterial({ map: imgTex, side: THREE.DoubleSide })
-        );
-        plane.position.set(xOff, h * 0.68, 0);
-        grp.add(plane);
-
-        const border = new THREE.Mesh(
-            new THREE.PlaneGeometry(cardW * 1.08, cardH * 1.08),
-            new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide })
-        );
-        border.position.set(xOff, h * 0.68, -0.5);
-        grp.add(border);
-    }
-
-    const pedR = Math.max(h * 0.38, objectFootprints[i] * 0.36);
-    const ped = new THREE.Mesh(new THREE.CylinderGeometry(pedR, pedR * 1.06, 1.5, 48), new THREE.MeshBasicMaterial({ color: hexNum }));
-    ped.position.y = 0.75;
+    const pedR = Math.max(h * 0.22, objectWidths[i] * 0.45);
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(pedR, pedR * 1.08, 2.0, 48), new THREE.MeshBasicMaterial({ color: hexNum }));
+    ped.position.y = 1.0;
     grp.add(ped);
 
     grp.position.set(x, 0, 0);
@@ -855,7 +794,7 @@ window.renderFrameAtTime = function(t) {
         }
     }
 
-    const floatIdx = Math.min(4.0, stageIndex + Math.pow(stageProgress, 1.45) * 0.90);
+    const floatIdx = Math.min(4.0, stageIndex + Math.pow(stageProgress, 1.5) * 0.88);
     const i0 = Math.min(4, Math.floor(floatIdx));
     const i1 = Math.min(4, i0 + 1);
     const frac = floatIdx - i0;
@@ -863,43 +802,39 @@ window.renderFrameAtTime = function(t) {
 
     const curX = xPositions[i0] * (1 - smoothFrac) + xPositions[i1] * smoothFrac;
     const curH = visualHeights[i0] * (1 - smoothFrac) + visualHeights[i1] * smoothFrac;
-    const curFoot = objectFootprints[i0] * (1 - smoothFrac) + objectFootprints[i1] * smoothFrac;
-
-    const c0 = new THREE.Color(env.sky[i0]);
-    const c1 = new THREE.Color(env.sky[i1]);
-    const curSky = c0.lerp(c1, smoothFrac);
-    scene.background = curSky;
-    scene.fog.color = curSky;
+    const prevX = (i0 > 0) ? xPositions[i0 - 1] : curX;
 
     meshes.forEach((m, idx) => {
-        m.rotation.y = Math.sin(t * 0.55 + idx) * 0.28;
+        m.rotation.y = Math.sin(t * 0.6 + idx) * 0.25;
     });
 
-    const camOrbit = Math.sin(t * 0.45) * 0.18;
-    const dist = Math.max(curH * (isWide ? 2.25 : 3.25), curFoot * 2.3, 65);
+    // Frame BOTH the current object AND the previous smaller object on the left so the viewer sees the true scale jump!
+    const lookX = (i0 === 0 && smoothFrac < 0.2) ? curX : (curX * 0.72 + prevX * 0.28);
+    const dist = Math.max(curH * (isWide ? 2.15 : 2.95), 75);
     camera.position.set(
-        curX + Math.sin(camOrbit) * dist * 0.45 - dist * 0.18,
-        curH * 0.56 + 10,
-        Math.cos(camOrbit) * dist
+        lookX - dist * 0.12,
+        curH * 0.54 + 10,
+        dist
     );
-    camera.lookAt(curX - curFoot * 0.10, curH * 0.48, 0);
+    camera.lookAt(lookX, curH * 0.48, 0);
 
     renderer.render(scene, camera);
 
+    // 2D Broadcast HUD + Picture-in-Picture Real Photo + Scale Comparison Multiplier Badge!
     ctx.clearRect(0, 0, W, H);
     const activeItem = items[stageIndex] || { name: 'OBJECT ' + (stageIndex + 1), metric: '100 m', subtitle: '3D SCALE' };
     const activeImg = loadedImages[stageIndex];
 
     const cardW = isWide ? 860 : (W - 84);
     const cardX = (W - cardW) / 2;
-    const cardY = isWide ? 44 : 90;
+    const cardY = isWide ? 44 : 88;
 
     ctx.save();
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.roundRect(cardX, cardY, cardW, 185, 24);
+    ctx.roundRect(cardX, cardY, cardW, 195, 24);
     ctx.fill();
     ctx.stroke();
 
@@ -907,37 +842,40 @@ window.renderFrameAtTime = function(t) {
     if (activeImg && activeImg.complete && activeImg.naturalWidth > 0) {
         ctx.save();
         ctx.beginPath();
-        ctx.roundRect(cardX + 20, cardY + 20, 145, 145, 16);
+        ctx.roundRect(cardX + 20, cardY + 22, 150, 150, 16);
         ctx.clip();
-        ctx.drawImage(activeImg, cardX + 20, cardY + 20, 145, 145);
+        ctx.drawImage(activeImg, cardX + 20, cardY + 22, 150, 150);
         ctx.restore();
         ctx.strokeStyle = '#facc15';
         ctx.lineWidth = 4;
-        ctx.strokeRect(cardX + 20, cardY + 20, 145, 145);
-        textOffsetX = cardX + 188;
+        ctx.strokeRect(cardX + 20, cardY + 22, 150, 150);
+        textOffsetX = cardX + 192;
     }
 
     ctx.fillStyle = '#f59e0b';
     ctx.beginPath();
-    ctx.roundRect(textOffsetX, cardY + 22, 150, 40, 10);
+    ctx.roundRect(textOffsetX, cardY + 24, 150, 40, 10);
     ctx.fill();
     ctx.fillStyle = '#0f172a';
     ctx.font = 'bold 21px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('RANK #0' + (stageIndex + 1), textOffsetX + 75, cardY + 49);
+    ctx.fillText('RANK #0' + (stageIndex + 1), textOffsetX + 75, cardY + 51);
 
     ctx.textAlign = 'left';
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 34px sans-serif';
-    ctx.fillText(String(activeItem.name || '').toUpperCase().slice(0, 22), textOffsetX + 165, cardY + 52);
+    ctx.fillText(String(activeItem.name || '').toUpperCase().slice(0, 22), textOffsetX + 165, cardY + 54);
 
     ctx.fillStyle = '#38bdf8';
     ctx.font = 'bold 54px sans-serif';
     ctx.fillText(String(activeItem.metric || ''), textOffsetX, cardY + 132);
 
-    ctx.fillStyle = '#cbd5e1';
+    // Show Multiplier vs Rank #1 so viewer immediately grasps the scale jump!
+    const multVsFirst = (rawMeters[stageIndex] / Math.max(rawMeters[0], 0.1)).toFixed(1);
+    const subTxt = stageIndex > 0 ? (`${multVsFirst}X LARGER THAN ${String(items[0].name || 'RANK #1').toUpperCase().slice(0, 14)}`) : String(activeItem.subtitle || '').toUpperCase();
+    ctx.fillStyle = '#facc15';
     ctx.font = 'bold 22px sans-serif';
-    ctx.fillText(String(activeItem.subtitle || '').toUpperCase().slice(0, 32), textOffsetX, cardY + 166);
+    ctx.fillText(subTxt.slice(0, 36), textOffsetX, cardY + 170);
     ctx.restore();
 
     const chunks = DATA.chunks || [];
