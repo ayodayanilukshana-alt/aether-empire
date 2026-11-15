@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA vs AMD: Satisfying Ball Escape Physics | KINETICZEN LABS</title>
+<meta name="description" content="Interactive 60FPS rigid-body-inspired NVIDIA versus AMD ball escape physics simulation.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/nvidia-vs-amd-satisfying-ball-escape-physics.html">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"SoftwareApplication",
+  "name":"NVIDIA vs AMD: Satisfying Ball Escape Physics",
+  "applicationCategory":"SimulationApplication",
+  "operatingSystem":"Web",
+  "description":"Interactive 60FPS physics rivalry simulation for NVIDIA and AMD.",
+  "url":"https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/nvidia-vs-amd-satisfying-ball-escape-physics.html",
+  "brand":{"@type":"Brand","name":"KINETICZEN LABS"}
+}
+</script>
+<style>
+:root{--bg:#05070b;--card:#0b0f17;--line:#1e293b;--text:#e5e7eb;--muted:#94a3b8;--pink:#f43f5e;--green:#38bdf8;--mono:"SFMono-Regular",Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,system-ui,sans-serif}header{border-bottom:1px solid var(--line);padding:18px max(20px,calc((100% - 1240px)/2));display:flex;justify-content:space-between;align-items:center;gap:20px}.brand{font-weight:800;letter-spacing:.12em;color:var(--pink)}a{color:#cbd5e1;text-decoration:none}a:hover{color:var(--pink)}main{max-width:1240px;margin:auto;padding:28px 20px 60px}h1{font-size:clamp(24px,4vw,43px);margin:8px 0 10px;letter-spacing:-.04em}h2{font-size:18px;margin:0 0 16px}.sub{color:var(--muted);max-width:750px;line-height:1.6}.layout{display:grid;grid-template-columns:280px 1fr;gap:18px;margin-top:24px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}.controls{display:flex;flex-direction:column;gap:16px}.control label{display:flex;justify-content:space-between;color:#cbd5e1;margin-bottom:8px}.value,.metric strong{font-family:var(--mono);color:white}.control input[type=range]{width:100%;accent-color:var(--pink)}button{background:#111827;border:1px solid #334155;border-radius:7px;color:var(--text);padding:10px 12px;cursor:pointer;font-weight:650}button:hover,button.active{border-color:var(--pink);background:#24121a}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wide{grid-column:span 2}.canvas-wrap{position:relative}.canvas-wrap canvas{display:block;width:100%;height:520px;background:#070b12;border-radius:8px;border:1px solid #243044;cursor:crosshair}.legend{display:flex;gap:20px;color:var(--muted);margin-top:10px;font-family:var(--mono);font-size:12px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}.nv{background:var(--pink)}.amd{background:var(--green)}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:18px}.metric{padding:14px;border:1px solid var(--line);border-radius:8px;background:#080c13}.metric small{display:block;color:var(--muted);margin-bottom:7px}.metric strong{font-size:19px}.below{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line)}th{color:#cbd5e1}td{color:var(--muted)}.faq details{border-top:1px solid var(--line);padding:14px 0}.faq summary{cursor:pointer;font-weight:700}.note{font-size:12px;color:var(--muted);line-height:1.5}.stream{margin-top:18px}.stream iframe{width:100%;height:330px;border:1px solid var(--line);border-radius:10px}.status{color:var(--muted);font-family:var(--mono);font-size:12px;margin-top:10px}@media(max-width:850px){.layout,.below{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.canvas-wrap canvas{height:400px}}@media(max-width:450px){.metrics{grid-template-columns:1fr 1fr}.buttons{grid-template-columns:1fr}.wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">KINETICZEN LABS</a>
+  <a href="https://ayodayanilukshana-alt.github.io/aether-empire">AETHER EMPIRE</a>
+</header>
+<main>
+  <h1>NVIDIA vs AMD: Satisfying Ball Escape Physics</h1>
+  <p class="sub">A 60FPS rigid-body-inspired rivalry laboratory. Tune gravity, restitution, friction, speed, and obstacle density, then observe which team clears the arena first.</p>
+  <section class="layout">
+    <aside class="card controls">
+      <h2>Simulation Controls</h2>
+      <div class="control"><label>Gravity <span class="value" id="gravityV"></span></label><input id="gravity" type="range" min="0" max="1.2" step=".01" value=".28"></div>
+      <div class="control"><label>Restitution <span class="value" id="bounceV"></span></label><input id="bounce" type="range" min=".1" max="1" step=".01" value=".78"></div>
+      <div class="control"><label>Friction <span class="value" id="frictionV"></span></label><input id="friction" type="range" min="0" max=".08" step=".005" value=".018"></div>
+      <div class="control"><label>Launch speed <span class="value" id="speedV"></span></label><input id="speed" type="range" min="1" max="8" step=".1" value="3.6"></div>
+      <div class="control"><label>Obstacle density <span class="value" id="densityV"></span></label><input id="density" type="range" min="3" max="20" step="1" value="10"></div>
+      <div>
+        <h2>Scenario Presets</h2>
+        <div class="buttons">
+          <button data-preset="balanced">Balanced</button><button data-preset="chaos">Chaos</button>
+          <button data-preset="precision">Precision</button><button data-preset="reset">Reset</button>
+          <button id="pause" class="wide">Pause Simulation</button>
+          <button id="export" class="wide">Export CSV Telemetry</button>
+          <button id="copy" class="wide">Copy Scenario Link</button>
+        </div>
+      </div>
+      <p class="note">Click inside the arena to inject a ball for the selected lane. NVIDIA occupies the upper lane; AMD occupies the lower lane.</p>
+      <div id="status" class="status">RUNNING · click the arena to add a ball</div>
+    </aside>
+    <section>
+      <div class="card canvas-wrap">
+        <canvas id="arena" aria-label="Interactive NVIDIA and AMD physics simulation"></canvas>
+        <div class="legend"><span><i class="dot nv"></i>NVIDIA</span><span><i class="dot amd"></i>AMD</span><span>EXIT →</span></div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><small>NVIDIA escaped</small><strong id="nvEsc">0</strong></div>
+        <div class="metric"><small>AMD escaped</small><strong id="amdEsc">0</strong></div>
+        <div class="metric"><small>Total collisions</small><strong id="collisions">0</strong></div>
+        <div class="metric"><small>Elapsed</small><strong id="elapsed">0.0s</strong></div>
+        <div class="metric"><small>Leader</small><strong id="leader">TIED</strong></div>
+      </div>
+    </section>
+  </section>
+  <section class="below">
+    <div class="card">
+      <h2>Analytical Breakdown</h2>
+      <div class="table-wrap"><table><thead><tr><th>Measure</th><th>NVIDIA</th><th>AMD</th><th>Interpretation</th></tr></thead><tbody>
+        <tr><td>Lane allocation</td><td>Upper</td><td>Lower</td><td>Independent escape channels</td></tr>
+        <tr><td>Escape count</td><td id="tabNv">0</td><td id="tabAmd">0</td><td>Successful right-edge exits</td></tr>
+        <tr><td>Ball model</td><td>Circle</td><td>Circle</td><td>Velocity-based rigid-body approximation</td></tr>
+        <tr><td>Collision response</td><td>Elastic</td><td>Elastic</td><td>Restitution and friction controls</td></tr>
+        <tr><td>Primary KPI</td><td colspan="2">Escape throughput</td><td>Higher count indicates faster clearance</td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="card faq">
+      <h2>FAQ</h2>
+      <details open><summary>What does the simulation represent?</summary><p class="note">It is a visual rivalry model using circular bodies, gravity, walls, pegs, friction, and an exit gate. It is inspired by the supplied Matter.js physics concept and does not represent benchmark performance.</p></details>
+      <details><summary>How are NVIDIA and AMD compared?</summary><p class="note">Both teams receive equivalent ball bodies and begin in separate labeled lanes. The live comparison is based on escaped balls and elapsed time.</p></details>
+      <details><summary>What is recorded in telemetry?</summary><p class="note">The CSV contains timestamp, escape counts, collision count, active bodies, and leader state at regular intervals.</p></details>
+    </div>
+  </section>
+  <section class="card stream">
+    <h2>Source Video</h2>
+    <iframe src="https://www.youtube.com/embed/tV4w9OjyTFE" title="NVIDIA vs AMD: Satisfying Ball Escape Physics" allowfullscreen></iframe>
+  </section>
+</main>
+<script>
+const canvas=document.getElementById("arena"),ctx=canvas.getContext("2d"),$=id=>document.getElementById(id);
+let W=900,H=520,dpr=1,balls=[],pegs=[],running=true,time=0,last=0,collisions=0,nvEsc=0,amdEsc=0,telemetry=[],selected="NVIDIA",seed=4;
+const inputs={gravity:$("gravity"),bounce:$("bounce"),friction:$("friction"),speed:$("speed"),density:$("density")};
+function resize(){dpr=devicePixelRatio||1;let r=canvas.getBoundingClientRect();W=r.width;H=r.height;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);buildPegs()}
+function val(){return +inputs.gravity.value}
+function buildPegs(){pegs=[];let n=+inputs.density.value;for(let i=0;i<n;i++){let lane=i%2,y=(lane?H*.68:H*.32)+(Math.sin(i*3.7+seed)*H*.13),x=W*.19+(i/(n+1))*W*.66;pegs.push({x,y,r:7+(i%3)*2})}}
+function addBall(team,x,y){let lane=team==="NVIDIA"?H*.25:H*.75;balls.push({team,x:x||34,y:y||lane,r:11,vx:+inputs.speed.value+(Math.random()-.5),vy:(Math.random()-.5)*2,alive:true})}
+function reset(){balls=[];nvEsc=amdEsc=collisions=time=0;telemetry=[];seed++;buildPegs();for(let i=0;i<7;i++){addBall("NVIDIA",35+i*13,H*.2+(i%3)*15);addBall("AMD",35+i*13,H*.8-(i%3)*15)}updateUI()}
+function physics(dt){let g=val(),fr=+inputs.friction.value,b=+inputs.bounce.value;balls.forEach(o=>{if(!o.alive)return;o.vy+=g*dt*60;o.vx*=1-fr;o.vy*=1-fr;o.x+=o.vx*dt*60;o.y+=o.vy*dt*60;let top=o.team==="NVIDIA"?2:H/2+2,bottom=o.team==="NVIDIA"?H/2-4:H-2;if(o.y-o.r<top){o.y=top+o.r;o.vy=Math.abs(o.vy)*b;collisions++}if(o.y+o.r>bottom){o.y=bottom-o.r;o.vy=-Math.abs(o.vy)*b;collisions++}if(o.x-o.r<2){o.x=2+o.r;o.vx=Math.abs(o.vx)*b}pegs.forEach(p=>{if((p.y< H/2)!=(o.team==="NVIDIA"))return;let dx=o.x-p.x,dy=o.y-p.y,d=Math.hypot(dx,dy),min=o.r+p.r;if(d<min&&d>0){let nx=dx/d,ny=dy/d;o.x=p.x+nx*min;o.y=p.y+ny*min;let dot=o.vx*nx+o.vy*ny;if(dot<0){o.vx-= (1+b)*dot*nx;o.vy-=(1+b)*dot*ny;collisions++}}});if(o.x-o.r>W){o.alive=false;o.team==="NVIDIA"?nvEsc++:amdEsc++}});balls=balls.filter(o=>o.alive)}
+function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle="#0d1420";ctx.fillRect(0,H/2-1,W,2);ctx.fillStyle="#697586";ctx.font="700 12px monospace";ctx.fillText("NVIDIA LANE",16,22);ctx.fillText("AMD LANE",16,H/2+22);ctx.fillStyle="#172235";ctx.fillRect(W-28,0,28,H);ctx.fillStyle="#94a3b8";ctx.save();ctx.translate(W-10,H/2);ctx.rotate(Math.PI/2);ctx.fillText("EXIT",0,0);ctx.restore();pegs.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fillStyle="#475569";ctx.fill();ctx.strokeStyle="#94a3b8";ctx.stroke()});balls.forEach(o=>{ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,7);ctx.fillStyle=o.team==="NVIDIA"?"#f43f5e":"#38bdf8";ctx.shadowBlur=14;ctx.shadowColor=ctx.fillStyle;ctx.fill();ctx.shadowBlur=0;ctx.beginPath();ctx.arc(o.x-3,o.y-3,2,0,7);ctx.fillStyle="#fff";ctx.fill()})}
+function updateUI(){let l=nvEsc>amdEsc?"NVIDIA":amdEsc>nvEsc?"AMD":"TIED";$("nvEsc").textContent=$("tabNv").textContent=nvEsc;$("amdEsc").textContent=$("tabAmd").textContent=amdEsc;$("collisions").textContent=collisions;$("elapsed").textContent=time.toFixed(1)+"s";$("leader").textContent=l;$("status").textContent=(running?"RUNNING":"PAUSED")+" · click the arena to add a "+selected+" ball"}
+function loop(t){if(!last)last=t;let dt=Math.min((t-last)/1000,.033);last=t;if(running){time+=dt;physics(dt);if(time>0.25&&Math.floor(time*4)!==Math.floor((time-dt)*4))telemetry.push([time.toFixed(2),nvEsc,amdEsc,collisions,balls.length,nvEsc>amdEsc?"NVIDIA":amdEsc>nvEsc?"AMD":"TIED"])}draw();updateUI();requestAnimationFrame(loop)}
+function sync(){["gravity","bounce","friction","speed","density"].forEach(k=>$(k+"V").textContent=inputs[k].value);buildPegs()}
+Object.keys(inputs).forEach(k=>inputs[k].addEventListener("input",sync));
+document.querySelectorAll("[data-preset]").forEach(btn=>btn.onclick=()=>{let p=btn.dataset.preset;if(p==="reset"){reset();return}let sets={balanced:[".28",".78",".018","3.6","10"],chaos:[".72",".94",".005","6.5","20"],precision:[".08",".42",".055","2.2","5"]}[p];["gravity","bounce","friction","speed","density"].forEach((k,i)=>inputs[k].value=sets[i]);sync();reset()});
+$("pause").onclick=()=>{running=!running;$("pause").textContent=running?"Pause Simulation":"Resume Simulation";updateUI()};
+$("export").onclick=()=>{let rows=[["time_s","nvidia_escaped","amd_escaped","collisions","active_balls","leader"],...telemetry];if(!rows.length)rows.push([time.toFixed(2),nvEsc,amdEsc,collisions,balls.length,nvEsc>amdEsc?"NVIDIA":amdEsc>nvEsc?"AMD":"TIED"]);let blob=new Blob([rows.map(r=>r.join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kineticzen-telemetry.csv";a.click();URL.revokeObjectURL(a.href)};
+$("copy").onclick=async()=>{let u=new URL(location.href);Object.keys(inputs).forEach(k=>u.searchParams.set(k,inputs[k].value));try{await navigator.clipboard.writeText(u.href);$("status").textContent="SCENARIO LINK COPIED"}catch(e){prompt("Copy scenario link:",u.href)}};
+canvas.onclick=e=>{let r=canvas.getBoundingClientRect();selected=e.offsetY<r.height/2?"NVIDIA":"AMD";addBall(selected,e.offsetX,e.offsetY);updateUI()};
+resize();sync();reset();addEventListener("resize",resize);requestAnimationFrame(loop);
+</script>
+</body>
+</html>
