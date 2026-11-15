@@ -1,67 +1,83 @@
 1
-00:00:00,096 --> 00:00:01,778
+00:00:00,096 --> 00:00:01,732
 You spend five dollars daily on
 
 2
-00:00:01,790 --> 00:00:03,975
-coffee totaling one thousand eight hundred
+00:00:01,743 --> 00:00:04,057
+coffee totaling eighteen hundred twenty five
 
 3
-00:00:03,986 --> 00:00:06,895
-twenty five dollars yearly After three
+00:00:04,068 --> 00:00:05,555
+dollars yearly but what if you
 
 4
-00:00:06,907 --> 00:00:09,325
-years coffee costs three thousand six
+00:00:05,540 --> 00:00:07,967
+invested it instead By the end
 
 5
-00:00:09,337 --> 00:00:11,104
-hundred fifty while Nvidia grows to
+00:00:07,979 --> 00:00:09,731
+of year three your coffee habit
 
 6
-00:00:11,077 --> 00:00:14,011
-three thousand six hundred Five years
+00:00:09,743 --> 00:00:11,577
+burned six thousand two hundred dollars
 
 7
-00:00:14,022 --> 00:00:16,300
-in coffee habits reach five thousand
+00:00:11,589 --> 00:00:13,294
+while Bitcoin grew to nine thousand
 
 8
-00:00:16,312 --> 00:00:18,590
-four hundred seventy five but Nvidia
+00:00:13,306 --> 00:00:16,340
+four hundred Five years in coffee
 
 9
-00:00:18,602 --> 00:00:21,514
-jumps to eighteen thousand Ten years
+00:00:16,352 --> 00:00:18,396
+costs seven thousand eight hundred dollars
 
 10
-00:00:21,526 --> 00:00:23,757
-later coffee totals seven thousand three
+00:00:18,630 --> 00:00:20,455
+but Bitcoin's wild ride dropped your
 
 11
-00:00:23,769 --> 00:00:25,872
-hundred while Nvidia soars to seventy
+00:00:20,440 --> 00:00:22,286
+investment to six thousand one hundred
 
 12
-00:00:25,883 --> 00:00:29,122
-six thousand five hundred Fifteen years
+00:00:23,208 --> 00:00:25,288
+Ten years later coffee drained nine
 
 13
-00:00:29,402 --> 00:00:31,400
-coffee burns twenty seven thousand three
+00:00:25,299 --> 00:00:27,566
+thousand five hundred dollars yet Bitcoin
 
 14
-00:00:31,412 --> 00:00:33,596
-hundred seventy five Nvidia hits two
+00:00:27,577 --> 00:00:29,388
+surged to twenty two thousand leaving
 
 15
-00:00:33,608 --> 00:00:34,955
-hundred forty two thousand what if
+00:00:29,400 --> 00:00:32,403
+you questioning everything Fifteen years of
 
 16
-00:00:34,928 --> 00:00:36,400
-you had invested that five dollars
+00:00:32,388 --> 00:00:34,350
+coffee equals twelve thousand four hundred
 
 17
-00:00:36,412 --> 00:00:37,241
-daily instead
+00:00:34,362 --> 00:00:36,678
+dollars wasted while Bitcoin exploded to
+
+18
+00:00:36,640 --> 00:00:38,454
+fifty four thousand but here's the
+
+19
+00:00:38,428 --> 00:00:39,981
+twist what if you had started
+
+20
+00:00:39,993 --> 00:00:41,687
+with five thousand dollars and invested
+
+21
+00:00:41,699 --> 00:00:42,213
+it daily
