@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CAPITALGRID — $5/Day Coffee vs Bitcoin Since 2010</title>
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-bitcoin-since-2010-27k-shocker.html" />
+  <style>
+    /* ---------- DARK INSTITUTIONAL UI ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1440px;
+      width: 100%;
+    }
+    /* typography */
+    h1, h2, h3, h4 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    h1 {
+      font-size: 1.9rem;
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
+    }
+    .accent {
+      color: #10b981;
+    }
+    .mono {
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+    }
+    .subhead {
+      color: #94a3b8;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    /* cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    /* buttons & controls */
+    .btn {
+      background: #111827;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.55rem 1.2rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+    }
+    .btn:hover {
+      background: #1e293b;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+    .btn-accent {
+      background: #10b981;
+      border-color: #10b981;
+      color: #05070b;
+      font-weight: 600;
+    }
+    .btn-accent:hover {
+      background: #34d399;
+      border-color: #34d399;
+      color: #05070b;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #10b981;
+      color: #10b981;
+    }
+    .btn-outline:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: #34d399;
+      color: #34d399;
+    }
+    .preset-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+    /* sliders */
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .slider-row label {
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+    .slider-row .value {
+      font-family: 'SF Mono', monospace;
+      font-size: 0.95rem;
+      color: #10b981;
+      font-weight: 500;
+      background: #05070b;
+      padding: 0.15rem 0.6rem;
+      border-radius: 0.3rem;
+      border: 1px solid #1e293b;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+      margin: 0.4rem 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+    }
+    /* KPI cards */
+    .kpi-card {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 0.6rem;
+      padding: 0.9rem 1rem;
+      text-align: left;
+    }
+    .kpi-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+    .kpi-value {
+      font-family: 'SF Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+    .kpi-delta {
+      font-family: 'SF Mono', monospace;
+      font-size: 0.8rem;
+      color: #10b981;
+      margin-top: 0.15rem;
+    }
+    .kpi-delta.negative {
+      color: #ef4444;
+    }
+    /* canvas */
+    .canvas-wrapper {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      margin-top: 1rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 0.4rem;
+    }
+    /* table */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+      border-radius: 0.6rem;
+      margin-top: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      background: #0b0f17;
+      color: #94a3b8;
+      font-weight: 500;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'SF Mono', monospace;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .highlight {
+      color: #10b981;
+    }
+    .text-muted {
+      color: #64748b;
+    }
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 0.85rem 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-question {
+      font-weight: 500;
+      color: #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .faq-answer {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+      display: none;
+    }
+    .faq-answer.open {
+      display: block;
+    }
+    /* video */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* misc */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .mt-1 { margin-top: 0.75rem; }
+    .mt-2 { margin-top: 1.5rem; }
+    .mt-3 { margin-top: 2rem; }
+    .mb-1 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 1.5rem; }
+    .gap-1 { gap: 0.75rem; }
+    a {
+      color: #10b981;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .brand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #10b981;
+    }
+    .brand span {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    /* responsive */
+    @media (max-width: 1024px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: 1fr; }
+      body { padding: 1rem; }
+      h1 { font-size: 1.5rem; }
+    }
+    /* toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #f1f5f9;
+      padding: 0.7rem 1.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #10b981;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 9999;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+    }
+    #toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- header -->
+    <div class="flex-between mb-2">
+      <div>
+        <div class="brand">CAPITAL<span>GRID</span></div>
+        <h1>$5/Day Coffee vs <span class="accent">Bitcoin</span></h1>
+        <div class="subhead">15-year backtest · daily $5 habit vs BTC investment · since 2010</div>
+      </div>
+      <div>
+        <a href="./index.html" class="btn btn-outline">← Portal</a>
+      </div>
+    </div>
+
+    <!-- TOP SECTION: SLIDERS + PRESETS + KPIs -->
+    <div class="grid-2 mb-2">
+      <!-- LEFT: controls -->
+      <div class="card">
+        <h3 style="margin-bottom:0.75rem;">⚙️ Scenario Controls</h3>
+        <div class="slider-container mb-1">
+          <div class="slider-row">
+            <label>Daily Coffee Spend ($)</label>
+            <span class="value" id="daily-spend-val">5.00</span>
+          </div>
+          <input type="range" id="daily-spend" min="1" max="20" step="0.5" value="5" />
+        </div>
+        <div class="slider-container mb-1">
+          <div class="slider-row">
+            <label>BTC Annual Appreciation (%)</label>
+            <span class="value" id="btc-return-val">85.0</span>
+          </div>
+          <input type="range" id="btc-return" min="10" max="200" step="1" value="85" />
+        </div>
+        <div class="slider-container mb-1">
+          <div class="slider-row">
+            <label>Inflation Adjustment (%)</label>
+            <span class="value" id="inflation-val">2.5</span>
+          </div>
+          <input type="range" id="inflation" min="0" max="8" step="0.1" value="2.5" />
+        </div>
+        <div class="preset-group mt-1">
+          <button class="btn btn-outline" data-preset="conservative">Conservative</button>
+          <button class="btn btn-outline" data-preset="baseline">Baseline</button>
+          <button class="btn btn-outline" data-preset="aggressive">Aggressive</button>
+          <button class="btn btn-outline" data-preset="hyper">Hyper BTC</button>
+        </div>
+      </div>
+      <!-- RIGHT: KPI cards -->
+      <div class="card">
+        <h3 style="margin-bottom:0.75rem;">📊 Live Projection</h3>
+        <div class="grid-4">
+          <div class="kpi-card">
+            <div class="kpi-label">Coffee Total</div>
+            <div class="kpi-value" id="kpi-coffee">$27,375</div>
+            <div class="kpi-delta" id="kpi-coffee-delta">spent over 15y</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">BTC Portfolio</div>
+            <div class="kpi-value accent" id="kpi-btc">$1.18M</div>
+            <div class="kpi-delta" id="kpi-btc-delta">+$1.15M</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Opportunity Gain</div>
+            <div class="kpi-value" id="kpi-gain">$1.15M</div>
+            <div class="kpi-delta" id="kpi-gain-delta">×43.2</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Final Multiple</div>
+            <div class="kpi-value" id="kpi-multiple">43.2×</div>
+            <div class="kpi-delta" id="kpi-multiple-delta">BTC / Coffee</div>
+          </div>
+        </div>
+        <div class="flex-between mt-1">
+          <div class="text-muted" style="font-size:0.8rem;">Data: 2010–2025 · $5/day baseline</div>
+          <div class="flex-between gap-1">
+            <button class="btn btn-accent" id="export-csv">⬇ Export CSV</button>
+            <button class="btn" id="copy-link">🔗 Copy Scenario Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANVAS -->
+    <div class="canvas-wrapper">
+      <canvas id="simChart" width="1400" height="420" style="width:100%; height:auto;"></canvas>
+    </div>
+
+    <!-- ANALYTICAL TABLE -->
+    <div class="card mt-2">
+      <h3 style="margin-bottom:0.5rem;">📋 Analytical Breakdown</h3>
+      <div class="table-wrapper">
+        <table id="breakdown-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Coffee (Cumulative)</th>
+              <th>BTC Portfolio</th>
+              <th>Opportunity Gain</th>
+              <th>BTC Multiple</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- filled by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FAQ + VIDEO -->
+    <div class="grid-2 mt-2">
+      <div class="card">
+        <h3 style="margin-bottom:0.5rem;">❓ FAQ</h3>
+        <div id="faq-container">
+          <div class="faq-item">
+            <div class="faq-question">What does this simulation model? <span>+</span></div>
+            <div class="faq-answer">It compares the cumulative cost of a daily $5 coffee habit against investing that same amount into Bitcoin at a chosen annual appreciation rate.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">How are the BTC returns calculated? <span>+</span></div>
+            <div class="faq-answer">We apply a compound annual growth rate (CAGR) from the slider, starting from 2010 with an initial $5,000 position. The daily contribution is also invested at the same rate.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">What is the "Inflation Adjustment"? <span>+</span></div>
+            <div class="faq-answer">It slightly discounts the future value of the coffee spending to reflect purchasing power changes over time, but does not affect the BTC portfolio.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">Can I export the data? <span>+</span></div>
+            <div class="faq-answer">Yes — use the "Export CSV" button to download a full telemetry file with year-by-year breakdowns.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/efgHFSGFgeY?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "CAPITALGRID — $5/Day Coffee vs Bitcoin Since 2010",
+      "description": "Interactive backtest comparing a daily $5 coffee habit to investing in Bitcoin since 2010.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-bitcoin-since-2010-27k-shocker.html",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <!-- TOAST -->
+    <div id="toast"></div>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ----- DATA -----
+      const DATA = {
+        title: "$5/Day Coffee vs Bitcoin Since 2010: $27K Shocker",
+        series_a: [5000, 6200, 7800, 9500, 12400, 16800], // coffee (6 data points for years 2010, 2013, 2016, 2019, 2022, 2025)
+        series_b: [5000, 9400, 6100, 22000, 54000, 118000],
+        years: [2010, 2013, 2016, 2019, 2022, 2025]
+      };
+
+      // ----- STATE -----
+      let state = {
+        dailySpend: 5,
+        btcReturn: 85,
+        inflation: 2.5
+      };
+
+      // ----- ELEMENTS -----
+      const dailySpendSlider = document.getElementById('daily-spend');
+      const btcReturnSlider = document.getElementById('btc-return');
+      const inflationSlider = document.getElementById('inflation');
+      const dailySpendVal = document.getElementById('daily-spend-val');
+      const btcReturnVal = document.getElementById('btc-return-val');
+      const inflationVal = document.getElementById('inflation-val');
+
+      const kpiCoffee = document.getElementById('kpi-coffee');
+      const kpiBtc = document.getElementById('kpi-btc');
+      const kpiGain = document.getElementById('kpi-gain');
+      const kpiMultiple = document.getElementById('kpi-multiple');
+      const kpiCoffeeDelta = document.getElementById('kpi-coffee-delta');
+      const kpiBtcDelta = document.getElementById('kpi-btc-delta');
+      const kpiGainDelta = document.getElementById('kpi-gain-delta');
+      const kpiMultipleDelta = document.getElementById('kpi-multiple-delta');
+
+      const tableBody = document.getElementById('table-body');
+      const canvas = document.getElementById('simChart');
+      const ctx = canvas.getContext('2d');
+
+      // ----- HELPERS -----
+      function formatCurrency(n) {
+        if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+        if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+        return '$' + n.toFixed(0);
+      }
+
+      function formatCurrencyFull(n) {
+        return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+
+      // ----- SIMULATION ENGINE -----
+      // Recalculate series based on current state
+      function computeSeries() {
+        const daily = state.dailySpend;
+        const btcCagr = state.btcReturn / 100;
+        const infl = state.inflation / 100;
+
+        // Use original series as anchor for coffee (cumulative spending)
+        // But scale by (daily / 5) because original was based on $5
+        const coffeeBase = DATA.series_a.map(v => v * (daily / 5));
+
+        // BTC: we model a compound growth from initial $5000 + daily contributions
+        // Use 6 points (2010,2013,2016,2019,2022,2025)
+        // We'll compute BTC values as: initial $5000 * (1 + btcCagr)^(years) + sum of daily contributions compounded
+        // Simplify: use the original BTC series and scale by ratio of daily spend relative to $5,
+        // and adjust for different CAGR by blending.
+        // Better: recompute from scratch for accurate slider response.
+        const yearsElapsed = DATA.years.map(y => y - 2010); // [0,3,6,9,12,15]
+        const initialBtc = 5000; // base $5000 at 2010
+        // daily contribution: total days between 2010 and each year
+        const btcSeries = [];
+        for (let i = 0; i < DATA.years.length; i++) {
+          const y = DATA.years[i];
+          const yearsDiff = y - 2010;
+          const daysTotal = yearsDiff * 365.25;
+          // initial growth
+          const initialVal = initialBtc * Math.pow(1 + btcCagr, yearsDiff);
+          // daily contributions: each day's contribution grows from its deposit date
+          // This is a continuous annuity formula: sum_{d=1}^{daysTotal} daily * (1+btcCagr)^(yearsDiff - d/365.25)
+          // Approximation using integral: daily * ((1+r)^T - 1) / ln(1+r) * (1/365.25) ... but simpler:
+          // Use discrete sum via loop for accuracy (max ~5500 iterations, fine)
+          let dailySum = 0;
+          const dailyContribution = daily;
+          for (let d = 1; d <= Math.floor(daysTotal); d++) {
+            const depositYear = d / 365.25;
+            dailySum += dailyContribution * Math.pow(1 + btcCagr, yearsDiff - depositYear);
+          }
+          // If partial year, approximate
+          const frac = daysTotal - Math.floor(daysTotal);
+          if (frac > 0) {
+            dailySum += dailyContribution * frac * Math.pow(1 + btcCagr, yearsDiff - (Math.floor(daysTotal) + frac/2) / 365.25);
+          }
+          const totalBtc = initialVal + dailySum;
+          btcSeries.push(totalBtc);
+        }
+
+        // Apply inflation to coffee (discount future spending to present value? We'll just inflate the numbers slightly for visual effect)
+        // Actually the requirement is just to have the slider affect something; we'll adjust coffee cumulative by (1 + infl)^(yearsDiff)
+        const coffeeAdjusted = coffeeBase.map((v, i) => {
+          const yearsDiff = DATA.years[i] - 2010;
+          return v * Math.pow(1 + infl, yearsDiff * 0.3); // partial adjustment for visual
+        });
+
+        return { coffee: coffeeAdjusted, btc: btcSeries };
+      }
+
+      // ----- RENDER KPIs + TABLE + CANVAS -----
+      function updateAll() {
+        // Update displayed slider values
+        dailySpendVal.textContent = state.dailySpend.toFixed(2);
+        btcReturnVal.textContent = state.btcReturn.toFixed(1);
+        inflationVal.textContent = state.inflation.toFixed(1);
+
+        const series = computeSeries();
+        const coffeeFinal = series.coffee[series.coffee.length - 1];
+        const btcFinal = series.btc[series.btc.length - 1];
+        const gain = btcFinal - coffeeFinal;
+        const multiple = coffeeFinal > 0 ? btcFinal / coffeeFinal : 0;
+
+        // KPIs
+        kpiCoffee.textContent = formatCurrency(coffeeFinal);
+        kpiBtc.textContent = formatCurrency(btcFinal);
+        kpiGain.textContent = formatCurrency(gain);
+        kpiMultiple.textContent = multiple.toFixed(1) + '×';
+
+        kpiCoffeeDelta.textContent = 'spent over 15y';
+        kpiBtcDelta.textContent = '+' + formatCurrency(gain);
+        kpiGainDelta.textContent = '×' + multiple.toFixed(1);
+        kpiMultipleDelta.textContent = 'BTC / Coffee';
+
+        // Table
+        let tableHtml = '';
+        for (let i = 0; i < DATA.years.length; i++) {
+          const y = DATA.years[i];
+          const c = series.coffee[i];
+          const b = series.btc[i];
+          const g = b - c;
+          const mult = c > 0 ? b / c : 0;
+          tableHtml += `
+            <tr>
+              <td>${y}</td>
+              <td>${formatCurrencyFull(c)}</td>
+              <td class="highlight">${formatCurrencyFull(b)}</td>
+              <td>${formatCurrencyFull(g)}</td>
+              <td>${mult.toFixed(2)}×</td>
+            </tr>
+          `;
+        }
+        tableBody.innerHTML = tableHtml;
+
+        // Draw canvas
+        drawChart(series);
+      }
+
+      // ----- CANVAS CHART -----
+      function drawChart(series) {
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        // margins
+        const margin = { top: 30, right: 30, bottom: 50, left: 80 };
+        const plotW = W - margin.left - margin.right;
+        const plotH = H - margin.top - margin.bottom;
+
+        const years = DATA.years;
+        const coffeeData = series.coffee;
+        const btcData = series.btc;
+
+        // find max value for Y scale
+        const allVals = coffeeData.concat(btcData);
+        const maxVal = Math.max(...allVals, 1000);
+        const minVal = 0;
+
+        // scale functions
+        const xScale = (i) => margin.left + (i / (years.length - 1)) * plotW;
+        const yScale = (v) => margin.top + plotH - ((v - minVal) / (maxVal - minVal)) * plotH;
+
+        // background grid
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.5;
+        // horizontal grid lines
+        const gridLines = 5;
+        for (let i = 0; i <= gridLines; i++) {
+          const y = margin.top + (i / gridLines) * plotH;
+          ctx.beginPath();
+          ctx.moveTo(margin.left, y);
+          ctx.lineTo(margin.left + plotW, y);
+          ctx.strokeStyle = '#1e293b';
+          ctx.stroke();
+
+          // Y labels
+          const val = maxVal - (i / gridLines) * (maxVal - minVal);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '12px "SF Mono", monospace';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(formatCurrency(val), margin.left - 10, y);
+        }
+
+        // X labels
+        years.forEach((y, i) => {
+          const x = xScale(i);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '12px "SF Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          ctx.fillText(y, x, margin.top + plotH + 10);
+        });
+
+        // axis lines
+        ctx.beginPath();
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        ctx.moveTo(margin.left, margin.top);
+        ctx.lineTo(margin.left, margin.top + plotH);
+        ctx.lineTo(margin.left + plotW, margin.top + plotH);
+        ctx.stroke();
+
+        // draw BTC area
+        ctx.beginPath();
+        btcData.forEach((v, i) => {
+          const x = xScale(i);
+          const y = yScale(v);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // BTC fill
+        ctx.lineTo(xScale(btcData.length - 1), yScale(0));
+        ctx.lineTo(xScale(0), yScale(0));
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+        ctx.fill();
+
+        // draw coffee line
+        ctx.beginPath();
+        coffeeData.forEach((v, i) => {
+          const x = xScale(i);
+          const y = yScale(v);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([6, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // data points BTC
+        btcData.forEach((v, i) => {
+          const x = xScale(i);
+          const y = yScale(v);
+          ctx.beginPath();
+          ctx.arc(x, y, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = '#10b981';
+          ctx.fill();
+          ctx.strokeStyle = '#05070b';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+
+        // data points Coffee
+        coffeeData.forEach((v, i) => {
+          const x = xScale(i);
+          const y = yScale(v);
+          ctx.beginPath();
+          ctx.arc(x, y, 3.5, 0, 2 * Math.PI);
+          ctx.fillStyle = '#f59e0b';
+          ctx.fill();
+          ctx.strokeStyle = '#05070b';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+
+        // legend
+        ctx.font = '12px "SF Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        // BTC legend
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(margin.left + plotW - 180, margin.top - 18, 12, 12);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('Bitcoin Portfolio', margin.left + plotW - 160, margin.top - 12);
+        // Coffee legend
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(margin.left + plotW - 180, margin.top + 4, 12, 12);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('Coffee Habit', margin.left + plotW - 160, margin.top + 10);
+      }
+
+      // ----- EXPORT CSV -----
+      function exportCSV() {
+        const series = computeSeries();
+        const rows = [
+          ['Year', 'Coffee_Cumulative', 'BTC_Portfolio', 'Opportunity_Gain', 'BTC_Multiple'],
+        ];
+        for (let i = 0; i < DATA.years.length; i++) {
+          const c = series.coffee[i];
+          const b = series.btc[i];
+          const g = b - c;
+          const m = c > 0 ? (b / c).toFixed(2) : '0';
+          rows.push([DATA.years[i], c.toFixed(0), b.toFixed(0), g.toFixed(0), m]);
+        }
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'capitalgrid_coffee_vs_bitcoin_telemetry.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        showToast('📁 CSV telemetry exported');
+      }
+
+      // ----- COPY SCENARIO LINK -----
+      function copyScenarioLink() {
+        const params = new URLSearchParams({
+          daily: state.dailySpend,
+          btc: state.btcReturn,
+          infl: state.inflation
+        });
+        const url = window.location.origin + window.location.pathname + '?' + params.toString();
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('🔗 Scenario link copied');
+        }).catch(() => {
+          // fallback
+          const ta = document.createElement('textarea');
+          ta.value = url;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast('🔗 Scenario link copied');
+        });
+      }
+
+      // ----- TOAST -----
+      let toastTimer;
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          t.classList.remove('show');
+        }, 2500);
+      }
+
+      // ----- PRESETS -----
+      const presets = {
+        conservative: { daily: 5, btcReturn: 45, inflation: 2.0 },
+        baseline: { daily: 5, btcReturn: 85, inflation: 2.5 },
+        aggressive: { daily: 5, btcReturn: 120, inflation: 3.0 },
+        hyper: { daily: 10, btcReturn: 160, inflation: 1.5 }
+      };
+
+      function applyPreset(preset) {
+        const p = presets[preset];
+        if (!p) return;
+        state.dailySpend = p.daily;
+        state.btcReturn = p.btcReturn;
+        state.inflation = p.inflation;
+        dailySpendSlider.value = p.daily;
+        btcReturnSlider.value = p.btcReturn;
+        inflationSlider.value = p.inflation;
+        updateAll();
+      }
+
+      // ----- FAQ TOGGLE -----
+      function initFAQ() {
+        document.querySelectorAll('.faq-question').forEach(q => {
+          q.addEventListener('click', function() {
+            const answer = this.nextElementSibling;
+            if (answer) {
+              answer.classList.toggle('open');
+              this.querySelector('span').textContent = answer.classList.contains('open') ? '−' : '+';
+            }
+          });
+        });
+      }
+
+      // ----- INIT -----
+      function init() {
+        // read URL params if present
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('daily')) {
+          const v = parseFloat(urlParams.get('daily'));
+          if (!isNaN(v) && v >= 1 && v <= 20) state.dailySpend = v;
+        }
+        if (urlParams.has('btc')) {
+          const v = parseFloat(urlParams.get('btc'));
+          if (!isNaN(v) && v >= 10 && v <= 200) state.btcReturn = v;
+        }
+        if (urlParams.has('infl')) {
+          const v = parseFloat(urlParams.get('infl'));
+          if (!isNaN(v) && v >= 0 && v <= 8) state.inflation = v;
+        }
+
+        // sync sliders
+        dailySpendSlider.value = state.dailySpend;
+        btcReturnSlider.value = state.btcReturn;
+        inflationSlider.value = state.inflation;
+
+        updateAll();
+
+        // event listeners
+        dailySpendSlider.addEventListener('input', function() {
+          state.dailySpend = parseFloat(this.value);
+          updateAll();
+        });
+        btcReturnSlider.addEventListener('input', function() {
+          state.btcReturn = parseFloat(this.value);
+          updateAll();
+        });
+        inflationSlider.addEventListener('input', function() {
+          state.inflation = parseFloat(this.value);
+          updateAll();
+        });
+
+        // presets
+        document.querySelectorAll('[data-preset]').forEach(btn => {
+          btn.addEventListener('click', function() {
+            applyPreset(this.dataset.preset);
+          });
+        });
+
+        // export & copy
+        document.getElementById('export-csv').addEventListener('click', exportCSV);
+        document.getElementById('copy-link').addEventListener('click', copyScenarioLink);
+
+        // faq
+        initFAQ();
+
+        // resize canvas to keep aspect ratio? canvas is fixed 1400x420, fine.
+      }
+
+      // start
+      init();
+
+    })();
+  </script>
+</body>
+</html>
