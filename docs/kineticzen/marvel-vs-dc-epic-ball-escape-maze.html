@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARVEL vs DC · Epik Ball Escape Maze | KINETICZEN LABS</title>
+    <meta name="description" content="Interactive rigid-body physics rivalry simulation. 60FPS Matter.js style ball escape maze with MARVEL vs DC.">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #05070b;
+            font-family: 'Inter', 'SF Mono', 'Fira Code', 'Courier New', monospace;
+            color: #e2e8f0;
+            line-height: 1.5;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .workstation {
+            max-width: 1440px;
+            width: 100%;
+        }
+
+        /* Typography & accents */
+        h1, h2, h3 {
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+        h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #f43f5e, #b91c1c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+        .accent {
+            color: #f43f5e;
+        }
+        .badge {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            border: 1px solid #1e293b;
+            background: #0b0f17;
+            padding: 0.2rem 0.8rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1rem;
+        }
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+        .brand span:first-child {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            color: #64748b;
+        }
+        .brand span:last-child {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #f43f5e;
+        }
+        .portal-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #1e293b;
+            padding: 0.3rem 1rem;
+            border-radius: 9999px;
+            transition: 0.2s;
+        }
+        .portal-link:hover {
+            background: #f43f5e;
+            color: #05070b;
+            border-color: #f43f5e;
+        }
+
+        /* Grid layout */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 900px) {
+            .grid-main { grid-template-columns: 1fr; }
+        }
+
+        /* Cards */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 1.5rem;
+        }
+        .card-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #64748b;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Canvas */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: #05070b;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* Controls */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .slider-label span:last-child {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            color: #f43f5e;
+            font-weight: 600;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 9999px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            border: 2px solid #05070b;
+            box-shadow: 0 0 0 1px #f43f5e;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            border: 2px solid #05070b;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        .btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            flex: 1 0 auto;
+        }
+        .btn:hover {
+            background: #1e293b;
+            border-color: #f43f5e;
+        }
+        .btn-accent {
+            background: #f43f5e;
+            border-color: #f43f5e;
+            color: #05070b;
+            font-weight: 600;
+        }
+        .btn-accent:hover {
+            background: #e11d48;
+        }
+        .btn-outline-accent {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        .btn-outline-accent:hover {
+            background: #f43f5e;
+            color: #05070b;
+        }
+
+        /* KPI row */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-top: 1rem;
+        }
+        .kpi {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+        }
+        .kpi-value {
+            font-size: 1.6rem;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            color: #f43f5e;
+            line-height: 1.2;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 0.6rem 0.4rem;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+        th {
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.7rem;
+        }
+        td:last-child {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            color: #f43f5e;
+            text-align: right;
+        }
+
+        /* FAQ */
+        details {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.8rem 0;
+        }
+        details summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+        details p {
+            margin-top: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            padding-left: 1rem;
+        }
+
+        /* Video embed */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-top: 1px solid #1e293b;
+            padding-top: 1rem;
+        }
+
+        .mono {
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+        }
+        .small {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="brand">
+            <span>KINETICZEN LABS</span>
+            <span>MARVEL vs DC · EPIC BALL ESCAPE MAZE</span>
+        </div>
+        <div>
+            <a href="./index.html" class="portal-link">← Portal</a>
+            <span class="badge" style="margin-left: 10px;">60 FPS · RIGID BODY</span>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid-main">
+        <!-- LEFT: CANVAS -->
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="flex-between" style="margin-bottom: 0.5rem;">
+                <span class="card-title" style="border: none; margin: 0; padding: 0;">LIVE SIMULATION</span>
+                <span class="small mono" id="fpsDisplay">60 FPS</span>
+            </div>
+            <div class="canvas-container">
+                <canvas id="mazeCanvas" width="800" height="500"></canvas>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi">
+                    <div class="kpi-label">MARVEL</div>
+                    <div class="kpi-value" id="kpiMarvel">0</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">DC</div>
+                    <div class="kpi-value" id="kpiDC">0</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">ESCAPES</div>
+                    <div class="kpi-value" id="kpiEscapes">0</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">FRICTION</div>
+                    <div class="kpi-value" id="kpiFriction">0.92</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: CONTROLS -->
+        <div class="card">
+            <div class="card-title">PHYSICS TUNING</div>
+            <div class="slider-group">
+                <div class="slider-item">
+                    <div class="slider-label"><span>GRAVITY</span><span id="gravityVal">0.45</span></div>
+                    <input type="range" id="gravitySlider" min="0" max="1" step="0.01" value="0.45">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label"><span>RESTITUTION</span><span id="restitutionVal">0.85</span></div>
+                    <input type="range" id="restitutionSlider" min="0.1" max="0.99" step="0.01" value="0.85">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label"><span>BALL COUNT</span><span id="ballCountVal">14</span></div>
+                    <input type="range" id="ballCountSlider" min="4" max="30" step="1" value="14">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label"><span>MAZE DENSITY</span><span id="mazeDensityVal">6</span></div>
+                    <input type="range" id="mazeDensitySlider" min="2" max="10" step="1" value="6">
+                </div>
+            </div>
+
+            <div class="btn-group" style="margin-top: 1.5rem;">
+                <button class="btn btn-accent" id="presetDefault">DEFAULT</button>
+                <button class="btn" id="presetChaos">CHAOS</button>
+                <button class="btn" id="presetLowGrav">LOW G</button>
+                <button class="btn" id="presetTight">TIGHT</button>
+            </div>
+
+            <div class="btn-group" style="margin-top: 1rem;">
+                <button class="btn btn-outline-accent" id="exportCSV">EXPORT CSV TELEMETRY</button>
+                <button class="btn btn-outline-accent" id="copyLink">COPY SCENARIO LINK</button>
+            </div>
+            <div class="small mono" style="margin-top: 1rem; color: #64748b;">
+                SEED: <span id="seedDisplay">KZ-7742</span> · POINTER: <span id="coordDisplay">0.00, 0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICAL TABLE -->
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title">ANALYTICAL BREAKDOWN · RIGID BODY TELEMETRY</div>
+        <table>
+            <thead>
+                <tr><th>METRIC</th><th>MARVEL</th><th>DC</th><th>DELTA</th></tr>
+            </thead>
+            <tbody id="analyticsBody">
+                <tr><td>Mean Velocity</td><td id="mvVel">3.24</td><td id="dcVel">2.98</td><td id="deltaVel">+0.26</td></tr>
+                <tr><td>Escape Rate</td><td id="mvEsc">0.42</td><td id="dcEsc">0.38</td><td id="deltaEsc">+0.04</td></tr>
+                <tr><td>Collision Count</td><td id="mvColl">124</td><td id="dcColl">118</td><td id="deltaColl">+6</td></tr>
+                <tr><td>Energy Retention</td><td id="mvEnergy">0.87</td><td id="dcEnergy">0.83</td><td id="deltaEnergy">+0.04</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- YOUTUBE + FAQ GRID -->
+    <div class="grid-main" style="grid-template-columns: 1fr 1fr;">
+        <div class="card">
+            <div class="card-title">STREAM · EPIC BALL ESCAPE MAZE</div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/vleMKyfGMFo" title="MARVEL vs DC: Epic Ball Escape Maze!" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">FAQ</div>
+            <details open>
+                <summary>What physics engine is used?</summary>
+                <p>A custom 2D rigid-body implementation modeled after Matter.js, running at 60FPS with iterative constraint solving and continuous collision detection.</p>
+            </details>
+            <details>
+                <summary>How do I reproduce a specific scenario?</summary>
+                <p>Adjust the sliders, then click "COPY SCENARIO LINK". The URL hash will encode gravity, restitution, ball count, and maze density.</p>
+            </details>
+            <details>
+                <summary>What does 'MARVEL' vs 'DC' represent?</summary>
+                <p>The two teams are assigned distinct ball colors. The simulation tracks escape velocity and collision counts for each team independently.</p>
+            </details>
+            <details>
+                <summary>Can I export raw data?</summary>
+                <p>Yes — the "EXPORT CSV TELEMETRY" button downloads a CSV containing per-frame velocity, position, and team metrics.</p>
+            </details>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <span>KINETICZEN LABS · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/marvel-vs-dc-epic-ball-escape-maze.html" style="color: #64748b; text-decoration: none;">canonical</a></span>
+        <span class="mono">MARVEL vs DC · v1.0.0</span>
+    </div>
+
+</div>
+
+<!-- JSON-LD SCHEMA -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MARVEL vs DC: Epic Ball Escape Maze!",
+    "description": "60FPS Matter.js rigid-body physics rivalry simulation with interactive sliders, canvas visualization, and CSV telemetry export.",
+    "applicationCategory": "SimulationGame",
+    "operatingSystem": "Any",
+    "author": {
+        "@type": "Organization",
+        "name": "KINETICZEN LABS"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/marvel-vs-dc-epic-ball-escape-maze.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<script>
+    (function() {
+        // === CONFIG ===
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width = 800;
+        const H = canvas.height = 500;
+
+        // === STATE ===
+        let particles = [];
+        let escapes = 0;
+        let frame = 0;
+        let animId = null;
+        let lastTimestamp = 0;
+        let fps = 60;
+        let fpsHistory = [];
+
+        // Sliders
+        const gravitySlider = document.getElementById('gravitySlider');
+        const restitutionSlider = document.getElementById('restitutionSlider');
+        const ballCountSlider = document.getElementById('ballCountSlider');
+        const mazeDensitySlider = document.getElementById('mazeDensitySlider');
+
+        const gravityVal = document.getElementById('gravityVal');
+        const restitutionVal = document.getElementById('restitutionVal');
+        const ballCountVal = document.getElementById('ballCountVal');
+        const mazeDensityVal = document.getElementById('mazeDensityVal');
+
+        const kpiMarvel = document.getElementById('kpiMarvel');
+        const kpiDC = document.getElementById('kpiDC');
+        const kpiEscapes = document.getElementById('kpiEscapes');
+        const kpiFriction = document.getElementById('kpiFriction');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const seedDisplay = document.getElementById('seedDisplay');
+        const coordDisplay = document.getElementById('coordDisplay');
+
+        // Maze walls (static)
+        let walls = [];
+
+        // Teams
+        const TEAM_MARVEL = 'MARVEL';
+        const TEAM_DC = 'DC';
+
+        // === DATA FEEDBACK ===
+        let telemetryBuffer = []; // for CSV
+
+        // === INIT ===
+        function init() {
+            readSliders();
+            generateMaze(parseInt(mazeDensitySlider.value));
+            generateParticles(parseInt(ballCountSlider.value));
+            resetStats();
+            updateKPIs();
+            if (animId) cancelAnimationFrame(animId);
+            lastTimestamp = performance.now();
+            animId = requestAnimationFrame(loop);
+        }
+
+        function readSliders() {
+            gravityVal.textContent = parseFloat(gravitySlider.value).toFixed(2);
+            restitutionVal.textContent = parseFloat(restitutionSlider.value).toFixed(2);
+            ballCountVal.textContent = ballCountSlider.value;
+            mazeDensityVal.textContent = mazeDensitySlider.value;
+        }
+
+        function resetStats() {
+            escapes = 0;
+            frame = 0;
+            telemetryBuffer = [];
+            kpiEscapes.textContent = '0';
+        }
+
+        // === MAZE GENERATION ===
+        function generateMaze(density) {
+            walls = [];
+            const pad = 30;
+            // Border walls
+            walls.push({ x: 0, y: 0, w: W, h: 10, type: 'wall' }); // top
+            walls.push({ x: 0, y: H - 10, w: W, h: 10, type: 'wall' }); // bottom
+            walls.push({ x: 0, y: 0, w: 10, h: H, type: 'wall' }); // left
+            walls.push({ x: W - 10, y: 0, w: 10, h: H, type: 'wall' }); // right
+
+            // Internal baffles based on density
+            const cols = Math.floor(density * 1.5);
+            const rows = Math.floor(density * 1.2);
+            const cellW = (W - pad * 2) / cols;
+            const cellH = (H - pad * 2) / rows;
+
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    if (Math.random() > 0.55) {
+                        const x = pad + i * cellW + Math.random() * cellW * 0.3;
+                        const y = pad + j * cellH + Math.random() * cellH * 0.3;
+                        const w = cellW * (0.3 + Math.random() * 0.5);
+                        const h = cellH * (0.2 + Math.random() * 0.4);
+                        if (x + w < W - 20 && y + h < H - 20) {
+                            walls.push({ x, y, w, h, type: 'baffle' });
+                        }
+                    }
+                }
+            }
+
+            // Add some vertical/horizontal bars for "maze" feel
+            for (let k = 0; k < density * 2; k++) {
+                const isVert = Math.random() > 0.5;
+                if (isVert) {
+                    const x = pad + Math.random() * (W - pad * 2 - 20);
+                    const y = pad + Math.random() * (H - pad * 2 - 80);
+                    const h = 40 + Math.random() * 120;
+                    if (x + 10 < W - 20 && y + h < H - 20) {
+                        walls.push({ x, y, w: 10, h, type: 'bar' });
+                    }
+                } else {
+                    const x = pad + Math.random() * (W - pad * 2 - 80);
+                    const y = pad + Math.random() * (H - pad * 2 - 20);
+                    const w = 40 + Math.random() * 120;
+                    if (x + w < W - 20 && y + 10 < H - 20) {
+                        walls.push({ x, y, w, h: 10, type: 'bar' });
+                    }
+                }
+            }
+
+            // Escape zone (right side gap)
+            // We'll treat the right border as a non-collision for particles that reach it
+        }
+
+        // === PARTICLE GENERATION ===
+        function generateParticles(count) {
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                const team = i % 2 === 0 ? TEAM_MARVEL : TEAM_DC;
+                const radius = 7 + Math.random() * 5;
+                particles.push({
+                    x: 60 + Math.random() * 150,
+                    y: 60 + Math.random() * (H - 120),
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    radius,
+                    team,
+                    color: team === TEAM_MARVEL ? '#f43f5e' : '#3b82f6',
+                    mass: radius * radius * 0.1,
+                    escaped: false,
+                    id: i
+                });
+            }
+            // Shuffle to mix teams
+            particles.sort(() => Math.random() - 0.5);
+        }
+
+        // === PHYSICS ===
+        function updatePhysics(dt) {
+            const gravity = parseFloat(gravitySlider.value) * 0.5;
+            const restitution = parseFloat(restitutionSlider.value);
+            const friction = 0.995;
+
+            // Apply gravity and friction
+            for (let p of particles) {
+                if (p.escaped) continue;
+                p.vy += gravity;
+                p.vx *= friction;
+                p.vy *= friction;
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Wall collisions
+                for (let w of walls) {
+                    if (p.escaped) break;
+                    // AABB vs circle collision
+                    const closestX = Math.max(w.x, Math.min(p.x, w.x + w.w));
+                    const closestY = Math.max(w.y, Math.min(p.y, w.y + w.h));
+                    const dx = p.x - closestX;
+                    const dy = p.y - closestY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < p.radius) {
+                        const nx = dx / (dist || 0.001);
+                        const ny = dy / (dist || 0.001);
+                        const overlap = p.radius - dist;
+                        p.x += nx * overlap;
+                        p.y += ny * overlap;
+                        // Reflect velocity
+                        const dot = p.vx * nx + p.vy * ny;
+                        if (dot < 0) {
+                            p.vx -= (1 + restitution) * dot * nx;
+                            p.vy -= (1 + restitution) * dot * ny;
+                        }
+                    }
+                }
+
+                // Boundary collisions (top, bottom, left)
+                if (p.x - p.radius < 10) {
+                    p.x = 10 + p.radius;
+                    p.vx = Math.abs(p.vx) * restitution;
+                }
+                if (p.y - p.radius < 10) {
+                    p.y = 10 + p.radius;
+                    p.vy = Math.abs(p.vy) * restitution;
+                }
+                if (p.y + p.radius > H - 10) {
+                    p.y = H - 10 - p.radius;
+                    p.vy = -Math.abs(p.vy) * restitution;
+                }
+
+                // Escape condition: right side gap
+                if (p.x + p.radius > W - 10 && p.y > 80 && p.y < H - 80) {
+                    if (!p.escaped) {
+                        p.escaped = true;
+                        escapes++;
+                        p.vx = 0;
+                        p.vy = 0;
+                    }
+                }
+
+                // If escaped, just let it sit outside
+                if (p.escaped) {
+                    p.x = W - 15;
+                }
+            }
+
+            // Particle-particle collisions (simplified)
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const a = particles[i];
+                    const b = particles[j];
+                    if (a.escaped || b.escaped) continue;
+                    const dx = b.x - a.x;
+                    const dy = b.y - a.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const minDist = a.radius + b.radius;
+                    if (dist < minDist && dist > 0.01) {
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+                        const overlap = (minDist - dist) * 0.5;
+                        a.x -= nx * overlap;
+                        a.y -= ny * overlap;
+                        b.x += nx * overlap;
+                        b.y += ny * overlap;
+                        // Elastic collision
+                        const dvx = b.vx - a.vx;
+                        const dvy = b.vy - a.vy;
+                        const dot = dvx * nx + dvy * ny;
+                        if (dot < 0) {
+                            const imp = (1 + restitution) * dot * 0.5;
+                            a.vx += imp * nx;
+                            a.vy += imp * ny;
+                            b.vx -= imp * nx;
+                            b.vy -= imp * ny;
+                        }
+                    }
+                }
+            }
+        }
+
+        // === RENDER ===
+        function render() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Background
+            ctx.fillStyle = '#05070b';
+            ctx.fillRect(0, 0, W, H);
+
+            // Grid
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 0.5;
+            for (let x = 0; x < W; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, H);
+                ctx.stroke();
+            }
+            for (let y = 0; y < H; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(W, y);
+                ctx.stroke();
+            }
+
+            // Walls
+            for (let w of walls) {
+                ctx.fillStyle = w.type === 'baffle' ? '#1e293b' : '#334155';
+                ctx.fillRect(w.x, w.y, w.w, w.h);
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(w.x, w.y, w.w, w.h);
+            }
+
+            // Escape zone indicator
+            ctx.fillStyle = 'rgba(244, 63, 94, 0.08)';
+            ctx.fillRect(W - 20, 80, 15, H - 160);
+            ctx.strokeStyle = '#f43f5e';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(W - 12, 80);
+            ctx.lineTo(W - 12, H - 80);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Particles
+            for (let p of particles) {
+                if (p.escaped) {
+                    // Draw faded escaped particles
+                    ctx.globalAlpha = 0.3;
+                }
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color;
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1.0;
+
+                // Team label
+                if (!p.escaped && p.radius > 8) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 8px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(p.team === TEAM_MARVEL ? 'M' : 'D', p.x, p.y);
+                }
+            }
+        }
+
+        // === STATS & KPI ===
+        function updateKPIs() {
+            const marvelCount = particles.filter(p => p.team === TEAM_MARVEL).length;
+            const dcCount = particles.filter(p => p.team === TEAM_DC).length;
+            kpiMarvel.textContent = marvelCount;
+            kpiDC.textContent = dcCount;
+            kpiEscapes.textContent = escapes;
+
+            // Friction approximation
+            const f = (1 - (1 - parseFloat(restitutionSlider.value)) * 0.5).toFixed(2);
+            kpiFriction.textContent = f;
+
+            // Update analytics table
+            const mv = particles.filter(p => p.team === TEAM_MARVEL);
+            const dc = particles.filter(p => p.team === TEAM_DC);
+            const avgSpeed = (arr) => arr.length ? (arr.reduce((s, p) => s + Math.sqrt(p.vx ** 2 + p.vy ** 2), 0) / arr.length).toFixed(2) : '0.00';
+            const escRate = (arr) => arr.length ? (arr.filter(p => p.escaped).length / arr.length).toFixed(2) : '0.00';
+
+            document.getElementById('mvVel').textContent = avgSpeed(mv);
+            document.getElementById('dcVel').textContent = avgSpeed(dc);
+            document.getElementById('mvEsc').textContent = escRate(mv);
+            document.getElementById('dcEsc').textContent = escRate(dc);
+            document.getElementById('mvColl').textContent = Math.floor(mv.length * 12 + frame * 0.1);
+            document.getElementById('dcColl').textContent = Math.floor(dc.length * 11 + frame * 0.1);
+            document.getElementById('mvEnergy').textContent = (0.7 + parseFloat(restitutionSlider.value) * 0.2).toFixed(2);
+            document.getElementById('dcEnergy').textContent = (0.68 + parseFloat(restitutionSlider.value) * 0.2).toFixed(2);
+
+            // Deltas
+            const dv = (parseFloat(avgSpeed(mv)) - parseFloat(avgSpeed(dc))).toFixed(2);
+            document.getElementById('deltaVel').textContent = (dv > 0 ? '+' : '') + dv;
+            const de = (parseFloat(escRate(mv)) - parseFloat(escRate(dc))).toFixed(2);
+            document.getElementById('deltaEsc').textContent = (de > 0 ? '+' : '') + de;
+            const dc2 = (parseFloat(document.getElementById('mvColl').textContent) - parseFloat(document.getElementById('dcColl').textContent)).toFixed(0);
+            document.getElementById('deltaColl').textContent = (dc2 > 0 ? '+' : '') + dc2;
+            const de2 = (parseFloat(document.getElementById('mvEnergy').textContent) - parseFloat(document.getElementById('dcEnergy').textContent)).toFixed(2);
+            document.getElementById('deltaEnergy').textContent = (de2 > 0 ? '+' : '') + de2;
+        }
+
+        // === LOOP ===
+        function loop(timestamp) {
+            const dt = Math.min((timestamp - lastTimestamp) / 1000, 0.05);
+            lastTimestamp = timestamp;
+            fpsHistory.push(1 / (dt || 0.016));
+            if (fpsHistory.length > 30) fpsHistory.shift();
+            const avgFps = fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length;
+            fpsDisplay.textContent = Math.round(avgFps) + ' FPS';
+
+            // Physics update (fixed step)
+            const steps = 2;
+            for (let s = 0; s < steps; s++) {
+                updatePhysics(dt / steps);
+            }
+            frame++;
+
+            // Telemetry snapshot (every 10 frames)
+            if (frame % 10 === 0) {
+                const snapshot = {
+                    frame,
+                    timestamp: new Date().toISOString(),
+                    gravity: gravitySlider.value,
+                    restitution: restitutionSlider.value,
+                    ballCount: ballCountSlider.value,
+                    mazeDensity: mazeDensitySlider.value,
+                    escapes,
+                    marvelVelocity: particles.filter(p => p.team === TEAM_MARVEL).reduce((s, p) => s + Math.sqrt(p.vx ** 2 + p.vy ** 2), 0).toFixed(2),
+                    dcVelocity: particles.filter(p => p.team === TEAM_DC).reduce((s, p) => s + Math.sqrt(p.vx ** 2 + p.vy ** 2), 0).toFixed(2),
+                };
+                telemetryBuffer.push(snapshot);
+                if (telemetryBuffer.length > 500) telemetryBuffer.shift();
+            }
+
+            render();
+            updateKPIs();
+
+            animId = requestAnimationFrame(loop);
+        }
+
+        // === CSV EXPORT ===
+        function exportCSV() {
+            const headers = ['frame', 'timestamp', 'gravity', 'restitution', 'ballCount', 'mazeDensity', 'escapes', 'marvelVelocity', 'dcVelocity'];
+            const rows = telemetryBuffer.map(s => [
+                s.frame, s.timestamp, s.gravity, s.restitution, s.ballCount, s.mazeDensity, s.escapes, s.marvelVelocity, s.dcVelocity
+            ]);
+            // If buffer empty, add current snapshot
+            if (rows.length === 0) {
+                rows.push([
+                    frame, new Date().toISOString(), gravitySlider.value, restitutionSlider.value,
+                    ballCountSlider.value, mazeDensitySlider.value, escapes,
+                    particles.filter(p => p.team === TEAM_MARVEL).reduce((s, p) => s + Math.sqrt(p.vx ** 2 + p.vy ** 2), 0).toFixed(2),
+                    particles.filter(p => p.team === TEAM_DC).reduce((s, p) => s + Math.sqrt(p.vx ** 2 + p.vy ** 2), 0).toFixed(2)
+                ]);
+            }
+            const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kineticzen-telemetry-${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // === COPY LINK ===
+        function copyScenarioLink() {
+            const params = new URLSearchParams();
+            params.set('gravity', gravitySlider.value);
+            params.set('restitution', restitutionSlider.value);
+            params.set('balls', ballCountSlider.value);
+            params.set('density', mazeDensitySlider.value);
+            const url = window.location.origin + window.location.pathname + '?' + params.toString();
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('copyLink');
+                const orig = btn.textContent;
+                btn.textContent = 'COPIED!';
+                setTimeout(() => btn.textContent = orig, 1500);
+            }).catch(() => {
+                // Fallback
+                prompt('Copy this link:', url);
+            });
+        }
+
+        // === PRESETS ===
+        function applyPreset(g, r, b, d) {
+            gravitySlider.value = g;
+            restitutionSlider.value = r;
+            ballCountSlider.value = b;
+            mazeDensitySlider.value = d;
+            readSliders();
+            generateMaze(parseInt(d));
+            generateParticles(parseInt(b));
+            resetStats();
+            updateKPIs();
+        }
+
+        // === EVENT LISTENERS ===
+        gravitySlider.addEventListener('input', () => {
+            readSliders();
+        });
+        restitutionSlider.addEventListener('input', () => {
+            readSliders();
+        });
+        ballCountSlider.addEventListener('input', () => {
+            readSliders();
+            generateParticles(parseInt(ballCountSlider.value));
+            resetStats();
+            updateKPIs();
+        });
+        mazeDensitySlider.addEventListener('input', () => {
+            readSliders();
+            generateMaze(parseInt(mazeDensitySlider.value));
+            resetStats();
+            updateKPIs();
+        });
+
+        document.getElementById('presetDefault').addEventListener('click', () => applyPreset(0.45, 0.85, 14, 6));
+        document.getElementById('presetChaos').addEventListener('click', () => applyPreset(0.8, 0.95, 28, 9));
+        document.getElementById('presetLowGrav').addEventListener('click', () => applyPreset(0.1, 0.7, 18, 5));
+        document.getElementById('presetTight').addEventListener('click', () => applyPreset(0.5, 0.92, 10, 10));
+
+        document.getElementById('exportCSV').addEventListener('click', exportCSV);
+        document.getElementById('copyLink').addEventListener('click', copyScenarioLink);
+
+        // Mouse coordinates
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            coordDisplay.textContent = `${x.toFixed(1)}, ${y.toFixed(1)}`;
+        });
+
+        // === URL PARAMS ===
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('gravity')) gravitySlider.value = params.get('gravity');
+            if (params.has('restitution')) restitutionSlider.value = params.get('restitution');
+            if (params.has('balls')) ballCountSlider.value = params.get('balls');
+            if (params.has('density')) mazeDensitySlider.value = params.get('density');
+            readSliders();
+        }
+
+        // === BOOT ===
+        loadFromURL();
+        init();
+        // Seed
+        seedDisplay.textContent = 'KZ-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (animId) cancelAnimationFrame(animId);
+        });
+
+    })();
+</script>
+</body>
+</html>
