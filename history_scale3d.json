@@ -6,7 +6,8 @@
     "Moon to Sun: 3D Universe Size Comparison",
     "Rockets: V-2 to Starship 3D Size Comparison",
     "Rockets: V-2 to Starship 3D Size Comparison",
-    "Rockets From V-2 to Starship: 3D Size Showdown"
+    "Rockets From V-2 to Starship: 3D Size Showdown",
+    "Largest Rockets & Spacecraft: 3D Scale Showdown"
   ],
   "playlist_id": "PLGgHoqtqZk9I",
   "published_videos": [
@@ -33,12 +34,18 @@
     {
       "video_id": "9t9fozNZEV4",
       "title": "Rockets: V-2 to Starship 3D Size Comparison #shorts",
-      "published_at": 1794641697
+      "published_at": 1794641697,
+      "ab_tested": true
     },
     {
       "video_id": "fv45STPO1W4",
       "title": "Rockets From V-2 to Starship: 3D Size Showdown #shorts",
       "published_at": 1794677776
+    },
+    {
+      "video_id": "FpJw5iWAJYw",
+      "title": "Largest Rockets & Spacecraft: 3D Scale Showdown #shorts",
+      "published_at": 1794706542
     }
   ],
   "xgb_feedback_rows": []
