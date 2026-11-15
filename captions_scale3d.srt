@@ -1,51 +1,59 @@
 1
-00:00:00,096 --> 00:00:01,700
-Starting with the V 2 the
+00:00:00,096 --> 00:00:02,094
+The V 2 rocket just 14
 
 2
-00:00:01,685 --> 00:00:03,312
-first rocket to reach space at
+00:00:02,106 --> 00:00:03,905
+meters tall was the first human
 
 3
-00:00:03,309 --> 00:00:06,334
-just fourteen meters tall Wait the
+00:00:03,916 --> 00:00:06,852
+made object to reach space Falcon
 
 4
-00:00:06,331 --> 00:00:08,483
-Space Shuttle stack seems smaller but
+00:00:06,863 --> 00:00:08,969
+9 stands 70 meters high a
 
 5
-00:00:08,480 --> 00:00:10,244
-its fifty six meters hide immense
+00:00:08,884 --> 00:00:11,221
+reusable rocket that has revolutionized modern
 
 6
-00:00:10,256 --> 00:00:13,361
-power Then comes Falcon 9 a
+00:00:11,232 --> 00:00:14,195
+spaceflight But the Super Heavy booster
 
 7
-00:00:13,276 --> 00:00:15,764
-reusable giant towering seventy meters above
+00:00:14,207 --> 00:00:16,275
+alone is 71 meters and when
 
 8
-00:00:15,776 --> 00:00:18,619
-the launch pad Next the mighty
+00:00:16,287 --> 00:00:18,705
+stacked with Starship it eclipses everything
 
 9
-00:00:18,631 --> 00:00:20,920
-Saturn V still the tallest fully
+00:00:18,716 --> 00:00:20,262
+before it leading us back to
 
 10
-00:00:20,932 --> 00:00:22,930
-successful rocket at one hundred eleven
+00:00:20,235 --> 00:00:23,183
+the V 2's humble beginnings Saturn
 
 11
-00:00:22,941 --> 00:00:26,592
-meters Finally Starship stretches one hundred
+00:00:23,195 --> 00:00:25,578
+V the mighty Moon rocket towers
 
 12
-00:00:26,603 --> 00:00:28,286
-twenty one meters but what about
+00:00:25,590 --> 00:00:27,436
+at 110 meters still the most
 
 13
-00:00:28,297 --> 00:00:28,998
-the V 2
+00:00:27,447 --> 00:00:31,565
+powerful ever flown Starship SpaceX's colossal
+
+14
+00:00:31,576 --> 00:00:34,780
+vehicle reaches 121 meters making it
+
+15
+00:00:34,742 --> 00:00:36,261
+the tallest rocket in history
