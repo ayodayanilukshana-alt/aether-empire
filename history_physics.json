@@ -6,7 +6,8 @@
     "RONALDO vs MESSI: 20 Balls vs 6 Rings! #shorts",
     "IPHONE vs ANDROID: Hexagon Cage Escape! #shorts",
     "TESLA vs SPACEX: Ball Physics Escape! #shorts",
-    "NVIDIA vs AMD: Satisfying Ball Escape Physics! #shorts"
+    "NVIDIA vs AMD: Satisfying Ball Escape Physics! #shorts",
+    "FERRARI vs LAMBO: Ball Physics Mayhem! #shorts"
   ],
   "playlist_id": "PLMPkaFRX1K9I",
   "published_videos": [
@@ -34,12 +35,19 @@
     {
       "video_id": "JUHSBHIv8uU",
       "title": "TESLA vs SPACEX: Ball Physics Escape! #shorts",
-      "published_at": 1794677620
+      "published_at": 1794677620,
+      "ab_tested": true
     },
     {
       "video_id": "tV4w9OjyTFE",
       "title": "NVIDIA vs AMD: Satisfying Ball Escape Physics! #shorts",
-      "published_at": 1794706403
+      "published_at": 1794706403,
+      "ab_tested": true
+    },
+    {
+      "video_id": "dvO_o9PwZw0",
+      "title": "FERRARI vs LAMBO: Ball Physics Mayhem! #shorts",
+      "published_at": 1794764030
     }
   ],
   "xgb_feedback_rows": []
