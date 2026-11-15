@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Rocket Scale Showdown</title>
+    <meta name="description" content="Interactive 3D scale comparison of history's greatest rockets, from V-2 to Starship. Adjust scale, compare heights, and export telemetry.">
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/largest-rockets-spacecraft-3d-scale-showdown.html">
+    <!-- JSON-LD SoftwareApplication Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "SCALEVERSE 3D · Largest Rockets & Spacecraft Scale Showdown",
+      "description": "Interactive 3D scale workstation comparing historical rockets from V-2 to Starship.",
+      "applicationCategory": "SimulationGame",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/largest-rockets-spacecraft-3d-scale-showdown.html"
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', monospace;
+        }
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .app {
+            max-width: 1600px;
+            width: 100%;
+        }
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .brand a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+        }
+        .brand a:hover {
+            text-decoration: underline;
+        }
+        .brand span {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .yt-link {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid #334155;
+            transition: 0.2s;
+        }
+        .yt-link:hover {
+            background: #334155;
+            border-color: #38bdf8;
+        }
+        /* Panels */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1000px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+        .card h2, .card h3 {
+            color: #38bdf8;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        /* Canvas */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #05070b;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* Controls */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .slider-row label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 8px #38bdf8;
+        }
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .preset-buttons button {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: monospace;
+        }
+        .preset-buttons button:hover {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+        }
+        .preset-buttons button.active {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 600;
+        }
+        /* KPI */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .kpi-item {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .kpi-item .label {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .kpi-item .value {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #38bdf8;
+            line-height: 1.2;
+        }
+        .kpi-item .unit {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.6rem 0.5rem;
+            color: #94a3b8;
+            font-weight: 500;
+            border-bottom: 1px solid #1e293b;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #1e293b;
+            font-family: monospace;
+            color: #cbd5e1;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .highlight {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 500;
+        }
+        .btn:hover {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+        }
+        .btn-primary {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+        }
+        .btn-primary:hover {
+            background: #7dd3fc;
+        }
+        /* FAQ */
+        .faq-item {
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.75rem;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .faq-item .q {
+            color: #38bdf8;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        .faq-item .a {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            line-height: 1.4;
+        }
+        /* Youtube */
+        .yt-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .yt-container iframe {
+            width: 100%;
+            height: 100%;
+        }
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #475569;
+            font-size: 0.8rem;
+            margin-top: 2rem;
+            border-top: 1px solid #1e293b;
+            padding-top: 1rem;
+        }
+        .footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dotted #38bdf8;
+            cursor: help;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <a href="./index.html">SCALEVERSE 3D</a>
+                <span>| Rocket Scale Showdown</span>
+            </div>
+            <a class="yt-link" href="https://www.youtube.com/embed/FpJw5iWAJYw" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                Watch on YouTube
+            </a>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Left: Canvas + Controls -->
+            <div class="card">
+                <h2>3D Scale Visualization</h2>
+                <div class="canvas-container">
+                    <canvas id="rocketCanvas"></canvas>
+                </div>
+                <div class="control-group" style="margin-top: 1.25rem;">
+                    <div class="slider-row">
+                        <label>Zoom <span id="zoomVal">1.00x</span></label>
+                        <input type="range" id="zoomSlider" min="0.5" max="2.0" step="0.01" value="1.0">
+                    </div>
+                    <div class="slider-row">
+                        <label>Vertical Offset <span id="offsetVal">0 m</span></label>
+                        <input type="range" id="offsetSlider" min="-20" max="20" step="1" value="0">
+                    </div>
+                    <div class="preset-buttons">
+                        <button data-preset="all" class="active">All Rockets</button>
+                        <button data-preset="v2">V-2</button>
+                        <button data-preset="shuttle">Shuttle</button>
+                        <button data-preset="falcon9">Falcon 9</button>
+                        <button data-preset="saturnv">Saturn V</button>
+                        <button data-preset="starship">Starship</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: KPI + Export -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h2>Telemetry</h2>
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <div class="label">Tallest Rocket</div>
+                            <div class="value" id="tallestName">Starship</div>
+                            <div class="unit" id="tallestHeight">121 m</div>
+                        </div>
+                        <div class="kpi-item">
+                            <div class="label">Shortest Rocket</div>
+                            <div class="value" id="shortestName">V-2</div>
+                            <div class="unit" id="shortestHeight">14 m</div>
+                        </div>
+                        <div class="kpi-item">
+                            <div class="label">Scale Factor</div>
+                            <div class="value" id="scaleFactor">1.00</div>
+                            <div class="unit">x zoom</div>
+                        </div>
+                        <div class="kpi-item">
+                            <div class="label">Height Ratio</div>
+                            <div class="value" id="heightRatio">8.64</div>
+                            <div class="unit">Starship / V-2</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-row" style="margin-top: 1.5rem;">
+                    <button class="btn" id="exportCSV">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export CSV Telemetry
+                    </button>
+                    <button class="btn btn-primary" id="copyLink">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        Copy Scenario Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table + FAQ -->
+        <div class="grid">
+            <div class="card">
+                <h2>Analytical Breakdown</h2>
+                <div class="table-wrapper">
+                    <table id="breakdownTable">
+                        <thead>
+                            <tr>
+                                <th>Rocket / Spacecraft</th>
+                                <th>Height (m)</th>
+                                <th>Relative to V-2</th>
+                                <th>Relative to Starship</th>
+                                <th>Percentage of Tallest</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <h2>FAQ</h2>
+                <div class="faq-item">
+                    <div class="q">What does the zoom slider do?</div>
+                    <div class="a">It magnifies the canvas view without altering the true relative scale of the rockets. Use it to inspect smaller vehicles like the V-2.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="q">How is the "Relative to V-2" column calculated?</div>
+                    <div class="a">It divides each rocket's height by 14 m (the V-2 height) to show how many V-2 stacks would fit inside.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="q">Can I export the data?</div>
+                    <div class="a">Yes, use the "Export CSV Telemetry" button to download a CSV with all rocket names, heights, and computed ratios.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="q">What is the "Copy Scenario Link" button?</div>
+                    <div class="a">It copies the current URL with your zoom and offset settings pre-applied, so you can share the exact view.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YouTube Embed -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <h2>Original Video</h2>
+            <div class="yt-container">
+                <iframe src="https://www.youtube.com/embed/FpJw5iWAJYw" title="Largest Rockets & Spacecraft: 3D Scale Showdown" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>SCALEVERSE 3D — <a href="./index.html">Portal</a> · Canonical URL: <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/largest-rockets-spacecraft-3d-scale-showdown.html">largest-rockets-spacecraft-3d-scale-showdown.html</a></p>
+            <p style="margin-top:0.5rem;">Data: V-2 (14m), Space Shuttle Stack (56m), Falcon 9 Full Thrust (70m), Saturn V (111m), Starship (121m).</p>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            // DATA PAYLOAD
+            const rockets = [
+                { name: "V-2 Rocket", meters: 14, color: "#f87171" },
+                { name: "Space Shuttle Stack", meters: 56, color: "#fbbf24" },
+                { name: "Falcon 9 Full Thrust", meters: 70, color: "#34d399" },
+                { name: "Saturn V", meters: 111, color: "#a78bfa" },
+                { name: "Starship (Super Heavy)", meters: 121, color: "#38bdf8" }
+            ];
+
+            // Sort descending by height for drawing (tallest at top)
+            const sortedRockets = [...rockets].sort((a, b) => b.meters - a.meters);
+            const minHeight = Math.min(...rockets.map(r => r.meters));
+            const maxHeight = Math.max(...rockets.map(r => r.meters));
+
+            // State
+            let zoom = 1.0;
+            let offset = 0; // vertical offset in meters
+            let activePreset = 'all';
+
+            // Canvas setup
+            const canvas = document.getElementById('rocketCanvas');
+            const ctx = canvas.getContext('2d');
+            let canvasWidth, canvasHeight;
+
+            // DOM refs
+            const zoomSlider = document.getElementById('zoomSlider');
+            const zoomVal = document.getElementById('zoomVal');
+            const offsetSlider = document.getElementById('offsetSlider');
+            const offsetVal = document.getElementById('offsetVal');
+            const presetButtons = document.querySelectorAll('[data-preset]');
+            const exportBtn = document.getElementById('exportCSV');
+            const copyBtn = document.getElementById('copyLink');
+            const tableBody = document.getElementById('tableBody');
+            const tallestName = document.getElementById('tallestName');
+            const tallestHeight = document.getElementById('tallestHeight');
+            const shortestName = document.getElementById('shortestName');
+            const shortestHeight = document.getElementById('shortestHeight');
+            const scaleFactor = document.getElementById('scaleFactor');
+            const heightRatio = document.getElementById('heightRatio');
+
+            // Resize handler
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                const rect = container.getBoundingClientRect();
+                canvasWidth = rect.width * window.devicePixelRatio;
+                canvasHeight = rect.height * window.devicePixelRatio;
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+                draw();
+            }
+
+            // Drawing logic
+            function draw() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+                const w = canvasWidth;
+                const h = canvasHeight;
+                const dpr = window.devicePixelRatio || 1;
+
+                // Background grid
+                ctx.fillStyle = '#05070b';
+                ctx.fillRect(0, 0, w, h);
+
+                // Scale: we want max rocket to fit with some padding
+                // Use meters to pixel conversion. Max height 121m + offset.
+                const padding = 0.1; // 10% top/bottom
+                const baseScale = (h * (1 - 2 * padding)) / (maxHeight + 20); // extra room for offset
+
+                // Apply zoom: zoom zooms in around center
+                const zoomFactor = zoom;
+                const offsetPixels = offset * baseScale;
+
+                // Helper to convert meters to y coordinate (0m at bottom)
+                function metersToY(meters) {
+                    const scaledHeight = meters * baseScale * zoomFactor;
+                    // Center the vertical positioning: we want rockets aligned at bottom
+                    // baseline at h - padding*h, then subtract offset
+                    const baseline = h - padding * h + offsetPixels;
+                    return baseline - scaledHeight;
+                }
+
+                // Draw ground line
+                const groundY = metersToY(0);
+                ctx.beginPath();
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1.5 * dpr;
+                ctx.moveTo(0, groundY);
+                ctx.lineTo(w, groundY);
+                ctx.stroke();
+
+                // Draw rockets
+                const numRockets = sortedRockets.length;
+                const spacing = w / (numRockets + 1);
+                const barWidth = Math.min(spacing * 0.5, 60 * dpr);
+
+                sortedRockets.forEach((rocket, index) => {
+                    const x = spacing * (index + 1);
+                    const heightPx = rocket.meters * baseScale * zoomFactor;
+                    const yTop = metersToY(rocket.meters);
+
+                    // Determine if this rocket is highlighted by preset
+                    let isActive = true;
+                    if (activePreset !== 'all') {
+                        isActive = rocket.name.toLowerCase().includes(activePreset) ||
+                                   (activePreset === 'v2' && rocket.name.includes('V-2')) ||
+                                   (activePreset === 'shuttle' && rocket.name.includes('Shuttle')) ||
+                                   (activePreset === 'falcon9' && rocket.name.includes('Falcon 9')) ||
+                                   (activePreset === 'saturnv' && rocket.name.includes('Saturn V')) ||
+                                   (activePreset === 'starship' && rocket.name.includes('Starship'));
+                    }
+
+                    // Rocket body
+                    const alpha = isActive ? 1.0 : 0.2;
+                    ctx.globalAlpha = alpha;
+
+                    // Draw body gradient
+                    const gradient = ctx.createLinearGradient(x - barWidth/2, 0, x + barWidth/2, 0);
+                    gradient.addColorStop(0, rocket.color);
+                    gradient.addColorStop(0.5, rocket.color + 'cc');
+                    gradient.addColorStop(1, rocket.color + '88');
+                    ctx.fillStyle = gradient;
+                    ctx.shadowColor = rocket.color;
+                    ctx.shadowBlur = isActive ? 15 * dpr : 0;
+                    ctx.beginPath();
+                    ctx.roundRect(x - barWidth/2, yTop, barWidth, heightPx, 4 * dpr);
+                    ctx.fill();
+
+                    // Nose cone (triangle on top)
+                    ctx.fillStyle = rocket.color;
+                    ctx.beginPath();
+                    ctx.moveTo(x - barWidth/2, yTop);
+                    ctx.lineTo(x, yTop - barWidth * 0.8);
+                    ctx.lineTo(x + barWidth/2, yTop);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Reset shadow
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha = 1.0;
+
+                    // Label
+                    ctx.fillStyle = isActive ? '#e2e8f0' : '#475569';
+                    ctx.font = `${11 * dpr}px monospace`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(rocket.meters + 'm', x, yTop + heightPx + 16 * dpr);
+
+                    // Name (abbreviated)
+                    ctx.fillStyle = isActive ? '#94a3b8' : '#334155';
+                    ctx.font = `${9 * dpr}px monospace`;
+                    const shortName = rocket.name.length > 14 ? rocket.name.substring(0, 13) + '…' : rocket.name;
+                    ctx.fillText(shortName, x, yTop + heightPx + 30 * dpr);
+                });
+
+                // Draw Y-axis scale
+                ctx.fillStyle = '#475569';
+                ctx.font = `${9 * dpr}px monospace`;
+                ctx.textAlign = 'left';
+                for (let m = 0; m <= maxHeight; m += 20) {
+                    const y = metersToY(m);
+                    if (y > 0 && y < h) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#1e293b';
+                        ctx.lineWidth = 0.5 * dpr;
+                        ctx.moveTo(0, y);
+                        ctx.lineTo(w, y);
+                        ctx.stroke();
+                        ctx.fillText(m + 'm', 4 * dpr, y - 3 * dpr);
+                    }
+                }
+            }
+
+            // RoundRect helper
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.moveTo(x + r, y);
+                this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r);
+                this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r);
+                this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y);
+                return this;
+            };
+
+            // Update KPIs
+            function updateKPIs() {
+                const tallest = rockets.reduce((a, b) => a.meters > b.meters ? a : b);
+                const shortest = rockets.reduce((a, b) => a.meters < b.meters ? a : b);
+                tallestName.textContent = tallest.name;
+                tallestHeight.textContent = tallest.meters + ' m';
+                shortestName.textContent = shortest.name;
+                shortestHeight.textContent = shortest.meters + ' m';
+                scaleFactor.textContent = zoom.toFixed(2);
+                heightRatio.textContent = (tallest.meters / shortest.meters).toFixed(2);
+            }
+
+            // Build table
+            function buildTable() {
+                const tallest = rockets.reduce((a, b) => a.meters > b.meters ? a : b);
+                tableBody.innerHTML = '';
+                [...rockets].sort((a, b) => b.meters - a.meters).forEach(r => {
+                    const tr = document.createElement('tr');
+                    const relativeV2 = (r.meters / 14).toFixed(2);
+                    const relativeStarship = (r.meters / 121).toFixed(3);
+                    const percentage = ((r.meters / tallest.meters) * 100).toFixed(1);
+                    tr.innerHTML = `
+                        <td style="color:${r.color}; font-weight:600;">${r.name}</td>
+                        <td class="highlight">${r.meters}</td>
+                        <td>${relativeV2}x</td>
+                        <td>${relativeStarship}x</td>
+                        <td>${percentage}%</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Event listeners
+            zoomSlider.addEventListener('input', (e) => {
+                zoom = parseFloat(e.target.value);
+                zoomVal.textContent = zoom.toFixed(2) + 'x';
+                updateKPIs();
+                draw();
+                updatePresetActive();
+            });
+
+            offsetSlider.addEventListener('input', (e) => {
+                offset = parseFloat(e.target.value);
+                offsetVal.textContent = offset + ' m';
+                draw();
+            });
+
+            presetButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    activePreset = btn.dataset.preset;
+                    presetButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    // Also set zoom for specific presets to focus
+                    if (activePreset === 'v2') { zoom = 2.0; }
+                    else if (activePreset === 'shuttle') { zoom = 1.5; }
+                    else if (activePreset === 'falcon9') { zoom = 1.2; }
+                    else if (activePreset === 'saturnv') { zoom = 1.0; }
+                    else if (activePreset === 'starship') { zoom = 0.9; }
+                    else { zoom = 1.0; }
+                    zoomSlider.value = zoom;
+                    zoomVal.textContent = zoom.toFixed(2) + 'x';
+                    updateKPIs();
+                    draw();
+                    updatePresetActive();
+                });
+            });
+
+            function updatePresetActive() {
+                presetButtons.forEach(b => b.classList.toggle('active', b.dataset.preset === activePreset));
+            }
+
+            // Export CSV
+            exportBtn.addEventListener('click', () => {
+                let csv = 'Rocket Name,Height (m),Relative to V-2,Relative to Starship,Percentage of Tallest(%)\n';
+                const tallest = Math.max(...rockets.map(r => r.meters));
+                rockets.forEach(r => {
+                    const relV2 = (r.meters / 14).toFixed(2);
+                    const relStarship = (r.meters / 121).toFixed(3);
+                    const pct = ((r.meters / tallest) * 100).toFixed(1);
+                    csv += `"${r.name}",${r.meters},${relV2},${relStarship},${pct}\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'rocket_telemetry.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            });
+
+            // Copy Scenario Link
+            copyBtn.addEventListener('click', () => {
+                const baseUrl = window.location.origin + window.location.pathname;
+                const params = new URLSearchParams();
+                params.set('zoom', zoom.toFixed(2));
+                params.set('offset', offset);
+                params.set('preset', activePreset);
+                const fullUrl = baseUrl + '?' + params.toString();
+                navigator.clipboard.writeText(fullUrl).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '✓ Copied!';
+                    setTimeout(() => { copyBtn.innerHTML = originalText; }, 2000);
+                }).catch(() => {
+                    // Fallback
+                    prompt('Copy this link:', fullUrl);
+                });
+            });
+
+            // Load from URL params
+            function loadFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('zoom')) {
+                    zoom = parseFloat(params.get('zoom')) || 1.0;
+                    zoomSlider.value = zoom;
+                    zoomVal.textContent = zoom.toFixed(2) + 'x';
+                }
+                if (params.has('offset')) {
+                    offset = parseInt(params.get('offset')) || 0;
+                    offsetSlider.value = offset;
+                    offsetVal.textContent = offset + ' m';
+                }
+                if (params.has('preset')) {
+                    activePreset = params.get('preset');
+                    presetButtons.forEach(b => b.classList.toggle('active', b.dataset.preset === activePreset));
+                }
+            }
+
+            // Init
+            function init() {
+                resizeCanvas();
+                buildTable();
+                updateKPIs();
+                loadFromURL();
+                updatePresetActive();
+                // Fix preset classes based on URL
+                if (activePreset) {
+                    presetButtons.forEach(b => b.classList.toggle('active', b.dataset.preset === activePreset));
+                }
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            init();
+        })();
+    </script>
+</body>
+</html>
