@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEPSI vs COKE · Ball Physics Escape · KINETICZEN LABS</title>
+  <meta name="description" content="Interactive rigid-body physics workstation: PEPSI vs COKE ball escape simulation with real-time canvas, telemetry export, and analysis.">
+  <meta name="author" content="KINETICZEN LABS">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/pepsi-vs-coke-ball-physics-escape.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.5;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workstation {
+      max-width: 1440px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.75rem;
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+    }
+    .brand span {
+      color: #f43f5e;
+      font-weight: 800;
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .brand .lab {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-left: 0.25rem;
+      border-left: 1px solid #334155;
+      padding-left: 0.75rem;
+    }
+    .header-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .header-meta a {
+      color: #f43f5e;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .header-meta a:hover {
+      text-decoration: underline;
+    }
+    .subhead {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.95rem;
+    }
+    .subhead .summary {
+      flex: 1;
+      color: #cbd5e1;
+    }
+    .team-badge {
+      display: flex;
+      gap: 1rem;
+    }
+    .team-badge span {
+      padding: 0.2rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+    }
+    .team-a {
+      background: #1e293b;
+      color: #60a5fa;
+      border: 1px solid #3b82f6;
+    }
+    .team-b {
+      background: #1e293b;
+      color: #f87171;
+      border: 1px solid #ef4444;
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.5rem;
+    }
+    @media (max-width: 1000px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .canvas-panel {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .canvas-header h2 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .canvas-wrapper {
+      position: relative;
+      background: #05070b;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #05070b;
+    }
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+    .card h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card h3::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #1e293b;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .kpi-item {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+    }
+    .kpi-value {
+      font-size: 1.4rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: #f8fafc;
+      line-height: 1.3;
+    }
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .slider-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+    }
+    .slider-header span:last-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: #f43f5e;
+      font-weight: 600;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 2px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f43f5e;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 0 1px #f43f5e;
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f43f5e;
+      border: 2px solid #05070b;
+      cursor: pointer;
+    }
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .preset-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .preset-btn:hover {
+      background: #334155;
+      border-color: #f43f5e;
+    }
+    .preset-btn.active {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: #05070b;
+      font-weight: 700;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: #f43f5e;
+      color: #05070b;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid #f43f5e;
+    }
+    .btn-primary:hover {
+      background: #e11d48;
+      border-color: #e11d48;
+    }
+    .btn-secondary {
+      background: transparent;
+      color: #f43f5e;
+      border: 1px solid #f43f5e;
+      padding: 0.6rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-secondary:hover {
+      background: #f43f5e;
+      color: #05070b;
+    }
+    .analysis-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      background: #0b0f17;
+      color: #94a3b8;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.7rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 700px) {
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .faq-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+    .faq-item h4 {
+      color: #f8fafc;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+    .faq-item p {
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+    .video-container {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .video-container h3 {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #05070b;
+      border: 1px solid #1e293b;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    footer {
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    footer a {
+      color: #f43f5e;
+      text-decoration: none;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 20px;
+      background: #1e293b;
+      color: #22c55e;
+      border: 1px solid #22c55e33;
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <span>⬤</span>
+      <h1>KINETICZEN <span>LABS</span></h1>
+      <span class="lab">RIGID BODY WORKSTATION</span>
+    </div>
+    <div class="header-meta">
+      <a href="./index.html">← Portal</a>
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/pepsi-vs-coke-ball-physics-escape.html" target="_blank">Canonical</a>
+    </div>
+  </header>
+
+  <!-- SUBHEAD / SUMMARY -->
+  <div class="subhead">
+    <div class="summary">
+      <strong>PEPSI vs COKE: Ball Physics Escape!</strong> — 60FPS rigid-body rivalry simulation. Adjust gravity, elasticity, and initial velocities to observe escape dynamics.
+    </div>
+    <div class="team-badge">
+      <span class="team-a">PEPSI</span>
+      <span class="team-b">COKE</span>
+    </div>
+  </div>
+
+  <!-- MAIN GRID: CANVAS + CONTROLS -->
+  <div class="main-grid">
+    <!-- LEFT: CANVAS -->
+    <div class="canvas-panel">
+      <div class="canvas-header">
+        <h2>◈ LIVE SIMULATION · PEPSI vs COKE ESCAPE</h2>
+        <span class="status-badge" id="fpsBadge">60 FPS</span>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="simCanvas" width="960" height="540"></canvas>
+      </div>
+      <div class="flex-between" style="font-size:0.75rem; color:#64748b;">
+        <span>● PEPSI (blue) &nbsp;|&nbsp; ● COKE (red)</span>
+        <span class="mono" id="simTime">t = 0.00s</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: CONTROLS & KPI -->
+    <div class="controls-panel">
+      <!-- KPI CARD -->
+      <div class="card">
+        <h3>◈ TELEMETRY · KPIs</h3>
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <div class="kpi-label">PEPSI KINETIC</div>
+            <div class="kpi-value" id="kpiPepsiKe">0.00</div>
+            <div class="kpi-sub">J</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">COKE KINETIC</div>
+            <div class="kpi-value" id="kpiCokeKe">0.00</div>
+            <div class="kpi-sub">J</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">ESCAPE VELOCITY</div>
+            <div class="kpi-value" id="kpiEscapeVel">0.00</div>
+            <div class="kpi-sub">m/s</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">COLLISIONS</div>
+            <div class="kpi-value" id="kpiCollisions">0</div>
+            <div class="kpi-sub">total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDERS -->
+      <div class="card">
+        <h3>◈ PARAMETERS</h3>
+        <div class="slider-group">
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>Gravity</span>
+              <span id="gravityVal">9.81</span>
+            </div>
+            <input type="range" id="gravitySlider" min="0" max="20" step="0.1" value="9.81">
+          </div>
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>Elasticity</span>
+              <span id="elasticityVal">0.82</span>
+            </div>
+            <input type="range" id="elasticitySlider" min="0.1" max="0.99" step="0.01" value="0.82">
+          </div>
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>PEPSI Initial Vx</span>
+              <span id="pepsiVxVal">4.50</span>
+            </div>
+            <input type="range" id="pepsiVxSlider" min="-10" max="10" step="0.1" value="4.5">
+          </div>
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>COKE Initial Vx</span>
+              <span id="cokeVxVal">-4.50</span>
+            </div>
+            <input type="range" id="cokeVxSlider" min="-10" max="10" step="0.1" value="-4.5">
+          </div>
+        </div>
+      </div>
+
+      <!-- PRESETS -->
+      <div class="card">
+        <h3>◈ SCENARIO PRESETS</h3>
+        <div class="preset-buttons">
+          <button class="preset-btn active" data-preset="default">DEFAULT</button>
+          <button class="preset-btn" data-preset="lowgrav">LOW-G</button>
+          <button class="preset-btn" data-preset="bouncy">BOUNCY</button>
+          <button class="preset-btn" data-preset="headon">HEAD-ON</button>
+          <button class="preset-btn" data-preset="escape">ESCAPE</button>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="card">
+        <h3>◈ ACTIONS</h3>
+        <div class="action-buttons">
+          <button class="btn-primary" id="exportCsvBtn">⬇ EXPORT CSV</button>
+          <button class="btn-secondary" id="copyLinkBtn">🔗 COPY LINK</button>
+          <button class="btn-secondary" id="resetBtn">⟲ RESET</button>
+        </div>
+        <div style="font-size:0.7rem; color:#64748b; margin-top:0.75rem;" id="copyStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICAL BREAKDOWN TABLE -->
+  <div class="analysis-section">
+    <div class="card" style="padding:0;">
+      <div style="padding:1rem 1.25rem 0.5rem;">
+        <h3 style="margin-bottom:0.5rem;">◈ ANALYTICAL BREAKDOWN · PEPSI vs COKE</h3>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>PEPSI</th>
+              <th>COKE</th>
+              <th>Δ (Pepsi - Coke)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mass (kg)</td>
+              <td class="mono">1.20</td>
+              <td class="mono">1.20</td>
+              <td class="mono">0.00</td>
+            </tr>
+            <tr>
+              <td>Radius (m)</td>
+              <td class="mono">0.45</td>
+              <td class="mono">0.45</td>
+              <td class="mono">0.00</td>
+            </tr>
+            <tr>
+              <td>Initial Vx (m/s)</td>
+              <td class="mono" id="tablePepsiVx">4.50</td>
+              <td class="mono" id="tableCokeVx">-4.50</td>
+              <td class="mono" id="tableDeltaVx">9.00</td>
+            </tr>
+            <tr>
+              <td>Kinetic Energy (J)</td>
+              <td class="mono" id="tablePepsiKe">12.15</td>
+              <td class="mono" id="tableCokeKe">12.15</td>
+              <td class="mono" id="tableDeltaKe">0.00</td>
+            </tr>
+            <tr>
+              <td>Momentum (kg·m/s)</td>
+              <td class="mono" id="tablePepsiMom">5.40</td>
+              <td class="mono" id="tableCokeMom">-5.40</td>
+              <td class="mono" id="tableDeltaMom">10.80</td>
+            </tr>
+            <tr>
+              <td>Collision Count</td>
+              <td class="mono" id="tablePepsiColl">0</td>
+              <td class="mono" id="tableCokeColl">0</td>
+              <td class="mono">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FAQ SECTION -->
+    <div class="card">
+      <h3>◈ FREQUENTLY ASKED QUESTIONS</h3>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4>What does the simulation model?</h4>
+          <p>Two rigid circular bodies (PEPSI & COKE) in a bounded container under gravity and elastic collisions. The ‘escape’ refers to a ball leaving the viewport when kinetic energy exceeds the box potential.</p>
+        </div>
+        <div class="faq-item">
+          <h4>How is kinetic energy computed?</h4>
+          <p>KE = ½ m v². Mass is fixed at 1.2 kg per ball. Velocity magnitude includes both x and y components derived from the physics integration.</p>
+        </div>
+        <div class="faq-item">
+          <h4>What do the preset buttons do?</h4>
+          <p>DEFAULT restores baseline values. LOW-G reduces gravity. BOUNCY raises elasticity. HEAD-ON sets symmetric opposite velocities. ESCAPE boosts velocities to force escape.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Can I export the telemetry?</h4>
+          <p>Yes, click EXPORT CSV to download a CSV file containing the current parameters and real-time KPI values for both teams.</p>
+        </div>
+        <div class="faq-item">
+          <h4>How do I share this scenario?</h4>
+          <p>Click COPY LINK to copy the current scenario state (encoded in URL hash) to your clipboard. Paste it into any browser to reproduce exact settings.</p>
+        </div>
+        <div class="faq-item">
+          <h4>What is the YouTube stream?</h4>
+          <p>The embedded video showcases the original 60FPS Matter.js physics rivalry. You can watch it alongside this interactive simulation for comparison.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE EMBED -->
+    <div class="video-container">
+      <h3>◈ ORIGINAL STREAM · PEPSI vs COKE: Ball Physics Escape!</h3>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/MWV96xa2RqI" title="PEPSI vs COKE: Ball Physics Escape! — 60FPS Matter.js" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© KINETICZEN LABS · Rigid Body Physics Workstation</span>
+    <span><a href="./index.html">← Return to Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/pepsi-vs-coke-ball-physics-escape.html">Canonical Link</a></span>
+  </footer>
+</div>
+
+<!-- JSON-LD SCHEMA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PEPSI vs COKE: Ball Physics Escape — Kineticzen Labs",
+  "applicationCategory": "Physics Simulation",
+  "operatingSystem": "Web Browser",
+  "description": "Interactive rigid-body physics workstation modeling PEPSI vs COKE ball escape with real-time canvas, telemetry export, and analytical breakdown.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/pepsi-vs-coke-ball-physics-escape.html",
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "video": {
+    "@type": "VideoObject",
+    "name": "PEPSI vs COKE: Ball Physics Escape!",
+    "description": "60FPS Matter.js rigid-body physics rivalry simulation.",
+    "embedUrl": "https://www.youtube.com/embed/MWV96xa2RqI",
+    "uploadDate": "2025-01-01"
+  }
+}
+</script>
+
+<!-- SIMULATION SCRIPT -->
+<script>
+(function(){
+  // ========== CONFIG & STATE ==========
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 960, H = 540;
+
+  // Fixed physical constants
+  const MASS = 1.2;            // kg
+  const RADIUS = 0.45;         // m (visual ~20px)
+  const VISUAL_R = 22;         // px radius for canvas
+  const BOUNDARY_PAD = 35;     // px from edges
+
+  // State object
+  const state = {
+    gravity: 9.81,
+    elasticity: 0.82,
+    // PEPSI
+    pepsi: {
+      x: W * 0.25, y: H * 0.5,
+      vx: 4.5, vy: 0,
+      mass: MASS, r: RADIUS,
+      collisions: 0,
+      color: '#3b82f6'
+    },
+    // COKE
+    coke: {
+      x: W * 0.75, y: H * 0.5,
+      vx: -4.5, vy: 0,
+      mass: MASS, r: RADIUS,
+      collisions: 0,
+      color: '#ef4444'
+    },
+    time: 0,
+    lastTimestamp: null,
+    running: true,
+    totalCollisions: 0,
+    // internal velocity multiplier for escape boost
+    _velocityBoost: 1
+  };
+
+  // DOM refs
+  const gravitySlider = document.getElementById('gravitySlider');
+  const elasticitySlider = document.getElementById('elasticitySlider');
+  const pepsiVxSlider = document.getElementById('pepsiVxSlider');
+  const cokeVxSlider = document.getElementById('cokeVxSlider');
+  const gravityVal = document.getElementById('gravityVal');
+  const elasticityVal = document.getElementById('elasticityVal');
+  const pepsiVxVal = document.getElementById('pepsiVxVal');
+  const cokeVxVal = document.getElementById('cokeVxVal');
+  const kpiPepsiKe = document.getElementById('kpiPepsiKe');
+  const kpiCokeKe = document.getElementById('kpiCokeKe');
+  const kpiEscapeVel = document.getElementById('kpiEscapeVel');
+  const kpiCollisions = document.getElementById('kpiCollisions');
+  const simTime = document.getElementById('simTime');
+  const fpsBadge = document.getElementById('fpsBadge');
+  const copyStatus = document.getElementById('copyStatus');
+  const resetBtn = document.getElementById('resetBtn');
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+
+  // Table cells
+  const tablePepsiVx = document.getElementById('tablePepsiVx');
+  const tableCokeVx = document.getElementById('tableCokeVx');
+  const tableDeltaVx = document.getElementById('tableDeltaVx');
+  const tablePepsiKe = document.getElementById('tablePepsiKe');
+  const tableCokeKe = document.getElementById('tableCokeKe');
+  const tableDeltaKe = document.getElementById('tableDeltaKe');
+  const tablePepsiMom = document.getElementById('tablePepsiMom');
+  const tableCokeMom = document.getElementById('tableCokeMom');
+  const tableDeltaMom = document.getElementById('tableDeltaMom');
+  const tablePepsiColl = document.getElementById('tablePepsiColl');
+  const tableCokeColl = document.getElementById('tableCokeColl');
+
+  // ========== UTILS ==========
+  function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+
+  function computeKineticEnergy(vx, vy) {
+    const v2 = vx * vx + vy * vy;
+    return 0.5 * MASS * v2;
+  }
+
+  // ========== UPDATE KPIs & TABLE ==========
+  function updateReadouts() {
+    const p = state.pepsi;
+    const c = state.coke;
+    const pKe = computeKineticEnergy(p.vx, p.vy);
+    const cKe = computeKineticEnergy(c.vx, c.vy);
+    const pMom = MASS * p.vx;
+    const cMom = MASS * c.vx;
+
+    // KPI
+    kpiPepsiKe.textContent = pKe.toFixed(2);
+    kpiCokeKe.textContent = cKe.toFixed(2);
+    const escapeVel = Math.sqrt(Math.max(p.vx * p.vx + p.vy * p.vy, c.vx * c.vx + c.vy * c.vy));
+    kpiEscapeVel.textContent = escapeVel.toFixed(2);
+    kpiCollisions.textContent = state.totalCollisions;
+
+    // Slider labels
+    gravityVal.textContent = state.gravity.toFixed(2);
+    elasticityVal.textContent = state.elasticity.toFixed(2);
+    pepsiVxVal.textContent = p.vx.toFixed(2);
+    cokeVxVal.textContent = c.vx.toFixed(2);
+
+    // TABLE
+    tablePepsiVx.textContent = p.vx.toFixed(2);
+    tableCokeVx.textContent = c.vx.toFixed(2);
+    tableDeltaVx.textContent = (p.vx - c.vx).toFixed(2);
+    tablePepsiKe.textContent = pKe.toFixed(2);
+    tableCokeKe.textContent = cKe.toFixed(2);
+    tableDeltaKe.textContent = (pKe - cKe).toFixed(2);
+    tablePepsiMom.textContent = pMom.toFixed(2);
+    tableCokeMom.textContent = cMom.toFixed(2);
+    tableDeltaMom.textContent = (pMom - cMom).toFixed(2);
+    tablePepsiColl.textContent = p.collisions;
+    tableCokeColl.textContent = c.collisions;
+
+    // Time display
+    simTime.textContent = `t = ${state.time.toFixed(2)}s`;
+  }
+
+  // ========== PHYSICS STEP ==========
+  function stepPhysics(dt) {
+    if (!state.running) return;
+    // Limit dt to avoid explosions
+    dt = Math.min(dt, 0.033);
+    const g = state.gravity * 80; // scale gravity to px/s^2 for visual
+    const e = state.elasticity;
+    const p = state.pepsi;
+    const c = state.coke;
+
+    // Apply gravity to vy
+    p.vy += g * dt;
+    c.vy += g * dt;
+
+    // Update positions
+    p.x += p.vx * dt * 60;
+    p.y += p.vy * dt * 60;
+    c.x += c.vx * dt * 60;
+    c.y += c.vy * dt * 60;
+
+    // Boundary collision (walls) — account for radius
+    const left = BOUNDARY_PAD + VISUAL_R;
+    const right = W - BOUNDARY_PAD - VISUAL_R;
+    const top = BOUNDARY_PAD + VISUAL_R;
+    const bottom = H - BOUNDARY_PAD - VISUAL_R;
+
+    // PEPSI walls
+    if (p.x < left) { p.x = left; p.vx = Math.abs(p.vx) * e; p.collisions++; state.totalCollisions++; }
+    if (p.x > right) { p.x = right; p.vx = -Math.abs(p.vx) * e; p.collisions++; state.totalCollisions++; }
+    if (p.y < top) { p.y = top; p.vy = Math.abs(p.vy) * e; p.collisions++; state.totalCollisions++; }
+    if (p.y > bottom) { p.y = bottom; p.vy = -Math.abs(p.vy) * e; p.collisions++; state.totalCollisions++; }
+
+    // COKE walls
+    if (c.x < left) { c.x = left; c.vx = Math.abs(c.vx) * e; c.collisions++; state.totalCollisions++; }
+    if (c.x > right) { c.x = right; c.vx = -Math.abs(c.vx) * e; c.collisions++; state.totalCollisions++; }
+    if (c.y < top) { c.y = top; c.vy = Math.abs(c.vy) * e; c.collisions++; state.totalCollisions++; }
+    if (c.y > bottom) { c.y = bottom; c.vy = -Math.abs(c.vy) * e; c.collisions++; state.totalCollisions++; }
+
+    // Ball-ball collision (elastic, equal mass simplified)
+    const dx = c.x - p.x;
+    const dy = c.y - p.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const minDist = VISUAL_R * 2;
+    if (dist < minDist && dist > 0.01) {
+      // Normalize
+      const nx = dx / dist;
+      const ny = dy / dist;
+      // Separate
+      const overlap = (minDist - dist) / 2;
+      p.x -= nx * overlap;
+      p.y -= ny * overlap;
+      c.x += nx * overlap;
+      c.y += ny * overlap;
+
+      // Relative velocity
+      const dvx = c.vx - p.vx;
+      const dvy = c.vy - p.vy;
+      const vn = dvx * nx + dvy * ny;
+      if (vn < 0) {
+        // Only if approaching
+        const impulse = (1 + e) * vn / 2; // equal mass
+        p.vx += impulse * nx;
+        p.vy += impulse * ny;
+        c.vx -= impulse * nx;
+        c.vy -= impulse * ny;
+        p.collisions++;
+        c.collisions++;
+        state.totalCollisions += 2;
+      }
+    }
+
+    // Update time
+    state.time += dt;
+  }
+
+  // ========== DRAW ==========
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background grid
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.5;
+    const gridSize = 40;
+    for (let x = 0; x < W; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+      ctx.strokeStyle = '#1e293b33';
+      ctx.stroke();
+    }
+    for (let y = 0; y < H; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.strokeStyle = '#1e293b33';
+      ctx.stroke();
+    }
+
+    // Boundary box
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(BOUNDARY_PAD, BOUNDARY_PAD, W - BOUNDARY_PAD * 2, H - BOUNDARY_PAD * 2);
+    ctx.fillStyle = '#0b0f1780';
+    ctx.fillRect(BOUNDARY_PAD, BOUNDARY_PAD, W - BOUNDARY_PAD * 2, H - BOUNDARY_PAD * 2);
+
+    // Draw balls with trailing effect
+    const p = state.pepsi;
+    const c = state.coke;
+
+    // PEPSI
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, VISUAL_R, 0, Math.PI * 2);
+    ctx.fillStyle = '#3b82f6';
+    ctx.shadowColor = '#3b82f6';
+    ctx.shadowBlur = 20;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#60a5fa';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Label
+    ctx.font = 'bold 13px "Inter", monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('P', p.x, p.y);
+
+    // COKE
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, VISUAL_R, 0, Math.PI * 2);
+    ctx.fillStyle = '#ef4444';
+    ctx.shadowColor = '#ef4444';
+    ctx.shadowBlur = 20;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#f87171';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('C', c.x, c.y);
+
+    // Velocity vectors (scaled)
+    const vecScale = 6;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x + p.vx * vecScale, p.y + p.vy * vecScale);
+    ctx.strokeStyle = '#60a5fa';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(p.x + p.vx * vecScale, p.y + p.vy * vecScale, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#60a5fa';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(c.x, c.y);
+    ctx.lineTo(c.x + c.vx * vecScale, c.y + c.vy * vecScale);
+    ctx.strokeStyle = '#f87171';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(c.x + c.vx * vecScale, c.y + c.vy * vecScale, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#f87171';
+    ctx.fill();
+  }
+
+  // ========== ANIMATION LOOP ==========
+  let lastTime = performance.now();
+  let frameCount = 0;
+  let fpsTimer = 0;
+  let currentFps = 60;
+
+  function loop(now) {
+    requestAnimationFrame(loop);
+    const dt = Math.min((now - lastTime) / 1000, 0.05); // seconds
+    lastTime = now;
+
+    // FPS calculation
+    frameCount++;
+    fpsTimer += dt;
+    if (fpsTimer >= 0.5) {
+      currentFps = Math.round(frameCount / fpsTimer);
+      fpsBadge.textContent = currentFps + ' FPS';
+      frameCount = 0;
+      fpsTimer = 0;
+    }
+
+    // Only update physics at fixed timestep for stability
+    stepPhysics(dt);
+    updateReadouts();
+    draw();
+  }
+
+  // ========== SLIDER HANDLERS ==========
+  gravitySlider.addEventListener('input', function() {
+    state.gravity = parseFloat(this.value);
+    updateReadouts();
+  });
+  elasticitySlider.addEventListener('input', function() {
+    state.elasticity = parseFloat(this.value);
+    updateReadouts();
+  });
+  pepsiVxSlider.addEventListener('input', function() {
+    state.pepsi.vx = parseFloat(this.value);
+    updateReadouts();
+  });
+  cokeVxSlider.addEventListener('input', function() {
+    state.coke.vx = parseFloat(this.value);
+    updateReadouts();
+  });
+
+  // ========== PRESET HANDLERS ==========
+  const presets = {
+    default: { gravity: 9.81, elasticity: 0.82, pepsiVx: 4.5, cokeVx: -4.5 },
+    lowgrav: { gravity: 2.0, elasticity: 0.82, pepsiVx: 4.5, cokeVx: -4.5 },
+    bouncy: { gravity: 9.81, elasticity: 0.98, pepsiVx: 4.5, cokeVx: -4.5 },
+    headon: { gravity: 9.81, elasticity: 0.82, pepsiVx: 5.0, cokeVx: -5.0 },
+    escape: { gravity: 5.0, elasticity: 0.95, pepsiVx: 8.0, cokeVx: -8.0 }
+  };
+
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const preset = presets[this.dataset.preset] || presets.default;
+
+      state.gravity = preset.gravity;
+      state.elasticity = preset.elasticity;
+      state.pepsi.vx = preset.pepsiVx;
+      state.coke.vx = preset.cokeVx;
+
+      // Reset vy and positions
+      state.pepsi.vy = 0;
+      state.coke.vy = 0;
+      state.pepsi.x = W * 0.25;
+      state.pepsi.y = H * 0.5;
+      state.coke.x = W * 0.75;
+      state.coke.y = H * 0.5;
+      state.totalCollisions = 0;
+      state.pepsi.collisions = 0;
+      state.coke.collisions = 0;
+      state.time = 0;
+
+      // Update UI
+      gravitySlider.value = state.gravity;
+      elasticitySlider.value = state.elasticity;
+      pepsiVxSlider.value = state.pepsi.vx;
+      cokeVxSlider.value = state.coke.vx;
+
+      updateReadouts();
+    });
+  });
+
+  // ========== RESET ==========
+  resetBtn.addEventListener('click', function() {
+    // Set to default preset values
+    const preset = presets.default;
+    state.gravity = preset.gravity;
+    state.elasticity = preset.elasticity;
+    state.pepsi.vx = preset.pepsiVx;
+    state.coke.vx = preset.cokeVx;
+    state.pepsi.vy = 0;
+    state.coke.vy = 0;
+    state.pepsi.x = W * 0.25;
+    state.pepsi.y = H * 0.5;
+    state.coke.x = W * 0.75;
+    state.coke.y = H * 0.5;
+    state.totalCollisions = 0;
+    state.pepsi.collisions = 0;
+    state.coke.collisions = 0;
+    state.time = 0;
+
+    gravitySlider.value = state.gravity;
+    elasticitySlider.value = state.elasticity;
+    pepsiVxSlider.value = state.pepsi.vx;
+    cokeVxSlider.value = state.coke.vx;
+
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.preset-btn[data-preset="default"]').classList.add('active');
+
+    updateReadouts();
+  });
+
+  // ========== EXPORT CSV ==========
+  exportCsvBtn.addEventListener('click', function() {
+    const p = state.pepsi;
+    const c = state.coke;
+    const pKe = computeKineticEnergy(p.vx, p.vy);
+    const cKe = computeKineticEnergy(c.vx, c.vy);
+    const pMom = MASS * p.vx;
+    const cMom = MASS * c.vx;
+
+    const rows = [
+      ['Metric', 'PEPSI', 'COKE', 'Delta'],
+      ['Mass (kg)', MASS, MASS, 0],
+      ['Radius (m)', RADIUS, RADIUS, 0],
+      ['Vx (m/s)', p.vx.toFixed(4), c.vx.toFixed(4), (p.vx - c.vx).toFixed(4)],
+      ['Vy (m/s)', p.vy.toFixed(4), c.vy.toFixed(4), (p.vy - c.vy).toFixed(4)],
+      ['Kinetic Energy (J)', pKe.toFixed(4), cKe.toFixed(4), (pKe - cKe).toFixed(4)],
+      ['Momentum X (kg·m/s)', pMom.toFixed(4), cMom.toFixed(4), (pMom - cMom).toFixed(4)],
+      ['Collisions', p.collisions, c.collisions, '—'],
+      ['Total Collisions', state.totalCollisions, '', ''],
+      ['Gravity (m/s²)', state.gravity.toFixed(2), '', ''],
+      ['Elasticity', state.elasticity.toFixed(2), '', ''],
+      ['Simulation Time (s)', state.time.toFixed(2), '', '']
+    ];
+
+    const csvContent = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kineticzen_pepsi_vs_coke_telemetry_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // ========== COPY SCENARIO LINK ==========
+  copyLinkBtn.addEventListener('click', function() {
+    const scenario = {
+      g: state.gravity,
+      e: state.elasticity,
+      pvx: state.pepsi.vx,
+      cvx: state.coke.vx
+    };
+    const encoded = btoa(JSON.stringify(scenario));
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}#scenario=${encoded}`;
+
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      copyStatus.textContent = '✓ Scenario link copied to clipboard!';
+      setTimeout(() => { copyStatus.textContent = ''; }, 3000);
+    }).catch(() => {
+      copyStatus.textContent = 'Press Ctrl+C to copy: ' + shareUrl;
+    });
+  });
+
+  // ========== LOAD SCENARIO FROM HASH ==========
+  function loadFromHash() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#scenario=')) {
+      try {
+        const encoded = hash.slice(10);
+        const decoded = JSON.parse(atob(encoded));
+        if (decoded.g !== undefined) state.gravity = decoded.g;
+        if (decoded.e !== undefined) state.elasticity = decoded.e;
+        if (decoded.pvx !== undefined) state.pepsi.vx = decoded.pvx;
+        if (decoded.cvx !== undefined) state.coke.vx = decoded.cvx;
+
+        gravitySlider.value = state.gravity;
+        elasticitySlider.value = state.elasticity;
+        pepsiVxSlider.value = state.pepsi.vx;
+        cokeVxSlider.value = state.coke.vx;
+
+        updateReadouts();
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
+  // ========== INIT ==========
+  loadFromHash();
+  updateReadouts();
+  requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>
