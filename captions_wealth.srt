@@ -1,55 +1,39 @@
 1
-00:00:00,096 --> 00:00:03,160
-In 2010 $5 daily coffee adds up to
+00:00:00,096 --> 00:00:03,040
+In 2010 spending five dollars daily on
 
 2
-00:00:03,134 --> 00:00:05,563
-$5,000 yearly but skipping it could
+00:00:03,052 --> 00:00:08,666
+coffee cost you $1,825 By 2015 your
 
 3
-00:00:05,575 --> 00:00:11,050
-grow to $9,400 by 2011 By 2012 the
+00:00:08,678 --> 00:00:12,709
+coffee habit totaled $3,650 while Nvidia
 
 4
-00:00:11,047 --> 00:00:14,668
-coffee habit costs $6,200 while Costco
+00:00:12,720 --> 00:00:17,589
+grew to $9,400 By 2020 coffee spending
 
 5
-00:00:14,680 --> 00:00:17,776
-stock investment jumps to $6,100 almost
+00:00:17,601 --> 00:00:21,596
+hit $5,475 but Nvidia had surged
 
 6
-00:00:17,788 --> 00:00:21,638
-even Fast forward to 2015 coffee
+00:00:21,608 --> 00:00:27,761
+to $22,000 By 2023 coffee cost $7,300
 
 7
-00:00:21,650 --> 00:00:25,003
-spending hits $7,800 but Costco stock
+00:00:28,007 --> 00:00:33,026
+while Nvidia stock reached $54,000 By 2025
 
 8
-00:00:25,014 --> 00:00:29,345
-soars to $22,000 By 2020 the coffee
+00:00:33,237 --> 00:00:37,629
+coffee burned $27,375 but Nvidia turned
 
 9
-00:00:29,356 --> 00:00:33,095
-habit totals $9,500 yet Costco stock
+00:00:37,641 --> 00:00:40,821
+$5,000 into $118,000 what if you
 
 10
-00:00:33,106 --> 00:00:36,179
-balloons to $54,000 a fivefold difference
-
-11
-00:00:37,080 --> 00:00:41,800
-In 2025 coffee spending reaches $16,800 while
-
-12
-00:00:41,812 --> 00:00:45,106
-Costco stock skyrockets to $118,000 but
-
-13
-00:00:45,118 --> 00:00:46,812
-what if you started in 2010 with
-
-14
-00:00:46,823 --> 00:00:48,190
-$5 daily coffee
+00:00:40,795 --> 00:00:41,858
+had invested instead
