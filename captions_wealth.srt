@@ -1,43 +1,55 @@
 1
-00:00:00,096 --> 00:00:01,627
-Ten years of daily coffee would
+00:00:00,096 --> 00:00:03,160
+In 2010 $5 daily coffee adds up to
 
 2
-00:00:01,638 --> 00:00:04,419
-leave you with $6,100 saved while
+00:00:03,134 --> 00:00:05,563
+$5,000 yearly but skipping it could
 
 3
-00:00:04,430 --> 00:00:08,162
-Netflix grew to $8,300 By year
+00:00:05,575 --> 00:00:11,050
+grow to $9,400 by 2011 By 2012 the
 
 4
-00:00:08,173 --> 00:00:11,923
-five coffee money reached $7,400 but
+00:00:11,047 --> 00:00:14,668
+coffee habit costs $6,200 while Costco
 
 5
-00:00:11,935 --> 00:00:16,231
-Netflix stock surged to $14,300 At
+00:00:14,680 --> 00:00:17,776
+stock investment jumps to $6,100 almost
 
 6
-00:00:16,243 --> 00:00:19,502
-year eight coffee savings hit $8,900
+00:00:17,788 --> 00:00:21,638
+even Fast forward to 2015 coffee
 
 7
-00:00:19,724 --> 00:00:23,744
-while Netflix climbed to $20,700 By
+00:00:21,650 --> 00:00:25,003
+spending hits $7,800 but Costco stock
 
 8
-00:00:23,756 --> 00:00:27,553
-year twelve coffee totaled $11,500 but
+00:00:25,014 --> 00:00:29,345
+soars to $22,000 By 2020 the coffee
 
 9
-00:00:27,564 --> 00:00:32,150
-Netflix exploded to $35,600 At year
+00:00:29,356 --> 00:00:33,095
+habit totals $9,500 yet Costco stock
 
 10
-00:00:32,162 --> 00:00:36,099
-fifteen coffee gives $12,300 but Netflix
+00:00:33,106 --> 00:00:36,179
+balloons to $54,000 a fivefold difference
 
 11
-00:00:36,110 --> 00:00:39,557
-hits $77,500 next time what if you
+00:00:37,080 --> 00:00:41,800
+In 2025 coffee spending reaches $16,800 while
+
+12
+00:00:41,812 --> 00:00:45,106
+Costco stock skyrockets to $118,000 but
+
+13
+00:00:45,118 --> 00:00:46,812
+what if you started in 2010 with
+
+14
+00:00:46,823 --> 00:00:48,190
+$5 daily coffee
