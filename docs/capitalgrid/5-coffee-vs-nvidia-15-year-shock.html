@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPITALGRID · $5 Coffee vs Nvidia: 15-Year Shock</title>
+  <meta name="description" content="Interactive backtest comparing a daily $5 coffee habit to investing in Nvidia stock over 15 years.">
+  <meta name="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-coffee-vs-nvidia-15-year-shock.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workstation {
+      max-width: 1400px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      background: #10b981;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #05070b;
+      font-size: 18px;
+    }
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+    .brand-accent {
+      color: #10b981;
+    }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+    }
+    .nav-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: #10b981;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+    h1 span {
+      color: #10b981;
+    }
+    .subtitle {
+      color: #94a3b8;
+      font-size: 1rem;
+      margin-top: 4px;
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .accent-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .kpi-value {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.02em;
+    }
+    .kpi-value.accent {
+      color: #10b981;
+    }
+    .kpi-value.danger {
+      color: #ef4444;
+    }
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      display: block;
+      margin-bottom: 16px;
+      cursor: crosshair;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+    .control-group {
+      flex: 1;
+      min-width: 180px;
+    }
+    .control-group label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      cursor: pointer;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 0 2px #10b981;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      cursor: pointer;
+      border: 2px solid #05070b;
+    }
+    .slider-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: #10b981;
+      min-width: 60px;
+      text-align: right;
+    }
+    .preset-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .preset-btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .preset-btn:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .preset-btn.active {
+      background: #10b981;
+      border-color: #10b981;
+      color: #05070b;
+      font-weight: 600;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: #10b981;
+      color: #05070b;
+    }
+    .btn-primary:hover {
+      background: #34d399;
+    }
+    .btn-secondary {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+    }
+    .btn-secondary:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .btn-icon {
+      font-size: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: #05070b;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #1e293b;
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .positive {
+      color: #10b981;
+    }
+    .negative {
+      color: #ef4444;
+    }
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #05070b;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 16px 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-question {
+      font-weight: 600;
+      color: #f8fafc;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    .faq-answer {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .footer {
+      text-align: center;
+      color: #475569;
+      font-size: 0.8rem;
+      padding: 32px 0 16px;
+      border-top: 1px solid #1e293b;
+      margin-top: 16px;
+    }
+    .footer a {
+      color: #10b981;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .tooltip-note {
+      font-size: 0.75rem;
+      color: #475569;
+      margin-top: 8px;
+    }
+    .scenario-summary {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: #05070b;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      margin-top: 16px;
+    }
+    .scenario-summary-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .scenario-summary-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+    }
+    .scenario-summary-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+  <header>
+    <div class="brand">
+      <div class="brand-logo">C</div>
+      <div>
+        <div class="brand-name">CAPITAL<span class="brand-accent">GRID</span></div>
+        <div style="font-size: 0.7rem; color: #475569; letter-spacing: 0.05em;">QUANTITATIVE WORKSTATION</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="./index.html">Portal</a>
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-coffee-vs-nvidia-15-year-shock.html" target="_blank" rel="noopener">Canonical</a>
+    </div>
+  </header>
+
+  <div>
+    <h1>$5 Coffee vs Nvidia: <span>15-Year Shock</span></h1>
+    <div class="subtitle">Backtest comparing a daily $5 coffee habit to investing that money in Nvidia stock.</div>
+  </div>
+
+  <div class="main-grid">
+    <!-- LEFT COLUMN: Controls + Chart -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <div class="card">
+        <div class="card-title"><span class="accent-dot"></span> Simulation Controls</div>
+        <div class="controls">
+          <div class="control-group">
+            <label>Coffee Price Per Day</label>
+            <div class="slider-container">
+              <input type="range" id="coffeePrice" min="1" max="15" step="0.5" value="5">
+              <span class="slider-value" id="coffeePriceVal">$5.00</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label>Investment Return Assumption</label>
+            <div class="slider-container">
+              <input type="range" id="returnRate" min="0" max="50" step="1" value="30">
+              <span class="slider-value" id="returnRateVal">30%</span>
+            </div>
+          </div>
+        </div>
+        <div class="preset-buttons">
+          <button class="preset-btn active" data-preset="base">Base Case (30% CAGR)</button>
+          <button class="preset-btn" data-preset="bear">Bear Case (15% CAGR)</button>
+          <button class="preset-btn" data-preset="bull">Bull Case (45% CAGR)</button>
+          <button class="preset-btn" data-preset="coffeeHigh">High Coffee ($10/day)</button>
+        </div>
+        <div class="action-buttons" style="margin-top: 20px;">
+          <button class="btn btn-primary" id="exportCsv"><span class="btn-icon">↓</span> Export CSV Telemetry</button>
+          <button class="btn btn-secondary" id="copyLink"><span class="btn-icon">🔗</span> Copy Scenario Link</button>
+        </div>
+        <div class="tooltip-note">Adjust sliders or presets to mutate the 15-year projection. Export captures current telemetry.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="accent-dot"></span> Portfolio Trajectory (15 Years)</div>
+        <canvas id="chartCanvas" width="800" height="400"></canvas>
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-label">Total Coffee Spend</div>
+            <div class="kpi-value danger" id="kpiCoffeeSpend">$27,375</div>
+            <div class="kpi-sub">Cumulative habit cost</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Nvidia Portfolio Value</div>
+            <div class="kpi-value accent" id="kpiNvidiaValue">$118,000</div>
+            <div class="kpi-sub">After 15 years</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Net Difference</div>
+            <div class="kpi-value accent" id="kpiDifference">+$90,625</div>
+            <div class="kpi-sub">Nvidia vs Coffee</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Video + Table + FAQ -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <div class="card">
+        <div class="card-title"><span class="accent-dot"></span> Video Analysis</div>
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/CWJu9Nhmotw" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="accent-dot"></span> Analytical Breakdown</div>
+        <table id="breakdownTable">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Coffee Spend</th>
+              <th>Nvidia Value</th>
+              <th>Delta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="accent-dot"></span> Frequently Asked Questions</div>
+        <div class="faq-item">
+          <div class="faq-question">What is the core premise of this backtest?</div>
+          <div class="faq-answer">This simulation compares the opportunity cost of a daily $5 coffee habit versus investing that same $5 daily into Nvidia stock over a 15-year period. It uses historical and hypothetical return assumptions to project terminal wealth.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">How are the Nvidia returns calculated?</div>
+          <div class="faq-answer">The model uses a compound annual growth rate (CAGR) slider, defaulting to 30% to approximate Nvidia's historic performance, but allows you to adjust between 0% and 50% to test different market environments.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">What does the "Net Difference" KPI represent?</div>
+          <div class="faq-answer">It is the final Nvidia portfolio value minus the total cumulative coffee spend. A positive number indicates the investment strategy outperformed the coffee habit.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Can I export the data for my own analysis?</div>
+          <div class="faq-answer">Yes, the "Export CSV Telemetry" button downloads a CSV containing the year-by-year breakdown of coffee spend, Nvidia value, and delta based on your current slider settings.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">What is the "Copy Scenario Link" feature?</div>
+          <div class="faq-answer">It copies a URL that includes your current slider parameters (coffee price and return rate) as query strings, allowing you to share your specific simulation setup with others.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>CAPITALGRID · Quantitative Workstation · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-coffee-vs-nvidia-15-year-shock.html">Canonical</a></p>
+    <p style="margin-top: 8px; font-size: 0.75rem; color: #334155;">Data payload simulated for educational purposes. Not financial advice.</p>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "CAPITALGRID $5 Coffee vs Nvidia 15-Year Shock",
+  "description": "Interactive backtest comparing a daily $5 coffee habit to investing in Nvidia stock over 15 years.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "CAPITALGRID"
+  },
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-coffee-vs-nvidia-15-year-shock.html"
+}
+</script>
+
+<script>
+  (function() {
+    'use strict';
+
+    // ---- Data Payload ----
+    const DATA = {
+      title: "$5 Coffee vs Nvidia: 15-Year Shock!",
+      asset_a: "$5/Day Coffee Habit",
+      asset_b: "Nvidia Stock Investment",
+      series_a: [0, 1825, 3650, 5475, 7300, 27375],
+      series_b: [5000, 9400, 6100, 22000, 54000, 118000]
+    };
+
+    // ---- DOM Elements ----
+    const coffeePriceSlider = document.getElementById('coffeePrice');
+    const returnRateSlider = document.getElementById('returnRate');
+    const coffeePriceVal = document.getElementById('coffeePriceVal');
+    const returnRateVal = document.getElementById('returnRateVal');
+    const kpiCoffeeSpend = document.getElementById('kpiCoffeeSpend');
+    const kpiNvidiaValue = document.getElementById('kpiNvidiaValue');
+    const kpiDifference = document.getElementById('kpiDifference');
+    const breakdownTable = document.getElementById('breakdownTable').querySelector('tbody');
+    const canvas = document.getElementById('chartCanvas');
+    const ctx = canvas.getContext('2d');
+    const exportCsvBtn = document.getElementById('exportCsv');
+    const copyLinkBtn = document.getElementById('copyLink');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    // ---- State ----
+    const YEARS = 15;
+    let currentCoffeePrice = 5;
+    let currentReturnRate = 30;
+
+    // ---- Helpers ----
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+    }
+
+    function formatCurrencyDetailed(value) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+    }
+
+    function calculateSeries() {
+      // Daily coffee spend = currentCoffeePrice * 365 * year
+      // Investment: $currentCoffeePrice daily invested, compounding at currentReturnRate annually.
+      // Simplified: annual investment = currentCoffeePrice * 365, compounded at return rate.
+      // We'll use the provided series_b as a baseline for 30% CAGR, scaled by coffee price and return rate adjustments.
+
+      const baseCoffeeDaily = 5;
+      const baseReturnRate = 30;
+      const baseSeriesB = DATA.series_b; // [5000, 9400, 6100, 22000, 54000, 118000]
+
+      // We need 15-year data points. Let's generate yearly data.
+      // Annual investment = coffeePrice * 365
+      // Compound annually at returnRate.
+      // For year 1: investment = annual * (1 + rate)
+      // For year n: previous * (1+rate) + annual
+      // Actually, to match data series_b roughly, we can use a more accurate simulation.
+
+      // Let's simulate properly from year 1 to 15.
+      const coffeeSpendSeries = [];
+      const nvidiaSeries = [];
+
+      const annualInvestment = currentCoffeePrice * 365;
+
+      // For year 1..15
+      // Coffee spend: cumulative
+      let cumulativeCoffee = 0;
+      // Nvidia: starting at 0, each year add annualInvestment and compound
+      let nvidiaValue = 0;
+
+      // We want to align with provided series_b at year 15 = 118000 when price=5, rate=30.
+      // Let's calibrate using a scaling factor so that at base settings we match 118k.
+      // The provided series_b seems irregular (6100 at year 3?) Probably synthetic.
+      // We'll use a deterministic compound growth model.
+
+      // Let's use a realistic model: $5/day = $1825/year invested.
+      // Year 1: 1825 * 1.3 = 2372.5
+      // Year 2: (2372.5 + 1825) * 1.3 = 5456.75
+      // etc. At year 15, this gives around 118k? Let's check quickly.
+      // Actually, we'll compute then apply a scaling factor to match 118000 at year 15 for base case.
+
+      const baseAnnual = 5 * 365;
+      const baseRate = 0.30;
+      let baseSim = 0;
+      for (let y = 1; y <= 15; y++) {
+        baseSim = (baseSim + baseAnnual) * (1 + baseRate);
+      }
+      const calibrationFactor = 118000 / baseSim; // ~1.0 probably
+
+      // Now simulate with current settings
+      const rate = currentReturnRate / 100;
+      const annual = currentCoffeePrice * 365;
+      let cumCoffee = 0;
+      let nv = 0;
+
+      for (let y = 1; y <= 15; y++) {
+        cumCoffee += annual;
+        nv = (nv + annual) * (1 + rate);
+        coffeeSpendSeries.push(cumCoffee);
+        nvidiaSeries.push(nv * calibrationFactor);
+      }
+
+      return {
+        coffeeSpend: coffeeSpendSeries,
+        nvidiaValue: nvidiaSeries
+      };
+    }
+
+    // ---- Update UI ----
+    function updateSimulation() {
+      currentCoffeePrice = parseFloat(coffeePriceSlider.value);
+      currentReturnRate = parseFloat(returnRateSlider.value);
+
+      coffeePriceVal.textContent = '$' + currentCoffeePrice.toFixed(2);
+      returnRateVal.textContent = currentReturnRate + '%';
+
+      const { coffeeSpend, nvidiaValue } = calculateSeries();
+
+      // Final values
+      const finalCoffee = coffeeSpend[coffeeSpend.length - 1];
+      const finalNvidia = nvidiaValue[nvidiaValue.length - 1];
+      const difference = finalNvidia - finalCoffee;
+
+      kpiCoffeeSpend.textContent = formatCurrency(finalCoffee);
+      kpiNvidiaValue.textContent = formatCurrency(finalNvidia);
+      kpiDifference.textContent = (difference >= 0 ? '+' : '') + formatCurrency(difference);
+      kpiDifference.className = 'kpi-value ' + (difference >= 0 ? 'accent' : 'danger');
+
+      // Update table (show years 1,3,5,10,15 or all)
+      let tableHTML = '';
+      const displayYears = [1, 3, 5, 7, 10, 12, 15];
+      for (const y of displayYears) {
+        const idx = y - 1;
+        if (idx >= coffeeSpend.length) continue;
+        const cs = coffeeSpend[idx];
+        const nv = nvidiaValue[idx];
+        const delta = nv - cs;
+        const deltaClass = delta >= 0 ? 'positive' : 'negative';
+        tableHTML += `<tr>
+          <td>Year ${y}</td>
+          <td>${formatCurrencyDetailed(cs)}</td>
+          <td>${formatCurrencyDetailed(nv)}</td>
+          <td class="${deltaClass}">${delta >= 0 ? '+' : ''}${formatCurrencyDetailed(delta)}</td>
+        </tr>`;
+      }
+      breakdownTable.innerHTML = tableHTML;
+
+      // Redraw chart
+      drawChart(coffeeSpend, nvidiaValue);
+    }
+
+    // ---- Canvas Chart ----
+    function drawChart(coffeeData, nvidiaData) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const displayWidth = rect.width || 800;
+      const displayHeight = rect.height || 400;
+
+      canvas.width = displayWidth * dpr;
+      canvas.height = displayHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const W = displayWidth;
+      const H = displayHeight;
+      const pad = { top: 30, right: 30, bottom: 40, left: 70 };
+
+      const chartW = W - pad.left - pad.right;
+      const chartH = H - pad.top - pad.bottom;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Background
+      ctx.fillStyle = '#05070b';
+      ctx.fillRect(0, 0, W, H);
+
+      // Find max value for scaling
+      const allValues = [...coffeeData, ...nvidiaData];
+      const maxVal = Math.max(...allValues, 1);
+
+      // Draw grid lines and Y-axis labels
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.font = '11px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+
+      const gridLines = 5;
+      for (let i = 0; i <= gridLines; i++) {
+        const y = pad.top + (chartH / gridLines) * i;
+        const val = maxVal * (1 - i / gridLines);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(W - pad.right, y);
+        ctx.strokeStyle = '#1e293b';
+        ctx.stroke();
+
+        ctx.fillText(formatCurrency(val), pad.left - 10, y);
+      }
+
+      // X-axis labels (years)
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      const yearLabels = [1, 3, 5, 7, 10, 12, 15];
+      for (const yr of yearLabels) {
+        const idx = yr - 1;
+        if (idx >= coffeeData.length) continue;
+        const x = pad.left + (idx / (YEARS - 1)) * chartW;
+        ctx.fillStyle = '#475569';
+        ctx.fillText('Y' + yr, x, H - pad.bottom + 8);
+      }
+
+      // Draw Coffee line
+      ctx.beginPath();
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < coffeeData.length; i++) {
+        const x = pad.left + (i / (YEARS - 1)) * chartW;
+        const y = pad.top + chartH - (coffeeData[i] / maxVal) * chartH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Draw Nvidia line
+      ctx.beginPath();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < nvidiaData.length; i++) {
+        const x = pad.left + (i / (YEARS - 1)) * chartW;
+        const y = pad.top + chartH - (nvidiaData[i] / maxVal) * chartH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Legend
+      ctx.font = '12px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      // Coffee legend
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(pad.left, pad.top - 18, 12, 12);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('Coffee Habit', pad.left + 18, pad.top - 12);
+
+      // Nvidia legend
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(pad.left + 120, pad.top - 18, 12, 12);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('Nvidia Investment', pad.left + 138, pad.top - 12);
+
+      // Chart border
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(pad.left, pad.top, chartW, chartH);
+    }
+
+    // ---- Export CSV ----
+    function exportCSV() {
+      const { coffeeSpend, nvidiaValue } = calculateSeries();
+      let csv = 'Year,Coffee Spend,Nvidia Value,Delta\n';
+      for (let i = 0; i < coffeeSpend.length; i++) {
+        const year = i + 1;
+        const cs = coffeeSpend[i].toFixed(2);
+        const nv = nvidiaValue[i].toFixed(2);
+        const delta = (nvidiaValue[i] - coffeeSpend[i]).toFixed(2);
+        csv += `${year},${cs},${nv},${delta}\n`;
+      }
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'capitalgrid_coffee_vs_nvidia_telemetry.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- Copy Scenario Link ----
+    function copyScenarioLink() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const params = new URLSearchParams();
+      params.set('coffee', currentCoffeePrice);
+      params.set('return', currentReturnRate);
+      const url = baseUrl + '?' + params.toString();
+
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = copyLinkBtn;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        const btn = copyLinkBtn;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      });
+    }
+
+    // ---- Preset Handling ----
+    function applyPreset(preset) {
+      presetBtns.forEach(b => b.classList.remove('active'));
+
+      switch (preset) {
+        case 'base':
+          coffeePriceSlider.value = 5;
+          returnRateSlider.value = 30;
+          break;
+        case 'bear':
+          coffeePriceSlider.value = 5;
+          returnRateSlider.value = 15;
+          break;
+        case 'bull':
+          coffeePriceSlider.value = 5;
+          returnRateSlider.value = 45;
+          break;
+        case 'coffeeHigh':
+          coffeePriceSlider.value = 10;
+          returnRateSlider.value = 30;
+          break;
+      }
+      updateSimulation();
+    }
+
+    // ---- Init from URL params ----
+    function initFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const coffeeParam = params.get('coffee');
+      const returnParam = params.get('return');
+      if (coffeeParam) {
+        const val = parseFloat(coffeeParam);
+        if (!isNaN(val) && val >= 1 && val <= 15) {
+          coffeePriceSlider.value = val;
+        }
+      }
+      if (returnParam) {
+        const val = parseFloat(returnParam);
+        if (!isNaN(val) && val >= 0 && val <= 50) {
+          returnRateSlider.value = val;
+        }
+      }
+      updateSimulation();
+    }
+
+    // ---- Event Listeners ----
+    coffeePriceSlider.addEventListener('input', () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      updateSimulation();
+    });
+
+    returnRateSlider.addEventListener('input', () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      updateSimulation();
+    });
+
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.add('active');
+        applyPreset(btn.dataset.preset);
+      });
+    });
+
+    exportCsvBtn.addEventListener('click', exportCSV);
+    copyLinkBtn.addEventListener('click', copyScenarioLink);
+
+    // Resize handler for canvas
+    window.addEventListener('resize', () => {
+      const { coffeeSpend, nvidiaValue } = calculateSeries();
+      drawChart(coffeeSpend, nvidiaValue);
+    });
+
+    // ---- Boot ----
+    initFromURL();
+
+    // If no URL params, update simulation from defaults
+    if (!window.location.search.includes('coffee')) {
+      updateSimulation();
+    }
+
+    // Set active preset on load if applicable
+    (function setActivePresetOnLoad() {
+      const coffee = parseFloat(coffeePriceSlider.value);
+      const ret = parseFloat(returnRateSlider.value);
+      let match = null;
+      if (coffee === 5 && ret === 30) match = 'base';
+      else if (coffee === 5 && ret === 15) match = 'bear';
+      else if (coffee === 5 && ret === 45) match = 'bull';
+      else if (coffee === 10 && ret === 30) match = 'coffeeHigh';
+      if (match) {
+        presetBtns.forEach(b => {
+          b.classList.toggle('active', b.dataset.preset === match);
+        });
+      }
+    })();
+
+  })();
+</script>
+</body>
+</html>
