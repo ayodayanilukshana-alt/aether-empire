@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINETICZEN LABS · MARVEL vs DC · Epic Physics Escape</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #05070b;
+      font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+      color: #e2e8f0;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .workstation {
+      max-width: 1400px;
+      width: 100%;
+    }
+
+    /* header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-accent {
+      color: #f43f5e;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .brand-tag {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      padding: 0.25rem 0.75rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      letter-spacing: 0.3px;
+    }
+
+    .portal-link {
+      color: #f43f5e;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid #f43f5e30;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .portal-link:hover {
+      background: #f43f5e15;
+    }
+
+    .title-section {
+      margin-bottom: 2rem;
+    }
+
+    .title-section h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .versus-pill {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 60px;
+      padding: 0.2rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #f43f5e;
+      margin-left: 0.75rem;
+    }
+
+    .subhead {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      font-family: monospace;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* main grid */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    /* canvas area */
+    .canvas-container {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      background: #05070b;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      aspect-ratio: 16 / 9;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #05070b;
+    }
+
+    .canvas-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      font-family: monospace;
+    }
+
+    .fps-indicator {
+      color: #10b981;
+    }
+
+    /* controls panel */
+    .controls-panel {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+    }
+
+    .control-value {
+      color: #f43f5e;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f43f5e;
+      cursor: pointer;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 8px #f43f5e80;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .preset-btn {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 0.6rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: monospace;
+    }
+
+    .preset-btn:hover {
+      border-color: #f43f5e;
+      background: #0b0f17;
+      color: #fff;
+    }
+
+    .preset-btn.active {
+      border-color: #f43f5e;
+      background: #f43f5e10;
+      color: #f43f5e;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: #05070b;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #e11d48;
+      border-color: #e11d48;
+    }
+
+    .btn-outline:hover {
+      border-color: #f43f5e;
+      background: #f43f5e08;
+    }
+
+    /* KPI row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #64748b;
+      margin-bottom: 0.4rem;
+    }
+
+    .kpi-value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      font-family: monospace;
+      color: #f43f5e;
+      line-height: 1.2;
+    }
+
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+
+    /* video + table section */
+    .lower-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.6rem;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #05070b;
+    }
+
+    .video-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* table */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-family: monospace;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.6rem 0.4rem;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 0.6rem 0.4rem;
+      border-bottom: 1px solid #1e293b20;
+      color: #cbd5e1;
+    }
+
+    .team-marvel {
+      color: #f43f5e;
+      font-weight: 600;
+    }
+
+    .team-dc {
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    /* FAQ */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .faq-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: #f43f5e;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .faq-a {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+      font-size: 0.75rem;
+      color: #475569;
+      font-family: monospace;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer a {
+      color: #f43f5e;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 1000px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+      .lower-grid {
+        grid-template-columns: 1fr;
+      }
+      .kpi-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="workstation">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="brand">
+        <span class="brand-accent">KINETICZEN</span>
+        <span>LABS</span>
+        <span class="brand-tag">PHYSICS · WORKSTATION</span>
+      </div>
+      <a href="./index.html" class="portal-link">← Portal</a>
+    </div>
+
+    <!-- TITLE -->
+    <div class="title-section">
+      <h1>
+        MARVEL vs DC: Epic Physics Escape!
+        <span class="versus-pill">RIGID-BODY 60FPS</span>
+      </h1>
+      <div class="subhead">
+        <span>MATTER.JS · KINETICZEN LABS</span>
+        <span style="color:#f43f5e;">CANONICAL BUILD</span>
+        <span>v2.4.1</span>
+      </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-row" id="kpiRow">
+      <div class="kpi-card">
+        <div class="kpi-label">MARVEL ESCAPE VELOCITY</div>
+        <div class="kpi-value" id="kpiMarvelVel">0.00</div>
+        <div class="kpi-sub">m/s · simulated</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">DC ESCAPE VELOCITY</div>
+        <div class="kpi-value" id="kpiDcVel">0.00</div>
+        <div class="kpi-sub">m/s · simulated</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">COLLISION IMPULSE</div>
+        <div class="kpi-value" id="kpiImpulse">0.00</div>
+        <div class="kpi-sub">N·s · aggregate</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">FRAME RATE</div>
+        <div class="kpi-value" id="kpiFps">60</div>
+        <div class="kpi-sub">FPS target</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD: CANVAS + CONTROLS -->
+    <div class="dashboard">
+      <!-- CANVAS -->
+      <div class="canvas-container">
+        <div class="canvas-header">
+          <span>⚡ MATTER.JS RIGID-BODY ARENA · LIVE</span>
+          <span style="color:#10b981;">● ACTIVE</span>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="physicsCanvas" width="800" height="450"></canvas>
+        </div>
+        <div class="canvas-footer">
+          <span>MARVEL <span style="color:#f43f5e;">●</span> &nbsp; DC <span style="color:#3b82f6;">●</span></span>
+          <span class="fps-indicator" id="fpsDisplay">FPS: 60</span>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="controls-panel">
+        <div class="control-group">
+          <div class="control-label">
+            <span>GRAVITY</span>
+            <span class="control-value" id="gravityVal">1.0</span>
+          </div>
+          <input type="range" id="gravitySlider" min="0" max="2.5" step="0.1" value="1.0">
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>ELASTICITY (BOUNCE)</span>
+            <span class="control-value" id="elasticityVal">0.8</span>
+          </div>
+          <input type="range" id="elasticitySlider" min="0.1" max="1.0" step="0.05" value="0.8">
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>FRICTION</span>
+            <span class="control-value" id="frictionVal">0.1</span>
+          </div>
+          <input type="range" id="frictionSlider" min="0.01" max="0.9" step="0.01" value="0.1">
+        </div>
+
+        <div style="margin-top: 0.5rem;">
+          <div class="control-label" style="margin-bottom: 0.6rem;">SCENARIO PRESETS</div>
+          <div class="preset-grid">
+            <button class="preset-btn active" data-preset="classic">MARVEL CLASSIC</button>
+            <button class="preset-btn" data-preset="dc">DC DARK</button>
+            <button class="preset-btn" data-preset="crossover">CROSSOVER</button>
+            <button class="preset-btn" data-preset="chaos">CHAOS</button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="exportCsvBtn">⬇ EXPORT CSV TELEMETRY</button>
+          <button class="btn btn-outline" id="copyLinkBtn">🔗 COPY SCENARIO LINK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOWER GRID: VIDEO + TABLE -->
+    <div class="lower-grid">
+      <div class="card">
+        <div class="card-title">YOUTUBE STREAM · EPIC PHYSICS ESCAPE</div>
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/GwZQJqs_ueM" title="MARVEL vs DC: Epic Physics Escape!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">ANALYTICAL BREAKDOWN · TEAM METRICS</div>
+        <div class="table-responsive">
+          <table id="analyticsTable">
+            <thead>
+              <tr><th>METRIC</th><th>MARVEL</th><th>DC</th><th>Δ</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Mass (kg)</td><td class="team-marvel">7.2</td><td class="team-dc">8.1</td><td>+0.9</td></tr>
+              <tr><td>Velocity (m/s)</td><td class="team-marvel" id="tblMarvelVel">0.00</td><td class="team-dc" id="tblDcVel">0.00</td><td id="tblDeltaVel">0.00</td></tr>
+              <tr><td>Bounce Count</td><td class="team-marvel" id="tblMarvelBounce">0</td><td class="team-dc" id="tblDcBounce">0</td><td id="tblDeltaBounce">0</td></tr>
+              <tr><td>Kinetic Energy (J)</td><td class="team-marvel" id="tblMarvelKE">0.00</td><td class="team-dc" id="tblDcKE">0.00</td><td id="tblDeltaKE">0.00</td></tr>
+              <tr><td>Friction Coefficient</td><td class="team-marvel" id="tblMarvelFric">0.10</td><td class="team-dc" id="tblDcFric">0.10</td><td>0.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">What physics engine powers this simulation?</div>
+        <div class="faq-a">This workstation uses Matter.js, a 2D rigid-body physics engine configured for 60 FPS with custom collision impulse telemetry and real-time escape velocity tracking.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How are the Marvel and DC teams modeled?</div>
+        <div class="faq-a">Each team is represented by an abstract mass-spring aggregate with distinct restitution, friction, and velocity profiles. The Marvel group uses a lighter, higher-elasticity profile; DC uses a heavier, more damped profile.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I export the telemetry data?</div>
+        <div class="faq-a">Yes. The "Export CSV Telemetry" button generates a CSV file containing live kinetic metrics, collision impulses, and team velocity data from the simulation.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What does "Copy Scenario Link" do?</div>
+        <div class="faq-a">It copies a canonical URL that encodes the current slider and preset state, allowing you to share the exact physics configuration with colleagues.</div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>KINETICZEN LABS · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/marvel-vs-dc-epic-physics-escape.html">CANONICAL</a> · © 2025</span>
+      <span>POWERED BY MATTER.JS · 60FPS TARGET</span>
+    </div>
+  </div>
+
+  <!-- JSON-LD SCHEMA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "KINETICZEN LABS · MARVEL vs DC Epic Physics Escape",
+    "description": "60FPS Matter.js rigid-body physics rivalry simulation with real-time telemetry and interactive scenarios.",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/marvel-vs-dc-epic-physics-escape.html",
+    "applicationCategory": "Simulation",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Organization",
+      "name": "KINETICZEN LABS"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- MATTER.JS CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+
+  <script>
+    (function() {
+      // ---------- Matter.js setup ----------
+      const { Engine, Render, Runner, Bodies, Composite, Events, Vector, Body } = Matter;
+
+      const canvas = document.getElementById('physicsCanvas');
+      const ctx = canvas.getContext('2d');
+      const canvasWidth = 800, canvasHeight = 450;
+
+      // Engine
+      const engine = Engine.create({
+        gravity: { x: 0, y: 1.0, scale: 0.001 }
+      });
+
+      const world = engine.world;
+
+      // ---------- Team bodies ----------
+      // Marvel: lighter, bouncier, red
+      const marvelBody = Bodies.circle(200, 200, 28, {
+        restitution: 0.8,
+        friction: 0.1,
+        frictionAir: 0.02,
+        density: 0.002,
+        label: 'marvel',
+        render: { fillStyle: '#f43f5e' }
+      });
+
+      // DC: heavier, less bouncy, blue
+      const dcBody = Bodies.circle(600, 200, 32, {
+        restitution: 0.65,
+        friction: 0.15,
+        frictionAir: 0.025,
+        density: 0.0035,
+        label: 'dc',
+        render: { fillStyle: '#3b82f6' }
+      });
+
+      // Walls
+      const wallOpts = { isStatic: true, render: { fillStyle: '#1e293b' } };
+      const ground = Bodies.rectangle(400, 445, 800, 20, { ...wallOpts, label: 'ground' });
+      const leftWall = Bodies.rectangle(0, 225, 20, 500, { ...wallOpts, label: 'wall' });
+      const rightWall = Bodies.rectangle(800, 225, 20, 500, { ...wallOpts, label: 'wall' });
+      const ceiling = Bodies.rectangle(400, -10, 800, 20, { ...wallOpts, label: 'ceiling' });
+
+      Composite.add(world, [marvelBody, dcBody, ground, leftWall, rightWall, ceiling]);
+
+      // Runner
+      const runner = Runner.create();
+      Runner.run(runner, engine);
+
+      // ---------- Telemetry ----------
+      let collisionImpulse = 0;
+      let marvelBounceCount = 0;
+      let dcBounceCount = 0;
+      let fps = 60;
+      let lastTime = performance.now();
+      let frameCount = 0;
+
+      // Collision events
+      Events.on(engine, 'collisionStart', function(event) {
+        const pairs = event.pairs;
+        for (let pair of pairs) {
+          const bodyA = pair.bodyA;
+          const bodyB = pair.bodyB;
+          const relVel = Vector.magnitude(Vector.sub(bodyA.velocity, bodyB.velocity));
+          const impulse = relVel * (bodyA.mass + bodyB.mass) * 0.5;
+          collisionImpulse += impulse;
+
+          if (bodyA.label === 'marvel' || bodyB.label === 'marvel') {
+            if (bodyA.label === 'marvel' || bodyB.label === 'marvel') marvelBounceCount++;
+          }
+          if (bodyA.label === 'dc' || bodyB.label === 'dc') {
+            if (bodyA.label === 'dc' || bodyB.label === 'dc') dcBounceCount++;
+          }
+        }
+      });
+
+      // ---------- UI Elements ----------
+      const gravitySlider = document.getElementById('gravitySlider');
+      const elasticitySlider = document.getElementById('elasticitySlider');
+      const frictionSlider = document.getElementById('frictionSlider');
+      const gravityVal = document.getElementById('gravityVal');
+      const elasticityVal = document.getElementById('elasticityVal');
+      const frictionVal = document.getElementById('frictionVal');
+
+      const kpiMarvelVel = document.getElementById('kpiMarvelVel');
+      const kpiDcVel = document.getElementById('kpiDcVel');
+      const kpiImpulse = document.getElementById('kpiImpulse');
+      const kpiFps = document.getElementById('kpiFps');
+      const fpsDisplay = document.getElementById('fpsDisplay');
+
+      const tblMarvelVel = document.getElementById('tblMarvelVel');
+      const tblDcVel = document.getElementById('tblDcVel');
+      const tblDeltaVel = document.getElementById('tblDeltaVel');
+      const tblMarvelBounce = document.getElementById('tblMarvelBounce');
+      const tblDcBounce = document.getElementById('tblDcBounce');
+      const tblDeltaBounce = document.getElementById('tblDeltaBounce');
+      const tblMarvelKE = document.getElementById('tblMarvelKE');
+      const tblDcKE = document.getElementById('tblDcKE');
+      const tblDeltaKE = document.getElementById('tblDeltaKE');
+      const tblMarvelFric = document.getElementById('tblMarvelFric');
+      const tblDcFric = document.getElementById('tblDcFric');
+
+      // ---------- Slider handlers ----------
+      gravitySlider.addEventListener('input', function() {
+        const val = parseFloat(this.value);
+        gravityVal.textContent = val.toFixed(1);
+        engine.gravity.y = val;
+        engine.gravity.scale = 0.001;
+      });
+
+      elasticitySlider.addEventListener('input', function() {
+        const val = parseFloat(this.value);
+        elasticityVal.textContent = val.toFixed(2);
+        marvelBody.restitution = val;
+        dcBody.restitution = val * 0.85;
+      });
+
+      frictionSlider.addEventListener('input', function() {
+        const val = parseFloat(this.value);
+        frictionVal.textContent = val.toFixed(2);
+        marvelBody.friction = val;
+        dcBody.friction = val * 1.2;
+      });
+
+      // ---------- Preset handlers ----------
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      const presets = {
+        classic: { gravity: 1.0, elasticity: 0.8, friction: 0.1, marvelX: 200, dcX: 600 },
+        dc: { gravity: 1.4, elasticity: 0.55, friction: 0.25, marvelX: 300, dcX: 500 },
+        crossover: { gravity: 0.7, elasticity: 0.9, friction: 0.05, marvelX: 150, dcX: 650 },
+        chaos: { gravity: 2.0, elasticity: 0.95, friction: 0.02, marvelX: 400, dcX: 400 }
+      };
+
+      function applyPreset(name) {
+        const p = presets[name];
+        if (!p) return;
+
+        gravitySlider.value = p.gravity;
+        elasticitySlider.value = p.elasticity;
+        frictionSlider.value = p.friction;
+
+        gravityVal.textContent = p.gravity.toFixed(1);
+        elasticityVal.textContent = p.elasticity.toFixed(2);
+        frictionVal.textContent = p.friction.toFixed(2);
+
+        engine.gravity.y = p.gravity;
+        engine.gravity.scale = 0.001;
+
+        marvelBody.restitution = p.elasticity;
+        dcBody.restitution = p.elasticity * 0.85;
+        marvelBody.friction = p.friction;
+        dcBody.friction = p.friction * 1.2;
+
+        // reset positions
+        Body.setPosition(marvelBody, { x: p.marvelX, y: 200 });
+        Body.setPosition(dcBody, { x: p.dcX, y: 200 });
+        Body.setVelocity(marvelBody, { x: 0, y: 0 });
+        Body.setVelocity(dcBody, { x: 0, y: 0 });
+        Body.setAngularVelocity(marvelBody, 0);
+        Body.setAngularVelocity(dcBody, 0);
+
+        collisionImpulse = 0;
+        marvelBounceCount = 0;
+        dcBounceCount = 0;
+
+        presetBtns.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.preset-btn[data-preset="${name}"]`).classList.add('active');
+      }
+
+      presetBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          applyPreset(this.dataset.preset);
+        });
+      });
+
+      // ---------- Export CSV ----------
+      document.getElementById('exportCsvBtn').addEventListener('click', function() {
+        const marvelSpeed = Vector.magnitude(marvelBody.velocity);
+        const dcSpeed = Vector.magnitude(dcBody.velocity);
+        const marvelKE = 0.5 * marvelBody.mass * marvelSpeed * marvelSpeed;
+        const dcKE = 0.5 * dcBody.mass * dcSpeed * dcSpeed;
+
+        const rows = [
+          ['Metric', 'MARVEL', 'DC', 'Delta'],
+          ['Mass (kg)', marvelBody.mass.toFixed(2), dcBody.mass.toFixed(2), (dcBody.mass - marvelBody.mass).toFixed(2)],
+          ['Speed (m/s)', marvelSpeed.toFixed(2), dcSpeed.toFixed(2), (dcSpeed - marvelSpeed).toFixed(2)],
+          ['Bounce Count', marvelBounceCount, dcBounceCount, (dcBounceCount - marvelBounceCount)],
+          ['Kinetic Energy (J)', marvelKE.toFixed(2), dcKE.toFixed(2), (dcKE - marvelKE).toFixed(2)],
+          ['Friction', marvelBody.friction.toFixed(2), dcBody.friction.toFixed(2), (dcBody.friction - marvelBody.friction).toFixed(2)],
+          ['Restitution', marvelBody.restitution.toFixed(2), dcBody.restitution.toFixed(2), (dcBody.restitution - marvelBody.restitution).toFixed(2)],
+          ['Collision Impulse Total', collisionImpulse.toFixed(2), '', ''],
+          ['Gravity', engine.gravity.y.toFixed(2), '', ''],
+          ['Timestamp', new Date().toISOString(), '', '']
+        ];
+
+        let csvContent = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `kineticzen_marvel_vs_dc_telemetry_${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // ---------- Copy Scenario Link ----------
+      document.getElementById('copyLinkBtn').addEventListener('click', function() {
+        const params = new URLSearchParams({
+          g: gravitySlider.value,
+          e: elasticitySlider.value,
+          f: frictionSlider.value,
+          preset: document.querySelector('.preset-btn.active')?.dataset.preset || 'classic'
+        });
+        const baseUrl = window.location.origin + window.location.pathname;
+        const link = `${baseUrl}?${params.toString()}`;
+
+        navigator.clipboard.writeText(link).then(() => {
+          const btn = this;
+          const original = btn.innerHTML;
+          btn.innerHTML = '✓ COPIED!';
+          setTimeout(() => { btn.innerHTML = original; }, 1800);
+        }).catch(() => {
+          prompt('Copy this scenario link:', link);
+        });
+      });
+
+      // ---------- Load from URL params ----------
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('g')) {
+        const g = parseFloat(urlParams.get('g'));
+        if (!isNaN(g) && g >= 0 && g <= 2.5) {
+          gravitySlider.value = g;
+          gravityVal.textContent = g.toFixed(1);
+          engine.gravity.y = g;
+        }
+      }
+      if (urlParams.has('e')) {
+        const e = parseFloat(urlParams.get('e'));
+        if (!isNaN(e) && e >= 0.1 && e <= 1.0) {
+          elasticitySlider.value = e;
+          elasticityVal.textContent = e.toFixed(2);
+          marvelBody.restitution = e;
+          dcBody.restitution = e * 0.85;
+        }
+      }
+      if (urlParams.has('f')) {
+        const f = parseFloat(urlParams.get('f'));
+        if (!isNaN(f) && f >= 0.01 && f <= 0.9) {
+          frictionSlider.value = f;
+          frictionVal.textContent = f.toFixed(2);
+          marvelBody.friction = f;
+          dcBody.friction = f * 1.2;
+        }
+      }
+      if (urlParams.has('preset')) {
+        const p = urlParams.get('preset');
+        if (presets[p]) {
+          applyPreset(p);
+        }
+      }
+
+      // ---------- Custom rendering loop (overrides Matter Render) ----------
+      let renderLoopActive = true;
+
+      function render() {
+        if (!renderLoopActive) return;
+
+        // FPS calculation
+        const now = performance.now();
+        frameCount++;
+        if (now - lastTime >= 1000) {
+          fps = frameCount;
+          frameCount = 0;
+          lastTime = now;
+          kpiFps.textContent = fps;
+          fpsDisplay.textContent = `FPS: ${fps}`;
+        }
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        ctx.fillStyle = '#05070b';
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw subtle grid
+        ctx.strokeStyle = '#1e293b30';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < canvasWidth; i += 40) {
+          ctx.beginPath();
+          ctx.moveTo(i, 0);
+          ctx.lineTo(i, canvasHeight);
+          ctx.stroke();
+        }
+        for (let i = 0; i < canvasHeight; i += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, i);
+          ctx.lineTo(canvasWidth, i);
+          ctx.stroke();
+        }
+
+        // Draw ground and walls
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 435, canvasWidth, 15);
+        ctx.fillRect(0, 0, 5, canvasHeight);
+        ctx.fillRect(canvasWidth - 5, 0, 5, canvasHeight);
+
+        // Draw bodies
+        drawBody(marvelBody, '#f43f5e', 'M');
+        drawBody(dcBody, '#3b82f6', 'D');
+
+        // Draw velocity vector indicators
+        drawVelocityIndicator(marvelBody, '#f43f5e');
+        drawVelocityIndicator(dcBody, '#3b82f6');
+
+        // Update telemetry UI
+        updateTelemetry();
+
+        requestAnimationFrame(render);
+      }
+
+      function drawBody(body, color, label) {
+        const pos = body.position;
+        const radius = body.circleRadius;
+
+        // Glow
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Inner circle
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius * 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = '#0b0f17';
+        ctx.fill();
+
+        // Label
+        ctx.fillStyle = color;
+        ctx.font = 'bold 16px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, pos.x, pos.y);
+      }
+
+      function drawVelocityIndicator(body, color) {
+        const pos = body.position;
+        const vel = body.velocity;
+        const speed = Vector.magnitude(vel);
+        if (speed < 0.1) return;
+
+        const scale = 8;
+        const endX = pos.x + vel.x * scale;
+        const endY = pos.y + vel.y * scale;
+
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = color + '80';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Arrow head
+        const angle = Math.atan2(vel.y, vel.x);
+        ctx.beginPath();
+        ctx.moveTo(endX, endY);
+        ctx.lineTo(endX - 8 * Math.cos(angle - 0.4), endY - 8 * Math.sin(angle - 0.4));
+        ctx.lineTo(endX - 8 * Math.cos(angle + 0.4), endY - 8 * Math.sin(angle + 0.4));
+        ctx.closePath();
+        ctx.fillStyle = color + '80';
+        ctx.fill();
+      }
+
+      function updateTelemetry() {
+        const marvelSpeed = Vector.magnitude(marvelBody.velocity);
+        const dcSpeed = Vector.magnitude(dcBody.velocity);
+        const marvelKE = 0.5 * marvelBody.mass * marvelSpeed * marvelSpeed;
+        const dcKE = 0.5 * dcBody.mass * dcSpeed * dcSpeed;
+
+        // KPIs
+        kpiMarvelVel.textContent = marvelSpeed.toFixed(2);
+        kpiDcVel.textContent = dcSpeed.toFixed(2);
+        kpiImpulse.textContent = collisionImpulse.toFixed(2);
+
+        // Table
+        tblMarvelVel.textContent = marvelSpeed.toFixed(2);
+        tblDcVel.textContent = dcSpeed.toFixed(2);
+        tblDeltaVel.textContent = (dcSpeed - marvelSpeed).toFixed(2);
+
+        tblMarvelBounce.textContent = marvelBounceCount;
+        tblDcBounce.textContent = dcBounceCount;
+        tblDeltaBounce.textContent = dcBounceCount - marvelBounceCount;
+
+        tblMarvelKE.textContent = marvelKE.toFixed(2);
+        tblDcKE.textContent = dcKE.toFixed(2);
+        tblDeltaKE.textContent = (dcKE - marvelKE).toFixed(2);
+
+        tblMarvelFric.textContent = marvelBody.friction.toFixed(2);
+        tblDcFric.textContent = dcBody.friction.toFixed(2);
+      }
+
+      // Start render loop
+      render();
+
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', function() {
+        renderLoopActive = false;
+        Runner.stop(runner);
+      });
+
+    })();
+  </script>
+</body>
+</html>
