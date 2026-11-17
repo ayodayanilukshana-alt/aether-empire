@@ -1,773 +1,835 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCALEVERSE 3D · Rockets to Starship: 3D Size Shock</title>
-    <meta name="description" content="Interactive 3D size comparison of the largest rockets in history. From V-2 to Starship, explore the scale in an immersive WebGL workstation.">
-    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-to-starship-3d-size-shock.html">
-    <style>
-        /* ----- RESET & GLOBAL ----- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background: #05070b;
-            font-family: 'Inter', 'SF Mono', 'Menlo', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
-            color: #e2e8f0;
-            line-height: 1.5;
-            padding: 1.5rem 1rem;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .app {
-            max-width: 1440px;
-            width: 100%;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Rockets to Starship: 3D Size Shock</title>
+  <meta name="description" content="Interactive 3D size comparison workstation for historic rockets: V-2, Falcon 9, Saturn V, SLS, and Starship.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-to-starship-3d-size-shock.html">
+  <!-- Fonts and minimal styling -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* ----- TYPOGRAPHY & COLORS ----- */
-        h1, h2, h3, h4 {
-            font-weight: 400;
-            letter-spacing: -0.02em;
-        }
-        h1 {
-            font-size: 2rem;
-            font-weight: 500;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-        }
-        h1 span {
-            color: #38bdf8;
-        }
-        .subhead {
-            color: #94a3b8;
-            font-size: 0.95rem;
-            margin-bottom: 1.75rem;
-            border-left: 3px solid #38bdf8;
-            padding-left: 1rem;
-        }
-        .accent {
-            color: #38bdf8;
-        }
-        .mono {
-            font-family: 'SF Mono', 'Menlo', 'Monaco', 'Cascadia Code', monospace;
-            font-variant-numeric: tabular-nums;
-        }
+    body {
+      background: #05070b;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        /* ----- CARDS ----- */
-        .card {
-            background: #0b0f17;
-            border: 1px solid #1e293b;
-            border-radius: 20px;
-            padding: 1.5rem 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.7);
-        }
+    .workstation {
+      max-width: 1400px;
+      width: 100%;
+    }
 
-        /* ----- KPI ROW ----- */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .kpi-item {
-            background: #0f172a;
-            border-radius: 16px;
-            padding: 1rem 1.25rem;
-            border: 1px solid #1e293b;
-            text-align: center;
-        }
-        .kpi-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #64748b;
-            font-weight: 500;
-        }
-        .kpi-value {
-            font-size: 1.8rem;
-            font-weight: 500;
-            color: #f1f5f9;
-            line-height: 1.2;
-        }
-        .kpi-unit {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-left: 2px;
-        }
+    /* institutional dark cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+    }
 
-        /* ----- CONTROL PANEL ----- */
-        .control-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            align-items: center;
-            margin-bottom: 1.25rem;
-        }
-        .slider-container {
-            flex: 2 1 340px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: #94a3b8;
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            background: #1e293b;
-            border-radius: 4px;
-            outline: none;
-            transition: background 0.2s;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 22px;
-            height: 22px;
-            background: #38bdf8;
-            border-radius: 50%;
-            border: 3px solid #0b0f17;
-            box-shadow: 0 0 0 1px #38bdf8;
-            cursor: pointer;
-            transition: transform 0.15s;
-        }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.15);
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 22px;
-            height: 22px;
-            background: #38bdf8;
-            border-radius: 50%;
-            border: 3px solid #0b0f17;
-            cursor: pointer;
-        }
-        .preset-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-            align-items: center;
-            margin: 0.5rem 0 0.5rem 0;
-        }
-        .preset-btn {
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: #cbd5e1;
-            padding: 0.45rem 1rem;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            cursor: pointer;
-            transition: all 0.15s;
-            font-family: inherit;
-        }
-        .preset-btn:hover {
-            background: #2d3a4f;
-            border-color: #38bdf8;
-            color: #f1f5f9;
-        }
-        .preset-btn.active {
-            background: #38bdf8;
-            border-color: #38bdf8;
-            color: #05070b;
-        }
-        .action-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-left: auto;
-        }
-        .btn {
-            background: transparent;
-            border: 1px solid #334155;
-            color: #e2e8f0;
-            padding: 0.55rem 1.2rem;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            font-family: inherit;
-        }
-        .btn-primary {
-            background: #38bdf8;
-            border-color: #38bdf8;
-            color: #05070b;
-            font-weight: 600;
-        }
-        .btn-primary:hover {
-            background: #7dd3fc;
-            border-color: #7dd3fc;
-        }
-        .btn-outline:hover {
-            border-color: #38bdf8;
-            color: #38bdf8;
-            background: rgba(56, 189, 248, 0.05);
-        }
-        .btn:active {
-            transform: scale(0.97);
-        }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
 
-        /* ----- CANVAS ----- */
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            background: #070b12;
-            border-radius: 16px;
-            border: 1px solid #1e293b;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: auto;
-            background: #070b12;
-            cursor: grab;
-        }
-        canvas:active {
-            cursor: grabbing;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-        /* ----- TABLE ----- */
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 16px;
-            border: 1px solid #1e293b;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-        th {
-            background: #0f172a;
-            color: #94a3b8;
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 0.06em;
-            padding: 0.9rem 1rem;
-            border-bottom: 1px solid #1e293b;
-            text-align: left;
-        }
-        td {
-            padding: 0.9rem 1rem;
-            border-bottom: 1px solid #1e293b;
-            color: #cbd5e1;
-            font-variant-numeric: tabular-nums;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        .highlight-row td {
-            background: rgba(56, 189, 248, 0.06);
-            color: #f1f5f9;
-            font-weight: 500;
-            border-left: 2px solid #38bdf8;
-        }
+    .brand h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #f1f5f9;
+    }
 
-        /* ----- FAQ & SCHEMA ----- */
-        .faq-item {
-            padding: 0.9rem 0;
-            border-bottom: 1px solid #1e293b;
-        }
-        .faq-item:last-child {
-            border-bottom: none;
-        }
-        .faq-q {
-            font-weight: 500;
-            color: #f1f5f9;
-            margin-bottom: 0.3rem;
-            font-size: 0.95rem;
-        }
-        .faq-a {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 16px;
-            border: 1px solid #1e293b;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-        .footer-note {
-            text-align: center;
-            color: #475569;
-            font-size: 0.75rem;
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid #1e293b;
-        }
+    .brand .accent {
+      color: #38bdf8;
+    }
 
-        /* ----- RESPONSIVE ----- */
-        @media (max-width: 640px) {
-            h1 { font-size: 1.5rem; }
-            .card { padding: 1rem; }
-            .kpi-value { font-size: 1.4rem; }
-            .control-row { flex-direction: column; align-items: stretch; }
-            .action-group { margin-left: 0; }
-        }
-    </style>
+    .portal-link {
+      background: #1a1f2b;
+      color: #94a3b8;
+      padding: 0.6rem 1.2rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid #1e293b;
+      transition: 0.2s;
+    }
+
+    .portal-link:hover {
+      background: #253041;
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-container {
+      background: #05070b;
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      position: relative;
+      width: 100%;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+    }
+
+    .slider-value {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .preset-btn {
+      background: #111827;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 0.5rem 1.1rem;
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #f1f5f9;
+    }
+
+    .preset-btn.active {
+      background: #0c4a6e;
+      border-color: #38bdf8;
+      color: #bae6fd;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .kpi-card {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      margin-bottom: 0.4rem;
+    }
+
+    .kpi-number {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #38bdf8;
+      line-height: 1.2;
+    }
+
+    .kpi-unit {
+      font-size: 0.8rem;
+      color: #64748b;
+      font-family: monospace;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      background: #1e293b;
+      border: none;
+      color: #e2e8f0;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid #334155;
+    }
+
+    .btn:hover {
+      background: #334155;
+      border-color: #38bdf8;
+    }
+
+    .btn-primary {
+      background: #0c4a6e;
+      border-color: #38bdf8;
+      color: #bae6fd;
+    }
+
+    .btn-primary:hover {
+      background: #0e5a80;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    td {
+      padding: 0.9rem 0.5rem;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: #cbd5e1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #0c4a6e;
+      color: #38bdf8;
+      padding: 0.2rem 0.7rem;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .faq-answer {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .embed-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      background: #000;
+    }
+
+    .embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 1.2rem;
+      background: #38bdf8;
+      border-radius: 4px;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    .text-muted {
+      color: #64748b;
+    }
+
+    .mt-2 {
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
-<div class="app">
-
-    <!-- HEADER -->
-    <h1>SCALEVERSE <span>3D</span> · Rockets to Starship</h1>
-    <div class="subhead">3D Size Shock · Interactive scale comparison of the largest rockets and spacecraft in history.</div>
-
-    <!-- KPI ROW -->
-    <div class="kpi-grid" id="kpiRow">
-        <div class="kpi-item">
-            <div class="kpi-label">Selected Rocket</div>
-            <div class="kpi-value mono" id="kpiName">Starship</div>
-        </div>
-        <div class="kpi-item">
-            <div class="kpi-label">Height</div>
-            <div class="kpi-value mono"><span id="kpiHeight">120</span><span class="kpi-unit">m</span></div>
-        </div>
-        <div class="kpi-item">
-            <div class="kpi-label">Relative to V-2</div>
-            <div class="kpi-value mono"><span id="kpiRatio">8.57</span><span class="kpi-unit">x</span></div>
-        </div>
-        <div class="kpi-item">
-            <div class="kpi-label">Scale Factor</div>
-            <div class="kpi-value mono"><span id="kpiScale">1.00</span><span class="kpi-unit">x</span></div>
-        </div>
+  <div class="workstation">
+    <!-- Header -->
+    <div class="header">
+      <div class="brand">
+        <h1><span class="accent">SCALE</span>VERSE <span class="accent">3D</span></h1>
+      </div>
+      <a href="./index.html" class="portal-link">← Portal</a>
     </div>
 
-    <!-- CONTROL PANEL -->
-    <div class="card">
-        <div class="control-row">
-            <div class="slider-container">
-                <div class="slider-label">
-                    <span>Select Rocket (drag or presets)</span>
-                    <span class="mono" id="sliderValueLabel">Starship · 120 m</span>
-                </div>
-                <input type="range" id="rocketSlider" min="0" max="4" value="4" step="1">
+    <!-- Main grid: canvas + controls -->
+    <div class="grid-2">
+      <!-- Left: Canvas -->
+      <div class="card" style="padding: 1rem;">
+        <div class="canvas-container">
+          <canvas id="rocketCanvas" width="800" height="500"></canvas>
+        </div>
+      </div>
+
+      <!-- Right: controls & KPIs -->
+      <div class="card">
+        <div class="controls-panel">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Vertical exaggeration</span>
+              <span class="slider-value" id="scaleValue">1.00×</span>
             </div>
-            <div class="action-group">
-                <button class="btn btn-outline" id="copyLinkBtn">🔗 Copy Scenario Link</button>
-                <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+            <input type="range" id="verticalScale" min="0.5" max="3.0" step="0.05" value="1.0">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Label opacity</span>
+              <span class="slider-value" id="labelOpacityValue">1.00</span>
             </div>
-        </div>
+            <input type="range" id="labelOpacity" min="0.2" max="1.0" step="0.05" value="1.0">
+          </div>
 
-        <div class="preset-group" id="presetGroup">
-            <button class="preset-btn" data-index="0">V-2 · 14 m</button>
-            <button class="preset-btn" data-index="1">Space Shuttle · 56 m</button>
-            <button class="preset-btn" data-index="2">Falcon 9 · 70 m</button>
-            <button class="preset-btn" data-index="3">Saturn V · 111 m</button>
-            <button class="preset-btn active" data-index="4">Starship · 120 m</button>
+          <div class="preset-row">
+            <button class="preset-btn active" data-preset="all">All rockets</button>
+            <button class="preset-btn" data-preset="top3">Top 3 tallest</button>
+            <button class="preset-btn" data-preset="minimal">V-2 vs Starship</button>
+            <button class="preset-btn" data-preset="reset">Reset view</button>
+          </div>
+
+          <!-- KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Tallest</div>
+              <div class="kpi-number" id="kpiTallest">121</div>
+              <div class="kpi-unit">meters</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Shortest</div>
+              <div class="kpi-number" id="kpiShortest">14</div>
+              <div class="kpi-unit">meters</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Ratio</div>
+              <div class="kpi-number" id="kpiRatio">8.64</div>
+              <div class="kpi-unit">×</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Avg height</div>
+              <div class="kpi-number" id="kpiAvg">85.2</div>
+              <div class="kpi-unit">meters</div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="btn-group">
+            <button class="btn btn-primary" id="exportCsv">Export CSV Telemetry</button>
+            <button class="btn" id="copyLink">Copy Scenario Link</button>
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- CANVAS 3D VISUALIZATION -->
+    <!-- Analytical breakdown table -->
     <div class="card">
-        <div class="canvas-wrapper">
-            <canvas id="scaleCanvas" width="1200" height="500"></canvas>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">
-            <span>Drag to rotate · scroll to zoom</span>
-            <span class="mono">SCALEVERSE 3D · WebGL fallback (Canvas 2D)</span>
-        </div>
+      <div class="section-title">Analytical breakdown</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Rocket</th>
+            <th>Height (m)</th>
+            <th>Relative to V-2</th>
+            <th>Relative to Starship</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- JS will populate -->
+        </tbody>
+      </table>
     </div>
 
-    <!-- ANALYTICAL TABLE -->
-    <div class="card">
-        <h2 style="font-size: 1.1rem; margin-bottom: 1rem; color: #f1f5f9;">Analytical Breakdown · Historic Rocket Heights</h2>
-        <div class="table-wrapper">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Rocket / Spacecraft</th>
-                        <th>Height (m)</th>
-                        <th>Height (ft)</th>
-                        <th>Relative to V-2</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- dynamically populated -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- FAQ SECTION -->
-    <div class="card">
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: #f1f5f9;">Frequently Asked Questions</h2>
+    <!-- FAQ + YouTube embed -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title">Frequently asked questions</div>
         <div class="faq-item">
-            <div class="faq-q">How tall is the Starship compared to the Saturn V?</div>
-            <div class="faq-a">Starship stands at 120 meters, making it roughly 9 meters taller than the Saturn V (111 m). That's about an 8% increase in height.</div>
+          <div class="faq-question">How is the vertical scale calculated?</div>
+          <div class="faq-answer">All rockets are drawn to real-world proportions, with the tallest (Starship, 121 m) fitting the canvas height. The “vertical exaggeration” slider applies a uniform multiplier to emphasise differences.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q">What is the smallest rocket in this comparison?</div>
-            <div class="faq-a">The V-2 Rocket, at 14 meters, is the smallest. It's about 8.5 times shorter than the Starship.</div>
+          <div class="faq-question">Why does the V-2 look so small?</div>
+          <div class="faq-answer">The V-2 stands 14 metres tall—roughly the height of a four-story building. Compared to Starship (121 m), it is just 11.6% as tall. The visualisation highlights this dramatic evolutionary leap.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q">Are these heights accurate?</div>
-            <div class="faq-a">Yes, the data reflects standard published heights for each vehicle, including the Space Shuttle stack (56 m) and Falcon 9 (70 m).</div>
+          <div class="faq-question">What do the KPI readouts represent?</div>
+          <div class="faq-answer">Tallest/shortest heights in metres, the height ratio between the two extremes, and the arithmetic mean of all five rockets. These update automatically when you filter presets.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q">How does the visualization work?</div>
-            <div class="faq-a">The canvas renders each rocket as a stylized 3D bar, scaling height proportionally. You can rotate the view by dragging and zoom with your scroll wheel.</div>
+          <div class="faq-question">Can I export the data for research?</div>
+          <div class="faq-answer">Yes. Click “Export CSV Telemetry” to download a spreadsheet containing rocket names, heights, and computed ratios.</div>
         </div>
-    </div>
+      </div>
 
-    <!-- VIDEO EMBED -->
-    <div class="card" style="padding: 0; overflow: hidden; background: #000;">
-        <div class="video-container">
-            <iframe src="https://www.youtube.com/embed/NowTMoNA0Ew" title="Rockets to Starship: 3D Size Shock" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <div class="card">
+        <div class="section-title">Video reference</div>
+        <div class="embed-container">
+          <iframe src="https://www.youtube.com/embed/vjIDDr_3tD8" title="Rockets to Starship: 3D Size Shock" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
+        <p class="text-muted mt-2" style="font-size: 0.8rem;">Source: SCALEVERSE 3D — “Rockets to Starship: 3D Size Shock”</p>
+      </div>
     </div>
 
-    <!-- FOOTER -->
-    <div class="footer-note">
-        SCALEVERSE 3D · <a href="./index.html" style="color: #38bdf8; text-decoration: none;">Portal</a> · Data payload: Rockets to Starship: 3D Size Shock
+    <!-- Footer / JSON-LD -->
+    <div class="card" style="text-align: center; color: #64748b; font-size: 0.8rem;">
+      SCALEVERSE 3D · interactive size comparison workstation · data payload embedded
     </div>
-</div>
+  </div>
 
-<!-- JSON-LD SCHEMA -->
-<script type="application/ld+json">
-{
+  <!-- JSON-LD SoftwareApplication schema -->
+  <script type="application/ld+json">
+  {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "SCALEVERSE 3D · Rockets to Starship",
-    "description": "Interactive 3D size comparison of the largest rockets in history, from V-2 to Starship.",
-    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-to-starship-3d-size-shock.html",
+    "name": "SCALEVERSE 3D — Rockets to Starship",
+    "description": "Interactive 3D size comparison of historic rockets: V-2, Falcon 9, Saturn V, SLS, and Starship.",
     "applicationCategory": "EducationalApplication",
-    "operatingSystem": "Any",
+    "operatingSystem": "Web",
     "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
     },
-    "author": {
-        "@type": "Organization",
-        "name": "SCALEVERSE 3D"
+    "creator": {
+      "@type": "Organization",
+      "name": "SCALEVERSE 3D"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/rockets-to-starship-3d-size-shock.html",
+    "video": {
+      "@type": "VideoObject",
+      "name": "Rockets to Starship: 3D Size Shock",
+      "embedUrl": "https://www.youtube.com/embed/vjIDDr_3tD8"
     }
-}
-</script>
+  }
+  </script>
 
-<!-- MAIN LOGIC -->
-<script>
+  <script>
     (function() {
-        // ----- DATA -----
-        const items = [
-            { name: "V-2 Rocket", meters: 14, metric: "14 m" },
-            { name: "Space Shuttle", meters: 56, metric: "56 m" },
-            { name: "Falcon 9", meters: 70, metric: "70 m" },
-            { name: "Saturn V", meters: 111, metric: "111 m" },
-            { name: "Starship", meters: 120, metric: "120 m" }
-        ];
+      // ----- DATA PAYLOAD (exact) -----
+      const rockets = [
+        { name: "V-2 Rocket", meters: 14, metric: "14 m", color: "#a78bfa" },
+        { name: "Falcon 9", meters: 70, metric: "70 m", color: "#38bdf8" },
+        { name: "Saturn V", meters: 110, metric: "110 m", color: "#fbbf24" },
+        { name: "Space Launch System", meters: 111, metric: "111 m", color: "#f97316" },
+        { name: "Starship", meters: 121, metric: "121 m", color: "#34d399" }
+      ];
 
-        // ----- DOM REFS -----
-        const canvas = document.getElementById('scaleCanvas');
-        const ctx = canvas.getContext('2d');
-        const slider = document.getElementById('rocketSlider');
-        const sliderValueLabel = document.getElementById('sliderValueLabel');
-        const kpiName = document.getElementById('kpiName');
-        const kpiHeight = document.getElementById('kpiHeight');
-        const kpiRatio = document.getElementById('kpiRatio');
-        const kpiScale = document.getElementById('kpiScale');
-        const presetBtns = document.querySelectorAll('.preset-btn');
-        const tableBody = document.getElementById('tableBody');
-        const exportCsvBtn = document.getElementById('exportCsvBtn');
-        const copyLinkBtn = document.getElementById('copyLinkBtn');
+      // ----- DOM refs -----
+      const canvas = document.getElementById('rocketCanvas');
+      const ctx = canvas.getContext('2d');
+      const verticalScaleSlider = document.getElementById('verticalScale');
+      const scaleValueSpan = document.getElementById('scaleValue');
+      const labelOpacitySlider = document.getElementById('labelOpacity');
+      const labelOpacityValue = document.getElementById('labelOpacityValue');
+      const presetButtons = document.querySelectorAll('.preset-btn');
+      const exportCsvBtn = document.getElementById('exportCsv');
+      const copyLinkBtn = document.getElementById('copyLink');
+      const tableBody = document.getElementById('tableBody');
+      const kpiTallest = document.getElementById('kpiTallest');
+      const kpiShortest = document.getElementById('kpiShortest');
+      const kpiRatio = document.getElementById('kpiRatio');
+      const kpiAvg = document.getElementById('kpiAvg');
 
-        // ----- STATE -----
-        let selectedIndex = 4; // Starship default
-        let rotation = 0.4; // radians
-        let zoom = 1.0;
-        let isDragging = false;
-        let lastMouseX = 0;
-        let lastMouseY = 0;
+      // ----- State -----
+      let activePreset = 'all';
+      let currentRockets = [...rockets]; // filtered view
 
-        // ----- TABLE POPULATION -----
-        function renderTable() {
-            const minMeters = 14;
-            tableBody.innerHTML = items.map((item, i) => {
-                const ft = (item.meters * 3.28084).toFixed(1);
-                const ratio = (item.meters / minMeters).toFixed(2);
-                const isSelected = i === selectedIndex;
-                return `<tr class="${isSelected ? 'highlight-row' : ''}">
-                    <td>${i + 1}</td>
-                    <td>${item.name}</td>
-                    <td class="mono">${item.meters}</td>
-                    <td class="mono">${ft}</td>
-                    <td class="mono">${ratio}x</td>
-                    <td>${i === 0 ? 'Historic' : i === 4 ? 'Active' : 'Retired'}</td>
-                </tr>`;
-            }).join('');
+      // ----- helpers -----
+      function computeStats(list) {
+        if (!list.length) return { tallest: 0, shortest: 0, ratio: 0, avg: 0 };
+        const heights = list.map(r => r.meters);
+        const tallest = Math.max(...heights);
+        const shortest = Math.min(...heights);
+        const ratio = shortest === 0 ? 0 : tallest / shortest;
+        const avg = heights.reduce((a, b) => a + b, 0) / heights.length;
+        return { tallest, shortest, ratio, avg };
+      }
+
+      function updateKPIs() {
+        const stats = computeStats(currentRockets);
+        kpiTallest.textContent = stats.tallest.toFixed(0);
+        kpiShortest.textContent = stats.shortest.toFixed(0);
+        kpiRatio.textContent = stats.ratio.toFixed(2);
+        kpiAvg.textContent = stats.avg.toFixed(1);
+      }
+
+      function updateTable() {
+        // sort by height descending for display
+        const sorted = [...currentRockets].sort((a, b) => b.meters - a.meters);
+        const v2 = rockets.find(r => r.name === 'V-2 Rocket');
+        const starship = rockets.find(r => r.name === 'Starship');
+        tableBody.innerHTML = sorted.map(r => {
+          const relativeToV2 = v2 ? (r.meters / v2.meters).toFixed(2) : '—';
+          const relativeToStarship = starship ? (r.meters / starship.meters).toFixed(3) : '—';
+          const status = r.meters >= 110 ? 'Heavy-lift' : r.meters >= 70 ? 'Medium-lift' : 'Early era';
+          return `<tr>
+            <td style="font-weight:600; color:#f1f5f9;">${r.name}</td>
+            <td>${r.meters} m</td>
+            <td>${relativeToV2}×</td>
+            <td>${relativeToStarship}×</td>
+            <td><span class="badge">${status}</span></td>
+          </tr>`;
+        }).join('');
+      }
+
+      function updatePresetButtons(preset) {
+        presetButtons.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.preset === preset);
+        });
+      }
+
+      function applyPreset(preset) {
+        activePreset = preset;
+        if (preset === 'all' || preset === 'reset') {
+          currentRockets = [...rockets];
+        } else if (preset === 'top3') {
+          currentRockets = [...rockets].sort((a, b) => b.meters - a.meters).slice(0, 3);
+        } else if (preset === 'minimal') {
+          currentRockets = rockets.filter(r => r.name === 'V-2 Rocket' || r.name === 'Starship');
+        }
+        updateKPIs();
+        updateTable();
+        updatePresetButtons(preset);
+        drawCanvas();
+      }
+
+      // ----- Canvas drawing -----
+      function drawCanvas() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // Background grid lines
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 10; i++) {
+          const y = (h / 10) * i;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.strokeStyle = '#1a1f2b';
+          ctx.stroke();
         }
 
-        // ----- KPI UPDATE -----
-        function updateKPIs() {
-            const item = items[selectedIndex];
-            const minMeters = 14;
-            const ratio = (item.meters / minMeters).toFixed(2);
-            const scale = (item.meters / 120).toFixed(2); // relative to Starship
-            kpiName.textContent = item.name;
-            kpiHeight.textContent = item.meters;
-            kpiRatio.textContent = ratio;
-            kpiScale.textContent = scale;
-            sliderValueLabel.textContent = `${item.name} · ${item.meters} m`;
-        }
+        if (!currentRockets.length) return;
 
-        // ----- CANVAS RENDER (3D-like bars) -----
-        function renderCanvas() {
-            const w = canvas.width;
-            const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
+        const verticalScale = parseFloat(verticalScaleSlider.value);
+        const labelOpacity = parseFloat(labelOpacitySlider.value);
 
-            // background grid
-            ctx.strokeStyle = '#1a2332';
-            ctx.lineWidth = 1;
-            for (let y = 0; y < h; y += 40) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(w, y);
-                ctx.stroke();
-            }
+        // sort by height ascending so tallest is drawn last? we'll draw all, but scale them.
+        const maxMeters = Math.max(...currentRockets.map(r => r.meters));
+        const baseHeight = h * 0.85; // use 85% of canvas for tallest
+        const scaleFactor = baseHeight / maxMeters;
 
-            const maxHeight = 120;
-            const baseY = h - 40;
-            const maxBarHeight = h - 120;
+        // layout: equally spaced columns
+        const count = currentRockets.length;
+        const colWidth = w / count;
+        const bottomY = h - 40; // leave margin for labels
 
-            // draw each rocket as a 3D bar
-            const barWidth = 80;
-            const gap = 40;
-            const totalWidth = items.length * barWidth + (items.length - 1) * gap;
-            const startX = (w - totalWidth) / 2;
+        // Sort so we draw from left to right by ascending height (optional, but we want consistency)
+        // We'll preserve original rocket order for left-to-right? Actually let's sort by name or by height?
+        // For visual comparison, ascending height left to right looks nice.
+        const sorted = [...currentRockets].sort((a, b) => a.meters - b.meters);
 
-            // sort for visual consistency (keep order)
-            const sorted = items.map((it, idx) => ({ ...it, idx }));
+        sorted.forEach((rocket, index) => {
+          const xCenter = colWidth * (index + 0.5);
+          const rocketHeight = rocket.meters * scaleFactor * verticalScale;
+          const rocketWidth = Math.min(colWidth * 0.5, 70); // fixed width for clarity
+          const topY = bottomY - rocketHeight;
 
-            sorted.forEach((item, i) => {
-                const barHeight = (item.meters / maxHeight) * maxBarHeight;
-                const x = startX + i * (barWidth + gap);
+          // Draw rocket body
+          ctx.shadowColor = 'rgba(56, 189, 248, 0.15)';
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = rocket.color;
+          ctx.globalAlpha = 0.9;
+          // rounded rect body
+          const radius = 12;
+          ctx.beginPath();
+          ctx.moveTo(xCenter - rocketWidth/2 + radius, topY);
+          ctx.lineTo(xCenter + rocketWidth/2 - radius, topY);
+          ctx.quadraticCurveTo(xCenter + rocketWidth/2, topY, xCenter + rocketWidth/2, topY + radius);
+          ctx.lineTo(xCenter + rocketWidth/2, bottomY - radius);
+          ctx.quadraticCurveTo(xCenter + rocketWidth/2, bottomY, xCenter + rocketWidth/2 - radius, bottomY);
+          ctx.lineTo(xCenter - rocketWidth/2 + radius, bottomY);
+          ctx.quadraticCurveTo(xCenter - rocketWidth/2, bottomY, xCenter - rocketWidth/2, bottomY - radius);
+          ctx.lineTo(xCenter - rocketWidth/2, topY + radius);
+          ctx.quadraticCurveTo(xCenter - rocketWidth/2, topY, xCenter - rocketWidth/2 + radius, topY);
+          ctx.closePath();
+          ctx.fill();
 
-                // 3D offset based on rotation
-                const offsetX = Math.sin(rotation) * 15;
-                const offsetY = Math.cos(rotation) * 8;
+          // Nose cone highlight
+          ctx.beginPath();
+          ctx.arc(xCenter, topY + 6, rocketWidth * 0.25, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.globalAlpha = 0.25;
+          ctx.fill();
 
-                const isSelected = item.idx === selectedIndex;
+          ctx.shadowBlur = 0;
+          ctx.globalAlpha = 1.0;
 
-                // --- front face ---
-                const grad = ctx.createLinearGradient(x, baseY - barHeight, x + barWidth, baseY);
-                if (isSelected) {
-                    grad.addColorStop(0, '#38bdf8');
-                    grad.addColorStop(1, '#0ea5e9');
-                } else {
-                    grad.addColorStop(0, '#334155');
-                    grad.addColorStop(1, '#1e293b');
-                }
-                ctx.fillStyle = grad;
-                ctx.shadowColor = isSelected ? '#38bdf8' : 'transparent';
-                ctx.shadowBlur = isSelected ? 25 : 0;
-                ctx.fillRect(x, baseY - barHeight, barWidth, barHeight);
-                ctx.shadowBlur = 0;
+          // Draw label
+          ctx.font = 'bold 14px "Inter", system-ui, sans-serif';
+          ctx.fillStyle = `rgba(241, 245, 249, ${labelOpacity})`;
+          ctx.textAlign = 'center';
+          ctx.shadowColor = '#05070b';
+          ctx.shadowBlur = 6;
+          ctx.fillText(rocket.name, xCenter, bottomY + 20);
+          ctx.font = '12px "JetBrains Mono", monospace';
+          ctx.fillStyle = `rgba(56, 189, 248, ${labelOpacity})`;
+          ctx.fillText(rocket.meters + ' m', xCenter, bottomY + 38);
+          ctx.shadowBlur = 0;
 
-                // --- top face (3D) ---
-                ctx.fillStyle = isSelected ? '#7dd3fc' : '#475569';
-                ctx.beginPath();
-                ctx.moveTo(x, baseY - barHeight);
-                ctx.lineTo(x + offsetX, baseY - barHeight - offsetY);
-                ctx.lineTo(x + barWidth + offsetX, baseY - barHeight - offsetY);
-                ctx.lineTo(x + barWidth, baseY - barHeight);
-                ctx.closePath();
-                ctx.fill();
-
-                // --- side face (3D) ---
-                ctx.fillStyle = isSelected ? '#0ea5e9' : '#2d3a4f';
-                ctx.beginPath();
-                ctx.moveTo(x + barWidth, baseY - barHeight);
-                ctx.lineTo(x + barWidth + offsetX, baseY - barHeight - offsetY);
-                ctx.lineTo(x + barWidth + offsetX, baseY - offsetY);
-                ctx.lineTo(x + barWidth, baseY);
-                ctx.closePath();
-                ctx.fill();
-
-                // --- label ---
-                ctx.fillStyle = isSelected ? '#f1f5f9' : '#64748b';
-                ctx.font = '500 13px "SF Mono", monospace';
-                ctx.textAlign = 'center';
-                ctx.fillText(item.meters + 'm', x + barWidth / 2, baseY - barHeight - 12);
-
-                // name below
-                ctx.fillStyle = isSelected ? '#38bdf8' : '#475569';
-                ctx.font = '11px "SF Mono", monospace';
-                ctx.fillText(item.name.split(' ')[0], x + barWidth / 2, baseY + 20);
-            });
-
-            // ground line
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, baseY);
-            ctx.lineTo(w, baseY);
-            ctx.stroke();
-        }
-
-        // ----- UPDATE ALL -----
-        function updateAll() {
-            updateKPIs();
-            renderTable();
-            renderCanvas();
-            // update active preset
-            presetBtns.forEach((btn, i) => {
-                btn.classList.toggle('active', i === selectedIndex);
-            });
-            slider.value = selectedIndex;
-        }
-
-        // ----- EVENT LISTENERS -----
-        slider.addEventListener('input', (e) => {
-            selectedIndex = parseInt(e.target.value, 10);
-            updateAll();
+          // Draw height line measure
+          ctx.beginPath();
+          ctx.moveTo(xCenter + rocketWidth/2 + 6, topY);
+          ctx.lineTo(xCenter + rocketWidth/2 + 6, bottomY);
+          ctx.strokeStyle = `rgba(148, 163, 184, ${labelOpacity * 0.4})`;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
         });
 
-        presetBtns.forEach((btn, i) => {
-            btn.addEventListener('click', () => {
-                selectedIndex = i;
-                updateAll();
-            });
+        // Draw ground line
+        ctx.beginPath();
+        ctx.moveTo(0, bottomY);
+        ctx.lineTo(w, bottomY);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      // ----- Slider events -----
+      verticalScaleSlider.addEventListener('input', function() {
+        scaleValueSpan.textContent = parseFloat(this.value).toFixed(2) + '×';
+        drawCanvas();
+      });
+
+      labelOpacitySlider.addEventListener('input', function() {
+        labelOpacityValue.textContent = parseFloat(this.value).toFixed(2);
+        drawCanvas();
+      });
+
+      // ----- Preset events -----
+      presetButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const preset = this.dataset.preset;
+          applyPreset(preset);
+          if (preset === 'reset') {
+            verticalScaleSlider.value = 1.0;
+            scaleValueSpan.textContent = '1.00×';
+            labelOpacitySlider.value = 1.0;
+            labelOpacityValue.textContent = '1.00';
+            drawCanvas();
+          }
         });
+      });
 
-        // ----- CANVAS INTERACTION (drag to rotate) -----
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouseX = e.clientX;
-            lastMouseY = e.clientY;
+      // ----- CSV export -----
+      function exportCSV() {
+        const headers = ['Rocket', 'Height (m)', 'Relative to V-2', 'Relative to Starship'];
+        const v2 = rockets.find(r => r.name === 'V-2 Rocket');
+        const starship = rockets.find(r => r.name === 'Starship');
+        const rows = rockets.map(r => {
+          const relV2 = v2 ? (r.meters / v2.meters).toFixed(4) : 'N/A';
+          const relStarship = starship ? (r.meters / starship.meters).toFixed(4) : 'N/A';
+          return [`"${r.name}"`, r.meters, relV2, relStarship];
         });
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastMouseX;
-            rotation += dx * 0.01;
-            // clamp rotation for sanity
-            rotation = Math.max(-0.8, Math.min(0.8, rotation));
-            lastMouseX = e.clientX;
-            lastMouseY = e.clientY;
-            renderCanvas();
+        const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scaleverse_rocket_telemetry.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      // ----- Copy scenario link -----
+      function copyScenarioLink() {
+        const url = window.location.href.split('?')[0]; // preserve base
+        navigator.clipboard.writeText(url).then(() => {
+          copyLinkBtn.textContent = 'Copied!';
+          setTimeout(() => { copyLinkBtn.textContent = 'Copy Scenario Link'; }, 1800);
+        }).catch(() => {
+          // fallback
+          const textarea = document.createElement('textarea');
+          textarea.value = url;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          copyLinkBtn.textContent = 'Copied!';
+          setTimeout(() => { copyLinkBtn.textContent = 'Copy Scenario Link'; }, 1800);
         });
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
+      }
 
-        // zoom
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            zoom += e.deltaY * -0.001;
-            zoom = Math.max(0.5, Math.min(2.0, zoom));
-            // use zoom to adjust bar scale? we apply a simple scale to canvas context
-            // For simplicity, we'll just re-render with a global scale via canvas transform
-            // But we'll keep it simple: redraw with zoom influence on bar width
-            // Actually easier: just re-render with zoom factor applied to offsets
-            renderCanvas();
-        }, { passive: false });
+      exportCsvBtn.addEventListener('click', exportCSV);
+      copyLinkBtn.addEventListener('click', copyScenarioLink);
 
-        // ----- EXPORT CSV -----
-        exportCsvBtn.addEventListener('click', () => {
-            const headers = ['Name', 'Height (m)', 'Height (ft)', 'Relative to V-2', 'Status'];
-            const minMeters = 14;
-            const rows = items.map((item, i) => {
-                const ft = (item.meters * 3.28084).toFixed(1);
-                const ratio = (item.meters / minMeters).toFixed(2);
-                const status = i === 0 ? 'Historic' : i === 4 ? 'Active' : 'Retired';
-                return [item.name, item.meters, ft, ratio + 'x', status];
-            });
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-            ].join('\n');
+      // ----- Initialisation -----
+      function init() {
+        applyPreset('all');
+        updateKPIs();
+        updateTable();
+        drawCanvas();
+      }
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'scaleverse_rockets_telemetry.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+      // Handle canvas resize for crisp rendering (optional but good)
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        const rect = container.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        drawCanvas();
+      }
 
-        // ----- COPY SCENARIO LINK -----
-        copyLinkBtn.addEventListener('click', () => {
-            const baseUrl = window.location.href.split('?')[0];
-            const scenarioUrl = `${baseUrl}?rocket=${encodeURIComponent(items[selectedIndex].name)}&index=${selectedIndex}`;
-            navigator.clipboard.writeText(scenarioUrl).then(() => {
-                const originalText = copyLinkBtn.textContent;
-                copyLinkBtn.textContent = '✓ Copied!';
-                setTimeout(() => {
-                    copyLinkBtn.textContent = originalText;
-                }, 2000);
-            }).catch(() => {
-                // fallback
-                prompt('Copy this scenario link:', scenarioUrl);
-            });
-        });
-
-        // ----- PARSE URL PARAMS -----
-        function initFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const idx = params.get('index');
-            if (idx !== null && !isNaN(parseInt(idx, 10))) {
-                const parsed = parseInt(idx, 10);
-                if (parsed >= 0 && parsed < items.length) {
-                    selectedIndex = parsed;
-                }
-            }
-        }
-
-        // ----- INIT -----
-        initFromUrl();
-        updateAll();
-        // Ensure canvas is crisp on high-DPI (optional, but we keep logical size)
-        // We'll skip devicePixelRatio scaling for simplicity to keep drag coords consistent.
-
-        // Resize handling for canvas width (keep aspect ratio)
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            const containerWidth = container.clientWidth;
-            const aspectRatio = 1200 / 500;
-            canvas.width = Math.min(containerWidth, 1200);
-            canvas.height = canvas.width / aspectRatio;
-            renderCanvas();
-        }
-        window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('resize', () => {
         resizeCanvas();
+      });
+
+      // Start
+      init();
+      // Slight delay to ensure container is sized
+      setTimeout(resizeCanvas, 50);
     })();
-</script>
+  </script>
 </body>
 </html>
