@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARIO vs SONIC — Ball Physics Escape Workstation | KINETICZEN LABS</title>
+<meta name="description" content="Real-time rigid-body ball physics escape simulation workstation: MARIO vs SONIC rivalry telemetry, interactive canvas, presets, CSV export.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mario-vs-sonic-epic-ball-physics-escape.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "MARIO vs SONIC: Epic Ball Physics Escape — PhysSim Workstation",
+  "applicationCategory": "SimulationApplication",
+  "operatingSystem": "Web Browser",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mario-vs-sonic-epic-ball-physics-escape.html",
+  "description": "60FPS-inspired rigid-body ball physics rivalry simulation workstation comparing MARIO and SONIC via tunable gravity, restitution, friction, launch impulse and obstacle density, with live telemetry and CSV export.",
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/"
+  },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Interactive HTML5 canvas rigid-body simulation",
+    "Team A/B physics parameter tuning",
+    "Scenario presets",
+    "KPI telemetry readouts",
+    "CSV telemetry export",
+    "Shareable scenario links"
+  ]
+}
+</script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#05070b;color:#cbd5e1;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding:0 0 60px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Courier New',monospace;font-variant-numeric:tabular-nums}
+  .wrap{max-width:1340px;margin:0 auto;padding:0 20px}
+  header.top{border-bottom:1px solid #1e293b;background:linear-gradient(180deg,#0b0f17,#05070b);position:sticky;top:0;z-index:40}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:38px;height:38px;border:1px solid #f43f5e;border-radius:9px;display:grid;place-items:center;color:#f43f5e;font-weight:800;font-size:18px;background:#0b0f17;box-shadow:0 0 18px rgba(244,63,94,.18)}
+  .brand h1{font-size:15px;letter-spacing:2.5px;color:#f1f5f9;font-weight:700}
+  .brand span{display:block;font-size:10px;letter-spacing:3px;color:#64748b;margin-top:2px}
+  .portal{font-size:11px;letter-spacing:1.6px;color:#94a3b8;text-decoration:none;border:1px solid #1e293b;padding:9px 14px;border-radius:7px;background:#0b0f17;transition:.18s}
+  .portal:hover{color:#f43f5e;border-color:#f43f5e}
+  .hero{padding:34px 0 8px}
+  .hero .kicker{color:#f43f5e;font-size:11px;letter-spacing:3.5px;font-weight:700;margin-bottom:10px}
+  .hero h2{font-size:clamp(22px,3.4vw,36px);color:#f8fafc;line-height:1.15;letter-spacing:-.5px;font-weight:800}
+  .hero h2 em{color:#f43f5e;font-style:normal}
+  .hero p{margin-top:10px;color:#94a3b8;font-size:13.5px;max-width:820px;line-height:1.65}
+  .grid-main{display:grid;grid-template-columns:340px 1fr;gap:18px;margin-top:22px}
+  @media(max-width:1050px){.grid-main{grid-template-columns:1fr}}
+  .card{background:#0b0f17;border:1px solid #1e293b;border-radius:12px;padding:16px}
+  .card h3{font-size:11px;letter-spacing:2.4px;color:#e2e8f0;font-weight:700;margin-bottom:14px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+  .card h3::before{content:'';width:7px;height:7px;border-radius:2px;background:#f43f5e}
+  .ctrl{margin-bottom:15px}
+  .ctrl label{display:flex;justify-content:space-between;font-size:11px;letter-spacing:1.1px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase}
+  .ctrl label b{color:#f43f5e;font-weight:700}
+  input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#1e293b;border-radius:2px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#f43f5e;border:2px solid #05070b;box-shadow:0 0 9px rgba(244,63,94,.55);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#f43f5e;border:2px solid #05070b;cursor:pointer}
+  .presets{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+  .preset{font-size:10.5px;letter-spacing:1.3px;padding:9px 6px;border-radius:7px;border:1px solid #1e293b;background:#0f172a;color:#cbd5e1;cursor:pointer;text-transform:uppercase;transition:.15s;font-weight:600}
+  .preset:hover{border-color:#f43f5e;color:#f43f5e;background:#141d2e}
+  .preset.active{border-color:#f43f5e;background:rgba(244,63,94,.12);color:#f43f5e}
+  .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .btn{font-size:10.5px;letter-spacing:1.2px;padding:10px 8px;border-radius:7px;border:1px solid #1e293b;background:#0f172a;color:#e2e8f0;cursor:pointer;text-transform:uppercase;font-weight:700;transition:.15s}
+  .btn:hover{border-color:#f43f5e;color:#f43f5e}
+  .btn.primary{background:#f43f5e;border-color:#f43f5e;color:#05070b}
+  .btn.primary:hover{background:#fb7185;color:#05070b}
+  .stage{position:relative;background:radial-gradient(ellipse at 50% 45%,#0d1420,#05070b 78%);border:1px solid #1e293b;border-radius:12px;overflow:hidden}
+  canvas{display:block;width:100%;height:auto}
+  .stage-hud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;gap:10px;pointer-events:none;font-size:10px;letter-spacing:1.5px;color:#64748b}
+  .stage-hud .tag{border:1px solid #1e293b;background:rgba(5,7,11,.75);padding:4px 9px;border-radius:5px}
+  .stage-hud .tag.mario{color:#fda4af;border-color:rgba(244,63,94,.4)}
+  .stage-hud .tag.sonic{color:#7dd3fc;border-color:rgba(56,189,248,.4)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+  @media(max-width:760px){.kpis{grid-template-columns:1fr 1fr}}
+  .kpi{background:#0b0f17;border:1px solid #1e293b;border-radius:10px;padding:12px 13px}
+  .kpi .k{font-size:9.5px;letter-spacing:1.6px;color:#64748b;text-transform:uppercase;margin-bottom:6px}
+  .kpi .v{font-size:20px;font-weight:700;color:#f8fafc}
+  .kpi .v.mario{color:#f43f5e}
+  .kpi .v.sonic{color:#38bdf8}
+  .kpi .sub{font-size:10px;color:#475569;margin-top:3px;letter-spacing:.5px}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  @media(max-width:900px){.two-col{grid-template-columns:1fr}}
+  .teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .team{border:1px solid #1e293b;border-radius:10px;padding:13px;background:#0b0f17}
+  .team.mario{border-left:3px solid #f43f5e}
+  .team.sonic{border-left:3px solid #38bdf8}
+  .team .nm{font-size:12px;letter-spacing:2px;font-weight:800;margin-bottom:10px}
+  .team.mario .nm{color:#f43f5e}
+  .team.sonic .nm{color:#38bdf8}
+  .team .row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px dashed #131c2b;color:#94a3b8}
+  .team .row:last-child{border-bottom:none}
+  .team .row b{color:#e2e8f0}
+  table{width:100%;border-collapse:collapse;font-size:11.5px}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid #16202f}
+  th{color:#64748b;font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700}
+  td{color:#cbd5e1}
+  td.mono{color:#e2e8f0}
+  tr:hover td{background:#0d1420}
+  .vid{position:relative;padding-bottom:56.25%;height:0;border-radius:10px;overflow:hidden;border:1px solid #1e293b}
+  .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  details{border:1px solid #1e293b;border-radius:9px;padding:12px 14px;background:#0b0f17;margin-bottom:9px}
+  details[open]{border-color:#31415a}
+  summary{cursor:pointer;font-size:12.5px;color:#e2e8f0;font-weight:600;letter-spacing:.3px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:'+ ';color:#f43f5e;font-weight:800}
+  details[open] summary::before{content:'− '}
+  details p{margin-top:9px;font-size:12px;color:#94a3b8;line-height:1.7}
+  .note{font-size:10.5px;color:#475569;line-height:1.6;margin-top:10px}
+  footer{border-top:1px solid #1e293b;margin-top:34px;padding-top:18px;text-align:center;font-size:11px;color:#475569;letter-spacing:.6px}
+  footer a{color:#94a3b8;text-decoration:none;border-bottom:1px dotted #334155}
+  .toast{position:fixed;bottom:22px;right:22px;background:#0b0f17;border:1px solid #f43f5e;color:#f8fafc;padding:11px 18px;border-radius:8px;font-size:12px;letter-spacing:.6px;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:99;box-shadow:0 0 24px rgba(244,63,94,.25)}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .sec-title{font-size:12px;letter-spacing:3px;color:#f43f5e;font-weight:700;margin:30px 0 12px;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap topbar">
+    <div class="brand">
+      <div class="logo">K</div>
+      <div>
+        <h1>KINETICZEN LABS</h1>
+        <span>PHYSICS RIVALRY WORKSTATION</span>
+      </div>
+    </div>
+    <a class="portal mono" href="./index.html">&#8592; PORTAL</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="kicker">RIGID-BODY ESCAPE SIMULATOR</div>
+    <h2>MARIO <em>vs</em> SONIC — Epic Ball Physics Escape</h2>
+    <p>A 60FPS-inspired Matter.js-style rigid-body rivalry model. Two ball archetypes launch from the same containment chamber through a collapsing obstacle field. Tune gravity, restitution, friction, impulse and obstacle density, then read live escape telemetry for both teams.</p>
+  </section>
+
+  <div class="grid-main">
+
+    <!-- LEFT: CONTROLS -->
+    <aside>
+      <div class="card">
+        <h3>Scenario Presets</h3>
+        <div class="presets" id="presetBox">
+          <button class="preset active" data-preset="classic">Classic Duel</button>
+          <button class="preset" data-preset="speedway">Speedway</button>
+          <button class="preset" data-preset="moon">Moon Gravity</button>
+          <button class="preset" data-preset="bouncy">Hyper Bounce</button>
+          <button class="preset" data-preset="sticky">Sticky Floor</button>
+          <button class="preset" data-preset="gauntlet">Gauntlet</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>Physics Parameters</h3>
+        <div class="ctrl">
+          <label>Gravity <b id="vGravity" class="mono">1.00</b></label>
+          <input type="range" id="gravity" min="0.1" max="3" step="0.01" value="1">
+        </div>
+        <div class="ctrl">
+          <label>Restitution <b id="vRest" class="mono">0.82</b></label>
+          <input type="range" id="rest" min="0.1" max="1" step="0.01" value="0.82">
+        </div>
+        <div class="ctrl">
+          <label>Friction (air/floor) <b id="vFric" class="mono">0.012</b></label>
+          <input type="range" id="fric" min="0" max="0.08" step="0.001" value="0.012">
+        </div>
+        <div class="ctrl">
+          <label>Launch Impulse <b id="vImp" class="mono">7.4</b></label>
+          <input type="range" id="imp" min="3" max="14" step="0.1" value="7.4">
+        </div>
+        <div class="ctrl">
+          <label>Obstacle Density <b id="vDens" class="mono">7</b></label>
+          <input type="range" id="dens" min="2" max="16" step="1" value="7">
+        </div>
+        <div class="ctrl" style="margin-bottom:0">
+          <label>SONIC Speed Boost <b id="vBoost" class="mono">1.28</b></label>
+          <input type="range" id="boost" min="0.7" max="1.8" step="0.01" value="1.28">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="btnRun">Run / Restart</button>
+          <button class="btn" id="btnPause">Pause</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="btnCsv">Export CSV Telemetry</button>
+          <button class="btn" id="btnLink">Copy Scenario Link</button>
+        </div>
+        <div class="note">Simulation runs a deterministic fixed-step integrator at 120 internal steps/sec, rendered at display refresh. All telemetry is logged per-frame for CSV fidelity.</div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: STAGE + KPIs -->
+    <main>
+      <div class="stage">
+        <div class="stage-hud">
+          <span class="tag mario" id="hudMario">MARIO</span>
+          <span class="tag mono" id="hudClock">T+0.00s</span>
+          <span class="tag sonic" id="hudSonic">SONIC</span>
+        </div>
+        <canvas id="stage" width="920" height="560"></canvas>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">MARIO Escape Time</div>
+          <div class="v mario mono" id="kMario">—</div>
+          <div class="sub" id="kMarioSub">pending</div>
+        </div>
+        <div class="kpi">
+          <div class="k">SONIC Escape Time</div>
+          <div class="v sonic mono" id="kSonic">—</div>
+          <div class="sub" id="kSonicSub">pending</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Peak Velocity</div>
+          <div class="v mono" id="kPeak">0.00</div>
+          <div class="sub">units / s (both)</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Collisions</div>
+          <div class="v mono" id="kColl">0</div>
+          <div class="sub" id="kCollSub">walls + obstacles</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>Team Loadouts</h3>
+          <div class="teams">
+            <div class="team mario">
+              <div class="nm">MARIO</div>
+              <div class="row"><span>Archetype</span><b>Balanced Plumber</b></div>
+              <div class="row"><span>Mass</span><b class="mono">1.00</b></div>
+              <div class="row"><span>Radius</span><b class="mono">15.0</b></div>
+              <div class="row"><span>Restitution ×</span><b class="mono">1.00</b></div>
+              <div class="row"><span>Impulse ×</span><b class="mono">1.00</b></div>
+              <div class="row"><span>Color</span><b style="color:#f43f5e">#f43f5e</b></div>
+            </div>
+            <div class="team sonic">
+              <div class="nm">SONIC</div>
+              <div class="row"><span>Archetype</span><b>Hypersonic Hedgehog</b></div>
+              <div class="row"><span>Mass</span><b class="mono">0.82</b></div>
+              <div class="row"><span>Radius</span><b class="mono">13.0</b></div>
+              <div class="row"><span>Restitution ×</span><b class="mono">1.06</b></div>
+              <div class="row"><span>Impulse ×</span><b class="mono" id="tmBoost">1.28</b></div>
+              <div class="row"><span>Color</span><b style="color:#38bdf8">#38bdf8</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Embedded Stream</h3>
+          <div class="vid">
+            <iframe src="https://www.youtube.com/embed/XiT5sMUUFAg" title="MARIO vs SONIC: Epic Ball Physics Escape!" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- TABLE -->
+  <div class="sec-title">Analytical Breakdown</div>
+  <div class="card">
+    <h3>Parameter → Behavior Mapping</h3>
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>Symbol</th><th>Range</th><th>MARIO Effect</th><th>SONIC Effect</th><th>Modeled Behavior</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Gravity</td><td class="mono">g</td><td class="mono">0.10–3.00</td><td>Fall arc / escape height</td><td>Fall arc / escape height</td><td>Downward accel per fixed step; drives parabolic containment trajectories</td></tr>
+        <tr><td>Restitution</td><td class="mono">e</td><td class="mono">0.10–1.00</td><td>×1.00 multiplier</td><td>×1.06 multiplier</td><td>Reflects velocity normal to impact surface on collision</td></tr>
+        <tr><td>Friction</td><td class="mono">μ</td><td class="mono">0.000–0.080</td><td>Rolling decay</td><td>Rolling decay</td><td>Velocity damping applied along contact tangent each frame</td></tr>
+        <tr><td>Launch Impulse</td><td class="mono">J</td><td class="mono">3.0–14.0</td><td>×1.00</td><td>×speed boost</td><td>Initial velocity magnitude applied to both balls on restart</td></tr>
+        <tr><td>Obstacle Density</td><td class="mono">n</td><td class="mono">2–16</td><td>Path branching</td><td>Path branching</td><td>Count of static rigid pegs forming the escape gauntlet</td></tr>
+        <tr><td>SONIC Boost</td><td class="mono">β</td><td class="mono">0.70–1.80</td><td>—</td><td>Impulse amplification</td><td>Multiplies SONIC launch impulse — the core rivalry asymmetry</td></tr>
+        <tr><td>Escape Time</td><td class="mono">tₑ</td><td class="mono">simulated</td><td>Derived KPI</td><td>Derived KPI</td><td>First frame ball's center exits right-wall escape gate</td></tr>
+        <tr><td>Collisions</td><td class="mono">c</td><td class="mono">simulated</td><td>Derived KPI</td><td>Derived KPI</td><td>Discrete impact events against walls and static pegs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="sec-title">FAQ</div>
+  <div class="card">
+    <details open>
+      <summary>What does this workstation actually simulate?</summary>
+      <p>It models two rigid circular bodies (MARIO and SONIC) launched into a bounded chamber filled with static peg obstacles. Physics are integrated with a stable fixed timestep. Each ball reflects off walls and pegs using its restitution, loses energy to friction, and races toward the escape gate on the right wall. First ball to cross the gate records its escape time.</p>
+    </details>
+    <details>
+      <summary>Why does SONIC have different baseline parameters?</summary>
+      <p>SONIC represents the hypersonic archetype: lower mass (0.82), smaller radius, slightly higher restitution multiplier (1.06) and a tunable speed boost (default 1.28×) applied to launch impulse. MARIO is the balanced archetype at 1.00× across the board. This asymmetry is the core rivalry dynamic you are tuning.</p>
+    </details>
+    <details>
+      <summary>How is the CSV telemetry generated?</summary>
+      <p>Every fixed simulation step appends a row containing timestamp, both ball positions and velocities, collision counters and current parameter values. Pressing Export CSV serializes the recorded frame buffer into a standards-compliant CSV file and triggers a browser download.</p>
+    </details>
+    <details>
+      <summary>Can I share an exact scenario?</summary>
+      <p>Yes — Copy Scenario Link encodes every slider value into the URL query string. Opening that link restores the exact parameter set, then you press Run to reproduce the scenario. The physics integrator is deterministic given identical parameters and step count.</p>
+    </details>
+    <details>
+      <summary>What do the presets represent?</summary>
+      <p>Classic Duel is the baseline balance. Speedway raises impulse and lowers gravity for a fast race. Moon Gravity demonstrates low-g parabolic float. Hyper Bounce maximizes restitution. Sticky Floor maximizes friction and kills momentum. Gauntlet packs obstacles to stress the collision resolver.</p>
+    </details>
+  </div>
+
+  <footer>
+    KINETICZEN LABS — Physics Rivalry Workstation · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mario-vs-sonic-epic-ball-physics-escape.html">Canonical</a><br>
+    Simulation model inspired by Matter.js rigid-body behavior. Independent educational visualization.
+  </footer>
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- DOM ---------- */
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const el = {
+    gravity: document.getElementById('gravity'),
+    rest: document.getElementById('rest'),
+    fric: document.getElementById('fric'),
+    imp: document.getElementById('imp'),
+    dens: document.getElementById('dens'),
+    boost: document.getElementById('boost'),
+    vGravity: document.getElementById('vGravity'),
+    vRest: document.getElementById('vRest'),
+    vFric: document.getElementById('vFric'),
+    vImp: document.getElementById('vImp'),
+    vDens: document.getElementById('vDens'),
+    vBoost: document.getElementById('vBoost'),
+    tmBoost: document.getElementById('tmBoost'),
+    btnRun: document.getElementById('btnRun'),
+    btnPause: document.getElementById('btnPause'),
+    btnCsv: document.getElementById('btnCsv'),
+    btnLink: document.getElementById('btnLink'),
+    kMario: document.getElementById('kMario'),
+    kSonic: document.getElementById('kSonic'),
+    kMarioSub: document.getElementById('kMarioSub'),
+    kSonicSub: document.getElementById('kSonicSub'),
+    kPeak: document.getElementById('kPeak'),
+    kColl: document.getElementById('kColl'),
+    kCollSub: document.getElementById('kCollSub'),
+    hudClock: document.getElementById('hudClock'),
+    toast: document.getElementById('toast'),
+    presetBox: document.getElementById('presetBox')
+  };
+
+  /* ---------- PARAMS ---------- */
+  const P = { gravity:1, rest:0.82, fric:0.012, imp:7.4, dens:7, boost:1.28 };
+
+  const PRESETS = {
+    classic:{gravity:1.00, rest:0.82, fric:0.012, imp:7.4, dens:7,  boost:1.28},
+    speedway:{gravity:0.55, rest:0.90, fric:0.004, imp:12.5, dens:5, boost:1.45},
+    moon:{gravity:0.18, rest:0.88, fric:0.006, imp:6.0, dens:6, boost:1.10},
+    bouncy:{gravity:1.20, rest:0.99, fric:0.000, imp:9.5, dens:8, boost:1.20},
+    sticky:{gravity:1.60, rest:0.28, fric:0.070, imp:10.5, dens:6, boost:1.05},
+    gauntlet:{gravity:1.35, rest:0.74, fric:0.020, imp:11.0, dens:16, boost:1.35}
+  };
+
+  /* ---------- WORLD ---------- */
+  const GATE_X = W - 34;          // escape gate line
+  const FLOOR_Y = H - 26;
+  const STEP = 1/120;             // fixed timestep
+  let obstacles = [];
+  let trajectory = [];            // {t, ax, ay, avx, avy, bx, by, bvx, bvy, coll}
+  let simTime = 0, frameCounter = 0;
+  let running = false, paused = false;
+  let escapedA = null, escapedB = null;
+  let collA = 0, collB = 0, peakV = 0;
+
+  const ballA = { name:'MARIO', color:'#f43f5e', glow:'rgba(244,63,94,', mass:1.00, r:15, restMul:1.00, x:0, y:0, vx:0, vy:0, escaped:false };
+  const ballB = { name:'SONIC', color:'#38bdf8', glow:'rgba(56,189,248,', mass:0.82, r:13, restMul:1.06, x:0, y:0, vx:0, vy:0, escaped:false };
+
+  /* ---------- PRESET & SLIDER WIRING ---------- */
+  function syncUI(){
+    el.gravity.value = P.gravity; el.vGravity.textContent = P.gravity.toFixed(2);
+    el.rest.value = P.rest;       el.vRest.textContent = P.rest.toFixed(2);
+    el.fric.value = P.fric;       el.vFric.textContent = P.fric.toFixed(3);
+    el.imp.value = P.imp;         el.vImp.textContent = P.imp.toFixed(1);
+    el.dens.value = P.dens;       el.vDens.textContent = P.dens;
+    el.boost.value = P.boost;     el.vBoost.textContent = P.boost.toFixed(2);
+    el.tmBoost.textContent = P.boost.toFixed(2);
+  }
+
+  function bindSlider(input, key, fmt){
+    input.addEventListener('input', ()=>{
+      P[key] = parseFloat(input.value);
+      syncUI();
+      if(key === 'dens' || key === 'boost' || key === 'imp') rebuild(false);
+      markPresetNone();
+    });
+  }
+  bindSlider(el.gravity,'gravity');
+  bindSlider(el.rest,'rest');
+  bindSlider(el.fric,'fric');
+  bindSlider(el.imp,'imp');
+  bindSlider(el.dens,'dens');
+  bindSlider(el.boost,'boost');
+
+  function markPresetNone(){
+    [...el.presetBox.children].forEach(b=>b.classList.remove('active'));
+  }
+  function applyPreset(name){
+    const p = PRESETS[name]; if(!p) return;
+    Object.assign(P, p);
+    syncUI();
+    [...el.presetBox.children].forEach(b=>b.classList.toggle('active', b.dataset.preset===name));
+    rebuild(true);
+  }
+  el.presetBox.addEventListener('click', e=>{
+    const b = e.target.closest('.preset'); if(!b) return;
+    applyPreset(b.dataset.preset);
+  });
+
+  /* ---------- OBSTACLE GEN ---------- */
+  function generateObstacles(){
+    obstacles = [];
+    const n = P.dens;
+    const fieldLeft = 260, fieldRight = GATE_X - 70;
+    const top = 70, bottom = FLOOR_Y - 70;
+    let seed = 1337 + n * 91;
+    function rnd(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+    for(let i=0;i<n;i++){
+      const x = fieldLeft + rnd() * (fieldRight - fieldLeft);
+      const y = top + rnd() * (bottom - top);
+      const r = 10 + rnd() * 16;
+      obstacles.push({x,y,r});
+    }
+    // guarantee a few pegs near the gate for challenge
+    obstacles.push({x: GATE_X - 120, y: H*0.5, r: 18});
+    obstacles.push({x: GATE_X - 190, y: H*0.30, r: 14});
+  }
+
+  /* ---------- RESET ---------- */
+  function rebuild(restart){
+    generateObstacles();
+    trajectory = [];
+    simTime = 0; frameCounter = 0;
+    escapedA = null; escapedB = null;
+    collA = 0; collB = 0; peakV = 0;
+    ballA.x = 90; ballA.y = H*0.5; ballA.vx = 0; ballA.vy = 0; ballA.escaped = false;
+    ballB.x = 90; ballB.y = H*0.5 - 46; ballB.vx = 0; ballB.vy = 0; ballB.escaped = false;
+    updateKPIs();
+    if(restart){ running = false; paused = false; el.btnPause.textContent = 'Pause'; }
+    draw();
+  }
+
+  function launch(){
+    ballA.x = 90; ballA.y = H*0.5;
+    ballB.x = 90; ballB.y = H*0.5 - 46;
+    const angA = -0.42 + (Math.random()-0.5)*0.06;
+    const angB = -0.30 + (Math.random()-0.5)*0.06;
+    ballA.vx = Math.cos(angA) * P.imp * 26;
+    ballA.vy = Math.sin(angA) * P.imp * 26;
+    ballB.vx = Math.cos(angB) * P.imp * P.boost * 26;
+    ballB.vy = Math.sin(angB) * P.imp * P.boost * 26;
+    ballA.escaped = false; ballB.escaped = false;
+    escapedA = null; escapedB = null;
+    collA = 0; collB = 0; peakV = 0;
+    simTime = 0; frameCounter = 0;
+    trajectory = [];
+  }
+
+  /* ---------- PHYSICS ---------- */
+  const GRAV_SCALE = 260;
+  const WALL_DAMP = 0.98;
+
+  function resolveWalls(b, rec){
+    // left
+    if(b.x - b.r < 0){ b.x = b.r; b.vx = Math.abs(b.vx) * P.rest * b.restMul; rec(); }
+    // top
+    if(b.y - b.r < 0){ b.y = b.r; b.vy = Math.abs(b.vy) * P.rest * b.restMul; rec(); }
+    // floor
+    if(b.y + b.r > FLOOR_Y){
+      b.y = FLOOR_Y - b.r;
+      if(b.vy > 0){ b.vy = -b.vy * P.rest * b.restMul; }
+      b.vx *= (1 - P.fric * 18);
+      if(Math.abs(b.vy) < 8) b.vy = 0;
+      rec();
+    }
+    // right wall (gate region): allow escape through gap
+    const gateTop = H*0.28, gateBot = H*0.72;
+    const inGap = (b.y > gateTop && b.y < gateBot);
+    if(b.x + b.r > GATE_X && !inGap){
+      b.x = GATE_X - b.r;
+      b.vx = -Math.abs(b.vx) * P.rest * b.restMul;
+      rec();
+    }
+  }
+
+  function resolveObstacles(b, rec){
+    for(let i=0;i<obstacles.length;i++){
+      const o = obstacles[i];
+      const dx = b.x - o.x, dy = b.y - o.y;
+      const dist = Math.hypot(dx, dy);
+      const minD = b.r + o.r;
+      if(dist < minD && dist > 0.0001){
+        const nx = dx/dist, ny = dy/dist;
+        const overlap = minD - dist;
+        b.x += nx * overlap;
+        b.y += ny * overlap;
+        const vn = b.vx*nx + b.vy*ny;
+        if(vn < 0){
+          const e = P.rest * b.restMul;
+          b.vx -= (1 + e) * vn * nx;
+          b.vy -= (1 + e) * vn * ny;
+          rec();
+        }
+      }
+    }
+  }
+
+  function stepBall(b, dt){
+    b.vy += P.gravity * GRAV_SCALE * dt;
+    b.vx *= (1 - P.fric);
+    if(!b.escaped){
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+    }
+    let localColl = 0;
+    const rec = ()=>{ localColl++; };
+    resolveWalls(b, rec);
+    resolveObstacles(b, rec);
+    return localColl;
+  }
+
+  function physicsStep(dt){
+    if(!running || paused) return;
+    simTime += dt;
+    frameCounter++;
+
+    const cA = stepBall(ballA, dt);
+    const cB = stepBall(ballB, dt);
+    collA += cA; collB += cB;
+
+    const vA = Math.hypot(ballA.vx, ballA.vy);
+    const vB = Math.hypot(ballB.vx, ballB.vy);
+    if(vA > peakV) peakV = vA;
+    if(vB > peakV) peakV = vB;
+
+    // escape detection: center crosses gate x within gap
+    const gateTop = H*0.28, gateBot = H*0.72;
+    if(!ballA.escaped && ballA.x > GATE_X + ballA.r && ballA.y > gateTop && ballA.y < gateBot){
+      ballA.escaped = true; escapedA = simTime;
+      ballA.vx = Math.abs(ballA.vx);
+    }
+    if(!ballB.escaped && ballB.x > GATE_X + ballB.r && ballB.y > gateTop && ballB.y < gateBot){
+      ballB.escaped = true; escapedB = simTime;
+      ballB.vx = Math.abs(ballB.vx);
+    }
+
+    // record telemetry every 2 frames
+    if(frameCounter % 2 === 0){
+      trajectory.push({
+        t: +simTime.toFixed(4),
+        ax: +ballA.x.toFixed(2), ay: +ballA.y.toFixed(2),
+        avx: +ballA.vx.toFixed(2), avy: +ballA.vy.toFixed(2),
+        bx: +ballB.x.toFixed(2), by: +ballB.y.toFixed(2),
+        bvx: +ballB.vx.toFixed(2), bvy: +ballB.vy.toFixed(2),
+        collA, collB
+      });
+      if(trajectory.length > 20000) trajectory.shift();
+    }
+
+    updateKPIs();
+
+    if(ballA.escaped && ballB.escaped){
+      running = false;
+    }
+    if(simTime > 30){ running = false; }
+  }
+
+  /* ---------- RENDER ---------- */
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle = 'rgba(30,41,59,0.55)';
+    ctx.lineWidth = 1;
+    for(let x=0;x<W;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for(let y=0;y<H;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // floor
+    ctx.fillStyle = '#0a1220';
+    ctx.fillRect(0, FLOOR_Y, W, H - FLOOR_Y);
+    ctx.strokeStyle = '#1e293b';
+    ctx.beginPath(); ctx.moveTo(0,FLOOR_Y); ctx.lineTo(W,FLOOR_Y); ctx.stroke();
+
+    // gate
+    const gateTop = H*0.28, gateBot = H*0.72;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(244,63,94,0.55)';
+    ctx.setLineDash([8,6]);
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(GATE_X, gateTop); ctx.lineTo(GATE_X, gateBot); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(244,63,94,0.08)';
+    ctx.fillRect(GATE_X, gateTop, W - GATE_X, gateBot - gateTop);
+    ctx.restore();
+    ctx.fillStyle = '#f43f5e';
+    ctx.font = '600 11px ui-monospace,monospace';
+    ctx.fillText('ESCAPE GATE', GATE_X + 6, gateTop - 8);
+
+    // obstacles
+    for(const o of obstacles){
+      const grd = ctx.createRadialGradient(o.x - o.r*0.3, o.y - o.r*0.3, 2, o.x, o.y, o.r);
+      grd.addColorStop(0, '#22314a');
+      grd.addColorStop(1, '#0e1624');
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#31415a'; ctx.lineWidth = 1; ctx.stroke();
+    }
+
+    // balls
+    drawBall(ballA);
+    drawBall(ballB);
+
+    // velocity vectors
+    drawVector(ballA);
+    drawVector(ballB);
+
+    // labels
+    ctx.font = '700 10px ui-monospace,monospace';
+    ctx.fillStyle = 'rgba(244,63,94,0.85)';
+    ctx.fillText('MARIO', ballA.x - 18, ballA.y - ballA.r - 8);
+    ctx.fillStyle = 'rgba(56,189,248,0.85)';
+    ctx.fillText('SONIC', ballB.x - 18, ballB.y - ballB.r - 8);
+  }
+
+  function drawBall(b){
+    ctx.save();
+    ctx.shadowColor = b.glow + '0.55)';
+    ctx.shadowBlur = 18;
+    const grd = ctx.createRadialGradient(b.x - b.r*0.35, b.y - b.r*0.35, 1, b.x, b.y, b.r);
+    grd.addColorStop(0, '#ffffff');
+    grd.addColorStop(0.28, b.color);
+    grd.addColorStop(1, b.glow + '0.35)');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = b.color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.stroke();
+  }
+
+  function drawVector(b){
+    const mag = Math.hypot(b.vx, b.vy);
+    if(mag < 6) return;
+    const s = 0.11;
+    ctx.strokeStyle = b.glow + '0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(b.x, b.y);
+    ctx.lineTo(b.x + b.vx*s, b.y + b.vy*s);
+    ctx.stroke();
+  }
+
+  /* ---------- KPIs ---------- */
+  function updateKPIs(){
+    el.kMario.textContent = escapedA !== null ? escapedA.toFixed(2)+'s' : '—';
+    el.kSonic.textContent = escapedB !== null ? escapedB.toFixed(2)+'s' : '—';
+    el.kMarioSub.textContent = ballA.escaped ? 'escaped' : (running && !paused ? 'in field' : 'pending');
+    el.kSonicSub.textContent = ballB.escaped ? 'escaped' : (running && !paused ? 'in field' : 'pending');
+    el.kPeak.textContent = peakV.toFixed(2);
+    el.kColl.textContent = collA + collB;
+    el.kCollSub.textContent = 'MARIO ' + collA + ' · SONIC ' + collB;
+    el.hudClock.textContent = 'T+' + simTime.toFixed(2) + 's';
+  }
+
+  /* ---------- RAF LOOP ---------- */
+  let last = performance.now(), acc = 0;
+  function loop(now){
+    const dtRaw = Math.min((now - last)/1000, 0.05);
+    last = now;
+    if(running && !paused){
+      acc += dtRaw;
+      let guard = 0;
+      while(acc >= STEP && guard < 30){ physicsStep(STEP); acc -= STEP; guard++; }
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  /* ---------- BUTTONS ---------- */
+  el.btnRun.addEventListener('click', ()=>{
+    rebuild(true);
+    launch();
+    running = true; paused = false;
+    el.btnPause.textContent = 'Pause';
+    updateKPIs();
+  });
+
+  el.btnPause.addEventListener('click', ()=>{
+    if(!running) return;
+    paused = !paused;
+    el.btnPause.textContent = paused ? 'Resume' : 'Pause';
+  });
+
+  /* ---------- CSV ---------- */
+  function buildCSV(){
+    const header = [
+      'frame_time_s','mario_x','mario_y','mario_vx','mario_vy',
+      'sonic_x','sonic_y','sonic_vx','sonic_vy',
+      'mario_collisions','sonic_collisions',
+      'gravity','restitution','friction','impulse','obstacle_density','sonic_boost'
+    ].join(',');
+    const lines = [header];
+    for(const r of trajectory){
+      lines.push([
+        r.t, r.ax, r.ay, r.avx, r.avy,
+        r.bx, r.by, r.bvx, r.bvy,
+        r.collA, r.collB,
+        P.gravity, P.rest, P.fric, P.imp, P.dens, P.boost
+      ].join(','));
+    }
+    lines.push('');
+    lines.push('# SUMMARY');
+    lines.push('# mario_escape_s,' + (escapedA !== null ? escapedA.toFixed(4) : 'DNF'));
+    lines.push('# sonic_escape_s,' + (escapedB !== null ? escapedB.toFixed(4) : 'DNF'));
+    lines.push('# peak_velocity,' + peakV.toFixed(4));
+    lines.push('# total_collisions,' + (collA + collB));
+    return lines.join('\n');
+  }
+
+  el.btnCsv.addEventListener('click', ()=>{
+    if(trajectory.length === 0){ showToast('No telemetry yet — run a scenario first'); return; }
+    const csv = buildCSV();
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().replace(/[:.]/g,'-');
+    a.href = url;
+    a.download = 'kineticzen_mario-vs-sonic_telemetry_' + stamp + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+    showToast('CSV exported — ' + trajectory.length + ' frames');
+  });
+
+  /* ---------- SCENARIO LINK ---------- */
+  el.btnLink.addEventListener('click', ()=>{
+    const qs = new URLSearchParams({
+      g: P.gravity.toFixed(2),
+      e: P.rest.toFixed(2),
+      f: P.fric.toFixed(3),
+      j: P.imp.toFixed(2),
+      n: P.dens.toFixed(0),
+      b: P.boost.toFixed(2)
+    }).toString();
+    const base = location.origin + location.pathname;
+    const url = base + '?' + qs;
+    copyText(url).then(ok=>{
+      showToast(ok ? 'Scenario link copied' : 'Link: ' + url);
+    });
+  });
+
+  function copyText(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).then(()=>true).catch(()=>fallbackCopy(text));
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+  function fallbackCopy(text){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch(e){ return false; }
+  }
+
+  let toastTimer = null;
+  function showToast(msg){
+    el.toast.textContent = msg;
+    el.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>el.toast.classList.remove('show'), 2400);
+  }
+
+  /* ---------- LOAD FROM URL ---------- */
+  function loadFromURL(){
+    const p = new URLSearchParams(location.search);
+    if([...p.keys()].length === 0) return false;
+    const map = {g:'gravity', e:'rest', f:'fric', j:'imp', n:'dens', b:'boost'};
+    let changed = false;
+    for(const [k,prop] of Object.entries(map)){
+      if(p.has(k)){
+        const v = parseFloat(p.get(k));
+        if(isFinite(v)){ P[prop] = v; changed = true; }
+      }
+    }
+    return changed;
+  }
+
+  /* ---------- INIT ---------- */
+  const loaded = loadFromURL();
+  if(loaded) markPresetNone();
+  syncUI();
+  rebuild(false);
+  // gentle idle animation of balls resting
+  requestAnimationFrame(loop);
+
+  // auto-start after short delay for immediate visual
+  setTimeout(()=>{ if(!running){ rebuild(true); launch(); running = true; paused = false; updateKPIs(); } }, 450);
+
+})();
+</script>
+</body>
+</html>
