@@ -8,7 +8,8 @@
     "Tesla vs Ferrari",
     "Ferrari vs Lamborghini",
     "Real Madrid vs Barcelona",
-    "Netflix vs YouTube"
+    "Netflix vs YouTube",
+    "Volcano vs Glacier: Molten Ball vs Ice Maze Physics"
   ],
   "used_items": [
     "Ronaldo vs Messi",
@@ -21,6 +22,12 @@
     "Netflix vs YouTube"
   ],
   "used_domains": [],
-  "playlist_id": "",
-  "published_videos": []
+  "playlist_id": "PLa-eIeoLvXlk",
+  "published_videos": [
+    {
+      "video_id": "5WYfVljaCLA",
+      "title": "Volcano vs Glacier: Molten Ball vs Ice Maze Physics #shorts",
+      "published_at": 1794928639
+    }
+  ]
 }
