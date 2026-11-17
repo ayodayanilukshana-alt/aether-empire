@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Tiny Shrew → Blue Whale Scale Workstation</title>
+    <meta name="description" content="Interactive mammal scale simulation: from 3g Etruscan shrew to 150-ton blue whale. Real-time canvas, presets, CSV export, and analytics.">
+    <meta name="brand" content="SCALEVERSE 3D">
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/tiny-shrew-to-blue-whale-mind-blowing-mammal-scale.html">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #05070b;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+            color: #e2e8f0;
+            line-height: 1.5;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 1;
+        }
+        /* header */
+        .brand-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1rem;
+        }
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .brand h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #f1f5f9;
+        }
+        .brand .accent {
+            color: #38bdf8;
+        }
+        .brand .badge {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            padding: 0.2rem 1rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+        .portal-link {
+            color: #38bdf8;
+            text-decoration: none;
+            border: 1px solid #1e293b;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: 0.2s;
+            background: #0b0f17;
+        }
+        .portal-link:hover {
+            background: #1e293b;
+            border-color: #38bdf8;
+        }
+        /* cards */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.7);
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .kpi-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .kpi {
+            background: #05070b;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            border: 1px solid #1e293b;
+            flex: 1;
+            min-width: 100px;
+        }
+        .kpi .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            font-family: monospace;
+        }
+        .kpi .value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: monospace;
+            color: #38bdf8;
+            line-height: 1.3;
+        }
+        .kpi .value.small {
+            font-size: 1rem;
+        }
+        /* sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 1.2rem 0;
+        }
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .slider-item label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            font-family: monospace;
+        }
+        .slider-item label span {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: #38bdf8;
+            background: #1e293b;
+            height: 6px;
+            border-radius: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px #38bdf8;
+            border: 2px solid #0b0f17;
+        }
+        /* preset buttons */
+        .preset-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+        .preset-btn {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .preset-btn:hover {
+            border-color: #38bdf8;
+            background: #1e293b;
+            color: white;
+        }
+        .preset-btn.active {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 700;
+        }
+        /* action buttons */
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        .btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.7rem 1.4rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover {
+            background: #1e293b;
+            border-color: #38bdf8;
+            color: white;
+        }
+        .btn-primary {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 700;
+        }
+        .btn-primary:hover {
+            background: #7dd3fc;
+            border-color: #7dd3fc;
+        }
+        /* canvas */
+        .canvas-container {
+            background: #05070b;
+            border-radius: 16px;
+            border: 1px solid #1e293b;
+            padding: 0.5rem;
+            position: relative;
+            width: 100%;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            background: #05070b;
+        }
+        /* table */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+        th {
+            text-align: left;
+            padding: 0.8rem 0.5rem;
+            color: #94a3b8;
+            font-weight: 500;
+            border-bottom: 1px solid #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-size: 0.7rem;
+        }
+        td {
+            padding: 0.7rem 0.5rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .metric {
+            color: #38bdf8;
+        }
+        /* faq */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.9rem 0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.3rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            padding-left: 1rem;
+            border-left: 2px solid #1e293b;
+            margin-top: 0.4rem;
+        }
+        /* iframe */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .footnote {
+            color: #475569;
+            font-size: 0.75rem;
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid #1e293b;
+            font-family: monospace;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .tag {
+            background: #1e293b;
+            padding: 0.1rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+        .json-ld {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- header -->
+    <header class="brand-bar">
+        <div class="brand">
+            <h1><span class="accent">SCALEVERSE</span> 3D</h1>
+            <span class="badge">MAMMAL SCALE · SHRew → WHALE</span>
+        </div>
+        <a href="./index.html" class="portal-link">← Back to Portal</a>
+    </header>
+
+    <!-- KPI row & main controls -->
+    <div class="grid-2">
+        <!-- left: controls -->
+        <div class="card">
+            <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:0.8rem; letter-spacing:-0.01em;">Interactive Scale Model</h2>
+            <div class="kpi-row">
+                <div class="kpi">
+                    <div class="label">Selected Body Length</div>
+                    <div class="value" id="kpiLength">0.036 m</div>
+                </div>
+                <div class="kpi">
+                    <div class="label">Mass (approx)</div>
+                    <div class="value small" id="kpiMass">2 g</div>
+                </div>
+                <div class="kpi">
+                    <div class="label">Scale Factor vs Shrew</div>
+                    <div class="value" id="kpiFactor">1.0×</div>
+                </div>
+            </div>
+            <div class="slider-group">
+                <div class="slider-item">
+                    <label>MAMMAL LENGTH <span id="lengthLabel">0.036 m</span></label>
+                    <input type="range" id="lengthSlider" min="0" max="4" step="0.001" value="0">
+                </div>
+            </div>
+            <div class="preset-row" id="presetRow">
+                <button class="preset-btn" data-index="0">Etruscan Shrew</button>
+                <button class="preset-btn" data-index="1">European Rabbit</button>
+                <button class="preset-btn" data-index="2">Giant Anteater</button>
+                <button class="preset-btn" data-index="3">African Bush Elephant</button>
+                <button class="preset-btn" data-index="4">Blue Whale</button>
+            </div>
+            <div class="action-row">
+                <button class="btn" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+                <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+                <button class="btn btn-primary" id="resetBtn">⟲ Reset</button>
+            </div>
+            <p style="font-size:0.7rem; color:#475569; margin-top:0.8rem; font-family:monospace;">Slider interpolates mass/scale linearly in log space. Presets snap to exact specimen data.</p>
+        </div>
+
+        <!-- right: canvas visualization -->
+        <div class="card" style="padding:0.8rem;">
+            <div class="canvas-container">
+                <canvas id="scaleCanvas" width="700" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- data table + faq -->
+    <div class="grid-2">
+        <div class="card">
+            <h3 style="font-size:1rem; font-weight:600; margin-bottom:0.5rem;">Analytical Breakdown</h3>
+            <div class="table-wrap">
+                <table id="dataTable">
+                    <thead>
+                        <tr><th>Species</th><th>Length (m)</th><th>Mass</th><th>Relative to Shrew</th></tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <h3 style="font-size:1rem; font-weight:600; margin-bottom:0.5rem;">FAQ · Scale Insights</h3>
+            <div class="faq-item">
+                <div class="faq-q">How does the shrew compare to the blue whale? <span style="color:#38bdf8;">+</span></div>
+                <div class="faq-a">An Etruscan shrew (0.036 m) is roughly 830× shorter than a blue whale (29.9 m), and about 75 million times lighter (2 g vs 150,000 kg).</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">What is the scale factor? <span style="color:#38bdf8;">+</span></div>
+                <div class="faq-a">The scale factor is the linear ratio vs the shrew. Whale / shrew = 29.9 / 0.036 ≈ 830.6× length.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">How are masses estimated? <span style="color:#38bdf8;">+</span></div>
+                <div class="faq-a">We use published body masses: shrew ~2g, rabbit 2kg, anteater 33kg, elephant 6000kg, blue whale 150,000kg.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Can I export the current state? <span style="color:#38bdf8;">+</span></div>
+                <div class="faq-a">Yes, click "Export CSV Telemetry" to download a CSV with all specimen data and current slider position.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- video embed -->
+    <div class="card">
+        <h3 style="font-size:1rem; font-weight:600; margin-bottom:0.8rem;">📺 Tiny Shrew to Blue Whale: Mind-Blowing Mammal Scale</h3>
+        <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/W1Ir0h-y928" title="Tiny Shrew to Blue Whale: Mind-Blowing Mammal Scale" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="footnote">
+        SCALEVERSE 3D · Mammal Scale Workstation · Data: 5 species · Rendered with HTML5 Canvas
+    </div>
+</div>
+
+<!-- JSON-LD SoftwareApplication schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D Mammal Scale Workstation",
+  "description": "Interactive simulation comparing Etruscan shrew to blue whale with real-time canvas, CSV export, and analytical breakdown.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "SCALEVERSE 3D",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/"
+  },
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/tiny-shrew-to-blue-whale-mind-blowing-mammal-scale.html"
+}
+</script>
+
+<script>
+    // ----- DATA PAYLOAD (exact) -----
+    const mammals = [
+        { name: "Etruscan Shrew", meters: 0.036, massKg: 0.002, metric: "3.6 cm (1.4 in) body length, ~2 g" },
+        { name: "European Rabbit", meters: 0.4, massKg: 2.0, metric: "40 cm (16 in) body length, 2 kg" },
+        { name: "Giant Anteater", meters: 2.1, massKg: 33.0, metric: "2.1 m (6.9 ft) body length, 33 kg" },
+        { name: "African Bush Elephant", meters: 7.0, massKg: 6000.0, metric: "7 m (23 ft) tall, 6,000 kg" },
+        { name: "Blue Whale", meters: 29.9, massKg: 150000.0, metric: "29.9 m (98 ft) long, 150,000 kg" }
+    ];
+
+    // DOM refs
+    const lengthSlider = document.getElementById('lengthSlider');
+    const lengthLabel = document.getElementById('lengthLabel');
+    const kpiLength = document.getElementById('kpiLength');
+    const kpiMass = document.getElementById('kpiMass');
+    const kpiFactor = document.getElementById('kpiFactor');
+    const canvas = document.getElementById('scaleCanvas');
+    const ctx = canvas.getContext('2d');
+    const tableBody = document.getElementById('tableBody');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // helper: format mass
+    function formatMass(kg) {
+        if (kg >= 1000) return (kg / 1000).toFixed(1) + ' t';
+        if (kg >= 1) return kg.toFixed(1) + ' kg';
+        return (kg * 1000).toFixed(0) + ' g';
+    }
+
+    // current slider value maps to index [0..4] but we allow continuous via mass interpolation.
+    // We'll interpret slider value as length directly? But better: slider index is continuous between 0 and 4.
+    // For simplicity and to follow "presets snap", we treat slider as index with fraction.
+    // Update from slider: set current length based on piecewise linear interpolation of log(length).
+    // Actually use linear interpolation of length between points, but visual is fine. Use log10(length) for smooth.
+    function getLengthFromSlider(sliderVal) {
+        const idx = parseFloat(sliderVal);
+        const i0 = Math.floor(idx);
+        const i1 = Math.min(i0 + 1, mammals.length - 1);
+        const frac = idx - i0;
+        const l0 = Math.log10(mammals[i0].meters);
+        const l1 = Math.log10(mammals[i1].meters);
+        return Math.pow(10, l0 + (l1 - l0) * frac);
+    }
+
+    // Given length, find mass via piecewise log interpolation (log mass vs log length) for accurate KPI.
+    function getMassFromLength(lenM) {
+        // log-log interpolation between nearest points
+        if (lenM <= mammals[0].meters) return mammals[0].massKg;
+        if (lenM >= mammals[mammals.length - 1].meters) return mammals[mammals.length - 1].massKg;
+        for (let i = 0; i < mammals.length - 1; i++) {
+            const a = mammals[i], b = mammals[i + 1];
+            if (lenM >= a.meters && lenM <= b.meters) {
+                const t = (Math.log10(lenM) - Math.log10(a.meters)) / (Math.log10(b.meters) - Math.log10(a.meters));
+                return Math.pow(10, Math.log10(a.massKg) + (Math.log10(b.massKg) - Math.log10(a.massKg)) * t);
+            }
+        }
+        return mammals[mammals.length - 1].massKg;
+    }
+
+    // Update UI from slider
+    function updateFromSlider() {
+        const idx = parseFloat(lengthSlider.value);
+        const len = getLengthFromSlider(idx);
+        const mass = getMassFromLength(len);
+        const factor = len / mammals[0].meters;
+
+        // update labels
+        lengthLabel.textContent = len.toFixed(3) + ' m';
+        kpiLength.textContent = len.toFixed(3) + ' m';
+        kpiMass.textContent = formatMass(mass);
+        kpiFactor.textContent = factor.toFixed(1) + '×';
+
+        // update active preset class
+        const nearestIdx = Math.round(idx);
+        presetBtns.forEach((btn, i) => {
+            btn.classList.toggle('active', i === nearestIdx && Math.abs(idx - i) < 0.05);
+        });
+
+        // redraw canvas
+        drawCanvas(len, mass);
+    }
+
+    // Draw canvas: show a comparative scale with current selected length highlighted, plus all specimens
+    function drawCanvas(selLen, selMass) {
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // background grid
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.8;
+        for (let i = 0; i < w; i += 40) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke();
+        }
+        for (let i = 0; i < h; i += 40) {
+            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
+        }
+
+        // We'll draw a horizontal "line" and markers for each mammal, and a highlighted bar for current.
+        const marginX = 60, marginY = 60;
+        const usableW = w - 2 * marginX;
+        const usableH = h - 2 * marginY;
+
+        // X mapping: logarithmic length from 0.02 to 40 m for context
+        const minLog = Math.log10(0.02);
+        const maxLog = Math.log10(40);
+        const mapX = (len) => marginX + ((Math.log10(len) - minLog) / (maxLog - minLog)) * usableW;
+
+        // draw axis line
+        ctx.beginPath();
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2;
+        ctx.moveTo(marginX, h - marginY);
+        ctx.lineTo(w - marginX, h - marginY);
+        ctx.stroke();
+
+        // axis labels
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        const ticks = [0.02, 0.1, 0.5, 2, 10, 40];
+        ticks.forEach(t => {
+            const x = mapX(t);
+            ctx.beginPath();
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.moveTo(x, h - marginY - 5);
+            ctx.lineTo(x, h - marginY + 10);
+            ctx.stroke();
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText(t + ' m', x, h - marginY + 28);
+        });
+
+        // draw each mammal as a lollipop
+        mammals.forEach((m, i) => {
+            const x = mapX(m.meters);
+            const y = h - marginY - 30;
+            // vertical line
+            ctx.beginPath();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([2, 4]);
+            ctx.moveTo(x, h - marginY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // circle
+            ctx.beginPath();
+            ctx.fillStyle = '#38bdf8';
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#05070b';
+            ctx.beginPath();
+            ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            // label
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '9px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(m.name.split(' ')[0], x, y - 14);
+        });
+
+        // draw current selection indicator as a bright vertical bar + mass bubble
+        const selX = mapX(selLen);
+        ctx.beginPath();
+        ctx.strokeStyle = '#f472b6';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.moveTo(selX, h - marginY);
+        ctx.lineTo(selX, 50);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // bubble
+        ctx.fillStyle = '#f472b6';
+        ctx.beginPath();
+        ctx.arc(selX, 40, 8, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle = '#05070b';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('●', selX, 44);
+
+        // annotate current length text
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = selX > w - 100 ? 'right' : 'left';
+        const textX = selX > w - 100 ? selX - 10 : selX + 10;
+        ctx.fillText(selLen.toFixed(3) + ' m', textX, 30);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px monospace';
+        ctx.fillText(formatMass(selMass), textX, 46);
+
+        // title inside canvas
+        ctx.fillStyle = '#475569';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('LOG SCALE · LENGTH (m)', marginX, 30);
+    }
+
+    // Build table
+    function buildTable() {
+        tableBody.innerHTML = '';
+        const shrewLen = mammals[0].meters;
+        mammals.forEach(m => {
+            const ratio = (m.meters / shrewLen).toFixed(1);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${m.name}</td>
+                <td class="metric">${m.meters.toFixed(3)} m</td>
+                <td class="metric">${formatMass(m.massKg)}</td>
+                <td class="metric">${ratio}×</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Set slider to specific index (smooth)
+    function setSliderIndex(idx) {
+        lengthSlider.value = Math.max(0, Math.min(4, idx));
+        updateFromSlider();
+    }
+
+    // --- Event listeners ---
+    lengthSlider.addEventListener('input', updateFromSlider);
+
+    presetBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.index, 10);
+            setSliderIndex(idx);
+        });
+    });
+
+    resetBtn.addEventListener('click', () => {
+        setSliderIndex(0);
+    });
+
+    // export CSV
+    exportCsvBtn.addEventListener('click', () => {
+        const idx = parseFloat(lengthSlider.value);
+        const len = getLengthFromSlider(idx);
+        const mass = getMassFromLength(len);
+        const factor = len / mammals[0].meters;
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Species,Body Length (m),Mass (kg),Mass (approx),Scale Factor vs Shrew\n";
+        mammals.forEach(m => {
+            csvContent += `"${m.name}",${m.meters.toFixed(6)},${m.massKg.toFixed(6)},"${formatMass(m.massKg)}",${(m.meters / mammals[0].meters).toFixed(2)}\n`;
+        });
+        // append current simulated state
+        csvContent += `"CURRENT SLIDER SNAPSHOT",${len.toFixed(6)},${mass.toFixed(6)},"${formatMass(mass)}",${factor.toFixed(2)}\n`;
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "scaleverse_mammal_telemetry.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // copy scenario link: encodes current slider index as hash
+    copyLinkBtn.addEventListener('click', () => {
+        const idx = parseFloat(lengthSlider.value).toFixed(3);
+        const url = new URL(window.location.href);
+        url.hash = `#length=${idx}`;
+        navigator.clipboard.writeText(url.toString()).then(() => {
+            copyLinkBtn.textContent = '✓ Copied!';
+            setTimeout(() => { copyLinkBtn.textContent = '🔗 Copy Scenario Link'; }, 1500);
+        }).catch(() => {
+            // fallback
+            prompt('Copy this link:', url.toString());
+        });
+    });
+
+    // read hash on load
+    function loadFromHash() {
+        const hash = window.location.hash;
+        const match = hash.match(/#length=([\d.]+)/);
+        if (match) {
+            const val = parseFloat(match[1]);
+            if (!isNaN(val) && val >= 0 && val <= 4) {
+                lengthSlider.value = val;
+            }
+        }
+        updateFromSlider();
+    }
+
+    // initialize
+    buildTable();
+    loadFromHash();
+    // ensure active preset visual
+    const initialIdx = parseFloat(lengthSlider.value);
+    presetBtns.forEach((btn, i) => {
+        btn.classList.toggle('active', i === Math.round(initialIdx));
+    });
+
+    // handle window resize for canvas (keep aspect)
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        const containerW = container.clientWidth - 20; // padding
+        if (containerW > 0) {
+            canvas.width = Math.min(containerW, 800);
+            canvas.height = Math.round(canvas.width * 0.55);
+            // redraw
+            const idx = parseFloat(lengthSlider.value);
+            const len = getLengthFromSlider(idx);
+            const mass = getMassFromLength(len);
+            drawCanvas(len, mass);
+        }
+    }
+    window.addEventListener('resize', resizeCanvas);
+    // initial resize after load
+    setTimeout(resizeCanvas, 50);
+    resizeCanvas();
+
+    // also update canvas on scroll? no.
+</script>
+</body>
+</html>
