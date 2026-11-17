@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINETICZEN LABS · BITCOIN vs ETHEREUM · Crypto Ball Escape Workstation</title>
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/bitcoin-vs-ethereum-crypto-ball-escape.html">
+  <!-- Fonts & Icons (no emojis) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ----- GLOBAL DARK INSTITUTIONAL UI ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --bg: #05070b;
+      --card: #0b0f17;
+      --border: #1e293b;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --accent: #f43f5e;
+      --accent-glow: rgba(244, 63, 94, 0.15);
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workstation {
+      max-width: 1400px;
+      width: 100%;
+    }
+    /* ----- TYPOGRAPHY & UTILITIES ----- */
+    h1, h2, h3 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    h1 {
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    h1 span {
+      background: var(--accent);
+      color: #0a0a0a;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mono {
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
+    }
+    .text-dim {
+      color: var(--text-dim);
+    }
+    .accent {
+      color: var(--accent);
+    }
+    /* ----- HEADER / PORTAL ----- */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .brand-accent {
+      color: var(--accent);
+    }
+    .portal-link {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .portal-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+    /* ----- CARDS ----- */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.8);
+    }
+    /* ----- KPI ROW ----- */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem 1.2rem;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-bottom: 0.25rem;
+    }
+    .kpi-value {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .kpi-value small {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-left: 0.25rem;
+    }
+    /* ----- TWO COLUMN LAYOUT (sim + controls + video) ----- */
+    .main-sim-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .main-sim-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* ----- CANVAS / SIMULATION AREA ----- */
+    .canvas-wrapper {
+      position: relative;
+      background: #03050a;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+    }
+    #simCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #05070b;
+    }
+    .canvas-overlay {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      display: flex;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+    .badge {
+      background: rgba(11, 15, 23, 0.85);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      font-family: var(--mono);
+    }
+    .badge.bitcoin {
+      color: #f7931a;
+      border-color: rgba(247, 147, 26, 0.3);
+    }
+    .badge.ethereum {
+      color: #627eea;
+      border-color: rgba(98, 126, 234, 0.3);
+    }
+    /* ----- CONTROLS PANEL ----- */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+    .slider-header .mono {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 5px;
+      background: var(--border);
+      border-radius: 10px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-glow);
+      border: 2px solid #fff;
+    }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .preset-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .preset-btn.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #0a0a0a;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .btn-primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #0a0a0a;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #e11d48;
+    }
+    /* ----- VIDEO / ANALYTICS / FAQ ----- */
+    .video-wrapper {
+      aspect-ratio: 16 / 9;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .video-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .analytics-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .analytics-table th, .analytics-table td {
+      padding: 0.6rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .analytics-table th {
+      color: var(--text-dim);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+    .analytics-table td.mono {
+      font-family: var(--mono);
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-q {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .faq-a {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    /* ----- LAYOUT STACK ----- */
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    /* ----- SCENARIO LINK TOAST ----- */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--card);
+      border: 1px solid var(--accent);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--accent);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="workstation">
+    <!-- HEADER -->
+    <div class="header-bar">
+      <div class="brand">
+        <span class="brand-accent">KINETICZEN</span> LABS
+        <span style="color:var(--text-dim); font-weight:400; margin-left:0.5rem;">/ SIMULATION WORKSTATION</span>
+      </div>
+      <a href="./index.html" class="portal-link" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Portal
+      </a>
+    </div>
+
+    <!-- TITLE -->
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+      <h1>
+        BITCOIN vs ETHEREUM <span>BALL ESCAPE</span>
+      </h1>
+      <div class="mono text-dim" style="font-size:0.8rem;">60 FPS · MATTER.JS · RIVALRY</div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-grid">
+      <div class="kpi-item">
+        <div class="kpi-label">BTC Kinetic Energy</div>
+        <div class="kpi-value mono" id="kpiBtcEnergy">0.00 <small>J</small></div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">ETH Kinetic Energy</div>
+        <div class="kpi-value mono" id="kpiEthEnergy">0.00 <small>J</small></div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">BTC Escape Velocity</div>
+        <div class="kpi-value mono" id="kpiBtcVelocity">0.00 <small>px/s</small></div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">ETH Escape Velocity</div>
+        <div class="kpi-value mono" id="kpiEthVelocity">0.00 <small>px/s</small></div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Dominance</div>
+        <div class="kpi-value mono" id="kpiDominance">BTC 50%</div>
+      </div>
+    </div>
+
+    <!-- MAIN SIMULATION + CONTROLS + VIDEO -->
+    <div class="main-sim-grid">
+      <!-- LEFT: CANVAS -->
+      <div class="canvas-wrapper">
+        <canvas id="simCanvas" width="800" height="500"></canvas>
+        <div class="canvas-overlay">
+          <span class="badge bitcoin">BTC</span>
+          <span class="badge ethereum">ETH</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: CONTROLS -->
+      <div class="card controls">
+        <h2>Simulation Parameters</h2>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Gravity</span>
+            <span class="mono" id="gravityVal">1.00</span>
+          </div>
+          <input type="range" id="gravitySlider" min="0" max="2" step="0.01" value="1.0">
+        </div>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>BTC Restitution</span>
+            <span class="mono" id="btcRestVal">0.80</span>
+          </div>
+          <input type="range" id="btcRestSlider" min="0.1" max="1.0" step="0.01" value="0.8">
+        </div>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>ETH Restitution</span>
+            <span class="mono" id="ethRestVal">0.80</span>
+          </div>
+          <input type="range" id="ethRestSlider" min="0.1" max="1.0" step="0.01" value="0.8">
+        </div>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Friction</span>
+            <span class="mono" id="frictionVal">0.05</span>
+          </div>
+          <input type="range" id="frictionSlider" min="0" max="0.2" step="0.01" value="0.05">
+        </div>
+        <div class="preset-row">
+          <button class="preset-btn active" data-preset="default">Default</button>
+          <button class="preset-btn" data-preset="bullrun">Bull Run</button>
+          <button class="preset-btn" data-preset="beartrap">Bear Trap</button>
+          <button class="preset-btn" data-preset="escape">Escape Velocity</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="resetBtn">Reset Simulation</button>
+          <button class="btn" id="exportCsvBtn">Export CSV Telemetry</button>
+          <button class="btn" id="copyLinkBtn">Copy Scenario Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM: VIDEO + ANALYTICS + FAQ -->
+    <div class="stack">
+      <!-- YOUTUBE EMBED -->
+      <div class="card">
+        <h2>Live Stream · Crypto Ball Escape</h2>
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/uM8FJ_qqyMU" title="Bitcoin vs Ethereum Crypto Ball Escape" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <!-- ANALYTICAL TABLE -->
+      <div class="card">
+        <h2>Analytical Breakdown</h2>
+        <table class="analytics-table" id="analyticsTable">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>BITCOIN (BTC)</th>
+              <th>ETHEREUM (ETH)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Kinetic Energy</td><td class="mono" id="tableBtcEnergy">0.00 J</td><td class="mono" id="tableEthEnergy">0.00 J</td></tr>
+            <tr><td>Velocity</td><td class="mono" id="tableBtcVel">0.00 px/s</td><td class="mono" id="tableEthVel">0.00 px/s</td></tr>
+            <tr><td>Restitution</td><td class="mono" id="tableBtcRest">0.80</td><td class="mono" id="tableEthRest">0.80</td></tr>
+            <tr><td>Dominance</td><td class="mono" id="tableBtcDom">50.00%</td><td class="mono" id="tableEthDom">50.00%</td></tr>
+            <tr><td>Momentum</td><td class="mono" id="tableBtcMom">0.00</td><td class="mono" id="tableEthMom">0.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- FAQ -->
+      <div class="card">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+          <div class="faq-q">What does the simulation model?</div>
+          <div class="faq-a">Two rigid bodies (BTC and ETH) interact under gravity, restitution, and friction inside a bounded arena. The escape velocity and kinetic energy are computed in real time using Matter.js physics principles.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I export telemetry?</div>
+          <div class="faq-a">Yes. The "Export CSV Telemetry" button generates a CSV file with current physics parameters and live KPI readings.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is the scenario link generated?</div>
+          <div class="faq-a">The "Copy Scenario Link" button serializes the current slider values and physics state into the URL hash, allowing you to share an exact reproduction of your configuration.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What is the YouTube stream?</div>
+          <div class="faq-a">The embedded stream (https://www.youtube.com/embed/uM8FJ_qqyMU) provides the original visual context for this rivalry simulation.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANONICAL / FOOTER -->
+    <div class="flex-between" style="margin-top:2rem; font-size:0.75rem; color:var(--text-dim); border-top:1px solid var(--border); padding-top:1rem;">
+      <div>KINETICZEN LABS · <span class="mono">BITCOIN vs ETHEREUM</span> · Simulation Workstation</div>
+      <div class="mono">Canonical: https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/bitcoin-vs-ethereum-crypto-ball-escape.html</div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">Link copied to clipboard!</div>
+
+  <!-- JSON-LD SCHEMA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "KINETICZEN LABS · Bitcoin vs Ethereum Crypto Ball Escape Workstation",
+    "description": "60FPS Matter.js rigid-body physics rivalry simulation with interactive controls, KPI telemetry, and analytical breakdown.",
+    "applicationCategory": "SimulationGame",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Organization",
+      "name": "KINETICZEN LABS"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/bitcoin-vs-ethereum-crypto-ball-escape.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "video": {
+      "@type": "VideoObject",
+      "name": "Bitcoin vs Ethereum Crypto Ball Escape",
+      "embedUrl": "https://www.youtube.com/embed/uM8FJ_qqyMU"
+    }
+  }
+  </script>
+
+  <!-- SIMULATION LOGIC (Matter.js style, custom implementation) -->
+  <script>
+    (function() {
+      // ---------- DOM REFS ----------
+      const canvas = document.getElementById('simCanvas');
+      const ctx = canvas.getContext('2d');
+      const gravitySlider = document.getElementById('gravitySlider');
+      const gravityVal = document.getElementById('gravityVal');
+      const btcRestSlider = document.getElementById('btcRestSlider');
+      const btcRestVal = document.getElementById('btcRestVal');
+      const ethRestSlider = document.getElementById('ethRestSlider');
+      const ethRestVal = document.getElementById('ethRestVal');
+      const frictionSlider = document.getElementById('frictionSlider');
+      const frictionVal = document.getElementById('frictionVal');
+      const resetBtn = document.getElementById('resetBtn');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      const toast = document.getElementById('toast');
+
+      // KPI elements
+      const kpiBtcEnergy = document.getElementById('kpiBtcEnergy');
+      const kpiEthEnergy = document.getElementById('kpiEthEnergy');
+      const kpiBtcVelocity = document.getElementById('kpiBtcVelocity');
+      const kpiEthVelocity = document.getElementById('kpiEthVelocity');
+      const kpiDominance = document.getElementById('kpiDominance');
+      const tableBtcEnergy = document.getElementById('tableBtcEnergy');
+      const tableEthEnergy = document.getElementById('tableEthEnergy');
+      const tableBtcVel = document.getElementById('tableBtcVel');
+      const tableEthVel = document.getElementById('tableEthVel');
+      const tableBtcRest = document.getElementById('tableBtcRest');
+      const tableEthRest = document.getElementById('tableEthRest');
+      const tableBtcDom = document.getElementById('tableBtcDom');
+      const tableEthDom = document.getElementById('tableEthDom');
+      const tableBtcMom = document.getElementById('tableBtcMom');
+      const tableEthMom = document.getElementById('tableEthMom');
+
+      // ---------- PHYSICS WORLD ----------
+      const W = canvas.width;
+      const H = canvas.height;
+      const FLOOR = H - 20;
+
+      // Ball A (Bitcoin)
+      const ballA = {
+        x: W * 0.3, y: H * 0.3,
+        vx: 3.5, vy: -2,
+        r: 26,
+        mass: 1.2,
+        restitution: 0.8,
+        color: '#f7931a',
+        label: 'BTC',
+        energy: 0,
+        momentum: 0,
+        escapeVel: 0,
+      };
+
+      // Ball B (Ethereum)
+      const ballB = {
+        x: W * 0.7, y: H * 0.5,
+        vx: -2.8, vy: 1.8,
+        r: 26,
+        mass: 1.0,
+        restitution: 0.8,
+        color: '#627eea',
+        label: 'ETH',
+        energy: 0,
+        momentum: 0,
+        escapeVel: 0,
+      };
+
+      // World state
+      let gravity = 1.0;
+      let friction = 0.05;
+      let running = true;
+
+      // ---------- UPDATE PARAMETERS ----------
+      function updateParamsFromUI() {
+        gravity = parseFloat(gravitySlider.value);
+        gravityVal.textContent = gravity.toFixed(2);
+        ballA.restitution = parseFloat(btcRestSlider.value);
+        btcRestVal.textContent = ballA.restitution.toFixed(2);
+        ballB.restitution = parseFloat(ethRestSlider.value);
+        ethRestVal.textContent = ballB.restitution.toFixed(2);
+        friction = parseFloat(frictionSlider.value);
+        frictionVal.textContent = friction.toFixed(2);
+      }
+
+      // ---------- RESET ----------
+      function resetSimulation() {
+        ballA.x = W * 0.3; ballA.y = H * 0.3;
+        ballA.vx = 3.5; ballA.vy = -2;
+        ballB.x = W * 0.7; ballB.y = H * 0.5;
+        ballB.vx = -2.8; ballB.vy = 1.8;
+        ballA.energy = 0; ballB.energy = 0;
+        ballA.momentum = 0; ballB.momentum = 0;
+        ballA.escapeVel = 0; ballB.escapeVel = 0;
+        updateParamsFromUI();
+        updateKPIs();
+      }
+
+      // ---------- PRESETS ----------
+      function applyPreset(name) {
+        if (name === 'default') {
+          gravitySlider.value = 1.0;
+          btcRestSlider.value = 0.8;
+          ethRestSlider.value = 0.8;
+          frictionSlider.value = 0.05;
+        } else if (name === 'bullrun') {
+          gravitySlider.value = 2.0;
+          btcRestSlider.value = 0.95;
+          ethRestSlider.value = 0.95;
+          frictionSlider.value = 0.01;
+        } else if (name === 'bear trap') {
+          gravitySlider.value = 0.5;
+          btcRestSlider.value = 0.3;
+          ethRestSlider.value = 0.3;
+          frictionSlider.value = 0.15;
+        } else if (name === 'escape') {
+          gravitySlider.value = 1.5;
+          btcRestSlider.value = 0.6;
+          ethRestSlider.value = 0.6;
+          frictionSlider.value = 0.08;
+        }
+        updateParamsFromUI();
+        // update active button
+        presetBtns.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-preset="${name}"]`).classList.add('active');
+        updateKPIs();
+      }
+
+      // ---------- PHYSICS STEP ----------
+      function physicsStep() {
+        if (!running) return;
+
+        // Gravity
+        ballA.vy += gravity * 0.15;
+        ballB.vy += gravity * 0.15;
+
+        // Friction (air resistance)
+        ballA.vx *= (1 - friction * 0.02);
+        ballA.vy *= (1 - friction * 0.02);
+        ballB.vx *= (1 - friction * 0.02);
+        ballB.vy *= (1 - friction * 0.02);
+
+        // Move
+        ballA.x += ballA.vx;
+        ballA.y += ballA.vy;
+        ballB.x += ballB.vx;
+        ballB.y += ballB.vy;
+
+        // Walls (left/right)
+        if (ballA.x - ballA.r < 0) { ballA.x = ballA.r; ballA.vx *= -ballA.restitution; }
+        if (ballA.x + ballA.r > W) { ballA.x = W - ballA.r; ballA.vx *= -ballA.restitution; }
+        if (ballB.x - ballB.r < 0) { ballB.x = ballB.r; ballB.vx *= -ballB.restitution; }
+        if (ballB.x + ballB.r > W) { ballB.x = W - ballB.r; ballB.vx *= -ballB.restitution; }
+
+        // Floor & ceiling
+        if (ballA.y + ballA.r > FLOOR) {
+          ballA.y = FLOOR - ballA.r;
+          ballA.vy *= -ballA.restitution;
+          // prevent micro-bounce
+          if (Math.abs(ballA.vy) < 0.5) ballA.vy = 0;
+        }
+        if (ballA.y - ballA.r < 0) { ballA.y = ballA.r; ballA.vy *= -ballA.restitution; }
+        if (ballB.y + ballB.r > FLOOR) {
+          ballB.y = FLOOR - ballB.r;
+          ballB.vy *= -ballB.restitution;
+          if (Math.abs(ballB.vy) < 0.5) ballB.vy = 0;
+        }
+        if (ballB.y - ballB.r < 0) { ballB.y = ballB.r; ballB.vy *= -ballB.restitution; }
+
+        // Ball-to-ball collision (elastic with restitution)
+        const dx = ballB.x - ballA.x;
+        const dy = ballB.y - ballA.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const minDist = ballA.r + ballB.r;
+
+        if (dist < minDist && dist > 0.01) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const overlap = minDist - dist;
+          // push apart
+          ballA.x -= nx * overlap * 0.5;
+          ballA.y -= ny * overlap * 0.5;
+          ballB.x += nx * overlap * 0.5;
+          ballB.y += ny * overlap * 0.5;
+
+          // relative velocity
+          const dvx = ballB.vx - ballA.vx;
+          const dvy = ballB.vy - ballA.vy;
+          const vn = dvx * nx + dvy * ny;
+
+          if (vn < 0) {
+            const e = Math.min(ballA.restitution, ballB.restitution);
+            const j = -(1 + e) * vn / (1/ballA.mass + 1/ballB.mass);
+            ballA.vx -= j * nx / ballA.mass;
+            ballA.vy -= j * ny / ballA.mass;
+            ballB.vx += j * nx / ballB.mass;
+            ballB.vy += j * ny / ballB.mass;
+          }
+        }
+
+        // Compute KPIs
+        ballA.energy = 0.5 * ballA.mass * (ballA.vx * ballA.vx + ballA.vy * ballA.vy);
+        ballB.energy = 0.5 * ballB.mass * (ballB.vx * ballB.vx + ballB.vy * ballB.vy);
+        ballA.momentum = ballA.mass * Math.sqrt(ballA.vx * ballA.vx + ballA.vy * ballA.vy);
+        ballB.momentum = ballB.mass * Math.sqrt(ballB.vx * ballB.vx + ballB.vy * ballB.vy);
+        ballA.escapeVel = Math.sqrt(ballA.vx * ballA.vx + ballA.vy * ballA.vy);
+        ballB.escapeVel = Math.sqrt(ballB.vx * ballB.vx + ballB.vy * ballB.vy);
+
+        updateKPIs();
+      }
+
+      // ---------- UPDATE KPI DISPLAYS ----------
+      function updateKPIs() {
+        kpiBtcEnergy.innerHTML = ballA.energy.toFixed(2) + ' <small>J</small>';
+        kpiEthEnergy.innerHTML = ballB.energy.toFixed(2) + ' <small>J</small>';
+        kpiBtcVelocity.innerHTML = ballA.escapeVel.toFixed(2) + ' <small>px/s</small>';
+        kpiEthVelocity.innerHTML = ballB.escapeVel.toFixed(2) + ' <small>px/s</small>';
+        const totalEnergy = ballA.energy + ballB.energy;
+        if (totalEnergy > 0) {
+          const btcPct = (ballA.energy / totalEnergy) * 100;
+          kpiDominance.textContent = 'BTC ' + btcPct.toFixed(1) + '%';
+          tableBtcDom.textContent = btcPct.toFixed(2) + '%';
+          tableEthDom.textContent = (100 - btcPct).toFixed(2) + '%';
+        } else {
+          kpiDominance.textContent = 'BTC 50.0%';
+          tableBtcDom.textContent = '50.00%';
+          tableEthDom.textContent = '50.00%';
+        }
+        tableBtcEnergy.textContent = ballA.energy.toFixed(2) + ' J';
+        tableEthEnergy.textContent = ballB.energy.toFixed(2) + ' J';
+        tableBtcVel.textContent = ballA.escapeVel.toFixed(2) + ' px/s';
+        tableEthVel.textContent = ballB.escapeVel.toFixed(2) + ' px/s';
+        tableBtcRest.textContent = ballA.restitution.toFixed(2);
+        tableEthRest.textContent = ballB.restitution.toFixed(2);
+        tableBtcMom.textContent = ballA.momentum.toFixed(2);
+        tableEthMom.textContent = ballB.momentum.toFixed(2);
+      }
+
+      // ---------- RENDER ----------
+      function render() {
+        ctx.clearRect(0, 0, W, H);
+        // grid
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < W; i += 40) {
+          ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+        }
+        for (let i = 0; i < H; i += 40) {
+          ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
+        }
+        // floor line
+        ctx.strokeStyle = '#f43f5e';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, FLOOR); ctx.lineTo(W, FLOOR); ctx.stroke();
+
+        // Ball A (BTC)
+        ctx.shadowColor = '#f7931a';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(ballA.x, ballA.y, ballA.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#f7931a';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#0a0a0a';
+        ctx.font = 'bold 14px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('BTC', ballA.x, ballA.y);
+
+        // Ball B (ETH)
+        ctx.shadowColor = '#627eea';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(ballB.x, ballB.y, ballB.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#627eea';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px "JetBrains Mono", monospace';
+        ctx.fillText('ETH', ballB.x, ballB.y);
+
+        // velocity vectors
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(ballA.x, ballA.y);
+        ctx.lineTo(ballA.x + ballA.vx * 5, ballA.y + ballA.vy * 5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ballB.x, ballB.y);
+        ctx.lineTo(ballB.x + ballB.vx * 5, ballB.y + ballB.vy * 5);
+        ctx.stroke();
+      }
+
+      // ---------- ANIMATION LOOP ----------
+      let frameCount = 0;
+      function loop() {
+        physicsStep();
+        render();
+        frameCount++;
+        requestAnimationFrame(loop);
+      }
+
+      // ---------- CSV EXPORT ----------
+      function exportCSV() {
+        const rows = [
+          ['Metric', 'BITCOIN (BTC)', 'ETHEREUM (ETH)'],
+          ['Kinetic Energy (J)', ballA.energy.toFixed(4), ballB.energy.toFixed(4)],
+          ['Velocity (px/s)', ballA.escapeVel.toFixed(4), ballB.escapeVel.toFixed(4)],
+          ['Momentum', ballA.momentum.toFixed(4), ballB.momentum.toFixed(4)],
+          ['Restitution', ballA.restitution.toFixed(4), ballB.restitution.toFixed(4)],
+          ['Gravity', gravity.toFixed(4), gravity.toFixed(4)],
+          ['Friction', friction.toFixed(4), friction.toFixed(4)],
+          ['Position X', ballA.x.toFixed(2), ballB.x.toFixed(2)],
+          ['Position Y', ballA.y.toFixed(2), ballB.y.toFixed(2)],
+          ['Timestamp', new Date().toISOString(), new Date().toISOString()]
+        ];
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'kineticzen_bitcoin_ethereum_telemetry.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      // ---------- COPY SCENARIO LINK ----------
+      function copyScenarioLink() {
+        const params = new URLSearchParams();
+        params.set('gravity', gravitySlider.value);
+        params.set('btcRest', btcRestSlider.value);
+        params.set('ethRest', ethRestSlider.value);
+        params.set('friction', frictionSlider.value);
+        params.set('btcX', ballA.x.toFixed(1));
+        params.set('btcY', ballA.y.toFixed(1));
+        params.set('btcVx', ballA.vx.toFixed(2));
+        params.set('btcVy', ballA.vy.toFixed(2));
+        params.set('ethX', ballB.x.toFixed(1));
+        params.set('ethY', ballB.y.toFixed(1));
+        params.set('ethVx', ballB.vx.toFixed(2));
+        params.set('ethVy', ballB.vy.toFixed(2));
+        const url = window.location.origin + window.location.pathname + '#' + params.toString();
+        navigator.clipboard.writeText(url).then(() => {
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2000);
+        }).catch(() => {
+          // fallback
+          prompt('Copy this link:', url);
+        });
+      }
+
+      // ---------- EVENT LISTENERS ----------
+      gravitySlider.addEventListener('input', () => { updateParamsFromUI(); updateKPIs(); });
+      btcRestSlider.addEventListener('input', () => { updateParamsFromUI(); updateKPIs(); });
+      ethRestSlider.addEventListener('input', () => { updateParamsFromUI(); updateKPIs(); });
+      frictionSlider.addEventListener('input', () => { updateParamsFromUI(); updateKPIs(); });
+
+      resetBtn.addEventListener('click', resetSimulation);
+      exportCsvBtn.addEventListener('click', exportCSV);
+      copyLinkBtn.addEventListener('click', copyScenarioLink);
+
+      presetBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const preset = e.target.dataset.preset;
+          applyPreset(preset);
+        });
+      });
+
+      // Load from hash if available
+      function loadFromHash() {
+        if (window.location.hash.length > 1) {
+          const params = new URLSearchParams(window.location.hash.slice(1));
+          if (params.has('gravity')) gravitySlider.value = params.get('gravity');
+          if (params.has('btcRest')) btcRestSlider.value = params.get('btcRest');
+          if (params.has('ethRest')) ethRestSlider.value = params.get('ethRest');
+          if (params.has('friction')) frictionSlider.value = params.get('friction');
+          if (params.has('btcX')) ballA.x = parseFloat(params.get('btcX'));
+          if (params.has('btcY')) ballA.y = parseFloat(params.get('btcY'));
+          if (params.has('btcVx')) ballA.vx = parseFloat(params.get('btcVx'));
+          if (params.has('btcVy')) ballA.vy = parseFloat(params.get('btcVy'));
+          if (params.has('ethX')) ballB.x = parseFloat(params.get('ethX'));
+          if (params.has('ethY')) ballB.y = parseFloat(params.get('ethY'));
+          if (params.has('ethVx')) ballB.vx = parseFloat(params.get('ethVx'));
+          if (params.has('ethVy')) ballB.vy = parseFloat(params.get('ethVy'));
+          updateParamsFromUI();
+          updateKPIs();
+          // remove active preset during hash load
+          presetBtns.forEach(btn => btn.classList.remove('active'));
+        }
+      }
+
+      // Initialize
+      updateParamsFromUI();
+      loadFromHash();
+      resetSimulation();
+      // Start animation
+      loop();
+
+      // Expose for potential debugging
+      window.__sim = { ballA, ballB, resetSimulation, exportCSV, copyScenarioLink };
+
+    })();
+  </script>
+</body>
+</html>
