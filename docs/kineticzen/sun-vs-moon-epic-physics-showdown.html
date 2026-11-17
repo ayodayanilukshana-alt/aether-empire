@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KineticZen Labs · SUN vs MOON · Epic Physics Showdown</title>
+    <meta name="description" content="60FPS rigid-body physics rivalry simulation workstation. Interactive SUN vs MOON telemetry, canvas demo, and analytics.">
+    <meta name="canonical" content="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/sun-vs-moon-epic-physics-showdown.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "KineticZen Labs · SUN vs MOON Physics Workstation",
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/sun-vs-moon-epic-physics-showdown.html",
+      "applicationCategory": "SimulationGame",
+      "operatingSystem": "All",
+      "description": "Interactive rigid-body physics rivalry simulation between the SUN and MOON teams. 60FPS Matter.js-inspired telemetry, sliders, presets, and CSV export.",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "creator": {"@type": "Organization", "name": "KINETICZEN LABS"},
+      "keywords": "physics, simulation, Matter.js, SUN vs MOON, telemetry, kineticzen"
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'SF Pro Text', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        .workstation {
+            max-width: 1440px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.5rem;
+        }
+        /* headers, cards, typography */
+        h1, h2, h3 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #f43f5e 0%, #f97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+        .brand a {
+            color: #f43f5e;
+            text-decoration: none;
+            border-bottom: 1px dashed #f43f5e;
+        }
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.8);
+        }
+        .mono {
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+            letter-spacing: 0.01em;
+        }
+        .accent {
+            color: #f43f5e;
+        }
+        .team-sun { color: #fbbf24; }
+        .team-moon { color: #94a3b8; }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gap-1 { gap: 1rem; }
+        .mt-2 { margin-top: 0.75rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .text-sm { font-size: 0.8rem; }
+        .text-xs { font-size: 0.7rem; }
+        .text-muted { color: #64748b; }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        button, .btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #f1f5f9;
+            padding: 0.6rem 1rem;
+            border-radius: 0.6rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+        button:hover {
+            background: #2d3a4f;
+            border-color: #f43f5e;
+        }
+        button.primary {
+            background: #f43f5e;
+            border-color: #f43f5e;
+            color: #05070b;
+            font-weight: 600;
+        }
+        button.primary:hover {
+            background: #e11d48;
+        }
+        button.outline {
+            background: transparent;
+            border-color: #334155;
+        }
+        button.outline:hover {
+            border-color: #f43f5e;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            outline: none;
+            margin: 0.5rem 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #f43f5e;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            background: #05070b;
+            border: 1px solid #1e293b;
+        }
+        iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 0.75rem;
+            border: 1px solid #1e293b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        th {
+            text-align: left;
+            color: #94a3b8;
+            font-weight: 500;
+            padding: 0.5rem 0.25rem;
+            border-bottom: 1px solid #1e293b;
+        }
+        td {
+            padding: 0.45rem 0.25rem;
+            border-bottom: 1px solid #0f172a;
+        }
+        .kpi-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.65rem 0;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        .preset-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+        .preset-btn {
+            padding: 0.35rem 0.8rem;
+            font-size: 0.7rem;
+            border-radius: 2rem;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+        }
+        .preset-btn.active {
+            background: #f43f5e;
+            border-color: #f43f5e;
+            color: #05070b;
+            font-weight: 600;
+        }
+        .divider {
+            height: 1px;
+            background: #1e293b;
+            margin: 1rem 0;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            margin-right: 0.4rem;
+            box-shadow: 0 0 8px #10b981;
+        }
+        .sun-icon { color: #fbbf24; }
+        .moon-icon { color: #94a3b8; }
+        /* scrollable area if needed */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #05070b; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        @media (max-width: 1000px) {
+            .workstation { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+    <!-- LEFT PANEL: Controls, canvas, telemetry -->
+    <div class="card">
+        <div class="brand">
+            <span>KINETICZEN LABS</span>
+            <span>·</span>
+            <a href="./index.html">Portal</a>
+        </div>
+        <h1>Sun vs Moon: Epic Physics Showdown</h1>
+        <p class="text-sm text-muted" style="margin-bottom:1rem;">60FPS rigid-body rivalry · Matter.js-inspired telemetry</p>
+
+        <!-- Scenario Presets -->
+        <div class="mb-1">
+            <span class="text-xs text-muted">SCENARIO PRESETS</span>
+            <div class="preset-group">
+                <button class="preset-btn active" data-preset="balanced">Balanced Orbit</button>
+                <button class="preset-btn" data-preset="solar">Solar Flare</button>
+                <button class="preset-btn" data-preset="lunar">Lunar Tide</button>
+                <button class="preset-btn" data-preset="chaos">Chaos Gravity</button>
+            </div>
+        </div>
+
+        <!-- Interactive Sliders -->
+        <div class="grid-2">
+            <div>
+                <div class="flex-between">
+                    <span class="text-xs">Sun Gravity</span>
+                    <span class="text-xs mono" id="sunGravityVal">1.20</span>
+                </div>
+                <input type="range" id="sunGravity" min="0" max="3" step="0.01" value="1.2">
+            </div>
+            <div>
+                <div class="flex-between">
+                    <span class="text-xs">Moon Gravity</span>
+                    <span class="text-xs mono" id="moonGravityVal">0.80</span>
+                </div>
+                <input type="range" id="moonGravity" min="0" max="3" step="0.01" value="0.8">
+            </div>
+            <div>
+                <div class="flex-between">
+                    <span class="text-xs">Sun Velocity</span>
+                    <span class="text-xs mono" id="sunVelVal">2.50</span>
+                </div>
+                <input type="range" id="sunVelocity" min="0" max="6" step="0.1" value="2.5">
+            </div>
+            <div>
+                <div class="flex-between">
+                    <span class="text-xs">Moon Velocity</span>
+                    <span class="text-xs mono" id="moonVelVal">1.80</span>
+                </div>
+                <input type="range" id="moonVelocity" min="0" max="6" step="0.1" value="1.8">
+            </div>
+            <div>
+                <div class="flex-between">
+                    <span class="text-xs">Sun Mass</span>
+                    <span class="text-xs mono" id="sunMassVal">5.0</span>
+                </div>
+                <input type="range" id="sunMass" min="1" max="10" step="0.1" value="5">
+            </div>
+            <div>
+                <div class="flex-between">
+                    <span class="text-xs">Moon Mass</span>
+                    <span class="text-xs mono" id="moonMassVal">2.0</span>
+                </div>
+                <input type="range" id="moonMass" min="1" max="10" step="0.1" value="2">
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div style="margin:1rem 0;">
+            <canvas id="physicsCanvas" width="600" height="300"></canvas>
+        </div>
+
+        <!-- KPI Readouts -->
+        <div class="grid-3" style="margin-bottom:1rem;">
+            <div class="card" style="padding:0.75rem; background:#0f172a;">
+                <div class="text-xs text-muted">SUN FORCE</div>
+                <div class="kpi-value team-sun mono" id="kpiSunForce">0.0</div>
+            </div>
+            <div class="card" style="padding:0.75rem; background:#0f172a;">
+                <div class="text-xs text-muted">MOON FORCE</div>
+                <div class="kpi-value team-moon mono" id="kpiMoonForce">0.0</div>
+            </div>
+            <div class="card" style="padding:0.75rem; background:#0f172a;">
+                <div class="text-xs text-muted">COLLISION ENERGY</div>
+                <div class="kpi-value mono" id="kpiEnergy" style="color:#f43f5e;">0.0</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid-2">
+            <button id="exportCsvBtn" class="outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV Telemetry
+            </button>
+            <button id="copyLinkBtn" class="outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy Scenario Link
+            </button>
+        </div>
+        <div id="copyFeedback" class="text-xs text-muted" style="margin-top:0.4rem; height:1rem;"></div>
+    </div>
+
+    <!-- RIGHT PANEL: Analytics, video, table, FAQ -->
+    <div>
+        <!-- Video Embed -->
+        <div class="card" style="margin-bottom:1.5rem;">
+            <h3 style="font-size:1rem; margin-bottom:0.75rem;">📺 Original Stream</h3>
+            <iframe src="https://www.youtube.com/embed/ovF1IxjgS6E" title="Sun vs Moon: Epic Physics Showdown" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- Analytical Table -->
+        <div class="card" style="margin-bottom:1.5rem;">
+            <h3 style="font-size:1rem; margin-bottom:0.75rem;">Analytical Breakdown</h3>
+            <table>
+                <thead>
+                    <tr><th>Metric</th><th>SUN</th><th>MOON</th><th>Δ</th></tr>
+                </thead>
+                <tbody id="analyticsTableBody">
+                    <!-- populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card">
+            <h3 style="font-size:1rem; margin-bottom:0.75rem;">FAQ</h3>
+            <div class="faq-item">
+                <div class="faq-q">What is this simulation modeling? <span class="accent">+</span></div>
+                <div class="faq-a">A custom 60FPS rigid-body rivalry between two teams: SUN (gold) and MOON (silver). Sliders control gravity, velocity, and mass; the canvas renders live physics interactions.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">How is telemetry generated? <span class="accent">+</span></div>
+                <div class="faq-a">Each frame computes approximate force vectors, collision energy, and momentum transfer, logged for CSV export. The readouts update in real time.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Can I reproduce a scenario? <span class="accent">+</span></div>
+                <div class="faq-a">Yes. Use "Copy Scenario Link" to copy a URL with all slider values encoded as query parameters. Share or reload to restore the exact state.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">What does the export contain? <span class="accent">+</span></div>
+                <div class="faq-a">CSV with columns: timestamp, sunForce, moonForce, collisionEnergy, sunVelocity, moonVelocity, sunGravity, moonGravity.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- DOM refs ----------
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        const sunGravityEl = document.getElementById('sunGravity');
+        const moonGravityEl = document.getElementById('moonGravity');
+        const sunVelocityEl = document.getElementById('sunVelocity');
+        const moonVelocityEl = document.getElementById('moonVelocity');
+        const sunMassEl = document.getElementById('sunMass');
+        const moonMassEl = document.getElementById('moonMass');
+
+        const sunGravityVal = document.getElementById('sunGravityVal');
+        const moonGravityVal = document.getElementById('moonGravityVal');
+        const sunVelVal = document.getElementById('sunVelVal');
+        const moonVelVal = document.getElementById('moonVelVal');
+        const sunMassVal = document.getElementById('sunMassVal');
+        const moonMassVal = document.getElementById('moonMassVal');
+
+        const kpiSunForce = document.getElementById('kpiSunForce');
+        const kpiMoonForce = document.getElementById('kpiMoonForce');
+        const kpiEnergy = document.getElementById('kpiEnergy');
+        const analyticsBody = document.getElementById('analyticsTableBody');
+        const copyFeedback = document.getElementById('copyFeedback');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const presetButtons = document.querySelectorAll('.preset-btn');
+
+        // ---------- State ----------
+        let sunParams = { gravity: 1.2, velocity: 2.5, mass: 5.0 };
+        let moonParams = { gravity: 0.8, velocity: 1.8, mass: 2.0 };
+
+        // Physics simulation state (positions, velocities, etc.)
+        let sunPos = { x: 150, y: 150 };
+        let moonPos = { x: 450, y: 150 };
+        let sunVel = { x: 0.9, y: 0.6 };
+        let moonVel = { x: -0.7, y: -0.5 };
+        const radiusSun = 30;
+        const radiusMoon = 22;
+        const canvasW = 600, canvasH = 300;
+
+        // Telemetry log
+        let telemetryLog = [];
+        let lastTimestamp = performance.now();
+        let simTime = 0;
+
+        // ---------- UI Sync ----------
+        function updateUIFromState() {
+            sunGravityEl.value = sunParams.gravity;
+            moonGravityEl.value = moonParams.gravity;
+            sunVelocityEl.value = sunParams.velocity;
+            moonVelocityEl.value = moonParams.velocity;
+            sunMassEl.value = sunParams.mass;
+            moonMassEl.value = moonParams.mass;
+
+            sunGravityVal.textContent = sunParams.gravity.toFixed(2);
+            moonGravityVal.textContent = moonParams.gravity.toFixed(2);
+            sunVelVal.textContent = sunParams.velocity.toFixed(2);
+            moonVelVal.textContent = moonParams.velocity.toFixed(2);
+            sunMassVal.textContent = sunParams.mass.toFixed(1);
+            moonMassVal.textContent = moonParams.mass.toFixed(1);
+        }
+
+        // Reset positions/velocities based on current params (scaled)
+        function resetSimulation() {
+            sunPos = { x: 120, y: 150 };
+            moonPos = { x: 480, y: 150 };
+            sunVel = { x: sunParams.velocity * 0.4, y: 0.5 };
+            moonVel = { x: -moonParams.velocity * 0.4, y: -0.5 };
+            telemetryLog = [];
+            simTime = 0;
+        }
+
+        // ---------- Physics update (approximate Matter.js style) ----------
+        function computeForces() {
+            const dx = moonPos.x - sunPos.x;
+            const dy = moonPos.y - sunPos.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            // gravitational magnitude, asymmetric
+            const sunForceMag = (sunParams.gravity * sunParams.mass * 10) / (dist * dist) * 100;
+            const moonForceMag = (moonParams.gravity * moonParams.mass * 10) / (dist * dist) * 100;
+            return {
+                sunForce: Math.min(sunForceMag, 999),
+                moonForce: Math.min(moonForceMag, 999),
+                collisionEnergy: Math.min((sunForceMag + moonForceMag) * 0.5, 999)
+            };
+        }
+
+        function updatePhysics(deltaTime) {
+            // simplified vector updates influenced by gravity and velocities
+            const dx = moonPos.x - sunPos.x;
+            const dy = moonPos.y - sunPos.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const normX = dx / dist;
+            const normY = dy / dist;
+
+            // gravitation pull (scaled)
+            const gPullSun = sunParams.gravity * sunParams.mass * 0.02;
+            const gPullMoon = moonParams.gravity * moonParams.mass * 0.02;
+
+            // accelerate toward each other
+            sunVel.x += normX * gPullSun * 0.1;
+            sunVel.y += normY * gPullSun * 0.1;
+            moonVel.x -= normX * gPullMoon * 0.1;
+            moonVel.y -= normY * gPullMoon * 0.1;
+
+            // velocity cap from sliders
+            const sunSpeed = Math.hypot(sunVel.x, sunVel.y);
+            const moonSpeed = Math.hypot(moonVel.x, moonVel.y);
+            const maxSunSpeed = sunParams.velocity * 1.5;
+            const maxMoonSpeed = moonParams.velocity * 1.5;
+            if (sunSpeed > maxSunSpeed) {
+                sunVel.x = (sunVel.x / sunSpeed) * maxSunSpeed;
+                sunVel.y = (sunVel.y / sunSpeed) * maxSunSpeed;
+            }
+            if (moonSpeed > maxMoonSpeed) {
+                moonVel.x = (moonVel.x / moonSpeed) * maxMoonSpeed;
+                moonVel.y = (moonVel.y / moonSpeed) * maxMoonSpeed;
+            }
+
+            // damping
+            sunVel.x *= 0.998;
+            sunVel.y *= 0.998;
+            moonVel.x *= 0.998;
+            moonVel.y *= 0.998;
+
+            // integrate positions
+            sunPos.x += sunVel.x * deltaTime * 0.3;
+            sunPos.y += sunVel.y * deltaTime * 0.3;
+            moonPos.x += moonVel.x * deltaTime * 0.3;
+            moonPos.y += moonVel.y * deltaTime * 0.3;
+
+            // boundaries with bounce
+            const bounceFactor = -0.6;
+            if (sunPos.x - radiusSun < 0) { sunPos.x = radiusSun; sunVel.x *= bounceFactor; }
+            if (sunPos.x + radiusSun > canvasW) { sunPos.x = canvasW - radiusSun; sunVel.x *= bounceFactor; }
+            if (sunPos.y - radiusSun < 0) { sunPos.y = radiusSun; sunVel.y *= bounceFactor; }
+            if (sunPos.y + radiusSun > canvasH) { sunPos.y = canvasH - radiusSun; sunVel.y *= bounceFactor; }
+
+            if (moonPos.x - radiusMoon < 0) { moonPos.x = radiusMoon; moonVel.x *= bounceFactor; }
+            if (moonPos.x + radiusMoon > canvasW) { moonPos.x = canvasW - radiusMoon; moonVel.x *= bounceFactor; }
+            if (moonPos.y - radiusMoon < 0) { moonPos.y = radiusMoon; moonVel.y *= bounceFactor; }
+            if (moonPos.y + radiusMoon > canvasH) { moonPos.y = canvasH - radiusMoon; moonVel.y *= bounceFactor; }
+
+            // collision detection (simple elastic push)
+            const collisionDist = radiusSun + radiusMoon;
+            const dxColl = moonPos.x - sunPos.x;
+            const dyColl = moonPos.y - sunPos.y;
+            const distColl = Math.hypot(dxColl, dyColl);
+            if (distColl < collisionDist) {
+                const overlap = collisionDist - distColl;
+                const angle = Math.atan2(dyColl, dxColl);
+                const pushX = Math.cos(angle) * overlap * 0.5;
+                const pushY = Math.sin(angle) * overlap * 0.5;
+                sunPos.x -= pushX;
+                sunPos.y -= pushY;
+                moonPos.x += pushX;
+                moonPos.y += pushY;
+                // exchange velocity components (bounce)
+                const tempX = sunVel.x;
+                const tempY = sunVel.y;
+                sunVel.x = moonVel.x * 0.7;
+                sunVel.y = moonVel.y * 0.7;
+                moonVel.x = tempX * 0.7;
+                moonVel.y = tempY * 0.7;
+            }
+        }
+
+        // ---------- Render ----------
+        function render() {
+            ctx.clearRect(0, 0, canvasW, canvasH);
+            // grid background (subtle)
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvasW; i += 30) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvasH); ctx.stroke();
+            }
+            for (let i = 0; i < canvasH; i += 30) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvasW, i); ctx.stroke();
+            }
+
+            // draw sun
+            ctx.shadowColor = '#fbbf24';
+            ctx.shadowBlur = 24;
+            ctx.beginPath();
+            ctx.arc(sunPos.x, sunPos.y, radiusSun, 0, Math.PI * 2);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // draw moon
+            ctx.shadowColor = '#94a3b8';
+            ctx.shadowBlur = 18;
+            ctx.beginPath();
+            ctx.arc(moonPos.x, moonPos.y, radiusMoon, 0, Math.PI * 2);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // labels
+            ctx.font = 'bold 12px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#05070b';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#05070b';
+            ctx.fillText('SUN', sunPos.x, sunPos.y);
+            ctx.fillStyle = '#0b0f17';
+            ctx.fillText('MOON', moonPos.x, moonPos.y);
+
+            // small velocity vectors
+            ctx.beginPath();
+            ctx.moveTo(sunPos.x, sunPos.y);
+            ctx.lineTo(sunPos.x + sunVel.x * 20, sunPos.y + sunVel.y * 20);
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(moonPos.x, moonPos.y);
+            ctx.lineTo(moonPos.x + moonVel.x * 20, moonPos.y + moonVel.y * 20);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.stroke();
+        }
+
+        // ---------- Update KPIs and table ----------
+        function updateTelemetry() {
+            const forces = computeForces();
+            kpiSunForce.textContent = forces.sunForce.toFixed(1);
+            kpiMoonForce.textContent = forces.moonForce.toFixed(1);
+            kpiEnergy.textContent = forces.collisionEnergy.toFixed(1);
+
+            // analytics table
+            const sunSpeed = Math.hypot(sunVel.x, sunVel.y);
+            const moonSpeed = Math.hypot(moonVel.x, moonVel.y);
+            const momentumSun = sunParams.mass * sunSpeed;
+            const momentumMoon = moonParams.mass * moonSpeed;
+            analyticsBody.innerHTML = `
+                <tr><td>Gravity</td><td class="mono">${sunParams.gravity.toFixed(2)}</td><td class="mono">${moonParams.gravity.toFixed(2)}</td><td class="mono">${(sunParams.gravity - moonParams.gravity).toFixed(2)}</td></tr>
+                <tr><td>Velocity</td><td class="mono">${sunSpeed.toFixed(2)}</td><td class="mono">${moonSpeed.toFixed(2)}</td><td class="mono">${(sunSpeed - moonSpeed).toFixed(2)}</td></tr>
+                <tr><td>Mass</td><td class="mono">${sunParams.mass.toFixed(1)}</td><td class="mono">${moonParams.mass.toFixed(1)}</td><td class="mono">${(sunParams.mass - moonParams.mass).toFixed(1)}</td></tr>
+                <tr><td>Momentum</td><td class="mono">${momentumSun.toFixed(2)}</td><td class="mono">${momentumMoon.toFixed(2)}</td><td class="mono">${(momentumSun - momentumMoon).toFixed(2)}</td></tr>
+                <tr><td>Force</td><td class="mono">${forces.sunForce.toFixed(1)}</td><td class="mono">${forces.moonForce.toFixed(1)}</td><td class="mono">${(forces.sunForce - forces.moonForce).toFixed(1)}</td></tr>
+            `;
+
+            // log telemetry every 500ms (approx)
+            if (simTime % 0.5 < 0.02) {
+                telemetryLog.push({
+                    timestamp: new Date().toISOString(),
+                    sunForce: forces.sunForce.toFixed(1),
+                    moonForce: forces.moonForce.toFixed(1),
+                    collisionEnergy: forces.collisionEnergy.toFixed(1),
+                    sunVelocity: sunSpeed.toFixed(2),
+                    moonVelocity: moonSpeed.toFixed(2),
+                    sunGravity: sunParams.gravity,
+                    moonGravity: moonParams.gravity
+                });
+                if (telemetryLog.length > 300) telemetryLog.shift();
+            }
+        }
+
+        // ---------- Animation Loop ----------
+        function animationLoop(now) {
+            const deltaTime = Math.min((now - lastTimestamp) / 1000, 0.05);
+            lastTimestamp = now;
+            simTime += deltaTime;
+
+            updatePhysics(deltaTime);
+            render();
+            updateTelemetry();
+
+            requestAnimationFrame(animationLoop);
+        }
+
+        // ---------- Slider Listeners ----------
+        sunGravityEl.addEventListener('input', (e) => {
+            sunParams.gravity = parseFloat(e.target.value);
+            sunGravityVal.textContent = sunParams.gravity.toFixed(2);
+        });
+        moonGravityEl.addEventListener('input', (e) => {
+            moonParams.gravity = parseFloat(e.target.value);
+            moonGravityVal.textContent = moonParams.gravity.toFixed(2);
+        });
+        sunVelocityEl.addEventListener('input', (e) => {
+            sunParams.velocity = parseFloat(e.target.value);
+            sunVelVal.textContent = sunParams.velocity.toFixed(2);
+        });
+        moonVelocityEl.addEventListener('input', (e) => {
+            moonParams.velocity = parseFloat(e.target.value);
+            moonVelVal.textContent = moonParams.velocity.toFixed(2);
+        });
+        sunMassEl.addEventListener('input', (e) => {
+            sunParams.mass = parseFloat(e.target.value);
+            sunMassVal.textContent = sunParams.mass.toFixed(1);
+        });
+        moonMassEl.addEventListener('input', (e) => {
+            moonParams.mass = parseFloat(e.target.value);
+            moonMassVal.textContent = moonParams.mass.toFixed(1);
+        });
+
+        // ---------- Preset Buttons ----------
+        const presets = {
+            balanced: { sunGravity: 1.2, moonGravity: 0.8, sunVelocity: 2.5, moonVelocity: 1.8, sunMass: 5.0, moonMass: 2.0 },
+            solar: { sunGravity: 2.8, moonGravity: 0.3, sunVelocity: 4.0, moonVelocity: 0.8, sunMass: 8.0, moonMass: 1.2 },
+            lunar: { sunGravity: 0.4, moonGravity: 2.5, sunVelocity: 1.0, moonVelocity: 4.0, sunMass: 1.5, moonMass: 7.0 },
+            chaos: { sunGravity: 2.0, moonGravity: 2.0, sunVelocity: 3.0, moonVelocity: 3.0, sunMass: 5.0, moonMass: 5.0 }
+        };
+
+        presetButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                presetButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const p = presets[btn.dataset.preset];
+                sunParams = { gravity: p.sunGravity, velocity: p.sunVelocity, mass: p.sunMass };
+                moonParams = { gravity: p.moonGravity, velocity: p.moonVelocity, mass: p.moonMass };
+                updateUIFromState();
+                resetSimulation();
+            });
+        });
+
+        // ---------- Copy Scenario Link ----------
+        copyLinkBtn.addEventListener('click', () => {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const params = new URLSearchParams({
+                sg: sunParams.gravity,
+                mg: moonParams.gravity,
+                sv: sunParams.velocity,
+                mv: moonParams.velocity,
+                sm: sunParams.mass,
+                mm: moonParams.mass
+            });
+            const url = `${baseUrl}?${params.toString()}`;
+            navigator.clipboard.writeText(url).then(() => {
+                copyFeedback.textContent = '✓ Scenario link copied to clipboard!';
+                setTimeout(() => { copyFeedback.textContent = ''; }, 2500);
+            }).catch(() => {
+                copyFeedback.textContent = 'Failed to copy. Check browser permissions.';
+            });
+        });
+
+        // ---------- Export CSV ----------
+        exportCsvBtn.addEventListener('click', () => {
+            if (telemetryLog.length === 0) {
+                // generate one sample row from current state
+                const forces = computeForces();
+                const sunSpeed = Math.hypot(sunVel.x, sunVel.y);
+                const moonSpeed = Math.hypot(moonVel.x, moonVel.y);
+                telemetryLog.push({
+                    timestamp: new Date().toISOString(),
+                    sunForce: forces.sunForce.toFixed(1),
+                    moonForce: forces.moonForce.toFixed(1),
+                    collisionEnergy: forces.collisionEnergy.toFixed(1),
+                    sunVelocity: sunSpeed.toFixed(2),
+                    moonVelocity: moonSpeed.toFixed(2),
+                    sunGravity: sunParams.gravity,
+                    moonGravity: moonParams.gravity
+                });
+            }
+            const headers = ['timestamp', 'sunForce', 'moonForce', 'collisionEnergy', 'sunVelocity', 'moonVelocity', 'sunGravity', 'moonGravity'];
+            const rows = telemetryLog.map(entry => headers.map(h => entry[h]).join(','));
+            const csv = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `kineticzen_sun_moon_telemetry_${Date.now()}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+
+        // ---------- Load scenario from URL params ----------
+        function loadFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('sg')) sunParams.gravity = parseFloat(params.get('sg'));
+            if (params.has('mg')) moonParams.gravity = parseFloat(params.get('mg'));
+            if (params.has('sv')) sunParams.velocity = parseFloat(params.get('sv'));
+            if (params.has('mv')) moonParams.velocity = parseFloat(params.get('mv'));
+            if (params.has('sm')) sunParams.mass = parseFloat(params.get('sm'));
+            if (params.has('mm')) moonParams.mass = parseFloat(params.get('mm'));
+            // clamp
+            sunParams.gravity = Math.min(3, Math.max(0, sunParams.gravity));
+            moonParams.gravity = Math.min(3, Math.max(0, moonParams.gravity));
+            sunParams.velocity = Math.min(6, Math.max(0, sunParams.velocity));
+            moonParams.velocity = Math.min(6, Math.max(0, moonParams.velocity));
+            sunParams.mass = Math.min(10, Math.max(1, sunParams.mass));
+            moonParams.mass = Math.min(10, Math.max(1, moonParams.mass));
+            updateUIFromState();
+            resetSimulation();
+        }
+
+        // ---------- Init ----------
+        function init() {
+            updateUIFromState();
+            resetSimulation();
+            loadFromUrl(); // override if query params
+            requestAnimationFrame(animationLoop);
+            // set active preset state (first)
+            document.querySelector('.preset-btn[data-preset="balanced"]').classList.add('active');
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
