@@ -179,71 +179,67 @@ def extract_json(text):
     return json.loads(text)
 
 
-def fetch_wikipedia_image_b64(query_name):
+def fetch_wikipedia_image_b64(query_name, custom_ai_prompt=""):
     """
-    V11.0 Dual-Engine Photorealistic Image Resolver:
-    1. First checks Wikimedia Commons High-Res Photographs (800px).
-    2. If unavailable or generic, generates a bespoke Photorealistic 8K Render using Flux AI!
-    Also saves local cached JPEGs (`cached_img_0.jpg`, `cached_img_1.jpg`) for our Split-Screen Thumbnail Composer!
+    V12.0 Photorealistic Visual Resolver with Unique Cryptographic Seeds:
+    - Generates or fetches a unique, high-resolution photorealistic image for EVERY item/scene.
+    - Never reuses seeds or overwrites the wrong thumbnail slot!
     """
-    if not query_name:
+    if not query_name and not custom_ai_prompt:
         return ""
     q_clean = str(query_name).strip()
     img_bytes = None
     mime = "image/jpeg"
 
-    try:
-        slug = urllib.parse.quote(q_clean.replace(" ", "_"))
-        rest_u = mk_url("https", ["en", "wikipedia", "org"], f"/api/rest_v1/page/summary/{slug}")
-        r0 = requests.get(rest_u, headers=WIKI_HEADERS, timeout=6)
-        thumb_url = ""
-        if r0.status_code == 200:
-            thumb_url = r0.json().get("thumbnail", {}).get("source", "")
+    # If custom_ai_prompt is provided (e.g. for Documentary scenes), prioritize bespoke 8K AI scene generation!
+    if not custom_ai_prompt and q_clean:
+        try:
+            slug = urllib.parse.quote(q_clean.replace(" ", "_"))
+            rest_u = mk_url("https", ["en", "wikipedia", "org"], f"/api/rest_v1/page/summary/{slug}")
+            r0 = requests.get(rest_u, headers=WIKI_HEADERS, timeout=6)
+            thumb_url = ""
+            if r0.status_code == 200:
+                thumb_url = r0.json().get("thumbnail", {}).get("source", "")
 
-        if not thumb_url:
-            search_u = mk_url("https", ["en", "wikipedia", "org"], "/w/api.php")
-            params = {
-                "action": "query", "format": "json", "prop": "pageimages",
-                "piprop": "thumbnail", "pithumbsize": 800,
-                "generator": "search", "gsrsearch": q_clean, "gsrlimit": 1
-            }
-            r = requests.get(search_u, params=params, headers=WIKI_HEADERS, timeout=6)
-            if r.status_code == 200:
-                pages = r.json().get("query", {}).get("pages", {})
-                for _, pdata in pages.items():
-                    thumb_url = pdata.get("thumbnail", {}).get("source", "")
-                    if thumb_url:
-                        break
+            if not thumb_url:
+                search_u = mk_url("https", ["en", "wikipedia", "org"], "/w/api.php")
+                params = {
+                    "action": "query", "format": "json", "prop": "pageimages",
+                    "piprop": "thumbnail", "pithumbsize": 800,
+                    "generator": "search", "gsrsearch": q_clean, "gsrlimit": 1
+                }
+                r = requests.get(search_u, params=params, headers=WIKI_HEADERS, timeout=6)
+                if r.status_code == 200:
+                    pages = r.json().get("query", {}).get("pages", {})
+                    for _, pdata in pages.items():
+                        thumb_url = pdata.get("thumbnail", {}).get("source", "")
+                        if thumb_url:
+                            break
 
-        if thumb_url:
-            img_r = requests.get(thumb_url, headers=WIKI_HEADERS, timeout=8)
-            if img_r.status_code == 200 and len(img_r.content) > 1200:
-                img_bytes = img_r.content
-                if thumb_url.lower().endswith(".png"):
-                    mime = "image/png"
-    except Exception:
-        pass
+            if thumb_url:
+                img_r = requests.get(thumb_url, headers=WIKI_HEADERS, timeout=8)
+                if img_r.status_code == 200 and len(img_r.content) > 1500:
+                    img_bytes = img_r.content
+                    if thumb_url.lower().endswith(".png"):
+                        mime = "image/png"
+        except Exception:
+            pass
 
-    # Fallback to Flux AI Photorealistic Image Generation so EVERY object has a breathtaking HD visual!
     if not img_bytes:
         try:
-            prompt_str = urllib.parse.quote(f"photorealistic 8k cinematic architectural photograph of {q_clean}, dramatic lighting, ultra detailed, national geographic style")
-            ai_img_url = mk_url("https", ["image", "pollinations", "ai"], f"/prompt/{prompt_str}?width=768&height=768&nologo=true&seed=42")
-            r_ai = requests.get(ai_img_url, headers=BROWSER_HEADERS, timeout=15)
+            unique_seed = random.randint(10000, 99999999)
+            base_desc = custom_ai_prompt if custom_ai_prompt else f"photorealistic close-up cinematic studio shot of {q_clean}"
+            prompt_str = urllib.parse.quote(f"{base_desc}, 8k resolution, hyper-detailed, dramatic cinema lighting, national geographic photography, no text")
+            ai_img_url = mk_url("https", ["image", "pollinations", "ai"], f"/prompt/{prompt_str}?width=800&height=800&nologo=true&seed={unique_seed}")
+            r_ai = requests.get(ai_img_url, headers=BROWSER_HEADERS, timeout=22)
             if r_ai.status_code == 200 and len(r_ai.content) > 2000:
                 img_bytes = r_ai.content
                 mime = "image/jpeg"
-                print(f"🎨 [AI Image Generator] Generated photorealistic render for '{q_clean}'!", flush=True)
+                print(f"🎨 [AI Visual Studio] Generated unique HD visual (seed={unique_seed}) for '{q_clean}'!", flush=True)
         except Exception:
             pass
 
     if img_bytes:
-        try:
-            idx_slot = 0 if not os.path.exists("thumb_slot_0.jpg") else 1
-            with open(f"thumb_slot_{idx_slot}.jpg", "wb") as f:
-                f.write(img_bytes)
-        except Exception:
-            pass
         b64 = base64.b64encode(img_bytes).decode("utf-8")
         return f"data:{mime};base64,{b64}"
     return ""
@@ -1216,71 +1212,51 @@ TRADINGVIEW_WEALTH_HTML = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #090d16; overflow: hidden; font-family: 'DejaVu Sans', 'Liberation Sans', sans-serif; }
+  body { background: #04070e; overflow: hidden; font-family: 'DejaVu Sans', 'Liberation Sans', sans-serif; }
   canvas { display: block; }
 </style>
 </head>
 <body>
-<canvas id="wealthCanvas"></canvas>
+<canvas id="docCanvas"></canvas>
 <script>
 const DATA = __PAYLOAD_JSON__;
 const W = DATA.width;
 const H = DATA.height;
 const isWide = DATA.is_widescreen;
-const canvas = document.getElementById('wealthCanvas');
+const canvas = document.getElementById('docCanvas');
 canvas.width = W;
 canvas.height = H;
 const ctx = canvas.getContext('2d');
 
-const FIN_THEMES = [
-    { bg: '#090d16', colA: '#3b82f6', colB: '#10b981', fillA: 'rgba(59,130,246,0.26)', fillB: 'rgba(16,185,129,0.34)' },
-    { bg: '#110c1d', colA: '#f59e0b', colB: '#ec4899', fillA: 'rgba(245,158,11,0.26)', fillB: 'rgba(236,72,153,0.34)' },
-    { bg: '#07161b', colA: '#06b6d4', colB: '#facc15', fillA: 'rgba(6,182,212,0.26)', fillB: 'rgba(250,204,21,0.34)' },
-    { bg: '#140a0e', colA: '#a855f7', colB: '#22c55e', fillA: 'rgba(168,85,247,0.26)', fillB: 'rgba(34,197,94,0.34)' }
-];
-const theme = FIN_THEMES[(DATA.theme_seed || 0) % FIN_THEMES.length];
+const scenes = DATA.items || [];
+const loadedImages = [];
 
-const waypointsA = DATA.series_a || [5000, 6200, 7800, 9500, 12400, 16800];
-const waypointsB = DATA.series_b || [5000, 9400, 6100, 22000, 54000, 118000];
-const nameA = String(DATA.asset_a_name || 'ASSET A').toUpperCase();
-const nameB = String(DATA.asset_b_name || 'ASSET B').toUpperCase();
-const startYear = Number(DATA.start_year || 2005);
-const endYear = Number(DATA.end_year || 2025);
-
-let imgA = null, imgB = null;
 window.waitForAllImages = async function() {
-    const loadOne = (b64) => new Promise(res => {
-        if (!b64) return res(null);
-        const im = new Image();
-        im.onload = () => res(im);
-        im.onerror = () => res(null);
-        im.src = b64;
-    });
-    imgA = await loadOne(DATA.img_a_b64);
-    imgB = await loadOne(DATA.img_b_b64);
+    const promises = scenes.map((sc, idx) => new Promise(resolve => {
+        if (sc && sc.image_b64) {
+            const im = new Image();
+            im.onload = () => { loadedImages[idx] = im; resolve(); };
+            im.onerror = () => { loadedImages[idx] = null; resolve(); };
+            im.src = sc.image_b64;
+        } else {
+            loadedImages[idx] = null;
+            resolve();
+        }
+    }));
+    await Promise.all(promises);
 };
 
-const coins = [];
-for (let c = 0; c < 25; c++) {
-    coins.push({ x: (c * 73) % W, y: (c * 137) % H, speed: 2.5 + (c % 5), size: 6 + (c % 6) });
-}
-
-function sampleMarketValue(waypoints, exactStageFloat, isVolatile) {
-    const clamped = Math.min(Math.max(exactStageFloat, 0.0), 5.0);
-    const i0 = Math.min(4, Math.floor(clamped));
-    const i1 = Math.min(5, i0 + 1);
-    const frac = clamped - i0;
-    const baseVal = waypoints[i0] * (1 - frac) + waypoints[i1] * frac;
-    const pinEnvelope = Math.sin(frac * Math.PI);
-    const wave = (Math.sin(clamped * 24.0) * 0.032 + Math.cos(clamped * 55.0) * 0.018) * (isVolatile ? 1.25 : 0.55);
-    return Math.max(10, baseVal * (1 + wave * pinEnvelope));
-}
-
-function fmtMoney(val) {
-    if (val >= 1e9) return '$' + (val / 1e9).toFixed(2) + 'B';
-    if (val >= 1e6) return '$' + (val / 1e6).toFixed(2) + 'M';
-    if (val >= 1e3) return '$' + (val / 1e3).toFixed(1) + 'K';
-    return '$' + Math.round(val).toLocaleString();
+// Ambient floating dust/light particles for cinematic documentary realism
+const particles = [];
+for (let i = 0; i < 45; i++) {
+    particles.push({
+        x: (i * 97) % W,
+        y: (i * 173) % H,
+        r: 2 + (i % 4),
+        vx: (i % 2 === 0 ? 1 : -1) * (8 + (i % 7)),
+        vy: -12 - (i % 15),
+        alpha: 0.15 + (i % 5) * 0.08
+    });
 }
 
 window.renderFrameAtTime = function(t) {
@@ -1294,192 +1270,107 @@ window.renderFrameAtTime = function(t) {
             break;
         }
     }
-    const exactStageFloat = Math.min(5.0, stageIndex + stageProgress);
-    const normProg = exactStageFloat / 5.0;
 
-    const curValA = sampleMarketValue(waypointsA, exactStageFloat, false);
-    const curValB = sampleMarketValue(waypointsB, exactStageFloat, true);
+    const curScene = scenes[stageIndex] || { name: 'FACT #' + (stageIndex + 1), metric: 'EXTREME', subtitle: 'DOCUMENTARY ANALYSIS', impact_score: 85 };
+    const curImg = loadedImages[stageIndex];
 
-    const stStartA = waypointsA[Math.min(4, stageIndex)];
-    const stEndA = waypointsA[Math.min(5, stageIndex + 1)];
-    const stStartB = waypointsB[Math.min(4, stageIndex)];
-    const stEndB = waypointsB[Math.min(5, stageIndex + 1)];
-    const isCrashing = (stEndB < stStartB * 0.92) || (stEndA < stStartA * 0.92);
+    ctx.fillStyle = '#04070e';
+    ctx.fillRect(0, 0, W, H);
 
-    ctx.save();
-    if (isCrashing) {
-        ctx.translate(Math.sin(t * 50) * 4, Math.cos(t * 45) * 4);
+    // 1. Full-Bleed 60FPS Ken-Burns 3D Parallax Photorealistic Scene!
+    if (curImg && curImg.complete && curImg.naturalWidth > 0) {
+        ctx.save();
+        const zoom = 1.04 + stageProgress * 0.14;
+        const panX = ((stageIndex % 2 === 0) ? 1 : -1) * (stageProgress - 0.5) * 45;
+        const panY = ((stageIndex % 3 === 0) ? -1 : 1) * (stageProgress - 0.5) * 28;
+
+        const iw = curImg.naturalWidth, ih = curImg.naturalHeight;
+        const baseScale = Math.max(W / iw, H / ih) * zoom;
+        const dw = iw * baseScale, dh = ih * baseScale;
+        const dx = (W - dw) / 2 + panX;
+        const dy = (H - dh) / 2 + panY;
+        ctx.drawImage(curImg, dx, dy, dw, dh);
+        ctx.restore();
     }
 
-    ctx.fillStyle = theme.bg;
-    ctx.fillRect(-20, -20, W + 40, H + 40);
+    // 2. Cinematic Dark Vignette & Documentary Gradient Overlays
+    const topGrad = ctx.createLinearGradient(0, 0, 0, isWide ? 240 : 380);
+    topGrad.addColorStop(0, 'rgba(4, 7, 14, 0.92)');
+    topGrad.addColorStop(1, 'rgba(4, 7, 14, 0.0)');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(0, 0, W, isWide ? 240 : 380);
 
-    if (isCrashing) {
-        const cGrad = ctx.createRadialGradient(W/2, H/2, W*0.2, W/2, H/2, W*0.9);
-        cGrad.addColorStop(0, 'rgba(239, 68, 68, 0)');
-        cGrad.addColorStop(1, `rgba(239, 68, 68, ${0.22 + 0.14 * Math.sin(t * 16)})`);
-        ctx.fillStyle = cGrad;
-        ctx.fillRect(0, 0, W, H);
-    }
+    const botH = isWide ? 360 : 680;
+    const botGrad = ctx.createLinearGradient(0, H - botH, 0, H);
+    botGrad.addColorStop(0, 'rgba(4, 7, 14, 0.0)');
+    botGrad.addColorStop(0.45, 'rgba(4, 7, 14, 0.85)');
+    botGrad.addColorStop(1, 'rgba(4, 7, 14, 0.98)');
+    ctx.fillStyle = botGrad;
+    ctx.fillRect(0, H - botH, W, botH);
 
-    ctx.fillStyle = 'rgba(250, 204, 21, 0.12)';
-    coins.forEach(c => {
-        const cyPos = (c.y - t * 45 * c.speed % H + H) % H;
-        ctx.beginPath(); ctx.arc(c.x, cyPos, c.size, 0, Math.PI * 2); ctx.fill();
+    // 3. Floating Atmospheric Particles
+    particles.forEach(p => {
+        const px = ((p.x + t * p.vx) % W + W) % W;
+        const py = ((p.y + t * p.vy) % H + H) % H;
+        ctx.fillStyle = `rgba(250, 204, 21, ${p.alpha})`;
+        ctx.beginPath(); ctx.arc(px, py, p.r, 0, Math.PI * 2); ctx.fill();
     });
 
-    ctx.fillStyle = 'rgba(17, 24, 39, 0.95)';
-    ctx.fillRect(0, 0, W, 76);
-    ctx.fillStyle = isCrashing ? '#ef4444' : theme.colB;
-    ctx.font = 'bold 24px sans-serif';
-    const curYear = Math.round(startYear + normProg * (endYear - startYear));
-    ctx.fillText((isCrashing ? '⚠️ MARKET CRASH ALERT  •  YEAR: ' : 'LIVE WEALTH BACKTEST  •  YEAR: ') + curYear, 48, 47);
+    // 4. Top Documentary Telemetry HUD Card (Human-Edited Motion Graphics Look!)
+    const padX = isWide ? 64 : 44;
+    const topY = isWide ? 36 : 75;
+    const cardW = W - padX * 2;
+    const accents = ['#00f5d4', '#facc15', '#38bdf8', '#f43f5e', '#10b981'];
+    const acCol = accents[stageIndex % accents.length];
 
-    const padX = 48;
-    const cardW = (W - padX * 3) / 2;
-    const cardY = 102;
-    const cardH = isWide ? 190 : 240;
-
-    ctx.fillStyle = '#111827';
-    ctx.strokeStyle = theme.colA;
+    ctx.save();
+    ctx.fillStyle = 'rgba(9, 14, 26, 0.88)';
+    ctx.strokeStyle = acCol;
     ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.roundRect(padX, cardY, cardW, cardH, 22); ctx.fill(); ctx.stroke();
+    ctx.beginPath();
+    ctx.roundRect(padX, topY, cardW, isWide ? 145 : 195, 22);
+    ctx.fill();
+    ctx.stroke();
 
-    if (imgA && imgA.complete && imgA.naturalWidth > 0) {
-        ctx.save();
-        ctx.beginPath(); ctx.arc(padX + cardW - 56, cardY + 56, 38, 0, Math.PI * 2); ctx.clip();
-        ctx.drawImage(imgA, padX + cardW - 94, cardY + 18, 76, 76);
-        ctx.restore();
-        ctx.strokeStyle = theme.colA; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(padX + cardW - 56, cardY + 56, 38, 0, Math.PI * 2); ctx.stroke();
-    }
-
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 23px sans-serif';
-    ctx.fillText(nameA.slice(0, 15), padX + 26, cardY + 48);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = isWide ? 'bold 54px sans-serif' : 'bold 52px sans-serif';
-    ctx.fillText(fmtMoney(curValA), padX + 26, cardY + 130);
-
-    const roiA = (((curValA - waypointsA[0]) / Math.max(waypointsA[0], 1)) * 100).toFixed(0);
-    ctx.fillStyle = Number(roiA) >= 0 ? theme.colA : '#ef4444';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.fillText((Number(roiA) >= 0 ? '+' : '') + Number(roiA).toLocaleString() + '% ROI', padX + 26, cardY + cardH - 26);
-
-    const cardBX = padX * 2 + cardW;
-    ctx.fillStyle = '#111827';
-    ctx.strokeStyle = isCrashing ? '#ef4444' : theme.colB;
-    ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.roundRect(cardBX, cardY, cardW, cardH, 22); ctx.fill(); ctx.stroke();
-
-    if (imgB && imgB.complete && imgB.naturalWidth > 0) {
-        ctx.save();
-        ctx.beginPath(); ctx.arc(cardBX + cardW - 56, cardY + 56, 38, 0, Math.PI * 2); ctx.clip();
-        ctx.drawImage(imgB, cardBX + cardW - 94, cardY + 18, 76, 76);
-        ctx.restore();
-        ctx.strokeStyle = theme.colB; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(cardBX + cardW - 56, cardY + 56, 38, 0, Math.PI * 2); ctx.stroke();
-    }
-
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 23px sans-serif';
-    ctx.fillText(nameB.slice(0, 15), cardBX + 26, cardY + 48);
-    ctx.fillStyle = isCrashing ? '#ef4444' : theme.colB;
-    ctx.font = isWide ? 'bold 54px sans-serif' : 'bold 52px sans-serif';
-    ctx.fillText(fmtMoney(curValB), cardBX + 26, cardY + 130);
-
-    const roiB = (((curValB - waypointsB[0]) / Math.max(waypointsB[0], 1)) * 100).toFixed(0);
-    ctx.fillStyle = Number(roiB) >= 0 ? '#fbbf24' : '#ef4444';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.fillText((Number(roiB) >= 0 ? '+' : '') + Number(roiB).toLocaleString() + '% ROI', cardBX + 26, cardY + cardH - 26);
-
-    const mult = (Math.max(curValA, curValB) / Math.max(Math.min(curValA, curValB), 1)).toFixed(1);
-    ctx.fillStyle = '#facc15';
-    ctx.beginPath(); ctx.roundRect(W / 2 - 125, cardY + cardH + 8, 250, 42, 20); ctx.fill();
-    ctx.fillStyle = '#090d16';
-    ctx.font = 'bold 22px sans-serif';
+    // Stage Badge Pill
+    ctx.fillStyle = acCol;
+    ctx.beginPath();
+    ctx.roundRect(padX + 24, topY + 22, 165, 40, 10);
+    ctx.fill();
+    ctx.fillStyle = '#04070e';
+    ctx.font = 'bold 21px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('GAP: ' + mult + 'X WEALTHIER', W / 2, cardY + cardH + 36);
+    ctx.fillText('LEVEL 0' + (stageIndex + 1) + ' / 05', padX + 106, topY + 49);
+
+    // Subject Title
     ctx.textAlign = 'left';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = isWide ? 'bold 38px sans-serif' : 'bold 36px sans-serif';
+    ctx.fillText(String(curScene.name || '').toUpperCase().slice(0, 28), padX + 210, topY + 52);
 
-    const chartX = padX;
-    const chartY = cardY + cardH + 62;
-    const chartW = W - padX * 2;
-    const chartH = (isWide ? (H - 180) : 1385) - chartY;
+    // Key Metric Readout + Animated Impact Gauge Bar
+    ctx.fillStyle = acCol;
+    ctx.font = isWide ? 'bold 48px sans-serif' : 'bold 50px sans-serif';
+    ctx.fillText(String(curScene.metric || ''), padX + 24, topY + (isWide ? 118 : 130));
 
-    ctx.fillStyle = '#0d1322';
-    ctx.strokeStyle = '#1f2937';
-    ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.roundRect(chartX, chartY, chartW, chartH, 22); ctx.fill(); ctx.stroke();
+    const barW = isWide ? 420 : (cardW - 48);
+    const barX = isWide ? (padX + cardW - barW - 28) : (padX + 24);
+    const barY = isWide ? (topY + 92) : (topY + 152);
+    const targetPct = Math.min(Math.max(Number(curScene.impact_score || (stageIndex + 1) * 20), 15), 100) / 100.0;
+    const animPct = targetPct * Math.min(stageProgress * 1.8, 1.0);
 
-    const numSamples = 120;
-    const ptsA = [];
-    const ptsB = [];
-    let currentMax = Math.max(waypointsA[0], waypointsB[0]) * 1.15;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+    ctx.beginPath(); ctx.roundRect(barX, barY, barW, 24, 12); ctx.fill();
+    ctx.fillStyle = acCol;
+    ctx.beginPath(); ctx.roundRect(barX, barY, Math.max(24, barW * animPct), 24, 12); ctx.fill();
 
-    for (let i = 0; i <= numSamples; i++) {
-        const subStage = (i / numSamples) * Math.max(exactStageFloat, 0.08);
-        const va = sampleMarketValue(waypointsA, subStage, false);
-        const vb = sampleMarketValue(waypointsB, subStage, true);
-        if (va > currentMax) currentMax = va;
-        if (vb > currentMax) currentMax = vb;
-        ptsA.push({ sp: i / numSamples, v: va });
-        ptsB.push({ sp: i / numSamples, v: vb });
-    }
-
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = '#cbd5e1';
     ctx.font = 'bold 20px sans-serif';
-    for (let g = 0; g <= 4; g++) {
-        const gy = chartY + 40 + (g / 4) * (chartH - 110);
-        const gVal = currentMax * (1 - g / 4);
-        ctx.beginPath(); ctx.moveTo(chartX + 25, gy); ctx.lineTo(chartX + chartW - 25, gy); ctx.stroke();
-        ctx.fillText(fmtMoney(gVal), chartX + 32, gy - 8);
-    }
+    ctx.textAlign = 'right';
+    ctx.fillText(String(curScene.subtitle || '').toUpperCase().slice(0, 32), barX + barW, barY - 10);
+    ctx.restore();
 
-    for (let b = 0; b < 36; b++) {
-        const bx = chartX + 40 + (b / 36) * (chartW - 95);
-        const bh = 12 + Math.abs(Math.sin(b * 3.7 + exactStageFloat * 4)) * 45;
-        ctx.fillStyle = isCrashing ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.22)';
-        ctx.fillRect(bx, chartY + chartH - 12 - bh, 14, bh);
-    }
-
-    function drawAreaCurve(pts, strokeCol, fillTop) {
-        ctx.save();
-        ctx.beginPath();
-        pts.forEach((pt, idx) => {
-            const px = chartX + 40 + pt.sp * (chartW - 115);
-            const py = chartY + chartH - 55 - (pt.v / currentMax) * (chartH - 105);
-            if (idx === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-        });
-        ctx.strokeStyle = strokeCol;
-        ctx.lineWidth = 7;
-        ctx.shadowBlur = 0;
-        ctx.shadowColor = strokeCol;
-        ctx.stroke();
-
-        const lastPt = pts[pts.length - 1];
-        const lastX = chartX + 40 + lastPt.sp * (chartW - 115);
-        const lastY = chartY + chartH - 55 - (lastPt.v / currentMax) * (chartH - 105);
-        ctx.lineTo(lastX, chartY + chartH - 55);
-        ctx.lineTo(chartX + 40, chartY + chartH - 55);
-        ctx.closePath();
-        const aGrad = ctx.createLinearGradient(0, chartY, 0, chartY + chartH);
-        aGrad.addColorStop(0, fillTop);
-        aGrad.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = aGrad;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(lastX, lastY, 12, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        ctx.restore();
-    }
-
-    drawAreaCurve(ptsA, theme.colA, theme.fillA);
-    drawAreaCurve(ptsB, isCrashing ? '#ef4444' : theme.colB, theme.fillB);
-
+    // 5. High-Impact Word-by-Word Documentary Subtitles
     const chunks = DATA.chunks || [];
     let activeChunk = null;
     for (let c of chunks) {
@@ -1488,14 +1379,14 @@ window.renderFrameAtTime = function(t) {
     if (activeChunk) {
         ctx.save();
         const words = activeChunk.words.map(w => String(w.word || '').toUpperCase()).join(' ');
-        ctx.font = isWide ? 'bold 42px sans-serif' : 'bold 44px sans-serif';
-        const tw = Math.min(ctx.measureText(words).width + 60, W - 80);
-        const by = isWide ? (H - 65) : 1545;
-        ctx.fillStyle = '#111827';
-        ctx.strokeStyle = theme.colB;
+        ctx.font = isWide ? 'bold 42px sans-serif' : 'bold 46px sans-serif';
+        const tw = Math.min(ctx.measureText(words).width + 64, W - 70);
+        const by = isWide ? (H - 65) : 1565;
+        ctx.fillStyle = 'rgba(9, 14, 26, 0.92)';
+        ctx.strokeStyle = acCol;
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.roundRect((W - tw) / 2, by - 52, tw, 76, 16);
+        ctx.roundRect((W - tw) / 2, by - 54, tw, 78, 16);
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = '#ffffff';
@@ -1503,7 +1394,6 @@ window.renderFrameAtTime = function(t) {
         ctx.fillText(words, W / 2, by);
         ctx.restore();
     }
-    ctx.restore();
 };
 </script>
 </body>
@@ -1514,128 +1404,144 @@ window.renderFrameAtTime = function(t) {
 # =====================================================================
 # 6. AGENT 2 & 3: DYNAMIC XGBOOST TOPIC ARCHITECT + WIKIMEDIA PHOTOS
 # =====================================================================
-SCALE3D_THEME_WHEEL = [
-    ("Largest Rockets & Spacecraft in History (from V-2 Rocket to Falcon 9, Saturn V & Starship)", "rocket"),
-    ("Tallest Mountains & Volcanoes in the Solar System (from Mount Fuji to Everest & Olympus Mons)", "mountain"),
-    ("Iconic World Wonders & Towers (from Taj Mahal to Great Pyramid, Eiffel Tower & Burj Khalifa)", "dome_palace"),
-    ("Planets, Moons & Stars of the Universe (from Moon to Earth, Saturn & The Sun)", "planet"),
-    ("Deepest Ocean Trenches & Submarines (from Scuba Limit to Titanic Wreck & Mariana Trench)", "trench"),
-    ("Fastest Vehicles, Jets & Spacecraft Ever Built (from Bugatti to SR-71 Blackbird & Parker Probe)", "rocket"),
-    ("Colossal Asteroid Impacts & Craters Compared to Cities", "crater"),
-    ("Biggest Megastructures & Skyscrapers Around the Globe", "skyscraper")
+# 45+ Diverse Non-Repeating Domains for ScaleVerse 3D & Documentary Pod!
+SCALE3D_DOMAINS = [
+    "Microscopic Viruses, Bacteria & Human Cells Compared",
+    "Prehistoric Dinosaurs & Extinct Super-Predators by Size",
+    "Deepest Living Ocean Creatures from Surface to Hadal Zone",
+    "World's Largest Insects, Spiders & Arthropods",
+    "Colossal Fictional Movie Monsters (Godzilla, Kong, Cloverfield, Cthulhu)",
+    "Smallest to Largest Mammals on Earth (Etruscan Shrew to Blue Whale)",
+    "World's Largest Superyachts, Cruise Ships & Supertankers",
+    "Biggest Mining Excavators, Dump Trucks & Mega-Machines",
+    "Deadliest Asteroid & Meteor Impacts in Earth's History",
+    "Smallest to Largest Exoplanets & Rogue Planets Discovered",
+    "Neutron Stars, White Dwarfs & Hypergiant Stars Compared",
+    "Smallest to Largest Black Holes in the Known Universe (TON 618, Phoenix A)",
+    "Fastest Animals on Land, Sea & Air Compared by Speed",
+    "Loudest Sounds in History Measured in Decibels (Whale to Krakatoa)",
+    "Hottest Temperatures in the Universe from Lava to Quark-Gluon Plasma",
+    "Oldest Living Trees & Organisms on Earth by Age",
+    "Deepest Caves, Mines & Boreholes Ever Dug by Humans",
+    "Largest Bridges, Viaducts & Hydroelectric Dams on Earth",
+    "Biggest Stadiums & Arenas in the World by Capacity",
+    "Most Expensive Objects Ever Built (ISS, LHC, James Webb Telescope)",
+    "Largest Empires in Human History by Land Area",
+    "Tallest Waterfalls & Cliffs on Earth and Mars",
+    "Biggest Submarines & Underwater Habitats Ever Constructed",
+    "Largest Flying Birds & Pterosaurs in Earth's History"
 ]
 
-WEALTH_THEME_WHEEL = [
-    "$5/Day Coffee Habit vs Investing in Nvidia Stock over 15 Years",
-    "High-Yield Savings Account vs Dividend Aristocrats Snowball ($10,000 Start)",
-    "Cash Under the Mattress (Inflation Erosion) vs Bitcoin over 12 Years",
-    "Warren Buffett Value Strategy vs Day Trading Meme Stocks ($10,000 Simulation)",
-    "Renting & Investing the Difference vs Buying a Luxury House (25-Year Math)",
-    "Buying Every New iPhone vs Buying Apple Stock Instead ($15,000 Math)",
-    "Investing $100/Month Starting at Age 20 vs Starting at Age 35 (Compounding Secret)",
-    "Gold Bullion vs Real Estate: Investing $5,000 over 30 Years"
+DOCUMENTARY_DOMAINS = [
+    "What Happens to the Human Body from 1 Minute to 30 Days in Deep Space",
+    "Inside a $1,000 Storm Shelter vs a $500 Million Billionaire Doomsday Bunker",
+    "How Deep Can a Human Survive? From 10m Free-Dive to 11,000m Crush Depth",
+    "5 Impossible Mega-Engineering Projects Actually Being Built Right Now",
+    "What Happens If You Stop Sleeping for 24 Hours vs 11 Days (Science Breakdown)",
+    "Inside the World's Most Secure Places (Area 51, Svalbard Vault, Fort Knox)",
+    "Evolution of Computing & AI from 1945 Vacuum Tubes to 2035 Quantum Brains",
+    "The Most Expensive Substances on Earth Per Gram (Gold to Antimatter)",
+    "What Happens If a Supervolcano Erupts Tomorrow? (Hour-by-Hour Timeline)",
+    "How Humans Survive the Coldest vs Hottest Places on Earth (-89C to +70C)",
+    "5 Strangest Scientific Discoveries Found Frozen in Antarctica",
+    "Inside a $100 Million Private Jet vs Air Force One vs Space Hotel",
+    "Deadliest Venoms & Toxins in Nature Ranked by Microgram Potency",
+    "What Would Happen If the Moon Disappeared Tonight? (5-Stage Timeline)",
+    "How Ancient Civilizations Moved 1,000-Ton Megaliths Without Modern Tech"
 ]
-
-PHYSICS_RIVALRY_WHEEL = [
-    (1, "IPHONE", "ANDROID", "iPhone", "Android (operating system)", "IPHONE VS ANDROID: HEXAGON CAGE SURVIVAL!"),
-    (2, "DOGS", "CATS", "Dog", "Cat", "DOGS VS CATS: 25-BALL PLINKO JACKPOT RACE!"),
-    (0, "RONALDO", "MESSI", "Cristiano Ronaldo", "Lionel Messi", "RONALDO VS MESSI: 7-RING ESCAPE CHAMPIONSHIP!"),
-    (3, "GOLD", "BITCOIN", "Gold bar", "Bitcoin", "GOLD VS BITCOIN: BALLS GROW ON EVERY BOUNCE!"),
-    (4, "TESLA", "FERRARI", "Tesla, Inc.", "Ferrari", "TESLA VS FERRARI: VORTEX RING ESCAPE!"),
-    (0, "REAL MADRID", "BARCELONA", "Real Madrid CF", "FC Barcelona", "REAL MADRID VS BARCELONA: 7-RING ARENA!"),
-    (1, "NETFLIX", "YOUTUBE", "Netflix", "YouTube", "NETFLIX VS YOUTUBE: HEXAGON TUMBLER BATTLE!"),
-    (2, "USA", "JAPAN", "Flag of the United States", "Flag of Japan", "USA VS JAPAN: ULTIMATE PLINKO PHYSICS RACE!")
-]
-
-
-
-def fetch_omniscience_brain_directives():
-    try:
-        u = mk_url("https", ["raw", "githubusercontent", "com"], "/ayodayanilukshana-alt/omniscience-core/main/brain/omniscient_state.json")
-        r = requests.get(u, timeout=6)
-        if r.status_code == 200:
-            v = r.json().get("algorithmic_laws_vault", {})
-            return f"OMNISCIENCE BRAIN LAWS: Proven Formulas={v.get('viral_title_formulas',[])[:3]} | Avoid 0-View Poisons={v.get('zero_view_poison_patterns',[])[:3]}"
-    except Exception:
-        pass
-    return ""
 
 
 def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
-    run_idx = spy_data.get("run_idx", 0) + unit_idx
+    mem = load_pod_memory()
+    used_items = mem.get("used_items", [])
+    used_domains = mem.get("used_domains", [])
+
     elite_titles = [c["title"] for c in spy_data["elite_candidates"][:10]]
-    word_rule = "13 to 16 spoken words" if not is_long else "30 to 35 spoken words"
+    word_rule = "14 to 17 spoken words" if not is_long else "28 to 34 spoken words"
 
     if POD_NAME == "PHYSICS":
-        mode_id = run_idx % 5
+        mode_id = (spy_data.get("run_idx", 0) + unit_idx) % 5
         prompt = f"""
-        We are generating a viral, zero-language ASMR Physics Short featuring a head-to-head rivalry between two iconic competitors, brands, countries, games, cryptocurrencies, cars, or celebrities!
+        We are generating a viral, zero-language ASMR Physics video featuring a head-to-head rivalry between two iconic competitors, brands, countries, games, animals, superheroes, cars, or foods!
         Live XGBoost Trending Topics Today: {json.dumps(elite_titles[:8])}
-        PAST TITLES (STRICTLY FORBIDDEN — DO NOT REPEAT ANY OF THESE RIVALRIES):
-        {json.dumps(past_topics[-50:])}
+        STRICTLY FORBIDDEN PAST TITLES & RIVALRIES (NEVER REPEAT ANY OF THESE):
+        {json.dumps(past_topics[-60:] + used_items[-80:])}
 
-        Choose a 100% BRAND NEW, ultra-viral 2-way rivalry that has NEVER been used in PAST TITLES!
+        Choose a 100% BRAND NEW, ultra-viral 2-way rivalry that has NEVER appeared in the forbidden list above!
         Output JSON ONLY:
         {{
-          "team_a": "<Short Name A under 9 chars, e.g. NVIDIA>",
-          "team_b": "<Short Name B under 9 chars, e.g. INTEL>",
-          "wiki_a": "<Exact Wikipedia Article Title for A so we fetch its real photo/logo>",
-          "wiki_b": "<Exact Wikipedia Article Title for B so we fetch its real photo/logo>",
+          "team_a": "<Short Name A under 9 chars>",
+          "team_b": "<Short Name B under 9 chars>",
+          "wiki_a": "<Exact Wikipedia Article Title for A>",
+          "wiki_b": "<Exact Wikipedia Article Title for B>",
+          "ai_prompt_a": "<Detailed visual description of A for AI portrait>",
+          "ai_prompt_b": "<Detailed visual description of B for AI portrait>",
           "hook_banner": "<TEAM A VS TEAM B: SHORT EXCITING ARENA HOOK>",
-          "title": "<Team A vs Team B: Viral Physics Title under 58 chars> #shorts",
+          "title": "<Team A vs Team B: Viral Physics Title under 58 chars>",
           "topic_summary": "60FPS Matter.js rigid-body physics rivalry simulation.",
-          "pinned_comment": "Team A or Team B — which side did you bet on before the final winner banner appeared? Comment below!"
+          "pinned_comment": "Team A or Team B — which side did you back before the final ring shattered? Comment below!"
         }}
         """
-        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.85))
+        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.88))
         plan["physics_mode"] = mode_id
         plan["team_a_name"] = str(plan.get("team_a", "ALPHA")).upper()[:10]
         plan["team_b_name"] = str(plan.get("team_b", "OMEGA")).upper()[:10]
         plan["hook_banner"] = str(plan.get("hook_banner", f"{plan['team_a_name']} VS {plan['team_b_name']}")).upper()
-        plan["img_a_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_a") or plan["team_a_name"])
-        plan["img_b_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_b") or plan["team_b_name"])
-        plan["palette_seed"] = random.randint(0, 999)
+        plan["img_a_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_a") or plan["team_a_name"], plan.get("ai_prompt_a", ""))
+        plan["img_b_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_b") or plan["team_b_name"], plan.get("ai_prompt_b", ""))
+        plan["palette_seed"] = random.randint(0, 99999)
+
+        used_items.extend([plan["team_a_name"], plan["team_b_name"], f"{plan['team_a_name']} vs {plan['team_b_name']}"])
+        mem["used_items"] = list(dict.fromkeys(used_items))[-400:]
+        save_pod_memory(mem)
         return plan
 
     elif POD_NAME == "SCALE3D":
-        theme_desc, default_model = SCALE3D_THEME_WHEEL[run_idx % len(SCALE3D_THEME_WHEEL)]
-        prompt = f"""
-        Top XGBoost-Scored 3D Trends: {json.dumps(elite_titles[:8])}
-        Choose a 100% BRAND NEW topic inspired by these live XGBoost trends (or any viral 3D comparison concept NOT in Past Titles). Reference theme idea only if helpful: "{theme_desc}"
-        (FORBIDDEN: Do NOT repeat past titles: {json.dumps(past_topics[-35:])})
+        avail_domains = [d for d in SCALE3D_DOMAINS if d not in used_domains[-18:]] or SCALE3D_DOMAINS
+        chosen_domain = random.choice(avail_domains)
+        used_domains.append(chosen_domain)
 
-        Create a 5-step 3D scale comparison for "{theme_desc}".
+        prompt = f"""
+        Chosen Comparison Domain for this Chapter: "{chosen_domain}"
+        Live XGBoost Search Trends: {json.dumps(elite_titles[:6])}
+
+        STRICTLY BANNED OBJECTS & PAST TOPICS (YOU MUST NOT INCLUDE ANY OF THESE OBJECTS OR TOPICS):
+        {json.dumps(used_items[-120:] + past_topics[-50:])}
+
+        TASK:
+        Design a fascinating, 100% FRESH 5-Stage 3D Scale Comparison in the domain "{chosen_domain}".
         CRITICAL RULES:
-        1. Order the 5 `items` strictly from SMALLEST `meters` (Rank #1) to LARGEST `meters` (Rank #5).
-        2. Set `"model_type"` for each item accurately: `"dome_palace"`, `"pyramid"`, `"lattice_tower"`, `"planet"`, `"star"`, `"rocket"`, `"mountain"`, `"trench"`, `"crater"`, `"skyscraper"`, `"statue"`, or `"vehicle"`.
-        3. Include `"wiki_query"` with the exact Wikipedia article title so we fetch its real-world photograph!
-        4. Write 5 natural `narrations` ({word_rule} each) matching the 5 sorted items. NEVER say 'Stage 1' or 'Stage 2'! CRITICAL VIRAL RETENTION RULE: Make the final 5th narration sentence end with a cliffhanger phrase that grammatically flows directly back into the 1st narration sentence to create a seamless infinite loop! Also make `pinned_comment` point out a specific timestamp (e.g. 'Pause at 0:19 and look at the insane jump—did you expect that?') to trigger viewer replays!
+        1. Every single item in `items` MUST be 100% NEW and NOT in the banned list above! (NEVER use V-2, Falcon 9, Starship, Everest, Fuji, Taj Mahal, or Mariana Trench!).
+        2. Order the 5 `items` strictly from SMALLEST `meters` (Rank #1) to LARGEST `meters` (Rank #5).
+        3. Provide `"ai_visual_prompt"` for each item with a vivid, photorealistic description so our AI image engine renders a stunning picture of that exact item!
+        4. Write 5 engaging `narrations` ({word_rule} each) with amazing real-world facts. NEVER say "Stage 1" or "Rank 1"!
 
         Output JSON ONLY:
         {{
           "title": "<Viral 3D Comparison Title under 58 chars>",
-          "topic_summary": "<1-sentence summary>",
-          "pinned_comment": "<Interactive question>",
-          "thumb_badge": "<SHORT BADGE>",
-          "thumb_line_1": "<WORD 1>",
-          "thumb_line_2": "<WORD 2>",
+          "topic_summary": "<1-sentence fascinating summary>",
+          "pinned_comment": "<Engaging question asking viewers which scale jump shocked them most>",
+          "thumb_badge": "<2-3 WORD SHOCK BADGE>",
+          "thumb_line_1": "<2-3 WORDS>",
+          "thumb_line_2": "<2-3 WORDS>",
+          "thumb_ai_prompt": "<Vivid photorealistic description of the most colossal item in this comparison for thumbnail hero art>",
           "items": [
-            {{"name": "<Object 1>", "wiki_query": "<Exact Wikipedia Title>", "meters": 100, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<Object 2>", "wiki_query": "<Exact Wikipedia Title>", "meters": 500, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<Object 3>", "wiki_query": "<Exact Wikipedia Title>", "meters": 2500, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<Object 4>", "wiki_query": "<Exact Wikipedia Title>", "meters": 12000, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}},
-            {{"name": "<Object 5>", "wiki_query": "<Exact Wikipedia Title>", "meters": 60000, "metric": "<Formatted Metric>", "subtitle": "<2-3 WORD FACT>", "model_type": "{default_model}"}}
+            {{"name": "<Unique Item 1>", "wiki_query": "<Exact Wikipedia Title>", "ai_visual_prompt": "<Photorealistic description>", "meters": 1.5, "metric": "<Formatted Size/Speed/Value>", "subtitle": "<2-3 WORD FACT>"}},
+            {{"name": "<Unique Item 2>", "wiki_query": "<Exact Wikipedia Title>", "ai_visual_prompt": "<Photorealistic description>", "meters": 12, "metric": "<Formatted Size/Speed/Value>", "subtitle": "<2-3 WORD FACT>"}},
+            {{"name": "<Unique Item 3>", "wiki_query": "<Exact Wikipedia Title>", "ai_visual_prompt": "<Photorealistic description>", "meters": 85, "metric": "<Formatted Size/Speed/Value>", "subtitle": "<2-3 WORD FACT>"}},
+            {{"name": "<Unique Item 4>", "wiki_query": "<Exact Wikipedia Title>", "ai_visual_prompt": "<Photorealistic description>", "meters": 450, "metric": "<Formatted Size/Speed/Value>", "subtitle": "<2-3 WORD FACT>"}},
+            {{"name": "<Unique Item 5>", "wiki_query": "<Exact Wikipedia Title>", "ai_visual_prompt": "<Photorealistic description>", "meters": 3200, "metric": "<Formatted Size/Speed/Value>", "subtitle": "<2-3 WORD FACT>"}}
           ],
           "narrations": [
-            "<Natural narration for item 1>",
-            "<Natural narration for item 2>",
-            "<Natural narration for item 3>",
-            "<Natural narration for item 4>",
-            "<Natural narration for item 5>"
+            "<Natural narration 1>",
+            "<Natural narration 2>",
+            "<Natural narration 3>",
+            "<Natural narration 4>",
+            "<Natural narration 5>"
           ]
         }}
         """
-        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.78))
+        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.85))
         items = plan.get("items", [])
         nars = [strip_stage_prefix(n) for n in plan.get("narrations", [])]
         if len(items) == 5 and len(nars) == 5:
@@ -1647,55 +1553,71 @@ def generate_pod_plan(spy_data, past_topics, unit_idx=0, is_long=False):
 
         for it in plan.get("items", []):
             wq = it.get("wiki_query") or it.get("name", "")
-            it["image_b64"] = fetch_wikipedia_image_b64(wq)
+            it["image_b64"] = fetch_wikipedia_image_b64(wq, it.get("ai_visual_prompt", ""))
+            used_items.append(it.get("name", ""))
 
-        plan["theme_seed"] = random.randint(0, 999)
+        mem["used_items"] = list(dict.fromkeys(used_items))[-500:]
+        mem["used_domains"] = used_domains[-30:]
+        save_pod_memory(mem)
+        plan["theme_seed"] = random.randint(0, 99999)
         return plan
 
     else:
-        fin_theme = WEALTH_THEME_WHEEL[run_idx % len(WEALTH_THEME_WHEEL)]
-        prompt = f"""
-        Top XGBoost-Scored Wealth & Investing Queries: {json.dumps(elite_titles[:8])}
-        Choose a 100% BRAND NEW financial comparison inspired by these live XGBoost trends (or any viral wealth backtest NOT in Past Titles). Reference idea only if helpful: "{fin_theme}"
-        (FORBIDDEN: Do NOT repeat past titles: {json.dumps(past_topics[-35:])})
+        # WEALTH Pod -> Upgraded to High-Retention Entertainment & Knowledge Visual Documentary!
+        avail_doc = [d for d in DOCUMENTARY_DOMAINS if d not in used_domains[-12:]] or DOCUMENTARY_DOMAINS
+        chosen_doc = random.choice(avail_doc)
+        used_domains.append(chosen_doc)
 
-        Create a 5-part financial backtest comparing two assets or habits based on "{fin_theme}".
+        prompt = f"""
+        Documentary Concept Inspiration: "{chosen_doc}"
+        Live XGBoost Viral Trends: {json.dumps(elite_titles[:8])}
+        STRICTLY FORBIDDEN PAST TOPICS & ITEMS (NEVER REPEAT ANY OF THESE):
+        {json.dumps(past_topics[-60:] + used_items[-100:])}
+
+        TASK:
+        Create a 5-Stage High-Retention Visual Documentary & Extreme Comparison (Zack D. Films / Ridddle / Insider / What-If style) that hooks viewers from the first second!
         CRITICAL RULES:
-        1. `series_a` and `series_b` MUST each contain 6 numbers (`[initial_value, point_1, point_2, point_3, point_4, final_value]`).
-        2. Include `"wiki_a"` and `"wiki_b"` with exact Wikipedia article titles so we display their real photos!
-        3. Each of the 5 `narrations` ({word_rule} each) MUST state the exact dollar figures in `series_a[i+1]` and `series_b[i+1]`. NEVER say 'Stage 1' or 'Stage 2'! CRITICAL VIRAL RETENTION RULE: Make the final 5th narration sentence end with a cliffhanger phrase that grammatically flows directly back into the 1st narration sentence to create a seamless infinite loop! Also make `pinned_comment` point out a specific timestamp (e.g. 'Pause at 0:19 and look at the insane jump—did you expect that?') to trigger viewer replays!
+        1. Must be 100% NEW and fascinating (human body limits, extreme survival, $1 vs $1B mega-engineering, mind-blowing scientific timelines, or extreme real-world comparisons).
+        2. Each of the 5 `items` represents one visual documentary scene with a vivid `"ai_visual_prompt"` so our AI generates a photorealistic 8K cinematic image for every single scene!
+        3. Each of the 5 `narrations` ({word_rule} each) must be gripping, factual, and human-like. NEVER say "Stage 1" or "Level 1"!
 
         Output JSON ONLY:
         {{
-          "title": "<Unique Viral Title under 58 chars>",
-          "topic_summary": "<1-sentence summary>",
-          "pinned_comment": "<Question asking viewers which side they would pick>",
-          "thumb_badge": "<SHORT BADGE>",
-          "thumb_line_1": "<ASSET A VS>",
-          "thumb_line_2": "<ASSET B>",
-          "asset_a_name": "<Name of Strategy/Asset A>",
-          "asset_b_name": "<Name of Strategy/Asset B>",
-          "wiki_a": "<Wikipedia Title A>",
-          "wiki_b": "<Wikipedia Title B>",
-          "start_year": 2010,
-          "end_year": 2025,
-          "series_a": [5000, 6200, 7800, 9500, 12400, 16800],
-          "series_b": [5000, 9400, 6100, 22000, 54000, 118000],
+          "title": "<Ultra-Viral Curiosity Title under 58 chars>",
+          "topic_summary": "<1-sentence gripping documentary summary>",
+          "pinned_comment": "<Thought-provoking question that forces viewers to comment their answer>",
+          "thumb_badge": "<2-3 WORD SHOCK TEXT>",
+          "thumb_line_1": "<2-3 PUNCHY WORDS>",
+          "thumb_line_2": "<2-3 PUNCHY WORDS>",
+          "thumb_ai_prompt": "<Breathtaking, dramatic photorealistic scene description for the YouTube thumbnail>",
+          "items": [
+            {{"name": "<Scene 1 Header>", "metric": "<Key Number/Fact>", "subtitle": "<2-3 WORD CONTEXT>", "impact_score": 20, "ai_visual_prompt": "<Detailed photorealistic 8K scene description>"}},
+            {{"name": "<Scene 2 Header>", "metric": "<Key Number/Fact>", "subtitle": "<2-3 WORD CONTEXT>", "impact_score": 40, "ai_visual_prompt": "<Detailed photorealistic 8K scene description>"}},
+            {{"name": "<Scene 3 Header>", "metric": "<Key Number/Fact>", "subtitle": "<2-3 WORD CONTEXT>", "impact_score": 65, "ai_visual_prompt": "<Detailed photorealistic 8K scene description>"}},
+            {{"name": "<Scene 4 Header>", "metric": "<Key Number/Fact>", "subtitle": "<2-3 WORD CONTEXT>", "impact_score": 85, "ai_visual_prompt": "<Detailed photorealistic 8K scene description>"}},
+            {{"name": "<Scene 5 Climax>", "metric": "<Key Number/Fact>", "subtitle": "<2-3 WORD CONTEXT>", "impact_score": 100, "ai_visual_prompt": "<Detailed photorealistic 8K scene description>"}}
+          ],
           "narrations": [
-            "<Natural narration 1>",
-            "<Natural narration 2>",
-            "<Natural narration 3>",
-            "<Natural narration 4>",
-            "<Natural narration 5>"
+            "<Gripping narration for scene 1>",
+            "<Gripping narration for scene 2>",
+            "<Gripping narration for scene 3>",
+            "<Gripping narration for scene 4>",
+            "<Gripping narration for scene 5 climax>"
           ]
         }}
         """
-        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.78))
+        plan = extract_json(call_ai(SCRIPT_MODELS, "Output valid JSON only.", prompt, 0.85))
         plan["narrations"] = [strip_stage_prefix(n) for n in plan.get("narrations", [])]
-        plan["img_a_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_a") or plan.get("asset_a_name", ""))
-        plan["img_b_b64"] = fetch_wikipedia_image_b64(plan.get("wiki_b") or plan.get("asset_b_name", ""))
-        plan["theme_seed"] = random.randint(0, 999)
+        for it in plan.get("items", []):
+            it["image_b64"] = fetch_wikipedia_image_b64("", it.get("ai_visual_prompt") or it.get("name", ""))
+            used_items.append(it.get("name", ""))
+
+        mem["used_items"] = list(dict.fromkeys(used_items))[-500:]
+        mem["used_domains"] = used_domains[-30:]
+        save_pod_memory(mem)
+        plan["theme_seed"] = random.randint(0, 99999)
         return plan
+
 
 
 # =====================================================================
@@ -2698,87 +2620,139 @@ def build_seo_srt_file(all_words, srt_path):
 
 def generate_pod_thumbnail(lead_plan, output_jpg):
     """
-    V11.0 Human-Editor Style Split-Screen Photorealistic VS Thumbnail (1280x720):
-    Combines two real/AI high-resolution photographs side-by-side with a glowing diagonal
-    divider, central 'VS' emblem, dark gradient vignette, and ultra-crisp impact typography!
+    V12.0 Bespoke Multi-Channel AI Thumbnail Studio:
+    Generates 100% unique, human-designer quality 1280x720 thumbnails using fresh
+    cryptographic seeds and 3 completely different channel visual identities!
     """
     tw, th = 1280, 720
-    canvas = Image.new("RGB", (tw, th), (9, 13, 22))
-
-    # Load Left & Right High-Res Photos (or fallback to video frame)
-    img_left_path = "thumb_slot_0.jpg" if os.path.exists("thumb_slot_0.jpg") else f"thumb_{POD_NAME.lower()}.jpg"
-    img_right_path = "thumb_slot_1.jpg" if os.path.exists("thumb_slot_1.jpg") else img_left_path
-
-    def crop_half(p, w_target, h_target):
-        if os.path.exists(p):
-            try:
-                im = Image.open(p).convert("RGB")
-                iw, ih = im.size
-                scale = max(w_target / iw, h_target / ih)
-                nw, nh = int(iw * scale), int(ih * scale)
-                im = im.resize((nw, nh), Image.Resampling.LANCZOS)
-                left = (nw - w_target) // 2
-                top = (nh - h_target) // 2
-                return im.crop((left, top, left + w_target, top + h_target))
-            except Exception:
-                pass
-        return Image.new("RGB", (w_target, h_target), (16, 24, 42))
-
-    left_img = crop_half(img_left_path, tw // 2, th)
-    right_img = crop_half(img_right_path, tw // 2, th)
-    canvas.paste(left_img, (0, 0))
-    canvas.paste(right_img, (tw // 2, 0))
-
-    # Darken top and bottom 28% with smooth gradient bands for 100% readable typography
-    overlay = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
-    odraw = ImageDraw.Draw(overlay)
-    for y in range(220):
-        alpha = int(210 * (1 - y / 220))
-        odraw.line([(0, y), (tw, y)], fill=(5, 8, 17, alpha))
-    for y in range(th - 240, th):
-        alpha = int(235 * ((y - (th - 240)) / 240))
-        odraw.line([(0, y), (tw, y)], fill=(5, 8, 17, alpha))
-
-    # Glowing central vertical divider + VS circle emblem
-    odraw.line([(tw // 2, 0), (tw // 2, th)], fill=(250, 204, 21, 255), width=10)
-    odraw.ellipse([tw // 2 - 64, th // 2 - 64, tw // 2 + 64, th // 2 + 64], fill=(15, 23, 42, 255), outline=(250, 204, 21, 255), width=6)
-
-    canvas = Image.alpha_composite(canvas.convert("RGBA"), overlay).convert("RGB")
-    draw = ImageDraw.Draw(canvas)
-
     font_candidates = [
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
     ]
     f_path = next((p for p in font_candidates if os.path.exists(p)), None)
-    f_huge = ImageFont.truetype(f_path, 82) if f_path else ImageFont.load_default()
-    f_vs = ImageFont.truetype(f_path, 52) if f_path else ImageFont.load_default()
-    f_badge = ImageFont.truetype(f_path, 34) if f_path else ImageFont.load_default()
+    f_huge = ImageFont.truetype(f_path, 80) if f_path else ImageFont.load_default()
+    f_med = ImageFont.truetype(f_path, 48) if f_path else ImageFont.load_default()
+    f_small = ImageFont.truetype(f_path, 34) if f_path else ImageFont.load_default()
 
-    draw.text((tw // 2 - 38, th // 2 - 32), "VS", font=f_vs, fill=(250, 204, 21))
-
-    badge = clean_display_text(lead_plan.get("thumb_badge", "SHOCKING SCALE")).upper()[:20]
-    l1 = clean_display_text(lead_plan.get("thumb_line_1", "") or lead_plan.get("team_a_name", "SIDE A")).upper()[:15]
-    l2 = clean_display_text(lead_plan.get("thumb_line_2", "") or lead_plan.get("team_b_name", "SIDE B")).upper()[:15]
-
-    bw = int(draw.textlength(badge, font=f_badge)) + 48
-    draw.rounded_rectangle([(tw - bw) // 2, 24, (tw + bw) // 2, 92], radius=14, fill=(220, 38, 38), outline=(255, 255, 255), width=4)
-    draw.text(((tw - bw) // 2 + 24, 36), badge, font=f_badge, fill=(255, 255, 255))
-
-    w1 = int(draw.textlength(l1, font=f_huge))
-    w2 = int(draw.textlength(l2, font=f_huge))
-    draw.text(((tw - w1) // 2, th - 205), l1, font=f_huge, fill=(255, 255, 255), stroke_width=10, stroke_fill=(0, 0, 0))
-    draw.text(((tw - w2) // 2, th - 110), l2, font=f_huge, fill=(250, 204, 21), stroke_width=10, stroke_fill=(0, 0, 0))
-
-    for sl in ["thumb_slot_0.jpg", "thumb_slot_1.jpg"]:
-        if os.path.exists(sl):
+    def fetch_fresh_ai_pil(prompt_desc, w, h):
+        seed = random.randint(100000, 99999999)
+        p_enc = urllib.parse.quote(f"{prompt_desc}, 8k hyperrealistic, dramatic lighting, cinema photography, ultra high contrast, no text")
+        u = mk_url("https", ["image", "pollinations", "ai"], f"/prompt/{p_enc}?width={w}&height={h}&nologo=true&seed={seed}")
+        for _ in range(3):
             try:
-                os.remove(sl)
+                r = requests.get(u, headers=BROWSER_HEADERS, timeout=22)
+                if r.status_code == 200 and len(r.content) > 2000:
+                    import io
+                    return Image.open(io.BytesIO(r.content)).convert("RGB")
             except Exception:
-                pass
+                time.sleep(1.5)
+        return Image.new("RGB", (w, h), (15, 23, 42))
 
-    canvas.save(output_jpg, quality=95)
-    return output_jpg
+    if POD_NAME == "SCALE3D":
+        # STYLE 1: MetaBallStudios / WatchData 3-Column Ascending Scale Comparison Thumbnail!
+        items = lead_plan.get("items", [])
+        it_small = items[0] if len(items) > 0 else {"name": "SMALL", "metric": "1X"}
+        it_mid   = items[2] if len(items) > 2 else {"name": "LARGE", "metric": "50X"}
+        it_huge  = items[-1] if len(items) > 0 else {"name": "COLOSSAL", "metric": "1000X"}
+
+        img1 = fetch_fresh_ai_pil(it_small.get("ai_visual_prompt") or it_small.get("name", ""), 426, 720)
+        img2 = fetch_fresh_ai_pil(it_mid.get("ai_visual_prompt") or it_mid.get("name", ""), 426, 720)
+        img3 = fetch_fresh_ai_pil(lead_plan.get("thumb_ai_prompt") or it_huge.get("ai_visual_prompt") or it_huge.get("name", ""), 428, 720)
+
+        canvas = Image.new("RGB", (tw, th), (6, 10, 20))
+        canvas.paste(img1, (0, 0))
+        canvas.paste(img2, (426, 0))
+        canvas.paste(img3, (852, 0))
+
+        overlay = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
+        odraw = ImageDraw.Draw(overlay)
+        for y in range(480, th):
+            a = int(240 * ((y - 480) / 240))
+            odraw.line([(0, y), (tw, y)], fill=(4, 8, 18, a))
+        for y in range(0, 145):
+            a = int(215 * (1 - y / 145))
+            odraw.line([(0, y), (tw, y)], fill=(4, 8, 18, a))
+
+        # Ascending Scale Comparison Bars & Dividers
+        odraw.line([(426, 0), (426, th)], fill=(56, 189, 248, 255), width=8)
+        odraw.line([(852, 0), (852, th)], fill=(250, 204, 21, 255), width=8)
+
+        canvas = Image.alpha_composite(canvas.convert("RGBA"), overlay).convert("RGB")
+        draw = ImageDraw.Draw(canvas)
+
+        cols_info = [
+            (0, 426, str(it_small.get("metric", "1 m"))[:10], str(it_small.get("name", ""))[:13].upper(), (56, 189, 248)),
+            (426, 852, str(it_mid.get("metric", "100 m"))[:10], str(it_mid.get("name", ""))[:13].upper(), (16, 185, 129)),
+            (852, 1280, "???", str(it_huge.get("name", ""))[:13].upper(), (250, 204, 21))
+        ]
+        for x0, x1, met, nm, col in cols_info:
+            cx = (x0 + x1) // 2
+            wm = int(draw.textlength(met, font=f_med))
+            wn = int(draw.textlength(nm, font=f_small))
+            draw.rounded_rectangle([cx - wm // 2 - 18, 32, cx + wm // 2 + 18, 98], radius=12, fill=(9, 14, 26), outline=col, width=4)
+            draw.text((cx - wm // 2, 40), met, font=f_med, fill=col)
+            draw.text((cx - wn // 2, 635), nm, font=f_small, fill=(255, 255, 255), stroke_width=6, stroke_fill=(0, 0, 0))
+
+        canvas.save(output_jpg, quality=95)
+        return output_jpg
+
+    elif POD_NAME == "PHYSICS":
+        # STYLE 2: High-Octane Esports Rivalry Thumbnail with Fresh Competitor Portraits!
+        ta = str(lead_plan.get("team_a_name", "SIDE A")).upper()[:14]
+        tb = str(lead_plan.get("team_b_name", "SIDE B")).upper()[:14]
+        img_a = fetch_fresh_ai_pil(lead_plan.get("ai_prompt_a") or f"epic studio close up of {ta}", 640, 720)
+        img_b = fetch_fresh_ai_pil(lead_plan.get("ai_prompt_b") or f"epic studio close up of {tb}", 640, 720)
+
+        canvas = Image.new("RGB", (tw, th), (8, 10, 18))
+        canvas.paste(img_a, (0, 0))
+        canvas.paste(img_b, (640, 0))
+
+        overlay = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
+        odraw = ImageDraw.Draw(overlay)
+        for y in range(510, th):
+            a = int(240 * ((y - 510) / 210))
+            odraw.line([(0, y), (tw, y)], fill=(5, 8, 16, a))
+        odraw.line([(640, 0), (640, th)], fill=(0, 245, 212, 255), width=10)
+        odraw.ellipse([576, 296, 704, 424], fill=(12, 16, 30, 255), outline=(250, 204, 21, 255), width=7)
+
+        canvas = Image.alpha_composite(canvas.convert("RGBA"), overlay).convert("RGB")
+        draw = ImageDraw.Draw(canvas)
+        draw.text((602, 332), "VS", font=f_med, fill=(250, 204, 21))
+        draw.text((45, 610), ta, font=f_huge, fill=(0, 245, 212), stroke_width=8, stroke_fill=(0, 0, 0))
+        wb = int(draw.textlength(tb, font=f_huge))
+        draw.text((tw - 45 - wb, 610), tb, font=f_huge, fill=(255, 42, 133), stroke_width=8, stroke_fill=(0, 0, 0))
+        canvas.save(output_jpg, quality=95)
+        return output_jpg
+
+    else:
+        # STYLE 3: Full-Bleed Photorealistic Documentary Thumbnail (Zack D. Films / Ridddle / MrBeast Style!)
+        hero_prompt = lead_plan.get("thumb_ai_prompt") or lead_plan.get("topic_summary", "dramatic scientific discovery")
+        bg = fetch_fresh_ai_pil(hero_prompt, tw, th)
+
+        overlay = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
+        odraw = ImageDraw.Draw(overlay)
+        for y in range(420, th):
+            a = int(245 * ((y - 420) / 300))
+            odraw.line([(0, y), (tw, y)], fill=(4, 7, 14, a))
+
+        # Subtle glowing focal ring on the right third of the image
+        odraw.ellipse([780, 140, 1140, 500], outline=(250, 204, 21, 230), width=10)
+
+        canvas = Image.alpha_composite(bg.convert("RGBA"), overlay).convert("RGB")
+        draw = ImageDraw.Draw(canvas)
+
+        l1 = clean_display_text(lead_plan.get("thumb_line_1", "WHAT ACTUALLY")).upper()[:16]
+        l2 = clean_display_text(lead_plan.get("thumb_line_2", "HAPPENS?!")).upper()[:16]
+        badge = clean_display_text(lead_plan.get("thumb_badge", "EXTREME SCIENCE")).upper()[:18]
+
+        bw = int(draw.textlength(badge, font=f_small)) + 40
+        draw.rounded_rectangle([52, 42, 52 + bw, 102], radius=12, fill=(16, 185, 129), outline=(255, 255, 255), width=3)
+        draw.text((72, 53), badge, font=f_small, fill=(4, 7, 14))
+
+        draw.text((52, 505), l1, font=f_huge, fill=(255, 255, 255), stroke_width=10, stroke_fill=(0, 0, 0))
+        draw.text((52, 598), l2, font=f_huge, fill=(250, 204, 21), stroke_width=10, stroke_fill=(0, 0, 0))
+        canvas.save(output_jpg, quality=95)
+        return output_jpg
 
 
 def seed_telegraph_backlink(video_id, title, description):
@@ -3015,7 +2989,7 @@ def main():
         subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", concat_file, "-c", "copy", final_mp4], check=True)
 
     srt_file = build_seo_srt_file(master_words, f"captions_{POD_NAME.lower()}.srt") if master_words else None
-    thumb_jpg = generate_pod_thumbnail(lead_plan, f"final_thumb_{POD_NAME.lower()}.jpg") if is_long else None
+    thumb_jpg = generate_pod_thumbnail(lead_plan, f"final_thumb_{POD_NAME.lower()}.jpg")
     tags = list(dict.fromkeys(spy_data["hijacked_tags"] + ["simulation", "3d", "physics", "wealth", POD_NAME.lower(), "shorts"]))
 
     upload_pod_video(
