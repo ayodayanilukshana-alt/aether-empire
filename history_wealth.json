@@ -1,56 +1,8 @@
 {
-  "seed_idx": 0,
-  "topics": [
-    "$1,000/Month: S&P 500 vs Bitcoin (Insane)",
-    "Invest $10K in 2000: S&P 500 vs Nasdaq",
-    "$5/Day Coffee vs Nvidia Stock: 15-Year Bet",
-    "$5/Day Coffee vs Bitcoin Since 2010: $27K Shocker",
-    "$5 Coffee vs Netflix: $24K Shocker",
-    "$5 Coffee vs Costco Stock: 15-Year Shock!",
-    "$5 Coffee vs Nvidia: 15-Year Shock!",
-    "$5/Day Coffee vs Nvidia Stock: 15-Year Shocker!"
-  ],
-  "playlist_id": "PLZsnDf1de8DI",
-  "published_videos": [
-    {
-      "video_id": "unrjSI4toro",
-      "title": "Invest $10K in 2000: S&P 500 vs Nasdaq #shorts",
-      "published_at": 1794632883
-    },
-    {
-      "video_id": "Fn-Cl-rGlR4",
-      "title": "$5/Day Coffee vs Nvidia Stock: 15-Year Bet #shorts",
-      "published_at": 1794677799,
-      "ab_tested": true
-    },
-    {
-      "video_id": "efgHFSGFgeY",
-      "title": "$5/Day Coffee vs Bitcoin Since 2010: $27K Shocker #shorts",
-      "published_at": 1794706522,
-      "ab_tested": true
-    },
-    {
-      "video_id": "b_gYlOhA-Mg",
-      "title": "$5 Coffee vs Netflix: $24K Shocker #shorts",
-      "published_at": 1794764150,
-      "ab_tested": true
-    },
-    {
-      "video_id": "htNfOYd4bgE",
-      "title": "$5 Coffee vs Costco Stock: 15-Year Shock! #shorts",
-      "published_at": 1794793015,
-      "ab_tested": true
-    },
-    {
-      "video_id": "CWJu9Nhmotw",
-      "title": "$5 Coffee vs Nvidia: 15-Year Shock! #shorts",
-      "published_at": 1794850668
-    },
-    {
-      "video_id": "AdD8N3mbTNk",
-      "title": "$5/Day Coffee vs Nvidia Stock: 15-Year Shocker! #shorts",
-      "published_at": 1794879550
-    }
-  ],
-  "xgb_training_rows": []
+  "seed_idx": 10,
+  "topics": [],
+  "used_items": [],
+  "used_domains": [],
+  "playlist_id": "",
+  "published_videos": []
 }
