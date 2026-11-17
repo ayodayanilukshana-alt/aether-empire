@@ -1,80 +1,43 @@
 {
-  "seed_idx": 0,
-  "topics": [
-    "Famous Statues Size Comparison: 3D Scale",
-    "Iconic Wonders: 3D Size Comparison",
-    "Moon to Sun: 3D Universe Size Comparison",
-    "Rockets: V-2 to Starship 3D Size Comparison",
-    "Rockets: V-2 to Starship 3D Size Comparison",
-    "Rockets From V-2 to Starship: 3D Size Showdown",
-    "Largest Rockets & Spacecraft: 3D Scale Showdown",
-    "Rockets: V-2 to Starship 3D Size Loop",
-    "Rockets From V-2 to Starship: 3D Size Shock",
-    "Rockets to Starship: 3D Size Loop",
-    "Rockets to Starship: 3D Size Shock"
+  "seed_idx": 10,
+  "topics": [],
+  "used_items": [
+    "V-2 Rocket",
+    "Space Shuttle",
+    "Falcon 9",
+    "Saturn V",
+    "Space Launch System",
+    "Starship",
+    "Mount Fuji",
+    "Mount Everest",
+    "Maxwell Montes",
+    "Olympus Mons",
+    "Rheasilvia",
+    "Taj Mahal",
+    "Great Pyramid of Giza",
+    "Eiffel Tower",
+    "Shanghai Tower",
+    "Burj Khalifa",
+    "Statue of Liberty",
+    "Christ the Redeemer",
+    "Spring Temple Buddha",
+    "Statue of Unity",
+    "Moon",
+    "Earth",
+    "Neptune",
+    "Saturn",
+    "Sun",
+    "Sirius A",
+    "Scuba Dive",
+    "Titanic Wreck",
+    "Bathyscaphe Trieste",
+    "Challenger Deep",
+    "Mariana Trench",
+    "Bugatti",
+    "SR-71 Blackbird",
+    "Parker Solar Probe"
   ],
-  "playlist_id": "PLGgHoqtqZk9I",
-  "published_videos": [
-    {
-      "video_id": "UTTa87GGRbM",
-      "title": "Famous Statues Size Comparison: 3D Scale #shorts",
-      "published_at": 1794635101
-    },
-    {
-      "video_id": "F3rTMk282rk",
-      "title": "Iconic Wonders: 3D Size Comparison #shorts",
-      "published_at": 1794638020
-    },
-    {
-      "video_id": "-2eoPA4x7bg",
-      "title": "Moon to Sun: 3D Universe Size Comparison #shorts",
-      "published_at": 1794639223
-    },
-    {
-      "video_id": "Ds5mqlwNyjQ",
-      "title": "Rockets: V-2 to Starship 3D Size Comparison #shorts",
-      "published_at": 1794640549
-    },
-    {
-      "video_id": "9t9fozNZEV4",
-      "title": "Rockets: V-2 to Starship 3D Size Comparison #shorts",
-      "published_at": 1794641697,
-      "ab_tested": true
-    },
-    {
-      "video_id": "fv45STPO1W4",
-      "title": "Rockets From V-2 to Starship: 3D Size Showdown #shorts",
-      "published_at": 1794677776,
-      "ab_tested": true
-    },
-    {
-      "video_id": "FpJw5iWAJYw",
-      "title": "Largest Rockets & Spacecraft: 3D Scale Showdown #shorts",
-      "published_at": 1794706542,
-      "ab_tested": true
-    },
-    {
-      "video_id": "Ts0Bg7wMOPE",
-      "title": "Rockets: V-2 to Starship 3D Size Loop #shorts",
-      "published_at": 1794764246,
-      "ab_tested": true
-    },
-    {
-      "video_id": "hhFihP1n9mk",
-      "title": "Rockets From V-2 to Starship: 3D Size Shock #shorts",
-      "published_at": 1794792903,
-      "ab_tested": true
-    },
-    {
-      "video_id": "kG4OOOUBruI",
-      "title": "Rockets to Starship: 3D Size Loop #shorts",
-      "published_at": 1794850683
-    },
-    {
-      "video_id": "NowTMoNA0Ew",
-      "title": "Rockets to Starship: 3D Size Shock #shorts",
-      "published_at": 1794879386
-    }
-  ],
-  "xgb_feedback_rows": []
+  "used_domains": [],
+  "playlist_id": "",
+  "published_videos": []
 }
