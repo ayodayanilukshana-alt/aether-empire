@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPITALGRID · $5 Coffee vs NVDA · 15-Year Shock</title>
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-nvidia-15-year-shock.html">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .workstation {
+            max-width: 1440px;
+            width: 100%;
+        }
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logo {
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+            color: #f1f5f9;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand-sub {
+            font-size: 0.75rem;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .portal-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            transition: 0.2s;
+            background: #0b0f17;
+        }
+        .portal-link:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+        .main-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+        @media (max-width: 900px) {
+            .main-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px -15px rgba(0,0,0,0.7);
+            backdrop-filter: blur(2px);
+        }
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.75rem;
+        }
+        .card-title .accent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi-item {
+            background: #05070b;
+            border-radius: 14px;
+            padding: 1rem;
+            border: 1px solid #1e293b;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+        .kpi-value.accent {
+            color: #10b981;
+        }
+        .kpi-sub {
+            font-size: 0.75rem;
+            color: #475569;
+            margin-top: 4px;
+            font-family: monospace;
+        }
+        .slider-group {
+            margin: 1.5rem 0;
+        }
+        .slider-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .slider-label {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+        .slider-value {
+            font-family: monospace;
+            color: #10b981;
+            font-weight: 600;
+            background: #0f172a;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid #1e293b;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            margin: 0.5rem 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #10b981;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #05070b;
+            box-shadow: 0 0 10px #10b98166;
+            transition: 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 1.25rem 0;
+        }
+        .preset-btn {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            color: #94a3b8;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: monospace;
+            letter-spacing: 0.3px;
+        }
+        .preset-btn:hover {
+            border-color: #10b981;
+            color: #10b981;
+            background: #10b98108;
+        }
+        .preset-btn.active {
+            background: #10b981;
+            color: #05070b;
+            border-color: #10b981;
+            font-weight: 700;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            background: transparent;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.7rem 1.4rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+            font-family: monospace;
+            white-space: nowrap;
+        }
+        .action-btn:hover {
+            border-color: #10b981;
+            background: #10b98108;
+        }
+        .action-btn.primary {
+            background: #10b981;
+            color: #05070b;
+            border-color: #10b981;
+            font-weight: 700;
+        }
+        .action-btn.primary:hover {
+            background: #34d399;
+        }
+        .canvas-container {
+            background: #05070b;
+            border-radius: 16px;
+            padding: 0.5rem;
+            border: 1px solid #1e293b;
+            margin-bottom: 1rem;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+        }
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 16px;
+            border: 1px solid #1e293b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        th {
+            background: #0f172a;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.2rem;
+            text-align: right;
+            border-bottom: 1px solid #1e293b;
+        }
+        th:first-child {
+            text-align: left;
+        }
+        td {
+            padding: 0.9rem 1.2rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+            text-align: right;
+        }
+        td:first-child {
+            text-align: left;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: #0f172a50;
+        }
+        .positive {
+            color: #10b981;
+        }
+        .negative {
+            color: #ef4444;
+        }
+        .faq-section, .video-section {
+            margin-top: 1.5rem;
+        }
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #f1f5f9;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .faq-a {
+            color: #94a3b8;
+            margin-top: 0.6rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: none;
+        }
+        .faq-a.open {
+            display: block;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid #1e293b;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .footer-note {
+            text-align: center;
+            color: #475569;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+            border-top: 1px solid #1e293b;
+            padding-top: 1.5rem;
+            font-family: monospace;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            letter-spacing: -0.3px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .line {
+            flex: 1;
+            height: 1px;
+            background: #1e293b;
+        }
+        .badge {
+            font-size: 0.65rem;
+            background: #10b98120;
+            color: #10b981;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            border: 1px solid #10b98140;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+    <!-- Header -->
+    <div class="grid-header">
+        <div class="brand">
+            <span class="brand-logo">CAPITALGRID</span>
+            <span class="brand-sub">QUANT WORKSTATION</span>
+        </div>
+        <a href="./index.html" class="portal-link">← Portal</a>
+    </div>
+
+    <!-- Hero Title -->
+    <div style="margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; color: #f8fafc;">$5/Day Coffee vs Nvidia: 15-Year Shock</h1>
+        <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.4rem;">Backtest the opportunity cost of a daily coffee habit versus a concentrated NVDA position. Adjust parameters below.</p>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-panel">
+        <!-- Left: Controls & KPIs -->
+        <div class="card">
+            <div class="card-title"><span class="accent-dot"></span> Scenario Controls</div>
+            
+            <div class="kpi-grid">
+                <div class="kpi-item">
+                    <div class="kpi-label">Coffee Final Value</div>
+                    <div class="kpi-value" id="kpi-coffee">$0</div>
+                    <div class="kpi-sub" id="kpi-coffee-sub">0% gain</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">NVDA Final Value</div>
+                    <div class="kpi-value accent" id="kpi-nvda">$0</div>
+                    <div class="kpi-sub" id="kpi-nvda-sub">0% gain</div>
+                </div>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-row">
+                    <span class="slider-label">Daily Coffee Spend ($)</span>
+                    <span class="slider-value" id="daily-coffee-val">$5.00</span>
+                </div>
+                <input type="range" id="daily-coffee" min="1" max="20" step="0.5" value="5">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-row">
+                    <span class="slider-label">Investment Horizon (Years)</span>
+                    <span class="slider-value" id="horizon-val">15</span>
+                </div>
+                <input type="range" id="horizon" min="1" max="20" step="1" value="15">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-row">
+                    <span class="slider-label">NVDA Annualized Return (%)</span>
+                    <span class="slider-value" id="nvda-return-val">38.0%</span>
+                </div>
+                <input type="range" id="nvda-return" min="-5" max="60" step="0.5" value="38">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-row">
+                    <span class="slider-label">Coffee Savings APY (%)</span>
+                    <span class="slider-value" id="coffee-return-val">2.0%</span>
+                </div>
+                <input type="range" id="coffee-return" min="0" max="10" step="0.1" value="2">
+            </div>
+
+            <div class="preset-buttons">
+                <button class="preset-btn" data-preset="conservative">Conservative</button>
+                <button class="preset-btn active" data-preset="base">Base Case</button>
+                <button class="preset-btn" data-preset="aggressive">Aggressive</button>
+                <button class="preset-btn" data-preset="shock">2008 Shock</button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn primary" id="export-csv">⬇ Export CSV Telemetry</button>
+                <button class="action-btn" id="copy-link">🔗 Copy Scenario Link</button>
+            </div>
+        </div>
+
+        <!-- Right: Canvas Chart -->
+        <div class="card">
+            <div class="card-title"><span class="accent-dot"></span> Projected Growth Trajectory (15-Yr Horizon)</div>
+            <div class="canvas-container">
+                <canvas id="growthChart" width="600" height="300" style="width:100%; height:auto;"></canvas>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-color" style="background:#10b981;"></span> Coffee Habit (Savings)</div>
+                <div class="legend-item"><span class="legend-color" style="background:#3b82f6;"></span> NVDA Stock</div>
+            </div>
+            <div style="margin-top: 1rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b;">
+                <span>Horizon: <span id="horizon-display" style="color:#e2e8f0; font-family:monospace;">15</span> yrs</span>
+                <span>Daily: <span id="daily-display" style="color:#e2e8f0; font-family:monospace;">$5.00</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Breakdown Table -->
+    <div class="card" style="margin-bottom: 1.25rem;">
+        <div class="card-title"><span class="accent-dot"></span> Year-by-Year Analytical Breakdown</div>
+        <div class="table-wrap">
+            <table id="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Coffee Value</th>
+                        <th>NVDA Value</th>
+                        <th>Difference</th>
+                        <th>Coffee Return %</th>
+                        <th>NVDA Return %</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- JS populates -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Video Section -->
+    <div class="video-section card">
+        <div class="section-title">
+            <span>📺 Embedded Analysis</span>
+            <span class="line"></span>
+            <span class="badge">YOUTUBE</span>
+        </div>
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/4qcCeFk4Zgk" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section card">
+        <div class="section-title">
+            <span>🧠 Frequently Asked Questions</span>
+            <span class="line"></span>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                <span>What is the "$5/Day Coffee vs Nvidia" backtest?</span>
+                <span style="color:#10b981;">+</span>
+            </div>
+            <div class="faq-a">This simulation compares the opportunity cost of spending $5 daily on coffee versus investing that same amount into Nvidia (NVDA) stock over a 15-year horizon. It models both the savings trajectory (with interest) and the equity growth trajectory (with compounding returns).</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                <span>Why does NVDA show such dramatic growth?</span>
+                <span style="color:#10b981;">+</span>
+            </div>
+            <div class="faq-a">Nvidia has experienced extraordinary returns driven by the AI boom, GPU demand, and data center expansion. The base case uses a 38% annualized return, which reflects its historical 15-year performance. However, past performance does not guarantee future results.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                <span>How do I use the scenario presets?</span>
+                <span style="color:#10b981;">+</span>
+            </div>
+            <div class="faq-a">Presets instantly adjust the sliders to predefined configurations: "Conservative" uses lower returns, "Base Case" matches the video's assumptions, "Aggressive" assumes higher NVDA returns, and "2008 Shock" simulates a severe market downturn followed by recovery.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                <span>Can I export the data for my own analysis?</span>
+                <span style="color:#10b981;">+</span>
+            </div>
+            <div class="faq-a">Yes. Click the "Export CSV Telemetry" button to download a CSV file containing the year-by-year breakdown based on your current slider settings. The "Copy Scenario Link" button encodes your parameters into the URL for easy sharing.</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-note">
+        CAPITALGRID · QUANT WORKSTATION · DATA PAYLOAD: $5/Day Coffee vs NVDA 15-Year Shock · All simulations are illustrative.
+    </div>
+</div>
+
+<!-- JSON-LD Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "CAPITALGRID · $5 Coffee vs NVDA 15-Year Shock",
+    "description": "Interactive quantitative backtest comparing a $5 daily coffee habit to investing in Nvidia stock over a 15-year horizon.",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    },
+    "author": {
+        "@type": "Organization",
+        "name": "CAPITALGRID"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-day-coffee-vs-nvidia-15-year-shock.html"
+}
+</script>
+
+<script>
+    // --- Data Payload (exact) ---
+    const PAYLOAD = {
+        asset_a: "$5/Day Coffee Habit",
+        asset_b: "Nvidia Stock (NVDA)",
+        series_a: [5000, 6200, 7800, 9500, 12400, 16800],
+        series_b: [5000, 9400, 6100, 22000, 54000, 118000]
+    };
+
+    // --- State ---
+    const state = {
+        dailyCoffee: 5,
+        horizon: 15,
+        nvdaReturn: 38,
+        coffeeReturn: 2
+    };
+
+    // --- DOM Elements ---
+    const dailySlider = document.getElementById('daily-coffee');
+    const horizonSlider = document.getElementById('horizon');
+    const nvdaReturnSlider = document.getElementById('nvda-return');
+    const coffeeReturnSlider = document.getElementById('coffee-return');
+
+    const dailyVal = document.getElementById('daily-coffee-val');
+    const horizonVal = document.getElementById('horizon-val');
+    const nvdaReturnVal = document.getElementById('nvda-return-val');
+    const coffeeReturnVal = document.getElementById('coffee-return-val');
+
+    const kpiCoffee = document.getElementById('kpi-coffee');
+    const kpiNvda = document.getElementById('kpi-nvda');
+    const kpiCoffeeSub = document.getElementById('kpi-coffee-sub');
+    const kpiNvdaSub = document.getElementById('kpi-nvda-sub');
+
+    const horizonDisplay = document.getElementById('horizon-display');
+    const dailyDisplay = document.getElementById('daily-display');
+    const tableBody = document.getElementById('table-body');
+    const canvas = document.getElementById('growthChart');
+    const ctx = canvas.getContext('2d');
+
+    // --- Formatting Helpers ---
+    function formatCurrency(num) {
+        return '$' + Number(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+    function formatPercent(num) {
+        return num.toFixed(1) + '%';
+    }
+    function formatSignedCurrency(num) {
+        const sign = num >= 0 ? '+' : '-';
+        return sign + '$' + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
+    // --- Calculation Logic ---
+    function calculate() {
+        const daily = state.dailyCoffee;
+        const years = state.horizon;
+        const nvdaRate = state.nvdaReturn / 100;
+        const coffeeRate = state.coffeeReturn / 100;
+
+        // Annual contribution: daily * 365 (simplification, ignoring leap years)
+        const annualContribution = daily * 365;
+
+        // Build year-by-year arrays
+        const coffeeValues = [];
+        const nvdaValues = [];
+
+        // Year 0: initial contribution
+        let coffeeAccum = annualContribution;
+        let nvdaAccum = annualContribution;
+
+        coffeeValues.push(coffeeAccum);
+        nvdaValues.push(nvdaAccum);
+
+        for (let y = 1; y <= years; y++) {
+            // Coffee: compound with interest, add contribution at end of year
+            coffeeAccum = coffeeAccum * (1 + coffeeRate) + annualContribution;
+            nvdaAccum = nvdaAccum * (1 + nvdaRate) + annualContribution;
+
+            coffeeValues.push(coffeeAccum);
+            nvdaValues.push(nvdaAccum);
+        }
+
+        // Final values
+        const finalCoffee = coffeeValues[coffeeValues.length - 1];
+        const finalNvda = nvdaValues[nvdaValues.length - 1];
+
+        // KPI updates
+        kpiCoffee.textContent = formatCurrency(finalCoffee);
+        kpiNvda.textContent = formatCurrency(finalNvda);
+
+        const coffeeGain = ((finalCoffee - (annualContribution * (years + 1))) / (annualContribution * (years + 1))) * 100;
+        const nvdaGain = ((finalNvda - (annualContribution * (years + 1))) / (annualContribution * (years + 1))) * 100;
+
+        kpiCoffeeSub.textContent = formatPercent(coffeeGain) + ' gain';
+        kpiNvdaSub.textContent = formatPercent(nvdaGain) + ' gain';
+
+        // Update slider labels
+        dailyVal.textContent = '$' + daily.toFixed(2);
+        horizonVal.textContent = years;
+        nvdaReturnVal.textContent = state.nvdaReturn.toFixed(1) + '%';
+        coffeeReturnVal.textContent = state.coffeeReturn.toFixed(1) + '%';
+
+        horizonDisplay.textContent = years;
+        dailyDisplay.textContent = '$' + daily.toFixed(2);
+
+        // Update Table
+        renderTable(coffeeValues, nvdaValues, years);
+
+        // Update Canvas
+        drawChart(coffeeValues, nvdaValues, years);
+
+        // Update URL
+        updateURL();
+    }
+
+    // --- Render Table ---
+    function renderTable(coffeeVals, nvdaVals, years) {
+        let html = '';
+        const initialTotal = state.dailyCoffee * 365 * (years + 1);
+        for (let y = 0; y <= years; y++) {
+            const coffee = coffeeVals[y];
+            const nvda = nvdaVals[y];
+            const diff = nvda - coffee;
+            const coffeeReturn = initialTotal > 0 ? ((coffee - initialTotal) / initialTotal) * 100 : 0;
+            const nvdaReturn = initialTotal > 0 ? ((nvda - initialTotal) / initialTotal) * 100 : 0;
+            const diffClass = diff >= 0 ? 'positive' : 'negative';
+            html += `<tr>
+                <td>Year ${y}</td>
+                <td>${formatCurrency(coffee)}</td>
+                <td>${formatCurrency(nvda)}</td>
+                <td class="${diffClass}">${formatSignedCurrency(diff)}</td>
+                <td class="${coffeeReturn >= 0 ? 'positive' : 'negative'}">${formatPercent(coffeeReturn)}</td>
+                <td class="${nvdaReturn >= 0 ? 'positive' : 'negative'}">${formatPercent(nvdaReturn)}</td>
+            </tr>`;
+        }
+        tableBody.innerHTML = html;
+    }
+
+    // --- Draw Canvas Chart ---
+    function drawChart(coffeeVals, nvdaVals, years) {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // Background
+        ctx.fillStyle = '#05070b';
+        ctx.fillRect(0, 0, w, h);
+
+        // Determine max value for scaling
+        const maxVal = Math.max(...coffeeVals, ...nvdaVals, 1000);
+        const padding = { top: 30, right: 20, bottom: 40, left: 70 };
+        const chartW = w - padding.left - padding.right;
+        const chartH = h - padding.top - padding.bottom;
+
+        // Draw grid lines
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i <= 4; i++) {
+            const y = padding.top + chartH * (i / 4);
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(w - padding.right, y);
+            ctx.stroke();
+
+            // Y-axis labels
+            const val = maxVal * (1 - i / 4);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText('$' + (val / 1000).toFixed(0) + 'k', padding.left - 8, y + 3);
+        }
+
+        // X-axis labels (years)
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        const step = Math.max(1, Math.floor(years / 5));
+        for (let y = 0; y <= years; y += step) {
+            if (y > years) continue;
+            const x = padding.left + (y / years) * chartW;
+            ctx.fillText(y, x, h - 12);
+        }
+
+        // Draw lines
+        function drawLine(data, color) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.5;
+            ctx.lineJoin = 'round';
+            for (let i = 0; i <= years; i++) {
+                const x = padding.left + (i / years) * chartW;
+                const y = padding.top + chartH - (data[i] / maxVal) * chartH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Glow effect
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 8;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        // Coffee line (green)
+        drawLine(coffeeVals, '#10b981');
+
+        // NVDA line (blue)
+        drawLine(nvdaVals, '#3b82f6');
+
+        // Draw dots at final point
+        const finalX = padding.left + chartW;
+        const finalYCoffee = padding.top + chartH - (coffeeVals[years] / maxVal) * chartH;
+        const finalYNvda = padding.top + chartH - (nvdaVals[years] / maxVal) * chartH;
+
+        ctx.fillStyle = '#10b981';
+        ctx.beginPath();
+        ctx.arc(finalX, finalYCoffee, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = '#10b981';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(finalX, finalYNvda, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = '#3b82f6';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    // --- URL Management ---
+    function updateURL() {
+        const params = new URLSearchParams();
+        params.set('daily', state.dailyCoffee);
+        params.set('horizon', state.horizon);
+        params.set('nvda', state.nvdaReturn);
+        params.set('coffee', state.coffeeReturn);
+        const newUrl = window.location.pathname + '?' + params.toString();
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    function loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('daily')) {
+            state.dailyCoffee = parseFloat(params.get('daily'));
+            dailySlider.value = state.dailyCoffee;
+        }
+        if (params.has('horizon')) {
+            state.horizon = parseInt(params.get('horizon'));
+            horizonSlider.value = state.horizon;
+        }
+        if (params.has('nvda')) {
+            state.nvdaReturn = parseFloat(params.get('nvda'));
+            nvdaReturnSlider.value = state.nvdaReturn;
+        }
+        if (params.has('coffee')) {
+            state.coffeeReturn = parseFloat(params.get('coffee'));
+            coffeeReturnSlider.value = state.coffeeReturn;
+        }
+    }
+
+    // --- Presets ---
+    const presets = {
+        conservative: { daily: 5, horizon: 15, nvdaReturn: 22, coffeeReturn: 3.5 },
+        base: { daily: 5, horizon: 15, nvdaReturn: 38, coffeeReturn: 2 },
+        aggressive: { daily: 5, horizon: 15, nvdaReturn: 52, coffeeReturn: 1.5 },
+        shock: { daily: 5, horizon: 15, nvdaReturn: -5, coffeeReturn: 1 }
+    };
+
+    function applyPreset(name) {
+        const p = presets[name];
+        if (!p) return;
+        state.dailyCoffee = p.daily;
+        state.horizon = p.horizon;
+        state.nvdaReturn = p.nvdaReturn;
+        state.coffeeReturn = p.coffeeReturn;
+
+        dailySlider.value = p.daily;
+        horizonSlider.value = p.horizon;
+        nvdaReturnSlider.value = p.nvdaReturn;
+        coffeeReturnSlider.value = p.coffeeReturn;
+
+        // Update active state
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.preset === name) btn.classList.add('active');
+        });
+
+        calculate();
+    }
+
+    // --- Event Listeners ---
+    dailySlider.addEventListener('input', (e) => {
+        state.dailyCoffee = parseFloat(e.target.value);
+        calculate();
+    });
+    horizonSlider.addEventListener('input', (e) => {
+        state.horizon = parseInt(e.target.value);
+        calculate();
+    });
+    nvdaReturnSlider.addEventListener('input', (e) => {
+        state.nvdaReturn = parseFloat(e.target.value);
+        calculate();
+    });
+    coffeeReturnSlider.addEventListener('input', (e) => {
+        state.coffeeReturn = parseFloat(e.target.value);
+        calculate();
+    });
+
+    // Preset buttons
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            applyPreset(btn.dataset.preset);
+        });
+    });
+
+    // Export CSV
+    document.getElementById('export-csv').addEventListener('click', () => {
+        const years = state.horizon;
+        const daily = state.dailyCoffee;
+        const annualContribution = daily * 365;
+        const nvdaRate = state.nvdaReturn / 100;
+        const coffeeRate = state.coffeeReturn / 100;
+
+        let coffeeAccum = annualContribution;
+        let nvdaAccum = annualContribution;
+
+        const rows = [['Year', 'Coffee Value', 'NVDA Value', 'Difference', 'Coffee Return %', 'NVDA Return %']];
+        const initialTotal = annualContribution * (years + 1);
+
+        for (let y = 0; y <= years; y++) {
+            if (y > 0) {
+                coffeeAccum = coffeeAccum * (1 + coffeeRate) + annualContribution;
+                nvdaAccum = nvdaAccum * (1 + nvdaRate) + annualContribution;
+            }
+            const coffeeVal = coffeeAccum;
+            const nvdaVal = nvdaAccum;
+            const diff = nvdaVal - coffeeVal;
+            const coffeeReturn = initialTotal > 0 ? ((coffeeVal - initialTotal) / initialTotal) * 100 : 0;
+            const nvdaReturn = initialTotal > 0 ? ((nvdaVal - initialTotal) / initialTotal) * 100 : 0;
+            rows.push([y, coffeeVal.toFixed(2), nvdaVal.toFixed(2), diff.toFixed(2), coffeeReturn.toFixed(2), nvdaReturn.toFixed(2)]);
+        }
+
+        const csvContent = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `capitalgrid_coffee_vs_nvda_${state.dailyCoffee}_${state.horizon}yr.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    });
+
+    // Copy Scenario Link
+    document.getElementById('copy-link').addEventListener('click', () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = document.getElementById('copy-link');
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => { btn.textContent = originalText; }, 1500);
+        }).catch(() => {
+            // Fallback
+            prompt('Copy this link:', url);
+        });
+    });
+
+    // --- Init ---
+    loadFromURL();
+    calculate();
+</script>
+</body>
+</html>
