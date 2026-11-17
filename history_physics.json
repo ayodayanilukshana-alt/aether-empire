@@ -1,74 +1,26 @@
 {
-  "seed_idx": 0,
+  "seed_idx": 10,
   "topics": [
-    "Spinning Rings vs 24 Balls: Satisfying 60FPS Physics Escape",
-    "Gold vs Crimson: 20 Balls vs 6 Spinning Rings \u2014 Which Color Survives? #shorts",
-    "RONALDO vs MESSI: 20 Balls vs 6 Rings! #shorts",
-    "IPHONE vs ANDROID: Hexagon Cage Escape! #shorts",
-    "TESLA vs SPACEX: Ball Physics Escape! #shorts",
-    "NVIDIA vs AMD: Satisfying Ball Escape Physics! #shorts",
-    "FERRARI vs LAMBO: Ball Physics Mayhem! #shorts",
-    "PEPSI vs COKE: Ball Physics Escape! #shorts",
-    "MARVEL vs DC: Hero Ball Physics Escape! #shorts",
-    "MARIO vs SONIC: Epic Ball Physics Escape! #shorts"
+    "Ronaldo vs Messi",
+    "iPhone vs Android",
+    "Dogs vs Cats",
+    "Gold vs Bitcoin",
+    "Tesla vs Ferrari",
+    "Ferrari vs Lamborghini",
+    "Real Madrid vs Barcelona",
+    "Netflix vs YouTube"
   ],
-  "playlist_id": "PLMPkaFRX1K9I",
-  "published_videos": [
-    {
-      "video_id": "gB7DHlLTggA",
-      "title": "Spinning Rings vs 24 Balls: Satisfying 60FPS Physics Escape #shorts",
-      "published_at": 1794632154
-    },
-    {
-      "video_id": "WEc1EpvJF2I",
-      "title": "Gold vs Crimson: 20 Balls vs 6 Spinning Rings \u2014 Which Color Survives? #shorts",
-      "published_at": 1794634936
-    },
-    {
-      "video_id": "x4X5Uq7hS98",
-      "title": "RONALDO vs MESSI: 20 Balls vs 6 Rings! #shorts",
-      "published_at": 1794637972
-    },
-    {
-      "video_id": "dmVcdCg6p84",
-      "title": "IPHONE vs ANDROID: Hexagon Cage Escape! #shorts",
-      "published_at": 1794638954,
-      "ab_tested": true
-    },
-    {
-      "video_id": "JUHSBHIv8uU",
-      "title": "TESLA vs SPACEX: Ball Physics Escape! #shorts",
-      "published_at": 1794677620,
-      "ab_tested": true
-    },
-    {
-      "video_id": "tV4w9OjyTFE",
-      "title": "NVIDIA vs AMD: Satisfying Ball Escape Physics! #shorts",
-      "published_at": 1794706403,
-      "ab_tested": true
-    },
-    {
-      "video_id": "dvO_o9PwZw0",
-      "title": "FERRARI vs LAMBO: Ball Physics Mayhem! #shorts",
-      "published_at": 1794764030,
-      "ab_tested": true
-    },
-    {
-      "video_id": "MWV96xa2RqI",
-      "title": "PEPSI vs COKE: Ball Physics Escape! #shorts",
-      "published_at": 1794792827,
-      "ab_tested": true
-    },
-    {
-      "video_id": "cvE4Zx8Vois",
-      "title": "MARVEL vs DC: Hero Ball Physics Escape! #shorts",
-      "published_at": 1794850498
-    },
-    {
-      "video_id": "XiT5sMUUFAg",
-      "title": "MARIO vs SONIC: Epic Ball Physics Escape! #shorts",
-      "published_at": 1794879311
-    }
+  "used_items": [
+    "Ronaldo vs Messi",
+    "iPhone vs Android",
+    "Dogs vs Cats",
+    "Gold vs Bitcoin",
+    "Tesla vs Ferrari",
+    "Ferrari vs Lamborghini",
+    "Real Madrid vs Barcelona",
+    "Netflix vs YouTube"
   ],
-  "xgb_feedback_rows": []
+  "used_domains": [],
+  "playlist_id": "",
+  "published_videos": []
 }
