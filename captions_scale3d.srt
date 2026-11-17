@@ -1,59 +1,51 @@
 1
-00:00:00,096 --> 00:00:01,758
-Starting with the V 2 a
+00:00:00,096 --> 00:00:01,708
+The V 2 rocket a mere
 
 2
-00:00:01,685 --> 00:00:03,858
-mere fourteen meters tall the first
+00:00:01,720 --> 00:00:03,753
+14 meters tall was the first
 
 3
-00:00:03,870 --> 00:00:07,159
-rocket to reach space Next Falcon
+00:00:03,764 --> 00:00:06,760
+ballistic missile The Space Shuttle with
 
 4
-00:00:07,171 --> 00:00:09,437
-9 stands seventy meters a reusable
+00:00:06,772 --> 00:00:08,714
+its 56 meter height is a
 
 5
-00:00:09,449 --> 00:00:11,528
-giant that lands itself after launch
+00:00:08,664 --> 00:00:12,098
+reusable spaceplane The Falcon 9 stands
 
 6
-00:00:12,456 --> 00:00:14,641
-Then Saturn V one hundred ten
+00:00:12,110 --> 00:00:14,470
+70 meters tall a reusable workhorse
 
 7
-00:00:14,652 --> 00:00:16,895
-meters still the most powerful rocket
+00:00:14,481 --> 00:00:17,590
+for modern spaceflight The Saturn V
 
 8
-00:00:16,907 --> 00:00:19,698
-ever flown to the Moon SpaceX
+00:00:17,835 --> 00:00:20,335
+at 111 meters remains the most
 
 9
-00:00:19,710 --> 00:00:21,556
-Starship rises one hundred twenty one
+00:00:20,347 --> 00:00:23,513
+powerful rocket ever flown The Starship
 
 10
-00:00:21,567 --> 00:00:23,635
-meters the tallest and most massive
+00:00:23,654 --> 00:00:27,264
+SpaceX's 120 meter interplanetary transport dwarfs
 
 11
-00:00:23,647 --> 00:00:26,412
-rocket ever built But even Starship
+00:00:27,275 --> 00:00:29,074
+them all but wait the V
 
 12
-00:00:26,424 --> 00:00:28,398
-is dwarfed by the 182 meter
+00:00:29,086 --> 00:00:31,130
+2 rocket a mere 14 meters
 
 13
-00:00:28,410 --> 00:00:30,233
-Statue of Unity so let's loop
-
-14
-00:00:30,244 --> 00:00:31,623
-back to the tiny V 2
-
-15
-00:00:31,634 --> 00:00:33,025
-and see how far we've come
+00:00:31,142 --> 00:00:33,163
+tall was the first ballistic missile
