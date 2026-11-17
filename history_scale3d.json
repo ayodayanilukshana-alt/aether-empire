@@ -1,6 +1,8 @@
 {
   "seed_idx": 10,
-  "topics": [],
+  "topics": [
+    "Stadium Giants: 5 Colossal Arenas Compared"
+  ],
   "used_items": [
     "V-2 Rocket",
     "Space Shuttle",
@@ -38,6 +40,12 @@
     "Parker Solar Probe"
   ],
   "used_domains": [],
-  "playlist_id": "",
-  "published_videos": []
+  "playlist_id": "PLUPlT-3KTRy4",
+  "published_videos": [
+    {
+      "video_id": "MXYyct0WRJQ",
+      "title": "Stadium Giants: 5 Colossal Arenas Compared #shorts",
+      "published_at": 1794928794
+    }
+  ]
 }
