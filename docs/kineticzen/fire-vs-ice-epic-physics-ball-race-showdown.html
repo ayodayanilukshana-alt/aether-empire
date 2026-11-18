@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINETICZEN LABS · Fire vs Ice · Physics Ball Race</title>
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/fire-vs-ice-epic-physics-ball-race-showdown.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      line-height: 1.5;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .workstation {
+      max-width: 1400px;
+      width: 100%;
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 1.25rem;
+    }
+
+    .brand {
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      color: #f43f5e;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand a {
+      color: #f43f5e;
+      text-decoration: none;
+      border-bottom: 1px dashed transparent;
+      transition: border-color 0.2s;
+    }
+
+    .brand a:hover {
+      border-bottom-color: #f43f5e;
+    }
+
+    .title-block h1 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+
+    .title-block h1 span {
+      color: #f43f5e;
+      font-weight: 700;
+    }
+
+    .sub {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1000px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Canvas Area */
+    .canvas-panel {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding: 0 0.25rem;
+    }
+
+    .badge {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 0.25rem 0.75rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border: 1px solid #334155;
+    }
+
+    .badge.fire {
+      color: #f43f5e;
+      border-color: #f43f5e33;
+      background: #f43f5e0d;
+    }
+
+    .badge.ice {
+      color: #38bdf8;
+      border-color: #38bdf833;
+      background: #38bdf80d;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.8);
+      cursor: crosshair;
+    }
+
+    /* Control Panel */
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 1.25rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .card h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .slider-group {
+      margin-bottom: 1rem;
+    }
+
+    .slider-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 0.35rem;
+      color: #cbd5e1;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #f43f5e;
+      border-radius: 50%;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 0 2px #f43f5e66, 0 0 12px #f43f5e;
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"].ice::-webkit-slider-thumb {
+      background: #38bdf8;
+      box-shadow: 0 0 0 2px #38bdf866, 0 0 12px #38bdf8;
+    }
+
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.5rem 0.9rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .btn:hover {
+      background: #1e293b;
+      border-color: #334155;
+      color: #fff;
+    }
+
+    .btn.primary {
+      background: #f43f5e;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .btn.primary:hover {
+      background: #e11d48;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid #f43f5e;
+      color: #f43f5e;
+    }
+
+    .btn.secondary:hover {
+      background: #f43f5e1a;
+      color: #fff;
+    }
+
+    .btn.ice-btn {
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    .btn.ice-btn:hover {
+      background: #38bdf81a;
+      color: #fff;
+    }
+
+    /* KPI Readouts */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .kpi-label {
+      font-size: 0.6rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .kpi-value {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-top: 0.2rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fire .kpi-value { color: #f43f5e; }
+    .ice .kpi-value { color: #38bdf8; }
+
+    /* Table */
+    .analysis-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .analysis-table th {
+      text-align: left;
+      padding: 0.6rem 0.5rem;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.65rem;
+    }
+
+    .analysis-table td {
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+
+    .analysis-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .accent-fire { color: #f43f5e; }
+    .accent-ice { color: #38bdf8; }
+
+    /* FAQ */
+    .faq-section {
+      margin-top: 2rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+    }
+
+    .faq-section h2 {
+      font-size: 1.1rem;
+      color: #f1f5f9;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .faq-item {
+      margin-bottom: 1rem;
+    }
+
+    .faq-question {
+      font-weight: 600;
+      color: #f43f5e;
+      font-size: 0.9rem;
+    }
+
+    .faq-answer {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
+    /* YouTube */
+    .video-section {
+      margin-top: 2rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+    }
+
+    .video-section h2 {
+      font-size: 1rem;
+      color: #94a3b8;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid #1e293b;
+      background: #000;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #1e293b;
+      font-size: 0.7rem;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .footer a {
+      color: #64748b;
+      text-decoration: none;
+      border-bottom: 1px dotted #334155;
+    }
+
+    .footer a:hover {
+      color: #f43f5e;
+    }
+
+    .telemetry-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .note {
+      color: #475569;
+      font-size: 0.65rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="workstation">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="title-block">
+        <div class="brand">
+          <span>◆ KINETICZEN LABS</span>
+          <a href="./index.html">PORTAL ↗</a>
+        </div>
+        <h1>Fire vs Ice: <span>Epic Physics Ball Race</span> Showdown</h1>
+        <div class="sub">60FPS Matter.js rigid-body rivalry simulation · Real-time telemetry workstation</div>
+      </div>
+      <div class="badge" style="background:#1e293b; color:#f43f5e; border-color:#f43f5e;">LIVE SIM</div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="dashboard-grid">
+      <!-- LEFT: CANVAS -->
+      <div class="canvas-panel">
+        <div class="canvas-header">
+          <div class="badge fire">FIRE · #f43f5e</div>
+          <div class="badge ice">ICE · #38bdf8</div>
+        </div>
+        <canvas id="raceCanvas" width="800" height="450"></canvas>
+        <div class="note" style="margin-top:0.6rem; display:flex; justify-content:space-between;">
+          <span>Click canvas to reposition balls · Drag to aim fireball</span>
+          <span id="fpsDisplay" style="color:#38bdf8;">60 FPS</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: CONTROLS -->
+      <div class="control-panel">
+        <!-- SLIDERS -->
+        <div class="card">
+          <h3>⚙ Simulation Parameters</h3>
+          <div class="slider-group">
+            <div class="slider-row">
+              <span>Fire Mass</span>
+              <span id="fireMassVal" style="color:#f43f5e; font-weight:600;">1.0</span>
+            </div>
+            <input type="range" id="fireMass" min="0.5" max="3.0" step="0.1" value="1.0">
+          </div>
+          <div class="slider-group">
+            <div class="slider-row">
+              <span>Ice Mass</span>
+              <span id="iceMassVal" style="color:#38bdf8; font-weight:600;">1.0</span>
+            </div>
+            <input type="range" id="iceMass" min="0.5" max="3.0" step="0.1" value="1.0" class="ice">
+          </div>
+          <div class="slider-group">
+            <div class="slider-row">
+              <span>Friction</span>
+              <span id="frictionVal" style="color:#94a3b8;">0.05</span>
+            </div>
+            <input type="range" id="friction" min="0.01" max="0.3" step="0.01" value="0.05">
+          </div>
+          <div class="slider-group">
+            <div class="slider-row">
+              <span>Restitution</span>
+              <span id="restitutionVal" style="color:#94a3b8;">0.85</span>
+            </div>
+            <input type="range" id="restitution" min="0.1" max="0.99" step="0.01" value="0.85">
+          </div>
+          <div class="preset-buttons">
+            <button class="btn secondary" data-preset="balanced">⚖ Balanced</button>
+            <button class="btn secondary ice-btn" data-preset="ice">❄ Ice Dominance</button>
+            <button class="btn secondary" data-preset="fire" style="border-color:#f43f5e; color:#f43f5e;">🔥 Fire Dominance</button>
+            <button class="btn secondary" data-preset="chaos" style="border-color:#a855f7; color:#a855f7;">🌀 Chaos</button>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="card">
+          <h3>📊 Telemetry KPIs</h3>
+          <div class="kpi-grid">
+            <div class="kpi fire">
+              <div class="kpi-label">FIRE Velocity</div>
+              <div class="kpi-value" id="fireVel">0.00</div>
+            </div>
+            <div class="kpi ice">
+              <div class="kpi-label">ICE Velocity</div>
+              <div class="kpi-value" id="iceVel">0.00</div>
+            </div>
+            <div class="kpi fire">
+              <div class="kpi-label">FIRE Energy</div>
+              <div class="kpi-value" id="fireEnergy">0.00</div>
+            </div>
+            <div class="kpi ice">
+              <div class="kpi-label">ICE Energy</div>
+              <div class="kpi-value" id="iceEnergy">0.00</div>
+            </div>
+          </div>
+          <div class="telemetry-actions">
+            <button class="btn primary" id="exportCSV">⬇ Export CSV Telemetry</button>
+            <button class="btn secondary" id="copyLink">🔗 Copy Scenario Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICAL BREAKDOWN TABLE -->
+    <div style="margin-top: 0.5rem;">
+      <h3 style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-bottom:0.75rem;">📋 Analytical Breakdown</h3>
+      <table class="analysis-table" id="breakdownTable">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th class="accent-fire">FIRE</th>
+            <th class="accent-ice">ICE</th>
+            <th>Delta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Mass (kg)</td><td id="tFireMass">1.0</td><td id="tIceMass">1.0</td><td id="tDeltaMass">0.0</td></tr>
+          <tr><td>Velocity (m/s)</td><td id="tFireVel">0.00</td><td id="tIceVel">0.00</td><td id="tDeltaVel">0.00</td></tr>
+          <tr><td>Kinetic Energy (J)</td><td id="tFireEnergy">0.00</td><td id="tIceEnergy">0.00</td><td id="tDeltaEnergy">0.00</td></tr>
+          <tr><td>Momentum (kg·m/s)</td><td id="tFireMom">0.00</td><td id="tIceMom">0.00</td><td id="tDeltaMom">0.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <h2>❓ Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <div class="faq-question">What is the Fire vs Ice physics simulation?</div>
+        <div class="faq-answer">This is a rigid-body racing simulation where two spheres (Fire and Ice) collide, bounce, and race across a bounded arena under custom physics parameters. It models mass, friction, restitution, and kinetic energy transfer in real time.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">How are the physics parameters used?</div>
+        <div class="faq-answer">Mass affects momentum and collision response. Friction controls energy loss during sliding. Restitution determines bounciness. Adjusting these sliders changes the entire simulation behavior instantly.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Can I export the telemetry data?</div>
+        <div class="faq-answer">Yes. Click "Export CSV Telemetry" to download a CSV file containing current velocities, energies, momenta, and simulation settings for both Fire and Ice.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">What does the "Copy Scenario Link" button do?</div>
+        <div class="faq-answer">It copies a URL with encoded simulation parameters (mass, friction, restitution) to your clipboard so you can share the exact scenario with others.</div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE EMBED -->
+    <div class="video-section">
+      <h2>▶ Original Stream · Fire vs Ice Showdown</h2>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/pBI3xR2oap4" title="Fire vs Ice Epic Physics Ball Race Showdown" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>© KINETICZEN LABS · Physics Sandbox</span>
+      <span>
+        <a href="./index.html">Portal</a> ·
+        <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/fire-vs-ice-epic-physics-ball-race-showdown.html">Canonical</a> ·
+        <a href="#" id="jsonLdLink">Schema</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- JSON-LD SCHEMA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Fire vs Ice: Epic Physics Ball Race Showdown",
+    "description": "60FPS Matter.js rigid-body physics rivalry simulation with real-time telemetry controls and analytical breakdown.",
+    "applicationCategory": "SimulationGame",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Organization",
+      "name": "KINETICZEN LABS"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/fire-vs-ice-epic-physics-ball-race-showdown.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <script>
+    (function() {
+      // ---------- CANVAS & ENGINE ----------
+      const canvas = document.getElementById('raceCanvas');
+      const ctx = canvas.getContext('2d');
+      const W = 800, H = 450;
+      canvas.width = W;
+      canvas.height = H;
+
+      // ---------- PHYSICS STATE ----------
+      const state = {
+        fire: { x: 200, y: 225, vx: 4, vy: 1.5, r: 22, color: '#f43f5e', mass: 1.0 },
+        ice:  { x: 600, y: 225, vx: -3.8, vy: -1.2, r: 22, color: '#38bdf8', mass: 1.0 },
+        friction: 0.05,
+        restitution: 0.85,
+        wallBounce: 0.9,
+        time: 0,
+        lastTimestamp: performance.now(),
+        fps: 60,
+        frames: 0,
+        fpsInterval: 0,
+      };
+
+      // DOM refs
+      const fireMassSlider = document.getElementById('fireMass');
+      const iceMassSlider = document.getElementById('iceMass');
+      const frictionSlider = document.getElementById('friction');
+      const restitutionSlider = document.getElementById('restitution');
+      const fireMassVal = document.getElementById('fireMassVal');
+      const iceMassVal = document.getElementById('iceMassVal');
+      const frictionVal = document.getElementById('frictionVal');
+      const restitutionVal = document.getElementById('restitutionVal');
+
+      const fireVelEl = document.getElementById('fireVel');
+      const iceVelEl = document.getElementById('iceVel');
+      const fireEnergyEl = document.getElementById('fireEnergy');
+      const iceEnergyEl = document.getElementById('iceEnergy');
+
+      const tFireMass = document.getElementById('tFireMass');
+      const tIceMass = document.getElementById('tIceMass');
+      const tDeltaMass = document.getElementById('tDeltaMass');
+      const tFireVel = document.getElementById('tFireVel');
+      const tIceVel = document.getElementById('tIceVel');
+      const tDeltaVel = document.getElementById('tDeltaVel');
+      const tFireEnergy = document.getElementById('tFireEnergy');
+      const tIceEnergy = document.getElementById('tIceEnergy');
+      const tDeltaEnergy = document.getElementById('tDeltaEnergy');
+      const tFireMom = document.getElementById('tFireMom');
+      const tIceMom = document.getElementById('tIceMom');
+      const tDeltaMom = document.getElementById('tDeltaMom');
+
+      const fpsDisplay = document.getElementById('fpsDisplay');
+
+      // ---------- UPDATE KPIs & TABLE ----------
+      function updateReadouts() {
+        const f = state.fire;
+        const i = state.ice;
+
+        const fSpeed = Math.hypot(f.vx, f.vy);
+        const iSpeed = Math.hypot(i.vx, i.vy);
+
+        const fEnergy = 0.5 * f.mass * fSpeed * fSpeed;
+        const iEnergy = 0.5 * i.mass * iSpeed * iSpeed;
+
+        const fMom = f.mass * fSpeed;
+        const iMom = i.mass * iSpeed;
+
+        // KPI cards
+        fireVelEl.textContent = fSpeed.toFixed(2);
+        iceVelEl.textContent = iSpeed.toFixed(2);
+        fireEnergyEl.textContent = fEnergy.toFixed(2);
+        iceEnergyEl.textContent = iEnergy.toFixed(2);
+
+        // Table
+        tFireMass.textContent = f.mass.toFixed(1);
+        tIceMass.textContent = i.mass.toFixed(1);
+        tDeltaMass.textContent = (f.mass - i.mass).toFixed(1);
+
+        tFireVel.textContent = fSpeed.toFixed(2);
+        tIceVel.textContent = iSpeed.toFixed(2);
+        tDeltaVel.textContent = (fSpeed - iSpeed).toFixed(2);
+
+        tFireEnergy.textContent = fEnergy.toFixed(2);
+        tIceEnergy.textContent = iEnergy.toFixed(2);
+        tDeltaEnergy.textContent = (fEnergy - iEnergy).toFixed(2);
+
+        tFireMom.textContent = fMom.toFixed(2);
+        tIceMom.textContent = iMom.toFixed(2);
+        tDeltaMom.textContent = (fMom - iMom).toFixed(2);
+      }
+
+      // ---------- PHYSICS STEP ----------
+      function stepPhysics(dt) {
+        const f = state.fire;
+        const i = state.ice;
+        const fr = state.friction;
+        const rest = state.restitution;
+
+        // Friction (velocity damping)
+        const damp = 1 - fr * dt * 10;
+        f.vx *= damp;
+        f.vy *= damp;
+        i.vx *= damp;
+        i.vy *= damp;
+
+        // Move
+        f.x += f.vx * dt * 60;
+        f.y += f.vy * dt * 60;
+        i.x += i.vx * dt * 60;
+        i.y += i.vy * dt * 60;
+
+        // Wall collisions (with restitution)
+        const wallR = state.wallBounce;
+
+        // Fire walls
+        if (f.x - f.r < 0) { f.x = f.r; f.vx = -f.vx * wallR; }
+        if (f.x + f.r > W) { f.x = W - f.r; f.vx = -f.vx * wallR; }
+        if (f.y - f.r < 0) { f.y = f.r; f.vy = -f.vy * wallR; }
+        if (f.y + f.r > H) { f.y = H - f.r; f.vy = -f.vy * wallR; }
+
+        // Ice walls
+        if (i.x - i.r < 0) { i.x = i.r; i.vx = -i.vx * wallR; }
+        if (i.x + i.r > W) { i.x = W - i.r; i.vx = -i.vx * wallR; }
+        if (i.y - i.r < 0) { i.y = i.r; i.vy = -i.vy * wallR; }
+        if (i.y + i.r > H) { i.y = H - i.r; i.vy = -i.vy * wallR; }
+
+        // Ball-ball collision
+        const dx = i.x - f.x;
+        const dy = i.y - f.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = f.r + i.r;
+
+        if (dist < minDist && dist > 0.001) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          // Separate
+          const overlap = minDist - dist;
+          const totalMass = f.mass + i.mass;
+          const fPush = (i.mass / totalMass) * overlap;
+          const iPush = (f.mass / totalMass) * overlap;
+
+          f.x -= nx * fPush;
+          f.y -= ny * fPush;
+          i.x += nx * iPush;
+          i.y += ny * iPush;
+
+          // Relative velocity
+          const dvx = i.vx - f.vx;
+          const dvy = i.vy - f.vy;
+          const vn = dvx * nx + dvy * ny;
+
+          if (vn < 0) {
+            const e = rest;
+            const j = -(1 + e) * vn / (1/f.mass + 1/i.mass);
+
+            f.vx -= (j / f.mass) * nx;
+            f.vy -= (j / f.mass) * ny;
+            i.vx += (j / i.mass) * nx;
+            i.vy += (j / i.mass) * ny;
+          }
+        }
+
+        // Clamp min speed to avoid stop
+        const minSpd = 0.15;
+        const fSpd = Math.hypot(f.vx, f.vy);
+        const iSpd = Math.hypot(i.vx, i.vy);
+        if (fSpd < minSpd && fSpd > 0) {
+          f.vx *= 1.05;
+          f.vy *= 1.05;
+        }
+        if (iSpd < minSpd && iSpd > 0) {
+          i.vx *= 1.05;
+          i.vy *= 1.05;
+        }
+      }
+
+      // ---------- RENDER ----------
+      function render() {
+        ctx.clearRect(0, 0, W, H);
+
+        // Arena grid
+        ctx.strokeStyle = '#1e293b33';
+        ctx.lineWidth = 1;
+        const gridSize = 40;
+        for (let x = 0; x < W; x += gridSize) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, H);
+          ctx.stroke();
+        }
+        for (let y = 0; y < H; y += gridSize) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+        }
+
+        // Arena border
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, W - 2, H - 2);
+
+        // Draw Fire
+        ctx.shadowColor = '#f43f5e';
+        ctx.shadowBlur = 24;
+        ctx.beginPath();
+        ctx.arc(state.fire.x, state.fire.y, state.fire.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#f43f5e';
+        ctx.fill();
+        // Inner glow
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(state.fire.x - 4, state.fire.y - 4, state.fire.r * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = '#fb7185';
+        ctx.fill();
+
+        // Draw Ice
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 24;
+        ctx.beginPath();
+        ctx.arc(state.ice.x, state.ice.y, state.ice.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fill();
+        // Inner highlight
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(state.ice.x - 4, state.ice.y - 4, state.ice.r * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = '#7dd3fc';
+        ctx.fill();
+
+        // Reset shadow
+        ctx.shadowBlur = 0;
+
+        // Labels
+        ctx.font = 'bold 11px "SF Mono", monospace';
+        ctx.fillStyle = '#f43f5e';
+        ctx.fillText('FIRE', state.fire.x - 15, state.fire.y - 30);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText('ICE', state.ice.x - 12, state.ice.y - 30);
+      }
+
+      // ---------- ANIMATION LOOP ----------
+      let lastTime = performance.now();
+      let frameCount = 0;
+      let fpsTimer = 0;
+
+      function animate(now) {
+        const dt = Math.min((now - lastTime) / 1000, 0.033);
+        lastTime = now;
+
+        // Physics substeps for stability
+        const subSteps = 2;
+        for (let s = 0; s < subSteps; s++) {
+          stepPhysics(dt / subSteps);
+        }
+
+        render();
+        updateReadouts();
+
+        // FPS counter
+        frameCount++;
+        fpsTimer += dt;
+        if (fpsTimer > 0.5) {
+          state.fps = Math.round(frameCount / fpsTimer);
+          fpsDisplay.textContent = state.fps + ' FPS';
+          frameCount = 0;
+          fpsTimer = 0;
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      // ---------- SLIDER LISTENERS ----------
+      fireMassSlider.addEventListener('input', function() {
+        state.fire.mass = parseFloat(this.value);
+        fireMassVal.textContent = this.value;
+        updateReadouts();
+      });
+
+      iceMassSlider.addEventListener('input', function() {
+        state.ice.mass = parseFloat(this.value);
+        iceMassVal.textContent = this.value;
+        updateReadouts();
+      });
+
+      frictionSlider.addEventListener('input', function() {
+        state.friction = parseFloat(this.value);
+        frictionVal.textContent = this.value;
+      });
+
+      restitutionSlider.addEventListener('input', function() {
+        state.restitution = parseFloat(this.value);
+        restitutionVal.textContent = this.value;
+      });
+
+      // ---------- PRESET BUTTONS ----------
+      document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const preset = this.dataset.preset;
+          if (preset === 'balanced') {
+            fireMassSlider.value = 1.0;
+            iceMassSlider.value = 1.0;
+            frictionSlider.value = 0.05;
+            restitutionSlider.value = 0.85;
+            state.fire.mass = 1.0;
+            state.ice.mass = 1.0;
+            state.friction = 0.05;
+            state.restitution = 0.85;
+            fireMassVal.textContent = '1.0';
+            iceMassVal.textContent = '1.0';
+            frictionVal.textContent = '0.05';
+            restitutionVal.textContent = '0.85';
+            // Reset positions
+            state.fire.x = 200; state.fire.y = 225;
+            state.fire.vx = 4; state.fire.vy = 1.5;
+            state.ice.x = 600; state.ice.y = 225;
+            state.ice.vx = -3.8; state.ice.vy = -1.2;
+          } else if (preset === 'ice') {
+            fireMassSlider.value = 0.7;
+            iceMassSlider.value = 2.5;
+            frictionSlider.value = 0.02;
+            restitutionSlider.value = 0.95;
+            state.fire.mass = 0.7;
+            state.ice.mass = 2.5;
+            state.friction = 0.02;
+            state.restitution = 0.95;
+            fireMassVal.textContent = '0.7';
+            iceMassVal.textContent = '2.5';
+            frictionVal.textContent = '0.02';
+            restitutionVal.textContent = '0.95';
+            state.fire.x = 300; state.fire.y = 225;
+            state.fire.vx = 2; state.fire.vy = 0.8;
+            state.ice.x = 550; state.ice.y = 225;
+            state.ice.vx = -5; state.ice.vy = -2;
+          } else if (preset === 'fire') {
+            fireMassSlider.value = 2.8;
+            iceMassSlider.value = 0.7;
+            frictionSlider.value = 0.08;
+            restitutionSlider.value = 0.75;
+            state.fire.mass = 2.8;
+            state.ice.mass = 0.7;
+            state.friction = 0.08;
+            state.restitution = 0.75;
+            fireMassVal.textContent = '2.8';
+            iceMassVal.textContent = '0.7';
+            frictionVal.textContent = '0.08';
+            restitutionVal.textContent = '0.75';
+            state.fire.x = 250; state.fire.y = 225;
+            state.fire.vx = 6; state.fire.vy = 2.5;
+            state.ice.x = 600; state.ice.y = 225;
+            state.ice.vx = -2; state.ice.vy = -0.8;
+          } else if (preset === 'chaos') {
+            fireMassSlider.value = 1.8;
+            iceMassSlider.value = 1.8;
+            frictionSlider.value = 0.01;
+            restitutionSlider.value = 0.99;
+            state.fire.mass = 1.8;
+            state.ice.mass = 1.8;
+            state.friction = 0.01;
+            state.restitution = 0.99;
+            fireMassVal.textContent = '1.8';
+            iceMassVal.textContent = '1.8';
+            frictionVal.textContent = '0.01';
+            restitutionVal.textContent = '0.99';
+            state.fire.x = 400; state.fire.y = 150;
+            state.fire.vx = 5; state.fire.vy = 3;
+            state.ice.x = 400; state.ice.y = 300;
+            state.ice.vx = -5; state.ice.vy = -3;
+          }
+          updateReadouts();
+        });
+      });
+
+      // ---------- CANVAS INTERACTION: REPOSITION BALLS ----------
+      canvas.addEventListener('click', function(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = W / rect.width;
+        const scaleY = H / rect.height;
+        const mx = (e.clientX - rect.left) * scaleX;
+        const my = (e.clientY - rect.top) * scaleY;
+
+        // Reposition fire ball
+        state.fire.x = Math.min(Math.max(mx, state.fire.r), W - state.fire.r);
+        state.fire.y = Math.min(Math.max(my, state.fire.r), H - state.fire.r);
+        state.fire.vx = (Math.random() - 0.5) * 8;
+        state.fire.vy = (Math.random() - 0.5) * 8;
+      });
+
+      // ---------- EXPORT CSV ----------
+      document.getElementById('exportCSV').addEventListener('click', function() {
+        const f = state.fire;
+        const i = state.ice;
+        const fSpeed = Math.hypot(f.vx, f.vy);
+        const iSpeed = Math.hypot(i.vx, i.vy);
+        const fEnergy = 0.5 * f.mass * fSpeed * fSpeed;
+        const iEnergy = 0.5 * i.mass * iSpeed * iSpeed;
+        const fMom = f.mass * fSpeed;
+        const iMom = i.mass * iSpeed;
+
+        const rows = [
+          ['Metric', 'FIRE', 'ICE', 'Delta'],
+          ['Mass (kg)', f.mass.toFixed(2), i.mass.toFixed(2), (f.mass - i.mass).toFixed(2)],
+          ['Velocity (m/s)', fSpeed.toFixed(4), iSpeed.toFixed(4), (fSpeed - iSpeed).toFixed(4)],
+          ['Kinetic Energy (J)', fEnergy.toFixed(4), iEnergy.toFixed(4), (fEnergy - iEnergy).toFixed(4)],
+          ['Momentum (kg·m/s)', fMom.toFixed(4), iMom.toFixed(4), (fMom - iMom).toFixed(4)],
+          ['', '', '', ''],
+          ['Friction', state.friction.toFixed(3)],
+          ['Restitution', state.restitution.toFixed(3)],
+          ['Timestamp', new Date().toISOString()]
+        ];
+
+        const csv = rows.map(r => r.map(cell => `"${cell}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'kineticzen_fire_vs_ice_telemetry.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      });
+
+      // ---------- COPY SCENARIO LINK ----------
+      document.getElementById('copyLink').addEventListener('click', function() {
+        const params = new URLSearchParams();
+        params.set('fm', state.fire.mass.toFixed(1));
+        params.set('im', state.ice.mass.toFixed(1));
+        params.set('fr', state.friction.toFixed(2));
+        params.set('re', state.restitution.toFixed(2));
+
+        const base = window.location.href.split('?')[0];
+        const url = base + '?' + params.toString();
+
+        navigator.clipboard.writeText(url).then(() => {
+          const btn = this;
+          const original = btn.textContent;
+          btn.textContent = '✓ Copied!';
+          setTimeout(() => { btn.textContent = original; }, 2000);
+        }).catch(() => {
+          prompt('Copy scenario link:', url);
+        });
+      });
+
+      // ---------- JSON-LD LINK ----------
+      document.getElementById('jsonLdLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        const schema = document.querySelector('script[type="application/ld+json"]');
+        alert('Embedded JSON-LD SoftwareApplication schema:\n\n' + schema.textContent);
+      });
+
+      // ---------- INIT FPS ----------
+      fpsDisplay.textContent = '60 FPS';
+
+      // ---------- START ----------
+      requestAnimationFrame(animate);
+      updateReadouts();
+
+      // Handle URL params for scenario linking
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('fm')) {
+        const fm = parseFloat(urlParams.get('fm'));
+        fireMassSlider.value = fm;
+        fireMassVal.textContent = fm.toFixed(1);
+        state.fire.mass = fm;
+      }
+      if (urlParams.has('im')) {
+        const im = parseFloat(urlParams.get('im'));
+        iceMassSlider.value = im;
+        iceMassVal.textContent = im.toFixed(1);
+        state.ice.mass = im;
+      }
+      if (urlParams.has('fr')) {
+        const fr = parseFloat(urlParams.get('fr'));
+        frictionSlider.value = fr;
+        frictionVal.textContent = fr.toFixed(2);
+        state.friction = fr;
+      }
+      if (urlParams.has('re')) {
+        const re = parseFloat(urlParams.get('re'));
+        restitutionSlider.value = re;
+        restitutionVal.textContent = re.toFixed(2);
+        state.restitution = re;
+      }
+      updateReadouts();
+
+    })();
+  </script>
+</body>
+</html>
