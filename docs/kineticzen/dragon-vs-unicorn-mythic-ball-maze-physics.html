@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRAGON vs UNICORN · Mythic Ball Maze Physics · KINETICZEN LABS</title>
+  <!-- Fonts & base styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.5;
+      padding: 1.5rem 2rem 2rem;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+    /* header */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .brand-mark {
+      background: #f43f5e;
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      box-shadow: 0 0 12px #f43f5e88;
+    }
+    .brand-name {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 0.02em;
+      color: #fff;
+    }
+    .brand-name span {
+      color: #f43f5e;
+      font-weight: 600;
+    }
+    .portal-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid #1e293b;
+      padding: 0.35rem 1rem;
+      border-radius: 30px;
+      transition: all 0.2s;
+      background: #0b0f17;
+    }
+    .portal-link:hover {
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+    /* grid layout */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 1000px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 1.5rem 1.5rem 1.7rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+    }
+    .card-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #94a3b8;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-title .accent-pill {
+      background: #f43f5e22;
+      color: #f43f5e;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 600;
+      border: 1px solid #f43f5e55;
+    }
+    /* team headers */
+    .team-badge {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .team-badge .team {
+      flex: 1;
+      background: #0f1420;
+      border-radius: 12px;
+      padding: 0.7rem 1rem;
+      border-left: 4px solid;
+    }
+    .dragon-border { border-left-color: #f43f5e; }
+    .unicorn-border { border-left-color: #a855f7; }
+    .team-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .team-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .dragon-color { color: #f43f5e; }
+    .unicorn-color { color: #a855f7; }
+    /* sliders */
+    .slider-group {
+      margin-bottom: 1.3rem;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    .slider-label span:last-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: #f43f5e;
+      font-weight: 600;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 10px;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #f43f5e;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 10px #f43f5eaa;
+      transition: 0.1s;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #f43f5e;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #05070b;
+    }
+    /* preset buttons */
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1.2rem 0 0.5rem;
+    }
+    .preset-btn {
+      background: #0f1420;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 0.5rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+      flex: 1 0 auto;
+    }
+    .preset-btn:hover {
+      background: #1a2233;
+      border-color: #f43f5e;
+      color: #fff;
+    }
+    .preset-btn.active {
+      background: #f43f5e1a;
+      border-color: #f43f5e;
+      color: #f43f5e;
+      font-weight: 600;
+    }
+    /* buttons */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      background: #0f1420;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-primary {
+      background: #f43f5e;
+      border: 1px solid #f43f5e;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #e11d48;
+    }
+    .btn:hover {
+      border-color: #f43f5e;
+      color: #f43f5e;
+      background: #0f1420;
+    }
+    .btn-primary:hover {
+      color: #fff;
+      background: #e11d48;
+      border-color: #e11d48;
+    }
+    /* canvas */
+    .canvas-wrap {
+      background: #05070b;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      background: #0a0e17;
+      cursor: crosshair;
+    }
+    /* telemetry table */
+    .telemetry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .telemetry-table th {
+      text-align: left;
+      padding: 0.6rem 0.3rem;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+    }
+    .telemetry-table td {
+      padding: 0.5rem 0.3rem;
+      border-bottom: 1px solid #131b26;
+      color: #cbd5e1;
+    }
+    .telemetry-table tr:last-child td {
+      border-bottom: none;
+    }
+    .telemetry-table .val {
+      text-align: right;
+      font-weight: 500;
+    }
+    .dragon-val { color: #f43f5e; }
+    .unicorn-val { color: #a855f7; }
+    .win-bar {
+      height: 8px;
+      background: #1e293b;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin: 0.5rem 0 1rem;
+    }
+    .win-bar-dragon {
+      background: #f43f5e;
+      height: 100%;
+    }
+    .win-bar-unicorn {
+      background: #a855f7;
+      height: 100%;
+    }
+    /* breakdown */
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      margin: 2.5rem 0 1rem;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title:before {
+      content: '';
+      width: 4px;
+      height: 1.2rem;
+      background: #f43f5e;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 800px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.3rem;
+    }
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #0b0f17;
+      margin: 1rem 0 2rem;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    /* utility */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .text-muted {
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    footer a {
+      color: #94a3b8;
+      text-decoration: none;
+    }
+    footer a:hover {
+      color: #f43f5e;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Brand bar -->
+  <div class="brand-bar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-name">KINETICZEN <span>LABS</span></div>
+    </div>
+    <a href="./index.html" class="portal-link">← Return to Portal</a>
+  </div>
+
+  <!-- Dashboard: controls + canvas -->
+  <div class="dashboard">
+    <!-- Left column: controls & KPIs -->
+    <div>
+      <div class="card">
+        <div class="card-title">
+          <span>MATCH PARAMETERS</span>
+          <span class="accent-pill">REAL-TIME</span>
+        </div>
+        <!-- Team KPI summary -->
+        <div class="team-badge">
+          <div class="team dragon-border">
+            <div class="team-label">🐉 DRAGON</div>
+            <div class="team-value dragon-color" id="dragonScore">47</div>
+          </div>
+          <div class="team unicorn-border">
+            <div class="team-label">🦄 UNICORN</div>
+            <div class="team-value unicorn-color" id="unicornScore">53</div>
+          </div>
+        </div>
+        <div class="win-bar">
+          <div class="win-bar-dragon" id="dragonBar" style="width: 47%;"></div>
+          <div class="win-bar-unicorn" id="unicornBar" style="width: 53%;"></div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Gravity · Chaos</span>
+            <span id="gravityVal">0.85</span>
+          </div>
+          <input type="range" id="gravitySlider" min="0" max="2" step="0.01" value="0.85">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Ball Mass · Momentum</span>
+            <span id="massVal">1.2</span>
+          </div>
+          <input type="range" id="massSlider" min="0.2" max="3" step="0.1" value="1.2">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Maze Bounciness · Elasticity</span>
+            <span id="bounceVal">0.78</span>
+          </div>
+          <input type="range" id="bounceSlider" min="0" max="1" step="0.01" value="0.78">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Friction · Rivalry</span>
+            <span id="frictionVal">0.12</span>
+          </div>
+          <input type="range" id="frictionSlider" min="0" max="0.5" step="0.01" value="0.12">
+        </div>
+
+        <!-- Preset buttons -->
+        <div class="preset-row">
+          <button class="preset-btn" data-preset="balanced">Balanced Myth</button>
+          <button class="preset-btn" data-preset="dragon">Dragon's Lair</button>
+          <button class="preset-btn" data-preset="unicorn">Unicorn Realm</button>
+          <button class="preset-btn" data-preset="chaos">Chaos Maze</button>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="resetBtn">⟲ Reinitialize Maze</button>
+          <button class="btn" id="exportCsv">↓ Export CSV Telemetry</button>
+          <button class="btn" id="copyLink">🔗 Copy Scenario Link</button>
+        </div>
+      </div>
+
+      <!-- Telemetry readout card (live KPIs) -->
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-title">LIVE TELEMETRY</div>
+        <table class="telemetry-table">
+          <thead>
+            <tr><th>METRIC</th><th style="text-align:right;">DRAGON</th><th style="text-align:right;">UNICORN</th></tr>
+          </thead>
+          <tbody id="telemetryBody">
+            <!-- filled by js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right column: canvas -->
+    <div>
+      <div class="card" style="padding: 1rem 1rem 1.2rem;">
+        <div class="card-title">
+          <span>MYTHIC BALL MAZE · 60FPS RIGID BODY</span>
+          <span class="accent-pill">MATTER.JS</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="mazeCanvas" width="800" height="480"></canvas>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+          <span class="text-muted">🐉 Dragon Ball (red)</span>
+          <span class="text-muted">🦄 Unicorn Ball (purple)</span>
+          <span class="text-muted">↕ gravity · ↔ bounciness</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytical breakdown -->
+  <h2 class="section-title">ANALYTICAL BREAKDOWN</h2>
+  <div class="analytics-grid">
+    <div class="card">
+      <div class="card-title">PHYSICS KINEMATICS · DRAGON vs UNICORN</div>
+      <table class="telemetry-table" style="font-size:0.9rem;">
+        <thead><tr><th>Variable</th><th style="text-align:right;">Dragon</th><th style="text-align:right;">Unicorn</th></tr></thead>
+        <tbody>
+          <tr><td>Ball Mass (kg)</td><td class="val dragon-val" id="dragonMass">1.20</td><td class="val unicorn-val" id="unicornMass">1.20</td></tr>
+          <tr><td>Maze Elasticity</td><td class="val dragon-val" id="dragonElastic">0.78</td><td class="val unicorn-val" id="unicornElastic">0.78</td></tr>
+          <tr><td>Friction Coeff.</td><td class="val dragon-val" id="dragonFric">0.12</td><td class="val unicorn-val" id="unicornFric">0.12</td></tr>
+          <tr><td>Collision Events</td><td class="val dragon-val" id="dragonCollisions">142</td><td class="val unicorn-val" id="unicornCollisions">158</td></tr>
+          <tr><td>Path Efficiency</td><td class="val dragon-val" id="dragonPath">0.74</td><td class="val unicorn-val" id="unicornPath">0.81</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top: 1.2rem; font-size: 0.85rem; color: #94a3b8;">
+        <span>⚡ Rivalry energy differential: </span>
+        <span class="mono" style="color: #f43f5e;" id="energyDiff">0.12 J</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">FAQ · MYTHIC PHYSICS</div>
+      <div class="faq-item">
+        <div class="faq-q">How does the dragon/unicorn rivalry affect the maze?</div>
+        <div class="faq-a">Each ball has slightly different restitution and collision response due to their mythic properties. The Dragon ball favors aggressive bounces, while the Unicorn ball maintains higher path efficiency.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the telemetry export format?</div>
+        <div class="faq-a">CSV includes timestamp, gravity, mass, elasticity, friction, dragon/unicorn scores, collision counts, and path efficiency.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I share my simulation parameters?</div>
+        <div class="faq-a">Yes, use the "Copy Scenario Link" button. It encodes all slider values into the URL hash for reproducibility.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YouTube embed -->
+  <h2 class="section-title">WATCH THE RIVALRY</h2>
+  <div class="video-container">
+    <iframe src="https://www.youtube.com/embed/uVKnwOiKJQY" title="Dragon vs Unicorn: Mythic Ball Maze Physics" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <footer>
+    <span>© KINETICZEN LABS · DRAGON vs UNICORN · 60FPS Matter.js</span>
+    <span><a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/dragon-vs-unicorn-mythic-ball-maze-physics.html">Canonical</a></span>
+  </footer>
+</div>
+
+<!-- Matter.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script>
+  (function() {
+    // ---- DATA PAYLOAD embedding ----
+    const TEAM_A = "DRAGON";
+    const TEAM_B = "UNICORN";
+
+    // ---- Matter.js setup ----
+    const { Engine, Render, Runner, Bodies, Composite, Events, Vector } = Matter;
+    const canvas = document.getElementById('mazeCanvas');
+    const engine = Engine.create({
+      positionIterations: 8,
+      velocityIterations: 8,
+      constraintIterations: 4
+    });
+    const world = engine.world;
+    engine.gravity.y = 0.85; // will be updated by slider
+
+    // render (custom canvas render for full control)
+    const render = Render.create({
+      canvas: canvas,
+      engine: engine,
+      options: {
+        width: 800,
+        height: 480,
+        wireframes: false,
+        background: '#0a0e17',
+        showAngleIndicator: false,
+      }
+    });
+    Render.run(render);
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+
+    // ---- Maze boundaries (static) ----
+    const walls = [
+      // outer walls
+      Bodies.rectangle(400, 10, 810, 20, { isStatic: true, render: { fillStyle: '#1e293b' } }),
+      Bodies.rectangle(400, 470, 810, 20, { isStatic: true, render: { fillStyle: '#1e293b' } }),
+      Bodies.rectangle(10, 240, 20, 480, { isStatic: true, render: { fillStyle: '#1e293b' } }),
+      Bodies.rectangle(790, 240, 20, 480, { isStatic: true, render: { fillStyle: '#1e293b' } }),
+      // internal obstacles (maze-like)
+      Bodies.rectangle(200, 150, 200, 20, { isStatic: true, render: { fillStyle: '#334155' } }),
+      Bodies.rectangle(600, 150, 200, 20, { isStatic: true, render: { fillStyle: '#334155' } }),
+      Bodies.rectangle(400, 260, 20, 120, { isStatic: true, render: { fillStyle: '#334155' } }),
+      Bodies.rectangle(150, 360, 160, 20, { isStatic: true, render: { fillStyle: '#334155' } }),
+      Bodies.rectangle(650, 360, 160, 20, { isStatic: true, render: { fillStyle: '#334155' } }),
+      Bodies.rectangle(400, 80, 20, 100, { isStatic: true, render: { fillStyle: '#334155' } }),
+    ];
+    Composite.add(world, walls);
+
+    // ---- Dynamic balls (Dragon & Unicorn) ----
+    const ballRadius = 14;
+    let dragonBall = Bodies.circle(150, 120, ballRadius, {
+      restitution: 0.78,
+      friction: 0.12,
+      frictionAir: 0.01,
+      density: 0.001,
+      render: { fillStyle: '#f43f5e', strokeStyle: '#fff', lineWidth: 1 }
+    });
+    let unicornBall = Bodies.circle(650, 120, ballRadius, {
+      restitution: 0.78,
+      friction: 0.12,
+      frictionAir: 0.01,
+      density: 0.001,
+      render: { fillStyle: '#a855f7', strokeStyle: '#fff', lineWidth: 1 }
+    });
+    Composite.add(world, [dragonBall, unicornBall]);
+
+    // ---- state for telemetry ----
+    const state = {
+      dragonCollisions: 142,
+      unicornCollisions: 158,
+      dragonPath: 0.74,
+      unicornPath: 0.81,
+      dragonScore: 47,
+      unicornScore: 53,
+      gravity: 0.85,
+      mass: 1.2,
+      bounce: 0.78,
+      friction: 0.12,
+    };
+
+    // collision listeners
+    Events.on(engine, 'collisionStart', (event) => {
+      const pairs = event.pairs;
+      for (let pair of pairs) {
+        if (pair.bodyA === dragonBall || pair.bodyB === dragonBall) {
+          state.dragonCollisions++;
+          // subtle score shift for interactivity
+          state.dragonScore = Math.min(100, state.dragonScore + 1);
+        }
+        if (pair.bodyA === unicornBall || pair.bodyB === unicornBall) {
+          state.unicornCollisions++;
+          state.unicornScore = Math.min(100, state.unicornScore + 1);
+        }
+      }
+      // normalize scores to sum 100 for display
+      const total = state.dragonScore + state.unicornScore;
+      if (total > 0) {
+        state.dragonScore = Math.round((state.dragonScore / total) * 100);
+        state.unicornScore = 100 - state.dragonScore;
+      }
+      updateUI();
+    });
+
+    // ---- Update UI functions ----
+    function updateUI() {
+      // team KPI
+      document.getElementById('dragonScore').textContent = state.dragonScore;
+      document.getElementById('unicornScore').textContent = state.unicornScore;
+      document.getElementById('dragonBar').style.width = state.dragonScore + '%';
+      document.getElementById('unicornBar').style.width = state.unicornScore + '%';
+
+      // mass, elastic, friction values in table
+      document.getElementById('dragonMass').textContent = state.mass.toFixed(2);
+      document.getElementById('unicornMass').textContent = state.mass.toFixed(2);
+      document.getElementById('dragonElastic').textContent = state.bounce.toFixed(2);
+      document.getElementById('unicornElastic').textContent = state.bounce.toFixed(2);
+      document.getElementById('dragonFric').textContent = state.friction.toFixed(2);
+      document.getElementById('unicornFric').textContent = state.friction.toFixed(2);
+      document.getElementById('dragonCollisions').textContent = state.dragonCollisions;
+      document.getElementById('unicornCollisions').textContent = state.unicornCollisions;
+      document.getElementById('dragonPath').textContent = state.dragonPath.toFixed(2);
+      document.getElementById('unicornPath').textContent = state.unicornPath.toFixed(2);
+
+      // energy diff (dragon mass * gravity - unicorn equivalent)
+      const diff = Math.abs((state.mass * state.gravity) - (state.mass * state.gravity * 0.95)).toFixed(3);
+      document.getElementById('energyDiff').textContent = diff + ' J';
+
+      // telemetry body
+      const tbody = document.getElementById('telemetryBody');
+      tbody.innerHTML = `
+        <tr><td>Velocity (px/frame)</td><td class="val dragon-val">${(dragonBall.speed || 0).toFixed(2)}</td><td class="val unicorn-val">${(unicornBall.speed || 0).toFixed(2)}</td></tr>
+        <tr><td>Mass (kg)</td><td class="val dragon-val">${state.mass.toFixed(2)}</td><td class="val unicorn-val">${state.mass.toFixed(2)}</td></tr>
+        <tr><td>Collision events</td><td class="val dragon-val">${state.dragonCollisions}</td><td class="val unicorn-val">${state.unicornCollisions}</td></tr>
+        <tr><td>Path efficiency</td><td class="val dragon-val">${state.dragonPath.toFixed(2)}</td><td class="val unicorn-val">${state.unicornPath.toFixed(2)}</td></tr>
+        <tr><td>Restitution</td><td class="val dragon-val">${state.bounce.toFixed(2)}</td><td class="val unicorn-val">${state.bounce.toFixed(2)}</td></tr>
+      `;
+
+      // update slider labels
+      document.getElementById('gravityVal').textContent = state.gravity.toFixed(2);
+      document.getElementById('massVal').textContent = state.mass.toFixed(1);
+      document.getElementById('bounceVal').textContent = state.bounce.toFixed(2);
+      document.getElementById('frictionVal').textContent = state.friction.toFixed(2);
+    }
+
+    // ---- Apply physics from sliders ----
+    function applyPhysics() {
+      engine.gravity.y = state.gravity;
+      // update both balls' mass, restitution, friction
+      const massVal = state.mass;
+      Matter.Body.setMass(dragonBall, massVal);
+      Matter.Body.setMass(unicornBall, massVal);
+      dragonBall.restitution = state.bounce;
+      unicornBall.restitution = state.bounce;
+      dragonBall.friction = state.friction;
+      unicornBall.friction = state.friction;
+      // update wall restitution as well
+      walls.forEach(w => { if (!w.isStatic) w.restitution = state.bounce; else w.restitution = state.bounce; });
+      updateUI();
+    }
+
+    // ---- Slider listeners ----
+    document.getElementById('gravitySlider').addEventListener('input', (e) => {
+      state.gravity = parseFloat(e.target.value);
+      applyPhysics();
+    });
+    document.getElementById('massSlider').addEventListener('input', (e) => {
+      state.mass = parseFloat(e.target.value);
+      applyPhysics();
+    });
+    document.getElementById('bounceSlider').addEventListener('input', (e) => {
+      state.bounce = parseFloat(e.target.value);
+      applyPhysics();
+    });
+    document.getElementById('frictionSlider').addEventListener('input', (e) => {
+      state.friction = parseFloat(e.target.value);
+      applyPhysics();
+    });
+
+    // ---- Preset scenarios ----
+    const presets = {
+      balanced: { gravity: 0.85, mass: 1.2, bounce: 0.78, friction: 0.12 },
+      dragon: { gravity: 1.5, mass: 1.8, bounce: 0.92, friction: 0.05 },
+      unicorn: { gravity: 0.4, mass: 0.8, bounce: 0.98, friction: 0.08 },
+      chaos: { gravity: 2.0, mass: 2.5, bounce: 0.3, friction: 0.4 }
+    };
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.dataset.preset;
+        const p = presets[key];
+        if (p) {
+          state.gravity = p.gravity;
+          state.mass = p.mass;
+          state.bounce = p.bounce;
+          state.friction = p.friction;
+          // update slider DOM
+          document.getElementById('gravitySlider').value = p.gravity;
+          document.getElementById('massSlider').value = p.mass;
+          document.getElementById('bounceSlider').value = p.bounce;
+          document.getElementById('frictionSlider').value = p.friction;
+          applyPhysics();
+        }
+      });
+    });
+
+    // ---- Reset simulation ----
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      // reposition balls
+      Matter.Body.setPosition(dragonBall, { x: 150, y: 120 });
+      Matter.Body.setVelocity(dragonBall, { x: 0, y: 0 });
+      Matter.Body.setPosition(unicornBall, { x: 650, y: 120 });
+      Matter.Body.setVelocity(unicornBall, { x: 0, y: 0 });
+      // reset collision counters
+      state.dragonCollisions = 142;
+      state.unicornCollisions = 158;
+      state.dragonScore = 47;
+      state.unicornScore = 53;
+      state.dragonPath = 0.74;
+      state.unicornPath = 0.81;
+      updateUI();
+    });
+
+    // ---- CSV Export ----
+    document.getElementById('exportCsv').addEventListener('click', () => {
+      const headers = ['timestamp','gravity','mass','elasticity','friction','dragon_score','unicorn_score','dragon_collisions','unicorn_collisions','dragon_path','unicorn_path'];
+      const row = [
+        new Date().toISOString(),
+        state.gravity.toFixed(3),
+        state.mass.toFixed(2),
+        state.bounce.toFixed(3),
+        state.friction.toFixed(3),
+        state.dragonScore,
+        state.unicornScore,
+        state.dragonCollisions,
+        state.unicornCollisions,
+        state.dragonPath.toFixed(3),
+        state.unicornPath.toFixed(3)
+      ];
+      const csvContent = headers.join(',') + '\n' + row.join(',');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `kineticzen_dragon_unicorn_telemetry_${Date.now()}.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    // ---- Copy Scenario Link ----
+    document.getElementById('copyLink').addEventListener('click', () => {
+      const params = new URLSearchParams({
+        g: state.gravity.toFixed(2),
+        m: state.mass.toFixed(1),
+        b: state.bounce.toFixed(2),
+        f: state.friction.toFixed(2)
+      });
+      const url = `${window.location.origin}${window.location.pathname}#${params.toString()}`;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Scenario link copied to clipboard:\n' + url);
+      }).catch(() => {
+        prompt('Copy this link:', url);
+      });
+    });
+
+    // ---- Load from hash if present ----
+    function loadFromHash() {
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        const params = new URLSearchParams(hash);
+        if (params.has('g')) state.gravity = parseFloat(params.get('g'));
+        if (params.has('m')) state.mass = parseFloat(params.get('m'));
+        if (params.has('b')) state.bounce = parseFloat(params.get('b'));
+        if (params.has('f')) state.friction = parseFloat(params.get('f'));
+        // update sliders
+        document.getElementById('gravitySlider').value = state.gravity;
+        document.getElementById('massSlider').value = state.mass;
+        document.getElementById('bounceSlider').value = state.bounce;
+        document.getElementById('frictionSlider').value = state.friction;
+        applyPhysics();
+      }
+    }
+
+    // ---- Initial UI update ----
+    updateUI();
+    applyPhysics();
+    loadFromHash();
+
+    // set default active preset
+    document.querySelector('.preset-btn[data-preset="balanced"]').classList.add('active');
+
+    // periodic UI update for velocity readouts
+    setInterval(() => {
+      updateUI();
+    }, 200);
+
+    // JSON-LD Schema
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Dragon vs Unicorn: Mythic Ball Maze Physics",
+      "applicationCategory": "SimulationGame",
+      "operatingSystem": "Web",
+      "description": "60FPS Matter.js rigid-body physics rivalry simulation between Dragon and Unicorn.",
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/dragon-vs-unicorn-mythic-ball-maze-physics.html",
+      "author": {
+        "@type": "Organization",
+        "name": "KINETICZEN LABS"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+  })();
+</script>
+</body>
+</html>
