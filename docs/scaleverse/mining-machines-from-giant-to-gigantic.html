@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Mining Machines · Giant to Gigantic</title>
+  <meta name="description" content="Interactive scale workstation for mining equipment: Liebherr R 9800, Caterpillar 797F, Bucyrus 495HR, Big Muskie, Bagger 288. Compare heights, lengths, and visual scale.">
+  <style>
+    :root {
+      --bg: #05070b;
+      --card: #0b0f17;
+      --border: #1e293b;
+      --accent: #38bdf8;
+      --accent-dim: rgba(56, 189, 248, 0.15);
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand h1 span {
+      color: var(--accent);
+    }
+
+    .portal-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      background: var(--card);
+    }
+
+    .portal-link:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* Grid layout */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Control groups */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .slider-control {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-control label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .slider-control label span.value {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      cursor: pointer;
+    }
+
+    /* Preset buttons */
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .btn.active {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      color: var(--bg);
+    }
+
+    /* Canvas */
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #080c14;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* KPI readouts */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .kpi {
+      background: #0f1522;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-family: var(--mono);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .kpi-value small {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.mono {
+      font-family: var(--mono);
+      font-weight: 600;
+    }
+
+    .bar-cell {
+      width: 40%;
+    }
+
+    .bar-track {
+      background: #1a2332;
+      border-radius: 4px;
+      height: 8px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      cursor: pointer;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .faq-question .icon {
+      color: var(--accent);
+      font-size: 1.2rem;
+      transition: transform 0.2s;
+      font-family: var(--mono);
+    }
+
+    .faq-item.open .icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding-top: 12px;
+    }
+
+    /* Video embed */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Utility */
+    .flex-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <h1>SCALEVERSE <span>3D</span></h1>
+        <span class="subtitle">Mining Machines · Giant to Gigantic</span>
+      </div>
+      <a href="./index.html" class="portal-link" target="_blank" rel="noopener">← Portal Index</a>
+    </header>
+
+    <!-- Top section: Controls + Canvas -->
+    <div class="grid-2">
+      <!-- Left: Controls -->
+      <div class="card">
+        <div class="card-title">Simulation Controls</div>
+        <div class="control-group">
+          <div class="slider-control">
+            <label>
+              <span>Human Reference Scale</span>
+              <span class="value" id="humanScaleVal">1.0×</span>
+            </label>
+            <input type="range" id="humanScale" min="0.5" max="2.0" step="0.1" value="1.0">
+          </div>
+          <div class="slider-control">
+            <label>
+              <span>Zoom Factor</span>
+              <span class="value" id="zoomVal">1.0×</span>
+            </label>
+            <input type="range" id="zoomFactor" min="0.5" max="2.0" step="0.1" value="1.0">
+          </div>
+          <div class="slider-control">
+            <label>
+              <span>Machine Highlight Index</span>
+              <span class="value" id="highlightVal">0</span>
+            </label>
+            <input type="range" id="highlightIndex" min="0" max="4" step="1" value="0">
+          </div>
+        </div>
+        <div class="preset-buttons mt-4">
+          <button class="btn preset-btn" data-preset="compare">Compare All</button>
+          <button class="btn preset-btn" data-preset="giant">Giant Focus</button>
+          <button class="btn preset-btn" data-preset="gigantic">Gigantic Focus</button>
+          <button class="btn preset-btn" data-preset="human">Human Scale</button>
+          <button class="btn preset-btn" data-preset="reset">Reset</button>
+        </div>
+        <div class="flex-row mt-4">
+          <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+          <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+        </div>
+      </div>
+
+      <!-- Right: Canvas Visualization -->
+      <div class="card">
+        <div class="card-title">Scale Visualization</div>
+        <canvas id="scaleCanvas" width="800" height="500"></canvas>
+      </div>
+    </div>
+
+    <!-- KPI Readouts -->
+    <div class="card">
+      <div class="card-title">Telemetry Readouts</div>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <span class="kpi-label">Total Machines</span>
+          <span class="kpi-value" id="kpiTotal">5</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Tallest Machine</span>
+          <span class="kpi-value" id="kpiTallest">—</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Max Height</span>
+          <span class="kpi-value" id="kpiMaxHeight">— <small>m</small></span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Avg Height</span>
+          <span class="kpi-value" id="kpiAvgHeight">— <small>m</small></span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Ratio (Max/Human)</span>
+          <span class="kpi-value" id="kpiRatio">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="card-title">Analytical Breakdown</div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Machine</th>
+              <th>Height / Length (m)</th>
+              <th>Description</th>
+              <th class="bar-cell">Relative Scale</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Video Embed -->
+    <div class="card">
+      <div class="card-title">Featured Video</div>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/EtOLGhTExyc" title="Mining Machines: From Giant to Gigantic" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+      <div class="card-title">Frequently Asked Questions</div>
+      <div id="faqContainer">
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>What is the tallest machine in the dataset?</span>
+            <span class="icon">+</span>
+          </div>
+          <div class="faq-answer">The Bagger 288 is the tallest at 96 meters, followed by Big Muskie at 68 meters.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>How does the scale comparison work?</span>
+            <span class="icon">+</span>
+          </div>
+          <div class="faq-answer">The visualization uses a logarithmic-ish scale to fit all machines into the canvas view. Heights are normalized against the maximum value (Bagger 288 at 96 m). Human reference is approximately 1.8 m tall for scale.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>What does "Copy Scenario Link" do?</span>
+            <span class="icon">+</span>
+          </div>
+          <div class="faq-answer">It generates a URL-encoded link that preserves your current slider positions and highlight index, so you can share an exact view with others.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can I export the data?</span>
+            <span class="icon">+</span>
+          </div>
+          <div class="faq-answer">Yes, the "Export CSV Telemetry" button generates a CSV file containing the current scale factors and the full dataset for offline analysis.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>What is the significance of the Caterpillar 797F?</span>
+            <span class="icon">+</span>
+          </div>
+          <div class="faq-answer">The Caterpillar 797F is a haul truck, which is measured by length (14.8 m) rather than height. It's included for comparison to show different machine types.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>SCALEVERSE 3D · Interactive Mining Equipment Simulation · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/mining-machines-from-giant-to-gigantic.html" target="_blank" rel="noopener">Canonical URL</a></p>
+      <p class="mt-2">Data source: Mining Machines — From Giant to Gigantic</p>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D · Mining Machines Simulation",
+    "description": "Interactive visual simulation comparing the scale of giant mining machines including Liebherr R 9800, Caterpillar 797F, Bucyrus 495HR, Big Muskie, and Bagger 288.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/mining-machines-from-giant-to-gigantic.html",
+    "author": {
+      "@type": "Organization",
+      "name": "SCALEVERSE 3D"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "Mining Machines Scale Comparison"
+    }
+  }
+  </script>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ===== DATA =====
+      const DATA = [
+        { name: "Liebherr R 9800", meters: 10.5, metric: "10.5 m tall" },
+        { name: "Caterpillar 797F", meters: 14.8, metric: "14.8 m long" },
+        { name: "Bucyrus 495HR", meters: 20.7, metric: "20.7 m tall" },
+        { name: "Big Muskie", meters: 68, metric: "68 m tall" },
+        { name: "Bagger 288", meters: 96, metric: "96 m tall" }
+      ];
+
+      const MAX_METERS = Math.max(...DATA.map(d => d.meters));
+      const HUMAN_HEIGHT = 1.8; // meters
+
+      // State
+      let state = {
+        humanScale: 1.0,
+        zoomFactor: 1.0,
+        highlightIndex: 0
+      };
+
+      // ===== DOM REFS =====
+      const canvas = document.getElementById('scaleCanvas');
+      const ctx = canvas.getContext('2d');
+      const humanScaleInput = document.getElementById('humanScale');
+      const humanScaleVal = document.getElementById('humanScaleVal');
+      const zoomFactorInput = document.getElementById('zoomFactor');
+      const zoomVal = document.getElementById('zoomVal');
+      const highlightIndexInput = document.getElementById('highlightIndex');
+      const highlightVal = document.getElementById('highlightVal');
+      const tableBody = document.getElementById('tableBody');
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
+      const toast = document.getElementById('toast');
+
+      // KPI elements
+      const kpiTotal = document.getElementById('kpiTotal');
+      const kpiTallest = document.getElementById('kpiTallest');
+      const kpiMaxHeight = document.getElementById('kpiMaxHeight');
+      const kpiAvgHeight = document.getElementById('kpiAvgHeight');
+      const kpiRatio = document.getElementById('kpiRatio');
+
+      // ===== CANVAS RENDERING =====
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        const rect = container.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.min(rect.width - 40, 1000) * dpr;
+        canvas.height = 500 * dpr;
+        canvas.style.width = Math.min(rect.width - 40, 1000) + 'px';
+        canvas.style.height = '500px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        draw();
+      }
+
+      function draw() {
+        const w = canvas.width / (window.devicePixelRatio || 1);
+        const h = canvas.height / (window.devicePixelRatio || 1);
+        ctx.clearRect(0, 0, w, h);
+
+        // Background
+        ctx.fillStyle = '#080c14';
+        ctx.fillRect(0, 0, w, h);
+
+        // Grid lines
+        ctx.strokeStyle = '#1a2332';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 5; i++) {
+          const y = (h - 80) * (i / 5) + 40;
+          ctx.beginPath();
+          ctx.moveTo(40, y);
+          ctx.lineTo(w - 40, y);
+          ctx.stroke();
+        }
+
+        const baseY = h - 60;
+        const maxBarHeight = h - 140;
+        const barSpacing = (w - 120) / DATA.length;
+        const zoom = state.zoomFactor;
+        const human = HUMAN_HEIGHT * state.humanScale;
+
+        // Draw bars
+        DATA.forEach((item, i) => {
+          const x = 60 + i * barSpacing + barSpacing / 2;
+          const barHeight = (item.meters / MAX_METERS) * maxBarHeight * zoom;
+          const barWidth = Math.min(barSpacing * 0.5, 80);
+
+          const isHighlighted = i === state.highlightIndex;
+          const alpha = isHighlighted ? 1.0 : 0.55;
+
+          // Bar
+          const gradient = ctx.createLinearGradient(0, baseY - barHeight, 0, baseY);
+          if (isHighlighted) {
+            gradient.addColorStop(0, '#38bdf8');
+            gradient.addColorStop(1, '#0ea5e9');
+          } else {
+            gradient.addColorStop(0, 'rgba(56, 189, 248, 0.6)');
+            gradient.addColorStop(1, 'rgba(14, 165, 233, 0.3)');
+          }
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.roundRect(x - barWidth / 2, baseY - barHeight, barWidth, barHeight, 4);
+          ctx.fill();
+
+          // Highlight border
+          if (isHighlighted) {
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(x - barWidth / 2, baseY - barHeight, barWidth, barHeight, 4);
+            ctx.stroke();
+          }
+
+          // Height label
+          ctx.fillStyle = isHighlighted ? '#38bdf8' : '#94a3b8';
+          ctx.font = isHighlighted ? 'bold 13px ' + getComputedStyle(document.body).getPropertyValue('--mono') : '12px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+          ctx.textAlign = 'center';
+          ctx.fillText(item.meters + 'm', x, baseY - barHeight - 10);
+
+          // Name label (rotated)
+          ctx.save();
+          ctx.translate(x, baseY + 8);
+          ctx.rotate(-0.4);
+          ctx.fillStyle = isHighlighted ? '#e2e8f0' : '#64748b';
+          ctx.font = isHighlighted ? 'bold 11px ' + getComputedStyle(document.body).getPropertyValue('--sans') : '11px ' + getComputedStyle(document.body).getPropertyValue('--sans');
+          ctx.textAlign = 'right';
+          ctx.fillText(item.name, 0, 0);
+          ctx.restore();
+        });
+
+        // Human reference bar
+        const humanBarHeight = (human / MAX_METERS) * maxBarHeight * zoom;
+        if (humanBarHeight > 1) {
+          ctx.fillStyle = 'rgba(100, 116, 139, 0.5)';
+          ctx.fillRect(30, baseY - humanBarHeight, 8, humanBarHeight);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+          ctx.textAlign = 'left';
+          ctx.fillText('Human', 40, baseY - humanBarHeight - 4);
+        }
+
+        // Base line
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(30, baseY + 2);
+        ctx.lineTo(w - 30, baseY + 2);
+        ctx.stroke();
+
+        // Legend
+        ctx.fillStyle = '#64748b';
+        ctx.font = '11px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+        ctx.textAlign = 'right';
+        ctx.fillText('Human ref: ' + human.toFixed(1) + ' m  |  Zoom: ' + zoom.toFixed(1) + '×', w - 40, 20);
+      }
+
+      // Polyfill for roundRect if needed
+      if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+          if (r > w / 2) r = w / 2;
+          if (r > h / 2) r = h / 2;
+          this.moveTo(x + r, y);
+          this.arcTo(x + w, y, x + w, y + h, r);
+          this.arcTo(x + w, y + h, x, y + h, r);
+          this.arcTo(x, y + h, x, y, r);
+          this.arcTo(x, y, x + w, y, r);
+          this.closePath();
+          return this;
+        };
+      }
+
+      // ===== TABLE =====
+      function renderTable() {
+        tableBody.innerHTML = '';
+        DATA.forEach((item, i) => {
+          const tr = document.createElement('tr');
+          if (i === state.highlightIndex) {
+            tr.style.background = 'rgba(56, 189, 248, 0.08)';
+          }
+          const pct = (item.meters / MAX_METERS) * 100;
+          tr.innerHTML = `
+            <td class="mono">${i + 1}</td>
+            <td><strong>${item.name}</strong></td>
+            <td class="mono">${item.meters} m</td>
+            <td>${item.metric}</td>
+            <td class="bar-cell">
+              <div class="bar-track">
+                <div class="bar-fill" style="width: ${pct}%; ${i === state.highlightIndex ? 'background: #38bdf8; box-shadow: 0 0 8px rgba(56,189,248,0.5);' : ''}"></div>
+              </div>
+            </td>
+          `;
+          tr.style.cursor = 'pointer';
+          tr.addEventListener('click', () => {
+            state.highlightIndex = i;
+            highlightIndexInput.value = i;
+            updateHighlightDisplay();
+            draw();
+            renderTable();
+          });
+          tableBody.appendChild(tr);
+        });
+      }
+
+      function updateHighlightDisplay() {
+        highlightVal.textContent = state.highlightIndex;
+      }
+
+      // ===== KPI =====
+      function updateKPIs() {
+        const maxM = MAX_METERS;
+        const avgM = DATA.reduce((s, d) => s + d.meters, 0) / DATA.length;
+        const tallest = DATA.reduce((a, b) => a.meters > b.meters ? a : b);
+
+        kpiTotal.textContent = DATA.length;
+        kpiTallest.textContent = tallest.name;
+        kpiMaxHeight.innerHTML = maxM + ' <small>m</small>';
+        kpiAvgHeight.innerHTML = avgM.toFixed(1) + ' <small>m</small>';
+        kpiRatio.textContent = (maxM / HUMAN_HEIGHT).toFixed(1) + '×';
+      }
+
+      // ===== CONTROLS =====
+      humanScaleInput.addEventListener('input', (e) => {
+        state.humanScale = parseFloat(e.target.value);
+        humanScaleVal.textContent = state.humanScale.toFixed(1) + '×';
+        draw();
+      });
+
+      zoomFactorInput.addEventListener('input', (e) => {
+        state.zoomFactor = parseFloat(e.target.value);
+        zoomVal.textContent = state.zoomFactor.toFixed(1) + '×';
+        draw();
+      });
+
+      highlightIndexInput.addEventListener('input', (e) => {
+        state.highlightIndex = parseInt(e.target.value);
+        updateHighlightDisplay();
+        draw();
+        renderTable();
+      });
+
+      // ===== PRESETS =====
+      presetBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.dataset.preset;
+          presetBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          switch (preset) {
+            case 'compare':
+              state.humanScale = 1.0;
+              state.zoomFactor = 1.0;
+              state.highlightIndex = 0;
+              break;
+            case 'giant':
+              state.humanScale = 1.0;
+              state.zoomFactor = 1.0;
+              state.highlightIndex = 0; // Liebherr (smallest)
+              break;
+            case 'gigantic':
+              state.humanScale = 1.0;
+              state.zoomFactor = 1.0;
+              state.highlightIndex = 4; // Bagger 288 (largest)
+              break;
+            case 'human':
+              state.humanScale = 2.0;
+              state.zoomFactor = 1.0;
+              state.highlightIndex = 0;
+              break;
+            case 'reset':
+              state.humanScale = 1.0;
+              state.zoomFactor = 1.0;
+              state.highlightIndex = 0;
+              break;
+          }
+
+          humanScaleInput.value = state.humanScale;
+          humanScaleVal.textContent = state.humanScale.toFixed(1) + '×';
+          zoomFactorInput.value = state.zoomFactor;
+          zoomVal.textContent = state.zoomFactor.toFixed(1) + '×';
+          highlightIndexInput.value = state.highlightIndex;
+          updateHighlightDisplay();
+          draw();
+          renderTable();
+        });
+      });
+
+      // ===== CSV EXPORT =====
+      exportCsvBtn.addEventListener('click', () => {
+        const lines = [];
+        lines.push('Telemetry Export - SCALEVERSE 3D Mining Machines');
+        lines.push('Generated,' + new Date().toISOString());
+        lines.push('');
+        lines.push('Parameter,Value');
+        lines.push('Human Scale,' + state.humanScale.toFixed(2));
+        lines.push('Zoom Factor,' + state.zoomFactor.toFixed(2));
+        lines.push('Highlight Index,' + state.highlightIndex);
+        lines.push('Highlight Machine,' + DATA[state.highlightIndex].name);
+        lines.push('');
+        lines.push('Index,Machine,Meters,Metric');
+        DATA.forEach((d, i) => {
+          lines.push(`${i + 1},"${d.name}",${d.meters},"${d.metric}"`);
+        });
+
+        const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scaleverse_mining_telemetry.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('CSV exported successfully');
+      });
+
+      // ===== COPY LINK =====
+      copyLinkBtn.addEventListener('click', () => {
+        const base = window.location.origin + window.location.pathname;
+        const params = new URLSearchParams({
+          hs: state.humanScale.toFixed(2),
+          zf: state.zoomFactor.toFixed(2),
+          hi: state.highlightIndex.toString()
+        });
+        const url = base + '?' + params.toString();
+
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('Scenario link copied to clipboard');
+        }).catch(() => {
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = url;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast('Scenario link copied to clipboard');
+        });
+      });
+
+      // ===== TOAST =====
+      let toastTimeout;
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2500);
+      }
+
+      // ===== FAQ TOGGLE =====
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.addEventListener('click', () => {
+          item.classList.toggle('open');
+        });
+      });
+
+      // ===== URL PARAMS =====
+      function loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('hs')) {
+          state.humanScale = Math.min(2.0, Math.max(0.5, parseFloat(params.get('hs')) || 1.0));
+        }
+        if (params.has('zf')) {
+          state.zoomFactor = Math.min(2.0, Math.max(0.5, parseFloat(params.get('zf')) || 1.0));
+        }
+        if (params.has('hi')) {
+          state.highlightIndex = Math.min(4, Math.max(0, parseInt(params.get('hi')) || 0));
+        }
+        humanScaleInput.value = state.humanScale;
+        humanScaleVal.textContent = state.humanScale.toFixed(1) + '×';
+        zoomFactorInput.value = state.zoomFactor;
+        zoomVal.textContent = state.zoomFactor.toFixed(1) + '×';
+        highlightIndexInput.value = state.highlightIndex;
+        updateHighlightDisplay();
+      }
+
+      // ===== INIT =====
+      function init() {
+        loadFromURL();
+        renderTable();
+        updateKPIs();
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        // Draw after a short delay for layout
+        setTimeout(resizeCanvas, 100);
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
