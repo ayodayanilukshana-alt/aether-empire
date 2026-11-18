@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINETICZEN LABS · PUMA vs NIKE · Physics Ball Race Workstation</title>
+    <meta name="description" content="Interactive 60FPS rigid-body physics rivalry simulation. Tune parameters, compare PUMA vs NIKE, export telemetry.">
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/puma-vs-nike-epic-physics-ball-race-showdown.html">
+    <!-- Fonts & minimal reset -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+        .app {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1rem;
+            gap: 1rem;
+        }
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .brand-accent {
+            width: 10px;
+            height: 32px;
+            background: #f43f5e;
+            border-radius: 2px;
+        }
+        .brand-text {
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+        .brand-text span {
+            color: #f43f5e;
+            font-weight: 800;
+        }
+        .header-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .pill {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 0.35rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.02em;
+        }
+        .portal-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-bottom: 1px dashed #334155;
+            transition: color 0.2s;
+        }
+        .portal-link:hover { color: #f43f5e; }
+
+        /* Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 1024px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.6);
+            transition: border-color 0.2s;
+        }
+        .card-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        .accent-text { color: #f43f5e; }
+
+        /* Canvas */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #05070b;
+            aspect-ratio: 16 / 9;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #05070b;
+        }
+
+        /* Controls */
+        .control-group {
+            margin-bottom: 1rem;
+        }
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        .control-label .val {
+            color: #f43f5e;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 4px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 0 1px #f43f5e;
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+        }
+        .btn-row {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+        .btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'Inter', sans-serif;
+            flex: 1 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+        .btn:hover {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        .btn-primary {
+            background: #f43f5e;
+            border-color: #f43f5e;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background: #e11d48;
+            border-color: #e11d48;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #334155;
+        }
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.7rem;
+            flex: 0 1 auto;
+        }
+
+        /* KPI Readouts */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .kpi {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 0.7rem 1rem;
+        }
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .kpi-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.3;
+            color: #f1f5f9;
+        }
+        .kpi-team-puma .kpi-value { color: #f43f5e; }
+        .kpi-team-nike .kpi-value { color: #a855f7; }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .data-table th {
+            text-align: left;
+            padding: 0.6rem 0.5rem;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid #1e293b;
+        }
+        .data-table td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #131c2b;
+            color: #cbd5e1;
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table .highlight { color: #f43f5e; font-weight: 600; }
+        .data-table .highlight-alt { color: #a855f7; font-weight: 600; }
+
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.9rem 0;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q {
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: block;
+            line-height: 1.6;
+        }
+        .faq-q span { color: #f43f5e; font-size: 1.1rem; }
+
+        /* YouTube */
+        .yt-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #000;
+        }
+        .yt-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: 0;
+        }
+
+        /* Utils */
+        .text-muted { color: #64748b; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .gap-1 { gap: 0.5rem; }
+        .full-width { width: 100%; }
+        .section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #475569;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #05070b; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="brand-badge">
+            <div class="brand-accent"></div>
+            <div class="brand-text">KINETIC<span>ZEN</span> LABS</div>
+        </div>
+        <div class="header-meta">
+            <span class="pill">PHYSICS RIVALRY · 60 FPS</span>
+            <a href="./index.html" class="portal-link">← Portal</a>
+        </div>
+    </header>
+
+    <!-- TITLE / SUMMARY -->
+    <div class="card" style="padding: 1.1rem 1.5rem;">
+        <div class="flex-between" style="flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h1 style="font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: #ffffff;">PUMA vs NIKE: Epic Physics Ball Race Showdown</h1>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.25rem;">60FPS rigid-body physics rivalry simulation. Tune parameters, compare teams, export telemetry.</p>
+            </div>
+            <div class="pill" style="background: #0b0f17; border-color: #f43f5e33; color: #f43f5e; font-weight: 600;">LIVE SIM</div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID: CANVAS + CONTROLS -->
+    <div class="grid-2">
+        <!-- LEFT: Canvas + KPI -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="card" style="padding: 0.75rem 1rem;">
+                <div class="card-title">
+                    <span>SIMULATION VIEWPORT</span>
+                    <span class="mono" style="color:#f43f5e; font-size:0.7rem;">● 60 FPS</span>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="raceCanvas" width="960" height="540"></canvas>
+                </div>
+                <div class="kpi-grid" style="margin-top: 0.75rem;">
+                    <div class="kpi kpi-team-puma">
+                        <div class="kpi-label">PUMA Velocity</div>
+                        <div class="kpi-value mono" id="kpiPumaVel">0.00</div>
+                    </div>
+                    <div class="kpi kpi-team-nike">
+                        <div class="kpi-label">NIKE Velocity</div>
+                        <div class="kpi-value mono" id="kpiNikeVel">0.00</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Elapsed Time</div>
+                        <div class="kpi-value mono" id="kpiTime">0.0s</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Leader</div>
+                        <div class="kpi-value mono" id="kpiLeader" style="color:#f43f5e;">PUMA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Controls -->
+        <div class="card">
+            <div class="card-title">
+                <span>PARAMETERS & PRESETS</span>
+                <span style="color:#475569;">v1.0</span>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label"><span>PUMA Mass (kg)</span><span class="val" id="valPumaMass">1.0</span></div>
+                <input type="range" id="pumaMass" min="0.5" max="5.0" step="0.1" value="1.0">
+            </div>
+            <div class="control-group">
+                <div class="control-label"><span>NIKE Mass (kg)</span><span class="val" id="valNikeMass">1.0</span></div>
+                <input type="range" id="nikeMass" min="0.5" max="5.0" step="0.1" value="1.0">
+            </div>
+            <div class="control-group">
+                <div class="control-label"><span>PUMA Restitution (bounce)</span><span class="val" id="valPumaRest">0.86</span></div>
+                <input type="range" id="pumaRest" min="0.1" max="1.0" step="0.01" value="0.86">
+            </div>
+            <div class="control-group">
+                <div class="control-label"><span>NIKE Restitution (bounce)</span><span class="val" id="valNikeRest">0.80</span></div>
+                <input type="range" id="nikeRest" min="0.1" max="1.0" step="0.01" value="0.80">
+            </div>
+            <div class="control-group">
+                <div class="control-label"><span>Gravity (m/s²)</span><span class="val" id="valGravity">9.81</span></div>
+                <input type="range" id="gravity" min="1.0" max="20.0" step="0.1" value="9.81">
+            </div>
+
+            <div class="section-label" style="margin-top: 1rem;">SCENARIO PRESETS</div>
+            <div class="btn-row">
+                <button class="btn btn-sm btn-outline" data-preset="default">Default</button>
+                <button class="btn btn-sm btn-outline" data-preset="highBounce">High Bounce</button>
+                <button class="btn btn-sm btn-outline" data-preset="heavyPuma">Heavy PUMA</button>
+                <button class="btn btn-sm btn-outline" data-preset="lightNike">Light NIKE</button>
+                <button class="btn btn-sm btn-outline" data-preset="lowGravity">Low Gravity</button>
+            </div>
+
+            <div class="btn-row" style="margin-top: 1.25rem;">
+                <button class="btn btn-primary" id="btnReset">⟲ Reset Race</button>
+                <button class="btn" id="btnPause">⏸ Pause</button>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-outline" id="btnExportCSV">⬇ Export CSV Telemetry</button>
+                <button class="btn btn-outline" id="btnCopyLink">🔗 Copy Scenario Link</button>
+            </div>
+            <div id="copyFeedback" class="mono" style="font-size:0.7rem; color:#f43f5e; margin-top:0.5rem; height:1.2em;"></div>
+        </div>
+    </div>
+
+    <!-- ANALYTICAL BREAKDOWN TABLE -->
+    <div class="card">
+        <div class="card-title">
+            <span>ANALYTICAL BREAKDOWN</span>
+            <span class="mono" style="color:#475569;">PUMA vs NIKE</span>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>PUMA</th>
+                        <th>NIKE</th>
+                        <th>Δ (PUMA − NIKE)</th>
+                    </tr>
+                </thead>
+                <tbody id="analysisBody">
+                    <tr><td>Mass (kg)</td><td class="highlight" id="tblPumaMass">1.0</td><td class="highlight-alt" id="tblNikeMass">1.0</td><td id="tblMassDelta">0.0</td></tr>
+                    <tr><td>Restitution</td><td class="highlight" id="tblPumaRest">0.86</td><td class="highlight-alt" id="tblNikeRest">0.80</td><td id="tblRestDelta">+0.06</td></tr>
+                    <tr><td>Peak Velocity (m/s)</td><td class="highlight" id="tblPumaVel">—</td><td class="highlight-alt" id="tblNikeVel">—</td><td id="tblVelDelta">—</td></tr>
+                    <tr><td>Displacement (m)</td><td class="highlight" id="tblPumaDisp">—</td><td class="highlight-alt" id="tblNikeDisp">—</td><td id="tblDispDelta">—</td></tr>
+                    <tr><td>Energy Retained (%)</td><td class="highlight" id="tblPumaEnergy">—</td><td class="highlight-alt" id="tblNikeEnergy">—</td><td id="tblEnergyDelta">—</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted mono" style="font-size:0.7rem; margin-top:0.75rem;">* Live values update during simulation. Energy = restitution² × 100.</div>
+    </div>
+
+    <!-- YOUTUBE + FAQ GRID -->
+    <div class="grid-2">
+        <div class="card" style="padding: 1rem 1.25rem;">
+            <div class="card-title">EMBEDDED STREAM</div>
+            <div class="yt-container">
+                <iframe src="https://www.youtube.com/embed/KDImuK478h4" title="Puma vs Nike Physics Ball Race" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">FREQUENTLY ASKED QUESTIONS</div>
+            <div class="faq-item">
+                <div class="faq-q">What does this simulation model? <span>+</span></div>
+                <div class="faq-a">A 60 FPS rigid-body physics race between PUMA and NIKE balls. You control mass, restitution, and gravity to see how each parameter affects velocity, displacement, and energy retention.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">How do I export telemetry? <span>+</span></div>
+                <div class="faq-a">Click "Export CSV Telemetry" to download a CSV containing the current parameter set, peak velocities, and energy retention for both teams.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Can I share my scenario? <span>+</span></div>
+                <div class="faq-a">Yes. Click "Copy Scenario Link" to copy a URL that encodes your current slider settings. Anyone who opens it will see the same configuration.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Why do the balls bounce differently? <span>+</span></div>
+                <div class="faq-a">PUMA and NIKE have independent restitution values. Higher restitution means more elastic collisions and greater energy retention.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1rem 0.25rem; border-top: 1px solid #1e293b; color: #475569; font-size: 0.75rem;">
+        <span>© KINETICZEN LABS · Physics Rivalry Workstation</span>
+        <span class="mono">PUMA vs NIKE · 60FPS</span>
+    </footer>
+</div>
+
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "KINETICZEN LABS · PUMA vs NIKE Physics Ball Race Workstation",
+  "description": "Interactive 60FPS rigid-body physics rivalry simulation with real-time parameter tuning, CSV telemetry export, and scenario sharing.",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/puma-vs-nike-epic-physics-ball-race-showdown.html",
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS"
+  }
+}
+</script>
+
+<!-- ========== SIMULATION ENGINE ========== -->
+<script>
+(function() {
+    'use strict';
+
+    // ---------- DOM ----------
+    const canvas = document.getElementById('raceCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Sliders
+    const sPumaMass = document.getElementById('pumaMass');
+    const sNikeMass = document.getElementById('nikeMass');
+    const sPumaRest = document.getElementById('pumaRest');
+    const sNikeRest = document.getElementById('nikeRest');
+    const sGravity = document.getElementById('gravity');
+
+    // Value labels
+    const vPumaMass = document.getElementById('valPumaMass');
+    const vNikeMass = document.getElementById('valNikeMass');
+    const vPumaRest = document.getElementById('valPumaRest');
+    const vNikeRest = document.getElementById('valNikeRest');
+    const vGravity = document.getElementById('valGravity');
+
+    // KPI
+    const kpiPumaVel = document.getElementById('kpiPumaVel');
+    const kpiNikeVel = document.getElementById('kpiNikeVel');
+    const kpiTime = document.getElementById('kpiTime');
+    const kpiLeader = document.getElementById('kpiLeader');
+
+    // Table
+    const tblPumaMass = document.getElementById('tblPumaMass');
+    const tblNikeMass = document.getElementById('tblNikeMass');
+    const tblMassDelta = document.getElementById('tblMassDelta');
+    const tblPumaRest = document.getElementById('tblPumaRest');
+    const tblNikeRest = document.getElementById('tblNikeRest');
+    const tblRestDelta = document.getElementById('tblRestDelta');
+    const tblPumaVel = document.getElementById('tblPumaVel');
+    const tblNikeVel = document.getElementById('tblNikeVel');
+    const tblVelDelta = document.getElementById('tblVelDelta');
+    const tblPumaDisp = document.getElementById('tblPumaDisp');
+    const tblNikeDisp = document.getElementById('tblNikeDisp');
+    const tblDispDelta = document.getElementById('tblDispDelta');
+    const tblPumaEnergy = document.getElementById('tblPumaEnergy');
+    const tblNikeEnergy = document.getElementById('tblNikeEnergy');
+    const tblEnergyDelta = document.getElementById('tblEnergyDelta');
+
+    // Buttons
+    const btnReset = document.getElementById('btnReset');
+    const btnPause = document.getElementById('btnPause');
+    const btnExportCSV = document.getElementById('btnExportCSV');
+    const btnCopyLink = document.getElementById('btnCopyLink');
+    const copyFeedback = document.getElementById('copyFeedback');
+
+    // ---------- STATE ----------
+    const W = 960, H = 540;
+    const FLOOR_Y = H - 60;       // ground contact y
+    const WALL_LEFT = 24;
+    const WALL_RIGHT = W - 24;
+    const BALL_RADIUS = 22;
+
+    // Ball state
+    let puma = { x: WALL_LEFT + 80, y: FLOOR_Y - BALL_RADIUS, vx: 0, vy: 0, mass: 1.0, rest: 0.86, disp: 0, peakVel: 0 };
+    let nike = { x: WALL_LEFT + 160, y: FLOOR_Y - BALL_RADIUS, vx: 0, vy: 0, mass: 1.0, rest: 0.80, disp: 0, peakVel: 0 };
+
+    // Global params
+    let gravity = 9.81;
+    let paused = false;
+    let elapsed = 0;
+
+    // Fixed-step accumulator for stable physics at 60 FPS
+    const FIXED_DT = 1 / 60;
+    let accumulator = 0;
+    let lastTime = 0;
+
+    // ---------- READ PARAMS FROM UI ----------
+    function readParams() {
+        const pm = parseFloat(sPumaMass.value);
+        const nm = parseFloat(sNikeMass.value);
+        const pr = parseFloat(sPumaRest.value);
+        const nr = parseFloat(sNikeRest.value);
+        const g = parseFloat(sGravity.value);
+
+        puma.mass = pm;
+        nike.mass = nm;
+        puma.rest = pr;
+        nike.rest = nr;
+        gravity = g;
+
+        vPumaMass.textContent = pm.toFixed(1);
+        vNikeMass.textContent = nm.toFixed(1);
+        vPumaRest.textContent = pr.toFixed(2);
+        vNikeRest.textContent = nr.toFixed(2);
+        vGravity.textContent = g.toFixed(2);
+
+        // Table sync
+        tblPumaMass.textContent = pm.toFixed(1);
+        tblNikeMass.textContent = nm.toFixed(1);
+        const massDelta = pm - nm;
+        tblMassDelta.textContent = (massDelta >= 0 ? '+' : '') + massDelta.toFixed(1);
+        tblMassDelta.style.color = massDelta > 0 ? '#f43f5e' : (massDelta < 0 ? '#a855f7' : '#94a3b8');
+
+        tblPumaRest.textContent = pr.toFixed(2);
+        tblNikeRest.textContent = nr.toFixed(2);
+        const restDelta = pr - nr;
+        tblRestDelta.textContent = (restDelta >= 0 ? '+' : '') + restDelta.toFixed(2);
+        tblRestDelta.style.color = restDelta > 0 ? '#f43f5e' : (restDelta < 0 ? '#a855f7' : '#94a3b8');
+
+        // Energy retained approx = rest² × 100
+        const pEnergy = (pr * pr * 100);
+        const nEnergy = (nr * nr * 100);
+        tblPumaEnergy.textContent = pEnergy.toFixed(1) + '%';
+        tblNikeEnergy.textContent = nEnergy.toFixed(1) + '%';
+        const eDelta = pEnergy - nEnergy;
+        tblEnergyDelta.textContent = (eDelta >= 0 ? '+' : '') + eDelta.toFixed(1) + '%';
+        tblEnergyDelta.style.color = eDelta > 0 ? '#f43f5e' : (eDelta < 0 ? '#a855f7' : '#94a3b8');
+    }
+
+    // ---------- RESET BALLS ----------
+    function resetRace() {
+        puma.x = WALL_LEFT + 80;
+        puma.y = FLOOR_Y - BALL_RADIUS;
+        puma.vx = 0; puma.vy = 0;
+        puma.disp = 0; puma.peakVel = 0;
+
+        nike.x = WALL_LEFT + 160;
+        nike.y = FLOOR_Y - BALL_RADIUS;
+        nike.vx = 0; nike.vy = 0;
+        nike.disp = 0; nike.peakVel = 0;
+
+        elapsed = 0;
+        accumulator = 0;
+        paused = false;
+        btnPause.textContent = '⏸ Pause';
+        kpiLeader.textContent = 'PUMA';
+        kpiLeader.style.color = '#f43f5e';
+        updateKPI();
+        draw();
+    }
+
+    // ---------- KPI UPDATE ----------
+    function updateKPI() {
+        const pSpeed = Math.sqrt(puma.vx * puma.vx + puma.vy * puma.vy);
+        const nSpeed = Math.sqrt(nike.vx * nike.vx + nike.vy * nike.vy);
+        kpiPumaVel.textContent = pSpeed.toFixed(2);
+        kpiNikeVel.textContent = nSpeed.toFixed(2);
+        kpiTime.textContent = elapsed.toFixed(1) + 's';
+
+        if (puma.x > nike.x) {
+            kpiLeader.textContent = 'PUMA';
+            kpiLeader.style.color = '#f43f5e';
+        } else if (nike.x > puma.x) {
+            kpiLeader.textContent = 'NIKE';
+            kpiLeader.style.color = '#a855f7';
+        } else {
+            kpiLeader.textContent = 'TIE';
+            kpiLeader.style.color = '#94a3b8';
+        }
+
+        // Update table live values
+        tblPumaVel.textContent = pSpeed.toFixed(2);
+        tblNikeVel.textContent = nSpeed.toFixed(2);
+        const velDelta = pSpeed - nSpeed;
+        tblVelDelta.textContent = (velDelta >= 0 ? '+' : '') + velDelta.toFixed(2);
+        tblVelDelta.style.color = velDelta > 0 ? '#f43f5e' : (velDelta < 0 ? '#a855f7' : '#94a3b8');
+
+        tblPumaDisp.textContent = puma.disp.toFixed(1);
+        tblNikeDisp.textContent = nike.disp.toFixed(1);
+        const dispDelta = puma.disp - nike.disp;
+        tblDispDelta.textContent = (dispDelta >= 0 ? '+' : '') + dispDelta.toFixed(1);
+        tblDispDelta.style.color = dispDelta > 0 ? '#f43f5e' : (dispDelta < 0 ? '#a855f7' : '#94a3b8');
+    }
+
+    // ---------- PHYSICS STEP ----------
+    function physicsStep(dt) {
+        // Apply gravity
+        puma.vy += gravity * dt;
+        nike.vy += gravity * dt;
+
+        // Integrate position
+        puma.x += puma.vx * dt;
+        puma.y += puma.vy * dt;
+        nike.x += nike.vx * dt;
+        nike.y += nike.vy * dt;
+
+        // Track displacement (horizontal)
+        puma.disp += Math.abs(puma.vx * dt);
+        nike.disp += Math.abs(nike.vx * dt);
+
+        // Track peak velocity
+        const pSpeed = Math.sqrt(puma.vx * puma.vx + puma.vy * puma.vy);
+        const nSpeed = Math.sqrt(nike.vx * nike.vx + nike.vy * nike.vy);
+        if (pSpeed > puma.peakVel) puma.peakVel = pSpeed;
+        if (nSpeed > nike.peakVel) nike.peakVel = nSpeed;
+
+        // Floor collision (elastic with restitution)
+        if (puma.y > FLOOR_Y - BALL_RADIUS) {
+            puma.y = FLOOR_Y - BALL_RADIUS;
+            if (puma.vy > 0) {
+                puma.vy = -puma.vy * puma.rest;
+                if (Math.abs(puma.vy) < 0.5) puma.vy = 0;
+            }
+            // friction on ground
+            puma.vx *= 0.995;
+        }
+        if (nike.y > FLOOR_Y - BALL_RADIUS) {
+            nike.y = FLOOR_Y - BALL_RADIUS;
+            if (nike.vy > 0) {
+                nike.vy = -nike.vy * nike.rest;
+                if (Math.abs(nike.vy) < 0.5) nike.vy = 0;
+            }
+            nike.vx *= 0.995;
+        }
+
+        // Wall collisions (left/right)
+        if (puma.x < WALL_LEFT + BALL_RADIUS) { puma.x = WALL_LEFT + BALL_RADIUS; puma.vx = Math.abs(puma.vx) * puma.rest; }
+        if (puma.x > WALL_RIGHT - BALL_RADIUS) { puma.x = WALL_RIGHT - BALL_RADIUS; puma.vx = -Math.abs(puma.vx) * puma.rest; }
+        if (nike.x < WALL_LEFT + BALL_RADIUS) { nike.x = WALL_LEFT + BALL_RADIUS; nike.vx = Math.abs(nike.vx) * nike.rest; }
+        if (nike.x > WALL_RIGHT - BALL_RADIUS) { nike.x = WALL_RIGHT - BALL_RADIUS; nike.vx = -Math.abs(nike.vx) * nike.rest; }
+
+        // Ball-ball collision (1D along x for simplicity)
+        const dx = nike.x - puma.x;
+        if (Math.abs(dx) < BALL_RADIUS * 2) {
+            const overlap = (BALL_RADIUS * 2) - Math.abs(dx);
+            puma.x -= overlap * 0.5;
+            nike.x += overlap * 0.5;
+            const pv = puma.vx;
+            const nv = nike.vx;
+            const m1 = puma.mass, m2 = nike.mass;
+            const e = (puma.rest + nike.rest) * 0.5;
+            const v1 = ((m1 - m2) * pv + 2 * m2 * nv) / (m1 + m2);
+            const v2 = ((m2 - m1) * nv + 2 * m1 * pv) / (m1 + m2);
+            puma.vx = v1 * e;
+            nike.vx = v2 * e;
+        }
+
+        // Air drag
+        puma.vx *= 0.9995;
+        nike.vx *= 0.9995;
+
+        // Cumulative horizontal impulse to keep them moving (simulates initial kick)
+        // Only apply at start to get the race going
+        if (elapsed < 0.1) {
+            puma.vx += 3.2;
+            nike.vx += 3.0;
+        }
+    }
+
+    // ---------- RENDER ----------
+    function draw() {
+        // Background
+        ctx.clearRect(0, 0, W, H);
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, '#05070b');
+        grad.addColorStop(1, '#0b0f17');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid lines (institutional feel)
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.8;
+        for (let i = 0; i < W; i += 40) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+        }
+        for (let i = 0; i < H; i += 40) {
+            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
+        }
+
+        // Floor
+        ctx.fillStyle = '#131c2b';
+        ctx.fillRect(0, FLOOR_Y, W, H - FLOOR_Y);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(W, FLOOR_Y); ctx.stroke();
+
+        // Side walls
+        ctx.fillStyle = '#131c2b';
+        ctx.fillRect(0, 0, WALL_LEFT, FLOOR_Y);
+        ctx.fillRect(WALL_RIGHT, 0, W - WALL_RIGHT, FLOOR_Y);
+        ctx.strokeStyle = '#334155';
+        ctx.beginPath(); ctx.moveTo(WALL_LEFT, 0); ctx.lineTo(WALL_LEFT, FLOOR_Y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(WALL_RIGHT, 0); ctx.lineTo(WALL_RIGHT, FLOOR_Y); ctx.stroke();
+
+        // Finish line indicators (distance markers)
+        ctx.fillStyle = '#1e293b';
+        for (let x = 200; x < WALL_RIGHT; x += 200) {
+            ctx.fillRect(x, FLOOR_Y - 10, 2, 10);
+        }
+
+        // Draw PUMA ball (rose)
+        ctx.shadowColor = '#f43f5e';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(puma.x, puma.y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = '#f43f5e';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // PUMA label
+        ctx.font = 'bold 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.fillText('PUMA', puma.x, puma.y + 4);
+
+        // Draw NIKE ball (purple)
+        ctx.shadowColor = '#a855f7';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(nike.x, nike.y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = '#a855f7';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // NIKE label
+        ctx.font = 'bold 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('NIKE', nike.x, nike.y + 4);
+
+        // Velocity vectors (small arrows)
+        drawArrow(puma.x, puma.y, puma.vx * 4, puma.vy * 4, '#f43f5e');
+        drawArrow(nike.x, nike.y, nike.vx * 4, nike.vy * 4, '#a855f7');
+
+        // HUD: speed meters
+        ctx.font = '600 10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('VELOCITY  PUMA', WALL_LEFT + 10, 30);
+        ctx.fillStyle = '#f43f5e';
+        ctx.fillRect(WALL_LEFT + 120, 22, Math.min(200, Math.sqrt(puma.vx*puma.vx + puma.vy*puma.vy) * 20), 12);
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('VELOCITY  NIKE', WALL_LEFT + 10, 52);
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(WALL_LEFT + 120, 44, Math.min(200, Math.sqrt(nike.vx*nike.vx + nike.vy*nike.vy) * 20), 12);
+
+        // Leader indicator
+        ctx.font = 'bold 12px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right';
+        if (puma.x > nike.x) {
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillText('◀ PUMA LEADING', W - 30, 30);
+        } else if (nike.x > puma.x) {
+            ctx.fillStyle = '#a855f7';
+            ctx.fillText('NIKE LEADING ▶', W - 30, 30);
+        } else {
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('TIED', W - 30, 30);
+        }
+    }
+
+    function drawArrow(x, y, dx, dy, color) {
+        const mag = Math.sqrt(dx*dx + dy*dy);
+        if (mag < 2) return;
+        const scale = Math.min(30, mag * 0.5) / mag;
+        const ex = x + dx * scale;
+        const ey = y + dy * scale;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(ex, ey);
+        ctx.stroke();
+        // arrowhead
+        const angle = Math.atan2(dy, dx);
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(ex, ey);
+        ctx.lineTo(ex - 6 * Math.cos(angle - 0.5), ey - 6 * Math.sin(angle - 0.5));
+        ctx.lineTo(ex - 6 * Math.cos(angle + 0.5), ey - 6 * Math.sin(angle + 0.5));
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // ---------- ANIMATION LOOP ----------
+    function loop(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+        const delta = Math.min(0.1, (timestamp - lastTime) / 1000);
+        lastTime = timestamp;
+
+        if (!paused) {
+            accumulator += delta;
+            while (accumulator >= FIXED_DT) {
+                physicsStep(FIXED_DT);
+                elapsed += FIXED_DT;
+                accumulator -= FIXED_DT;
+            }
+            updateKPI();
+        }
+
+        draw();
+        requestAnimationFrame(loop);
+    }
+
+    // ---------- EXPORT CSV ----------
+    function exportCSV() {
+        const pSpeed = Math.sqrt(puma.vx * puma.vx + puma.vy * puma.vy);
+        const nSpeed = Math.sqrt(nike.vx * nike.vx + nike.vy * nike.vy);
+        const rows = [
+            ['Metric', 'PUMA', 'NIKE', 'Delta'],
+            ['Mass (kg)', puma.mass.toFixed(2), nike.mass.toFixed(2), (puma.mass - nike.mass).toFixed(2)],
+            ['Restitution', puma.rest.toFixed(2), nike.rest.toFixed(2), (puma.rest - nike.rest).toFixed(2)],
+            ['Peak Velocity (m/s)', puma.peakVel.toFixed(2), nike.peakVel.toFixed(2), (puma.peakVel - nike.peakVel).toFixed(2)],
+            ['Displacement (m)', puma.disp.toFixed(2), nike.disp.toFixed(2), (puma.disp - nike.disp).toFixed(2)],
+            ['Energy Retained (%)', (puma.rest*puma.rest*100).toFixed(1), (nike.rest*nike.rest*100).toFixed(1), ((puma.rest*puma.rest - nike.rest*nike.rest)*100).toFixed(1)],
+            ['Elapsed Time (s)', elapsed.toFixed(2), elapsed.toFixed(2), '0.00'],
+            ['Gravity (m/s²)', gravity.toFixed(2), gravity.toFixed(2), '0.00'],
+        ];
+        let csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'kineticzen_puma_vs_nike_telemetry.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+        copyFeedback.textContent = '✓ CSV exported.';
+        setTimeout(() => { copyFeedback.textContent = ''; }, 2500);
+    }
+
+    // ---------- COPY SCENARIO LINK ----------
+    function copyScenarioLink() {
+        const params = new URLSearchParams({
+            pm: sPumaMass.value,
+            nm: sNikeMass.value,
+            pr: sPumaRest.value,
+            nr: sNikeRest.value,
+            g: sGravity.value
+        });
+        const url = window.location.origin + window.location.pathname + '?' + params.toString();
+        navigator.clipboard.writeText(url).then(() => {
+            copyFeedback.textContent = '✓ Scenario link copied!';
+            setTimeout(() => { copyFeedback.textContent = ''; }, 2500);
+        }).catch(() => {
+            copyFeedback.textContent = '⚠ Copy failed. URL in console.';
+            console.log(url);
+            setTimeout(() => { copyFeedback.textContent = ''; }, 3000);
+        });
+    }
+
+    // ---------- PRESET HANDLERS ----------
+    const presets = {
+        default: { pumaMass: 1.0, nikeMass: 1.0, pumaRest: 0.86, nikeRest: 0.80, gravity: 9.81 },
+        highBounce: { pumaMass: 1.0, nikeMass: 1.0, pumaRest: 0.98, nikeRest: 0.95, gravity: 9.81 },
+        heavyPuma: { pumaMass: 4.5, nikeMass: 1.0, pumaRest: 0.86, nikeRest: 0.80, gravity: 9.81 },
+        lightNike: { pumaMass: 2.0, nikeMass: 0.6, pumaRest: 0.90, nikeRest: 0.70, gravity: 9.81 },
+        lowGravity: { pumaMass: 1.0, nikeMass: 1.0, pumaRest: 0.86, nikeRest: 0.80, gravity: 2.0 }
+    };
+
+    function applyPreset(name) {
+        const p = presets[name];
+        if (!p) return;
+        sPumaMass.value = p.pumaMass;
+        sNikeMass.value = p.nikeMass;
+        sPumaRest.value = p.pumaRest;
+        sNikeRest.value = p.nikeRest;
+        sGravity.value = p.gravity;
+        readParams();
+        resetRace();
+    }
+
+    // ---------- INIT ----------
+    function init() {
+        // Read URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('pm')) sPumaMass.value = urlParams.get('pm');
+        if (urlParams.has('nm')) sNikeMass.value = urlParams.get('nm');
+        if (urlParams.has('pr')) sPumaRest.value = urlParams.get('pr');
+        if (urlParams.has('nr')) sNikeRest.value = urlParams.get('nr');
+        if (urlParams.has('g')) sGravity.value = urlParams.get('g');
+
+        readParams();
+        resetRace();
+
+        // Event listeners for sliders
+        [sPumaMass, sNikeMass, sPumaRest, sNikeRest, sGravity].forEach(slider => {
+            slider.addEventListener('input', function() {
+                readParams();
+                // Reset race on parameter change to restart cleanly
+                resetRace();
+            });
+        });
+
+        // Preset buttons
+        document.querySelectorAll('[data-preset]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                applyPreset(this.dataset.preset);
+            });
+        });
+
+        // Reset button
+        btnReset.addEventListener('click', function() {
+            readParams();
+            resetRace();
+        });
+
+        // Pause toggle
+        btnPause.addEventListener('click', function() {
+            paused = !paused;
+            btnPause.textContent = paused ? '▶ Resume' : '⏸ Pause';
+            lastTime = 0; // reset delta to avoid jump
+        });
+
+        // Export CSV
+        btnExportCSV.addEventListener('click', exportCSV);
+
+        // Copy link
+        btnCopyLink.addEventListener('click', copyScenarioLink);
+
+        // Start render loop
+        requestAnimationFrame(loop);
+    }
+
+    // Kick off
+    init();
+
+})();
+</script>
+</body>
+</html>
