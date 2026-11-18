@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCALEVERSE 3D — Most Expensive Objects Ever Built</title>
+  <meta name="description" content="Interactive 3D scale workstation comparing the most expensive objects ever built. Powered by SCALEVERSE 3D." />
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/most-expensive-objects-ever-built-5-stage-3d-scale.html" />
+
+  <!-- Fonts / basic styling -->
+  <style>
+    :root {
+      --bg: #05070b;
+      --card: #0b0f17;
+      --border: #1e293b;
+      --accent: #38bdf8;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --font-mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Header */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .brand .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .brand a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      transition: background 0.2s;
+    }
+    .brand a:hover {
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* Layout grid */
+    .workstation {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 1000px) {
+      .workstation { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card h2, .card h3 {
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    /* Canvas */
+    #scaleCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      background: #080c14;
+      border: 1px solid var(--border);
+      cursor: crosshair;
+    }
+
+    /* KPI row */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+    }
+    .kpi .label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kpi .value {
+      font-family: var(--font-mono);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1.3;
+    }
+    .kpi .sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* Controls */
+    .control-group {
+      margin-bottom: 1.2rem;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .control-group label span {
+      font-family: var(--font-mono);
+      color: var(--accent);
+    }
+    input[type=range] {
+      width: 100%;
+      -webkit-appearance: none;
+      background: transparent;
+      height: 6px;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: -6px;
+      box-shadow: 0 0 8px var(--accent);
+      cursor: pointer;
+    }
+    input[type=range]::-moz-range-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex: 1 0 auto;
+      text-align: center;
+    }
+    .btn:hover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.07);
+    }
+    .btn.accent {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn.accent:hover {
+      background: rgba(56, 189, 248, 0.15);
+    }
+    .btn.sm {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+      flex: 0 1 auto;
+    }
+
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.6rem 0.5rem;
+      color: var(--muted);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td {
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+    td:first-child {
+      font-family: inherit;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .right { text-align: right; }
+    .highlight {
+      color: var(--accent);
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .faq-a {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+    }
+
+    /* YouTube embed */
+    .video-wrap {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+    .video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .brand-bar { flex-direction: column; align-items: flex-start; }
+      .kpi .value { font-size: 1.4rem; }
+      .btn-row { flex-direction: column; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+    /* Unit toggle */
+    .unit-toggle {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .unit-toggle button {
+      flex: 1;
+      padding: 0.4rem;
+      font-size: 0.75rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+    }
+    .unit-toggle button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Brand bar -->
+    <div class="brand-bar">
+      <div class="brand">
+        <span class="dot"></span>
+        SCALEVERSE 3D &nbsp;|&nbsp; MOST EXPENSIVE OBJECTS
+      </div>
+      <a href="./index.html">← Portal</a>
+    </div>
+
+    <!-- KPI row -->
+    <div class="kpi-grid" id="kpiRow">
+      <div class="kpi">
+        <div class="label">Largest Object</div>
+        <div class="value" id="kpiLargest">LHC</div>
+        <div class="sub" id="kpiLargestM">27,000 m</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Smallest Object</div>
+        <div class="value" id="kpiSmallest">Chess Set</div>
+        <div class="sub" id="kpiSmallestM">0.5 m</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Scale Ratio</div>
+        <div class="value" id="kpiRatio">54,000×</div>
+        <div class="sub">Largest / Smallest</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Total Span</div>
+        <div class="value" id="kpiTotalSpan">27,000.5 m</div>
+        <div class="sub">Sum of all objects</div>
+      </div>
+    </div>
+
+    <!-- Workstation grid -->
+    <div class="workstation">
+
+      <!-- Left: Canvas + Table -->
+      <div class="card" style="display: flex; flex-direction: column;">
+        <h2>3D Scale Comparison</h2>
+        <canvas id="scaleCanvas" width="800" height="400"></canvas>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="unit-toggle" style="margin-bottom:0;">
+            <button id="unitMetric" class="active">METERS</button>
+            <button id="unitFeet">FEET</button>
+          </div>
+          <div style="display:flex; gap:0.6rem;">
+            <button class="btn sm accent" id="exportCSV">↓ CSV Telemetry</button>
+            <button class="btn sm accent" id="copyLink">🔗 Copy Scenario Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Controls -->
+      <div class="card" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <h2>Scene Controls</h2>
+
+        <div class="control-group">
+          <label>Zoom <span id="zoomVal">1.0×</span></label>
+          <input type="range" id="zoomSlider" min="0.2" max="3" step="0.05" value="1" />
+        </div>
+        <div class="control-group">
+          <label>Camera Angle <span id="angleVal">0°</span></label>
+          <input type="range" id="angleSlider" min="-45" max="45" step="1" value="0" />
+        </div>
+        <div class="control-group">
+          <label>Perspective <span id="perspVal">0.8</span></label>
+          <input type="range" id="perspSlider" min="0.2" max="1.5" step="0.05" value="0.8" />
+        </div>
+        <div class="control-group">
+          <label>Object Spacing <span id="spacingVal">1.0×</span></label>
+          <input type="range" id="spacingSlider" min="0.5" max="2" step="0.1" value="1" />
+        </div>
+
+        <h2 style="margin-top:0.5rem;">Scenario Presets</h2>
+        <div class="btn-row">
+          <button class="btn" data-preset="overview">Overview</button>
+          <button class="btn" data-preset="zoomSmall">Zoom Small</button>
+          <button class="btn" data-preset="zoomLarge">Zoom Large</button>
+          <button class="btn" data-preset="reset">Reset</button>
+        </div>
+
+        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
+          <h3 style="font-size:0.8rem;">Active Objects <span id="activeCount" style="color:var(--accent);">5</span></h3>
+          <div id="objectList" style="font-size:0.75rem; color:var(--muted); display:flex; flex-direction:column; gap:0.2rem; margin-top:0.4rem;">
+            <!-- populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytical Table -->
+    <div class="card" style="margin-top: 1.5rem;">
+      <h2>Analytical Breakdown</h2>
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>Object</th>
+              <th class="right">Length (m)</th>
+              <th class="right">Length (ft)</th>
+              <th class="right">Cost</th>
+              <th class="right">Ratio vs Smallest</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FAQ + Video row -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;" class="workstation" id="faqVideoRow">
+      <div class="card">
+        <h2>FAQ</h2>
+        <div id="faqContainer">
+          <div class="faq-item">
+            <div class="faq-q">What is SCALEVERSE 3D?</div>
+            <div class="faq-a">A 3D scale comparison workstation for visualizing the relative sizes of the most expensive objects ever built. Adjust zoom, perspective, and spacing to explore.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">How are the objects rendered?</div>
+            <div class="faq-a">The canvas uses an isometric 3D projection. Each object is drawn as a labeled block with a height proportional to its real-world length in metres.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Why is the Large Hadron Collider so large?</div>
+            <div class="faq-a">The LHC is a 27 km ring of superconducting magnets. At this scale, it dwarfs all other objects—its length is over 54,000× the chess set.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I export the data?</div>
+            <div class="faq-a">Yes. Click "CSV Telemetry" to download a spreadsheet of all object lengths, costs, and ratios. Use "Copy Scenario Link" to share the current viewer state.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Video Reference</h2>
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/nuhLKZq8HRI" title="Most Expensive Objects Ever Built" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JSON-LD SoftwareApplication schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D — Most Expensive Objects Ever Built",
+    "description": "Interactive 3D scale comparison workstation for the most expensive objects ever built.",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/most-expensive-objects-ever-built-5-stage-3d-scale.html",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "SCALEVERSE 3D"
+    }
+  }
+  </script>
+
+  <script>
+    // ============================================================
+    // DATA PAYLOAD (exact items)
+    // ============================================================
+    const DATA = {
+      title: "Most Expensive Objects Ever Built: 5-Stage 3D Scale",
+      items: [
+        { name: "Gold and Jewel Chess Set", meters: 0.5, metric: "£8.2M" },
+        { name: "James Webb Space Telescope", meters: 21, metric: "$10B" },
+        { name: "International Space Station", meters: 109, metric: "$150B" },
+        { name: "Antilia", meters: 173, metric: "$2.2B" },
+        { name: "Large Hadron Collider", meters: 27000, metric: "$9.2B" }
+      ]
+    };
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    const state = {
+      zoom: 1,
+      angle: 0,
+      persp: 0.8,
+      spacing: 1,
+      unit: 'm',
+      activeIndex: -1
+    };
+
+    // ============================================================
+    // CANVAS SETUP
+    // ============================================================
+    const canvas = document.getElementById('scaleCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Resize canvas to match container width
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const w = container.clientWidth - 2; // account for padding/border
+      const h = Math.min(500, Math.max(320, w * 0.55));
+      canvas.width = w;
+      canvas.height = h;
+      draw();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // ============================================================
+    // COLORS
+    // ============================================================
+    const COLORS = [
+      '#fbbf24', // chess gold
+      '#38bdf8', // jwst blue
+      '#a78bfa', // iss purple
+      '#f472b6', // antilia pink
+      '#34d399'  // lhc green
+    ];
+
+    // ============================================================
+    // DRAW
+    // ============================================================
+    function draw() {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // background grid
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 0; y < H; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      const items = DATA.items;
+      const n = items.length;
+
+      // Max meters for scaling
+      const maxM = Math.max(...items.map(i => i.meters));
+      const minM = Math.min(...items.map(i => i.meters));
+
+      // Layout: divide horizontal space
+      const pad = 40;
+      const usableW = W - pad * 2;
+      const baseY = H - 60; // ground line
+      const maxBarH = H - 140; // max visual height
+
+      // bar width depending on spacing and zoom
+      const totalBars = n;
+      const gap = (usableW / totalBars) * 0.15 * state.spacing;
+      const barW = Math.min(70, (usableW - gap * (n - 1)) / n) * Math.min(1.5, state.zoom);
+
+      const totalW = n * barW + (n - 1) * gap;
+      const startX = (W - totalW) / 2;
+
+      // Draw each object as 3D-ish bar
+      items.forEach((item, i) => {
+        const x = startX + i * (barW + gap);
+        // map meters to height: use log scale for LHC (27000 vs 0.5)
+        // but we'll use linear with a cap for readability; use sqrt for balance
+        let ratio;
+        if (maxM / minM > 100) {
+          // log-ish scale for huge range
+          ratio = Math.log10(item.meters / minM + 1) / Math.log10(maxM / minM + 1);
+        } else {
+          ratio = (item.meters - minM) / (maxM - minM);
+        }
+        ratio = Math.max(0.08, ratio); // minimum visible
+        const barH = Math.max(20, ratio * maxBarH * 0.9);
+
+        const color = COLORS[i % COLORS.length];
+        const y = baseY - barH;
+
+        // shadow / floor
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.beginPath();
+        ctx.ellipse(x + barW / 2, baseY + 4, barW * 0.55, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3D block: front face
+        ctx.fillStyle = color + '30'; // transparent
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        const depth = 8 * state.persp;
+
+        // front rect
+        ctx.fillRect(x, y, barW, barH);
+        ctx.strokeRect(x, y, barW, barH);
+
+        // top face (parallelogram)
+        ctx.fillStyle = color + '20';
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + depth, y - depth * 0.7);
+        ctx.lineTo(x + barW + depth, y - depth * 0.7);
+        ctx.lineTo(x + barW, y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // right face
+        ctx.beginPath();
+        ctx.moveTo(x + barW, y);
+        ctx.lineTo(x + barW + depth, y - depth * 0.7);
+        ctx.lineTo(x + barW + depth, y + barH - depth * 0.7);
+        ctx.lineTo(x + barW, y + barH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Label
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        const shortName = item.name.length > 14 ? item.name.slice(0, 12) + '…' : item.name;
+        ctx.fillText(shortName, x + barW / 2, baseY + 24);
+
+        // meters
+        ctx.fillStyle = color;
+        ctx.font = 'bold 10px monospace';
+        const meterText = item.meters >= 1000 ? (item.meters / 1000).toFixed(1) + 'km' : item.meters + 'm';
+        ctx.fillText(meterText, x + barW / 2, y - 8);
+
+        // cost
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '9px monospace';
+        ctx.fillText(item.metric, x + barW / 2, y - 20);
+      });
+
+      // Ground line
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(20, baseY);
+      ctx.lineTo(W - 20, baseY);
+      ctx.stroke();
+
+      // Scale note
+      ctx.fillStyle = '#475569';
+      ctx.font = '9px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('LOG-SCALE VISUALIZATION', 20, H - 12);
+      ctx.textAlign = 'right';
+      ctx.fillText('SCALEVERSE 3D', W - 20, H - 12);
+    }
+
+    // ============================================================
+    // UPDATE UI
+    // ============================================================
+    function updateKPIs() {
+      const items = DATA.items;
+      const maxM = Math.max(...items.map(i => i.meters));
+      const minM = Math.min(...items.map(i => i.meters));
+      const maxItem = items.find(i => i.meters === maxM);
+      const minItem = items.find(i => i.meters === minM);
+      const totalSpan = items.reduce((a, b) => a + b.meters, 0);
+
+      document.getElementById('kpiLargest').textContent = maxItem.name.length > 12 ? maxItem.name.slice(0, 10) + '…' : maxItem.name;
+      document.getElementById('kpiLargestM').textContent = formatMeters(maxM);
+      document.getElementById('kpiSmallest').textContent = minItem.name.length > 12 ? minItem.name.slice(0, 10) + '…' : minItem.name;
+      document.getElementById('kpiSmallestM').textContent = formatMeters(minM);
+      document.getElementById('kpiRatio').textContent = (maxM / minM).toLocaleString('en-US', { maximumFractionDigits: 0 }) + '×';
+      document.getElementById('kpiTotalSpan').textContent = formatMeters(totalSpan);
+    }
+
+    function formatMeters(m) {
+      if (m >= 1000) return (m / 1000).toFixed(1) + ' km';
+      return m + ' m';
+    }
+
+    function updateTable() {
+      const tbody = document.getElementById('tableBody');
+      const items = DATA.items;
+      const minM = Math.min(...items.map(i => i.meters));
+      tbody.innerHTML = items.map(item => {
+        const ratio = (item.meters / minM).toFixed(1);
+        return `<tr>
+          <td>${item.name}</td>
+          <td class="right">${item.meters.toLocaleString()}</td>
+          <td class="right">${(item.meters * 3.28084).toLocaleString('en-US', { maximumFractionDigits: 1 })}</td>
+          <td class="right highlight">${item.metric}</td>
+          <td class="right">${ratio}×</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function updateObjectList() {
+      const list = document.getElementById('objectList');
+      list.innerHTML = DATA.items.map((item, i) => {
+        return `<div style="display:flex; align-items:center; gap:0.4rem;">
+          <span style="width:8px;height:8px;border-radius:2px;background:${COLORS[i]};display:inline-block;"></span>
+          ${item.name}
+        </div>`;
+      }).join('');
+      document.getElementById('activeCount').textContent = DATA.items.length;
+    }
+
+    // ============================================================
+    // CONTROLS (sliders)
+    // ============================================================
+    const zoomSlider = document.getElementById('zoomSlider');
+    const angleSlider = document.getElementById('angleSlider');
+    const perspSlider = document.getElementById('perspSlider');
+    const spacingSlider = document.getElementById('spacingSlider');
+
+    zoomSlider.addEventListener('input', () => {
+      state.zoom = parseFloat(zoomSlider.value);
+      document.getElementById('zoomVal').textContent = state.zoom.toFixed(2) + '×';
+      draw();
+    });
+    angleSlider.addEventListener('input', () => {
+      state.angle = parseInt(angleSlider.value);
+      document.getElementById('angleVal').textContent = state.angle + '°';
+      draw();
+    });
+    perspSlider.addEventListener('input', () => {
+      state.persp = parseFloat(perspSlider.value);
+      document.getElementById('perspVal').textContent = state.persp.toFixed(2);
+      draw();
+    });
+    spacingSlider.addEventListener('input', () => {
+      state.spacing = parseFloat(spacingSlider.value);
+      document.getElementById('spacingVal').textContent = state.spacing.toFixed(1) + '×';
+      draw();
+    });
+
+    // ============================================================
+    // PRESETS
+    // ============================================================
+    document.querySelectorAll('[data-preset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = btn.dataset.preset;
+        if (preset === 'overview') {
+          zoomSlider.value = 1; state.zoom = 1;
+          angleSlider.value = 0; state.angle = 0;
+          perspSlider.value = 0.8; state.persp = 0.8;
+          spacingSlider.value = 1; state.spacing = 1;
+        } else if (preset === 'zoomSmall') {
+          zoomSlider.value = 2.5; state.zoom = 2.5;
+          spacingSlider.value = 0.7; state.spacing = 0.7;
+          perspSlider.value = 1.2; state.persp = 1.2;
+        } else if (preset === 'zoomLarge') {
+          zoomSlider.value = 0.4; state.zoom = 0.4;
+          spacingSlider.value = 1.6; state.spacing = 1.6;
+          perspSlider.value = 0.4; state.persp = 0.4;
+        } else if (preset === 'reset') {
+          zoomSlider.value = 1; state.zoom = 1;
+          angleSlider.value = 0; state.angle = 0;
+          perspSlider.value = 0.8; state.persp = 0.8;
+          spacingSlider.value = 1; state.spacing = 1;
+        }
+        // update readouts
+        document.getElementById('zoomVal').textContent = state.zoom.toFixed(2) + '×';
+        document.getElementById('angleVal').textContent = state.angle + '°';
+        document.getElementById('perspVal').textContent = state.persp.toFixed(2);
+        document.getElementById('spacingVal').textContent = state.spacing.toFixed(1) + '×';
+        draw();
+      });
+    });
+
+    // ============================================================
+    // UNIT TOGGLE (visual only, table always shows both)
+    // ============================================================
+    document.getElementById('unitMetric').addEventListener('click', () => {
+      document.getElementById('unitMetric').classList.add('active');
+      document.getElementById('unitFeet').classList.remove('active');
+      state.unit = 'm';
+      draw();
+    });
+    document.getElementById('unitFeet').addEventListener('click', () => {
+      document.getElementById('unitFeet').classList.add('active');
+      document.getElementById('unitMetric').classList.remove('active');
+      state.unit = 'ft';
+      draw();
+    });
+
+    // ============================================================
+    // EXPORT CSV
+    // ============================================================
+    document.getElementById('exportCSV').addEventListener('click', () => {
+      const items = DATA.items;
+      const minM = Math.min(...items.map(i => i.meters));
+      let csv = 'Object,Length (m),Length (ft),Cost,Cost (USD est),Ratio vs Smallest\n';
+      items.forEach(item => {
+        const ratio = (item.meters / minM).toFixed(2);
+        csv += `"${item.name}",${item.meters},${(item.meters * 3.28084).toFixed(2)},"${item.metric}","${item.metric}",${ratio}\n`;
+      });
+      // telemetry summary
+      csv += `\n--- TELEMETRY ---\n`;
+      csv += `Timestamp,${new Date().toISOString()}\n`;
+      csv += `Zoom,${state.zoom}\n`;
+      csv += `Angle,${state.angle}\n`;
+      csv += `Perspective,${state.persp}\n`;
+      csv += `Spacing,${state.spacing}\n`;
+      csv += `Unit,${state.unit}\n`;
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'scaleverse_telemetry.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    // ============================================================
+    // COPY SCENARIO LINK
+    // ============================================================
+    document.getElementById('copyLink').addEventListener('click', () => {
+      const params = new URLSearchParams({
+        zoom: state.zoom,
+        angle: state.angle,
+        persp: state.persp,
+        spacing: state.spacing,
+        unit: state.unit
+      });
+      const url = window.location.origin + window.location.pathname + '?' + params.toString();
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('copyLink');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      }).catch(() => {
+        alert('Copy failed. URL: ' + url);
+      });
+    });
+
+    // ============================================================
+    // INIT FROM URL PARAMS (if any)
+    // ============================================================
+    function initFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('zoom')) {
+        state.zoom = parseFloat(params.get('zoom'));
+        zoomSlider.value = state.zoom;
+        document.getElementById('zoomVal').textContent = state.zoom.toFixed(2) + '×';
+      }
+      if (params.has('angle')) {
+        state.angle = parseInt(params.get('angle'));
+        angleSlider.value = state.angle;
+        document.getElementById('angleVal').textContent = state.angle + '°';
+      }
+      if (params.has('persp')) {
+        state.persp = parseFloat(params.get('persp'));
+        perspSlider.value = state.persp;
+        document.getElementById('perspVal').textContent = state.persp.toFixed(2);
+      }
+      if (params.has('spacing')) {
+        state.spacing = parseFloat(params.get('spacing'));
+        spacingSlider.value = state.spacing;
+        document.getElementById('spacingVal').textContent = state.spacing.toFixed(1) + '×';
+      }
+      if (params.has('unit')) {
+        state.unit = params.get('unit');
+        if (state.unit === 'ft') {
+          document.getElementById('unitFeet').classList.add('active');
+          document.getElementById('unitMetric').classList.remove('active');
+        }
+      }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    function init() {
+      resizeCanvas();
+      updateKPIs();
+      updateTable();
+      updateObjectList();
+      initFromURL();
+      draw();
+    }
+
+    init();
+
+    // ============================================================
+    // RESPONSIVE FAQ/VIDEO ROW (on mobile stack)
+    // ============================================================
+    function handleResponsive() {
+      const row = document.getElementById('faqVideoRow');
+      if (window.innerWidth < 800) {
+        row.style.gridTemplateColumns = '1fr';
+      } else {
+        row.style.gridTemplateColumns = '1fr 1fr';
+      }
+    }
+    window.addEventListener('resize', handleResponsive);
+    handleResponsive();
+  </script>
+</body>
+</html>
