@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Neutron Stars vs White Dwarfs vs Hypergiants</title>
+    <meta name="description" content="Interactive 3D size comparison of stellar remnants and hypergiants. Neutron star, white dwarf, Betelgeuse, VY Canis Majoris, UY Scuti.">
+    <!-- JSON‑LD SoftwareApplication schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SCALEVERSE 3D – Stellar Size Shock",
+        "description": "Interactive 3D workstation comparing diameters of a neutron star, white dwarf, and hypergiants.",
+        "applicationCategory": "Simulation",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "SCALEVERSE 3D"
+        },
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/neutron-stars-vs-white-dwarfs-vs-hypergiants-3d-size-shock.html"
+    }
+    </script>
+    <style>
+        /* ---------- Sleek dark institutional UI ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #05070b;
+            color: #e2e8f0;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Monospace numbers everywhere */
+        .mono, .kpi-value, .slider-value, table td:not(:first-child), .preset-btn span, .stat-number {
+            font-family: 'SFMono-Regular', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            width: 100%;
+        }
+
+        /* Header / brand */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+        }
+
+        .brand h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #f8fafc;
+        }
+
+        .brand h1 span {
+            color: #38bdf8;
+        }
+
+        .brand .badge {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 30px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .portal-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid #1e293b;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            transition: background 0.2s;
+        }
+
+        .portal-link:hover {
+            background: #0b0f17;
+            border-color: #38bdf8;
+        }
+
+        /* Layout grid */
+        .workstation {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Left panel – controls */
+        .controls-panel {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.75rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        .slider-value {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 10px;
+            outline: none;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 0 1px #38bdf8;
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .preset-btn {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.45rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .preset-btn:hover {
+            background: #0b0f17;
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .preset-btn.active {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #111827;
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .btn-primary {
+            background: #38bdf8;
+            color: #05070b;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: #7dd3fc;
+            color: #05070b;
+        }
+
+        /* Right panel – canvas + KPIs */
+        .visual-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .canvas-container {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1rem;
+            position: relative;
+            aspect-ratio: 16 / 9;
+            width: 100%;
+        }
+
+        canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 8px;
+            background: #05070b;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .kpi-card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #f8fafc;
+            line-height: 1.2;
+        }
+
+        .kpi-value small {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .kpi-sub {
+            font-size: 0.8rem;
+            color: #38bdf8;
+            margin-top: 0.25rem;
+        }
+
+        /* Table section */
+        .analytics-section {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title span {
+            color: #38bdf8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.9rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        th {
+            background: #05070b;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td:first-child {
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        td:not(:first-child) {
+            color: #38bdf8;
+        }
+
+        /* YouTube embed */
+        .video-section {
+            margin-top: 2rem;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #05070b;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* FAQ */
+        .faq-section {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .faq-item {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 0.5rem;
+        }
+
+        .faq-answer {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            border-top: 1px solid #1e293b;
+            padding-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0b0f17;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 0.9rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .workstation {
+                grid-template-columns: 1fr;
+            }
+            .faq-section {
+                grid-template-columns: 1fr;
+            }
+            .kpi-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+            .kpi-row {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="brand">
+                <h1>SCALEVERSE <span>3D</span></h1>
+                <div class="badge">SIZE SHOCK</div>
+            </div>
+            <a href="./index.html" class="portal-link">← Back to Portal</a>
+        </div>
+
+        <!-- Main workstation -->
+        <div class="workstation">
+            <!-- Left controls -->
+            <div class="controls-panel">
+                <div class="panel-title">Simulation Controls</div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Scale Factor</span>
+                        <span class="slider-value mono" id="scaleFactorValue">1.00×</span>
+                    </div>
+                    <input type="range" id="scaleFactor" min="0.1" max="3" step="0.01" value="1">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Rotation Speed</span>
+                        <span class="slider-value mono" id="rotationSpeedValue">0.50×</span>
+                    </div>
+                    <input type="range" id="rotationSpeed" min="0" max="2" step="0.01" value="0.5">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Glow Intensity</span>
+                        <span class="slider-value mono" id="glowIntensityValue">0.80</span>
+                    </div>
+                    <input type="range" id="glowIntensity" min="0" max="1" step="0.01" value="0.8">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">Preset Scenarios</div>
+                    <div class="preset-buttons" id="presetContainer">
+                        <button class="preset-btn active" data-preset="all">All Objects</button>
+                        <button class="preset-btn" data-preset="remnants">Remnants Only</button>
+                        <button class="preset-btn" data-preset="giants">Hypergiants</button>
+                        <button class="preset-btn" data-preset="compare">Neutron vs Giant</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="exportCsvBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export CSV Telemetry
+                    </button>
+                    <button class="btn" id="copyLinkBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        Copy Scenario Link
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right visual panel -->
+            <div class="visual-panel">
+                <div class="canvas-container">
+                    <canvas id="simCanvas" width="1200" height="675"></canvas>
+                </div>
+
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Largest Diameter</div>
+                        <div class="kpi-value mono" id="kpiLargest">2.40B <small>km</small></div>
+                        <div class="kpi-sub" id="kpiLargestName">UY Scuti</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Smallest Diameter</div>
+                        <div class="kpi-value mono" id="kpiSmallest">20 <small>km</small></div>
+                        <div class="kpi-sub" id="kpiSmallestName">Neutron Star</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Scale Ratio</div>
+                        <div class="kpi-value mono" id="kpiRatio">1.2e8 <small>×</small></div>
+                        <div class="kpi-sub">Largest / Smallest</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytical breakdown table -->
+        <div class="analytics-section">
+            <div class="section-title">Analytical Breakdown <span>·</span> Stellar Diameters</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Object</th>
+                        <th>Diameter (m)</th>
+                        <th>Diameter (km)</th>
+                        <th>Relative to Neutron Star</th>
+                    </tr>
+                </thead>
+                <tbody id="analyticsTableBody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- YouTube embed -->
+        <div class="video-section">
+            <div class="section-title">Video Reference <span>·</span> Size Shock</div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/mlJ4Osu-liY" title="Neutron Stars vs White Dwarfs vs Hypergiants: 3D Size Shock" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <div class="faq-item">
+                <div class="faq-question">What is the purpose of this simulation?</div>
+                <div class="faq-answer">It visualizes the extreme size differences between stellar remnants (neutron star, white dwarf) and hypergiants (Betelgeuse, VY Canis Majoris, UY Scuti) using accurate diameter data.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">How are the diameters scaled in the canvas?</div>
+                <div class="faq-answer">A logarithmic scale is used to fit objects spanning 8 orders of magnitude, with a user-controlled scale factor and preset filters.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Can I export the data?</div>
+                <div class="faq-answer">Yes, click "Export CSV Telemetry" to download a CSV containing all current object metrics and scenario parameters.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">What does the scale factor slider do?</div>
+                <div class="faq-answer">It multiplies the displayed size of all objects, allowing you to zoom in or out of the visualization without changing the underlying data.</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div>SCALEVERSE 3D · Stellar Size Shock · 2025</div>
+            <div><a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/neutron-stars-vs-white-dwarfs-vs-hypergiants-3d-size-shock.html">Canonical Link</a></div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Copied!</div>
+
+    <script>
+        (function() {
+            // ---------- DATA PAYLOAD ----------
+            const DATA = {
+                title: "Neutron Stars vs White Dwarfs vs Hypergiants: 3D Size Shock",
+                items: [
+                    { name: "Neutron Star (PSR B1919+21)", meters: 20000, metric: "20 km diameter", color: "#f97316", type: "remnant" },
+                    { name: "White Dwarf (Sirius B)", meters: 12000000, metric: "12,000 km diameter", color: "#38bdf8", type: "remnant" },
+                    { name: "Betelgeuse", meters: 1300000000000, metric: "~1.3 billion km diameter", color: "#ef4444", type: "giant" },
+                    { name: "VY Canis Majoris", meters: 2000000000000, metric: "~2 billion km diameter", color: "#dc2626", type: "giant" },
+                    { name: "UY Scuti", meters: 2400000000000, metric: "~2.4 billion km diameter", color: "#b91c1c", type: "giant" }
+                ]
+            };
+
+            // ---------- STATE ----------
+            let state = {
+                scaleFactor: 1.0,
+                rotationSpeed: 0.5,
+                glowIntensity: 0.8,
+                activePreset: 'all',
+                time: 0
+            };
+
+            // ---------- CANVAS SETUP ----------
+            const canvas = document.getElementById('simCanvas');
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            // ---------- DOM REFERENCES ----------
+            const scaleSlider = document.getElementById('scaleFactor');
+            const scaleValue = document.getElementById('scaleFactorValue');
+            const rotSlider = document.getElementById('rotationSpeed');
+            const rotValue = document.getElementById('rotationSpeedValue');
+            const glowSlider = document.getElementById('glowIntensity');
+            const glowValue = document.getElementById('glowIntensityValue');
+            const presetContainer = document.getElementById('presetContainer');
+            const exportBtn = document.getElementById('exportCsvBtn');
+            const copyBtn = document.getElementById('copyLinkBtn');
+            const toast = document.getElementById('toast');
+            const analyticsBody = document.getElementById('analyticsTableBody');
+
+            // KPI elements
+            const kpiLargest = document.getElementById('kpiLargest');
+            const kpiLargestName = document.getElementById('kpiLargestName');
+            const kpiSmallest = document.getElementById('kpiSmallest');
+            const kpiSmallestName = document.getElementById('kpiSmallestName');
+            const kpiRatio = document.getElementById('kpiRatio');
+
+            // ---------- HELPERS ----------
+            function formatNumber(num) {
+                if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+                if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+                if (num >= 1e3) return (num / 1e3).toFixed(1) + 'k';
+                return num.toString();
+            }
+
+            function formatMeters(m) {
+                if (m >= 1e9) return (m / 1e9).toFixed(2) + ' billion';
+                if (m >= 1e6) return (m / 1e6).toFixed(2) + ' million';
+                if (m >= 1e3) return (m / 1e3).toFixed(1) + ' thousand';
+                return m.toString();
+            }
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+
+            // ---------- FILTER LOGIC ----------
+            function getFilteredItems() {
+                switch (state.activePreset) {
+                    case 'remnants':
+                        return DATA.items.filter(i => i.type === 'remnant');
+                    case 'giants':
+                        return DATA.items.filter(i => i.type === 'giant');
+                    case 'compare':
+                        // Neutron star + largest giant
+                        const neutron = DATA.items.find(i => i.name.includes('Neutron'));
+                        const largest = DATA.items.reduce((a, b) => a.meters > b.meters ? a : b);
+                        return [neutron, largest].filter(Boolean);
+                    case 'all':
+                    default:
+                        return DATA.items;
+                }
+            }
+
+            // ---------- CANVAS DRAWING ----------
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                const dpr = window.devicePixelRatio || 1;
+                const rect = container.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            function draw() {
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+
+                // Clear background
+                ctx.clearRect(0, 0, w, h);
+
+                // Background grid / starfield
+                ctx.fillStyle = '#05070b';
+                ctx.fillRect(0, 0, w, h);
+
+                // Draw subtle grid lines
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < w; i += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, h);
+                    ctx.stroke();
+                }
+                for (let i = 0; i < h; i += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(w, i);
+                    ctx.stroke();
+                }
+
+                // Get filtered items
+                const items = getFilteredItems();
+                if (items.length === 0) return;
+
+                // Calculate sizes – logarithmic scale
+                const maxMeters = Math.max(...items.map(i => i.meters));
+                const minMeters = Math.min(...items.map(i => i.meters));
+
+                // Use log scale for radii, with a minimum visual radius
+                const minRadius = 12;
+                const maxRadius = Math.min(w, h) * 0.32;
+
+                // Compute normalized log values
+                function logNorm(m, min, max) {
+                    if (max === min) return 0.5;
+                    return (Math.log10(m) - Math.log10(min)) / (Math.log10(max) - Math.log10(min));
+                }
+
+                // Sort by size for consistent positioning
+                const sorted = [...items].sort((a, b) => a.meters - b.meters);
+
+                // Layout: center them horizontally with spacing
+                const totalWidth = w * 0.85;
+                const startX = (w - totalWidth) / 2;
+                const spacing = totalWidth / Math.max(sorted.length - 1, 1);
+
+                // Time for animation
+                state.time += 0.01 * state.rotationSpeed;
+                const time = state.time;
+
+                // Draw each item
+                sorted.forEach((item, idx) => {
+                    // Normalized radius from meters
+                    let norm = logNorm(item.meters, minMeters, maxMeters);
+                    // Ensure minimum visible size
+                    let radius = minRadius + (maxRadius - minRadius) * norm;
+                    radius *= state.scaleFactor;
+
+                    // Position
+                    const cx = sorted.length === 1 ? w / 2 : startX + idx * spacing;
+                    const cy = h / 2 + Math.sin(time + idx * 1.5) * 8;
+
+                    // Glow effect
+                    if (state.glowIntensity > 0) {
+                        const gradient = ctx.createRadialGradient(cx, cy, radius * 0.5, cx, cy, radius * 2);
+                        gradient.addColorStop(0, item.color + '80'); // 50% alpha
+                        gradient.addColorStop(1, 'transparent');
+                        ctx.fillStyle = gradient;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, radius * 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    // Main circle
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                    
+                    // Radial gradient for sphere effect
+                    const sphereGrad = ctx.createRadialGradient(
+                        cx - radius * 0.3, cy - radius * 0.3, radius * 0.1,
+                        cx, cy, radius
+                    );
+                    sphereGrad.addColorStop(0, item.color + 'cc');
+                    sphereGrad.addColorStop(0.7, item.color + '88');
+                    sphereGrad.addColorStop(1, item.color + '33');
+                    ctx.fillStyle = sphereGrad;
+                    ctx.fill();
+
+                    // Border
+                    ctx.strokeStyle = item.color;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    // Label
+                    ctx.font = '500 ' + Math.max(11, radius * 0.25) + 'px "SFMono-Regular", "Consolas", monospace';
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+
+                    // Object name (shortened)
+                    const shortName = item.name.length > 20 ? item.name.substring(0, 18) + '…' : item.name;
+                    ctx.fillText(shortName, cx, cy + radius + 8);
+
+                    // Diameter
+                    ctx.font = '400 ' + Math.max(10, radius * 0.18) + 'px "SFMono-Regular", "Consolas", monospace';
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.fillText(item.metric, cx, cy + radius + 26);
+                });
+
+                // Draw legend at bottom
+                ctx.font = '12px "SFMono-Regular", "Consolas", monospace';
+                ctx.fillStyle = '#64748b';
+                ctx.textAlign = 'center';
+                ctx.fillText('Logarithmic scale · ' + new Date().toISOString().slice(0, 10), w / 2, h - 16);
+
+                animationFrameId = requestAnimationFrame(draw);
+            }
+
+            // ---------- UPDATE KPI ----------
+            function updateKPIs() {
+                const items = getFilteredItems();
+                if (items.length === 0) return;
+
+                const largest = items.reduce((a, b) => a.meters > b.meters ? a : b);
+                const smallest = items.reduce((a, b) => a.meters < b.meters ? a : b);
+                const ratio = largest.meters / smallest.meters;
+
+                kpiLargest.innerHTML = formatMeters(largest.meters) + ' <small>m</small>';
+                kpiLargestName.textContent = largest.name;
+                kpiSmallest.innerHTML = formatMeters(smallest.meters) + ' <small>m</small>';
+                kpiSmallestName.textContent = smallest.name;
+                kpiRatio.innerHTML = (ratio >= 1e6 ? (ratio / 1e6).toFixed(1) + 'M' : ratio.toExponential(2)) + ' <small>×</small>';
+            }
+
+            // ---------- UPDATE TABLE ----------
+            function updateTable() {
+                const items = getFilteredItems();
+                const neutron = DATA.items.find(i => i.name.includes('Neutron'));
+                const neutronMeters = neutron ? neutron.meters : 20000;
+
+                analyticsBody.innerHTML = items.map(item => {
+                    const km = item.meters / 1000;
+                    const rel = item.meters / neutronMeters;
+                    return `<tr>
+                        <td>${item.name}</td>
+                        <td>${formatNumber(item.meters)}</td>
+                        <td>${formatNumber(km)}</td>
+                        <td>${rel >= 1e6 ? (rel / 1e6).toFixed(2) + 'M' : rel.toFixed(2)}×</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // ---------- UPDATE ALL UI ----------
+            function updateAll() {
+                updateKPIs();
+                updateTable();
+
+                // Update slider displayed values
+                scaleValue.textContent = state.scaleFactor.toFixed(2) + '×';
+                rotValue.textContent = state.rotationSpeed.toFixed(2) + '×';
+                glowValue.textContent = state.glowIntensity.toFixed(2);
+            }
+
+            // ---------- EVENT LISTENERS ----------
+            scaleSlider.addEventListener('input', (e) => {
+                state.scaleFactor = parseFloat(e.target.value);
+                updateAll();
+            });
+
+            rotSlider.addEventListener('input', (e) => {
+                state.rotationSpeed = parseFloat(e.target.value);
+                updateAll();
+            });
+
+            glowSlider.addEventListener('input', (e) => {
+                state.glowIntensity = parseFloat(e.target.value);
+                updateAll();
+            });
+
+            presetContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.preset-btn');
+                if (!btn) return;
+
+                // Update active class
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                state.activePreset = btn.dataset.preset;
+                updateAll();
+            });
+
+            // Export CSV
+            exportBtn.addEventListener('click', () => {
+                const items = getFilteredItems();
+                const headers = ['Name', 'Meters', 'Kilometers', 'Metric', 'Type', 'RelativeToNeutron'];
+                const neutron = DATA.items.find(i => i.name.includes('Neutron'));
+                const neutronMeters = neutron ? neutron.meters : 20000;
+
+                const rows = items.map(item => [
+                    `"${item.name}"`,
+                    item.meters,
+                    item.meters / 1000,
+                    `"${item.metric}"`,
+                    item.type,
+                    (item.meters / neutronMeters).toFixed(6)
+                ]);
+
+                const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `scaleverse-stellar-telemetry-${new Date().toISOString().slice(0, 10)}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('CSV exported successfully');
+            });
+
+            // Copy scenario link
+            copyBtn.addEventListener('click', () => {
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('Scenario link copied to clipboard');
+                }).catch(() => {
+                    // Fallback
+                    const textarea = document.createElement('textarea');
+                    textarea.value = url;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showToast('Scenario link copied to clipboard');
+                });
+            });
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+            });
+
+            // ---------- INITIALIZATION ----------
+            function init() {
+                resizeCanvas();
+                updateAll();
+                draw();
+            }
+
+            init();
+
+            // Cleanup on unload
+            window.addEventListener('beforeunload', () => {
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            });
+        })();
+    </script>
+</body>
+</html>
