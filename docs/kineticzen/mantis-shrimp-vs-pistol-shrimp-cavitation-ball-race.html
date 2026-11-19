@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KINETICZEN LABS · Mantis Shrimp vs Pistol Shrimp Cavitation Race</title>
+<meta name="description" content="60FPS Matter.js rigid-body physics rivalry simulation. Mantis Shrimp vs Pistol Shrimp cavitation ball race.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mantis-shrimp-vs-pistol-shrimp-cavitation-ball-race.html">
+<style>
+  :root{
+    --bg:#05070b;
+    --card:#0b0f17;
+    --border:#1e293b;
+    --accent:#f43f5e;
+    --accent-dim:#9f1239;
+    --text:#e2e8f0;
+    --muted:#64748b;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --mantis:#22d3ee;
+    --pistol:#f59e0b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1400px;margin:0 auto;padding:24px 20px 60px}
+  /* HEADER */
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:24px;flex-wrap:wrap}
+  .brand{display:flex;flex-direction:column;gap:2px}
+  .brand .mark{font-family:var(--mono);font-size:11px;letter-spacing:.28em;color:var(--accent);text-transform:uppercase}
+  .brand h1{font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .brand .sub{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:200px}
+  .live-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:#4ade80;border:1px solid #14532d;background:#052e16;padding:3px 9px;border-radius:999px}
+  .live-badge .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .portal-link{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  /* GRID */
+  .main-grid{display:grid;grid-template-columns:290px 1fr 290px;gap:16px;align-items:start}
+  @media(max-width:1100px){.main-grid{grid-template-columns:1fr;}}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+  .panel-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  /* CANVAS WRAP */
+  .stage{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#030509}
+  canvas{display:block;width:100%;height:auto;aspect-ratio:800/500}
+  .stage-hud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none;font-family:var(--mono);font-size:10px;letter-spacing:.08em}
+  .hud-pill{background:rgba(5,7,11,.78);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--muted)}
+  .hud-pill strong{color:var(--text)}
+  /* CONTROLS */
+  .ctrl{margin-bottom:14px}
+  .ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .ctrl-top label{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:#94a3b8;text-transform:uppercase}
+  .ctrl-top .val{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
+  input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #000;box-shadow:0 0 0 1px var(--accent);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #000;cursor:pointer}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#111827;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;cursor:pointer;transition:.15s;width:100%;text-align:center;user-select:none}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#020617;font-weight:700}
+  .btn.primary:hover{background:#e11d48;color:#fff}
+  .btn.accent-outline{border-color:var(--accent-dim);color:var(--accent)}
+  .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .btn-stack{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .presets{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .preset{background:#0f172a;border:1px solid var(--border);border-radius:6px;padding:8px 6px;font-family:var(--mono);font-size:10px;letter-spacing:.03em;color:#94a3b8;cursor:pointer;text-align:center;transition:.15s;line-height:1.3}
+  .preset:hover{border-color:var(--accent);color:var(--accent)}
+  .preset.active{border-color:var(--accent);color:var(--accent);background:#1a0a10}
+  /* KPIs */
+  .kpi-list{display:flex;flex-direction:column;gap:8px}
+  .kpi{background:#0f172a;border:1px solid var(--border);border-radius:6px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .kpi .k-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+  .kpi .k-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--text);white-space:nowrap}
+  .kpi.mantis .k-val{color:var(--mantis)}
+  .kpi.pistol .k-val{color:var(--pistol)}
+  /* TEAM CARDS */
+  .teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  @media(max-width:700px){.teams{grid-template-columns:1fr}}
+  .team-card{border:1px solid var(--border);border-radius:8px;padding:12px;background:#0f172a;position:relative;overflow:hidden}
+  .team-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .team-card.mantis::before{background:var(--mantis)}
+  .team-card.pistol::before{background:var(--pistol)}
+  .team-card .t-name{font-family:var(--mono);font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:4px}
+  .team-card.mantis .t-name{color:var(--mantis)}
+  .team-card.pistol .t-name{color:var(--pistol)}
+  .team-card .t-spec{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5}
+  .team-card .t-score{font-family:var(--mono);font-size:22px;font-weight:700;margin-top:8px;color:var(--text)}
+  /* TABLE */
+  .table-wrap{overflow-x:auto;margin-top:16px}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+  th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;background:#0f172a;position:sticky;top:0}
+  td{font-family:var(--mono);font-size:11.5px;color:#cbd5e1}
+  td:first-child{color:var(--text);font-weight:600}
+  tr:hover td{background:rgba(244,63,94,.04)}
+  .badge-m{color:var(--mantis);font-weight:700}
+  .badge-p{color:var(--pistol);font-weight:700}
+  /* FAQ */
+  .faq-item{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:#0f172a;overflow:hidden}
+  .faq-q{width:100%;background:none;border:none;color:var(--text);text-align:left;padding:14px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .faq-q:hover{color:var(--accent)}
+  .faq-q .ic{color:var(--accent);font-family:var(--mono);font-size:16px;flex-shrink:0}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;padding:0 16px}
+  .faq-a.open{max-height:300px;padding-bottom:14px}
+  .faq-a p{font-size:12.5px;color:#94a3b8;line-height:1.65}
+  /* VIDEO */
+  .video-box{position:relative;padding-bottom:56.25%;height:0;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#000}
+  .video-box iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+  /* TOAST */
+  #toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#020617;padding:11px 18px;border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.04em;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:999;box-shadow:0 8px 30px rgba(244,63,94,.4)}
+  #toast.show{opacity:1;transform:translateY(0)}
+  .section-title{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin:28px 0 12px;display:flex;align-items:center;gap:10px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  /* FOOTER */
+  footer{margin-top:48px;border-top:1px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  footer p{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em}
+  footer a{font-family:var(--mono);font-size:10px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend .sw{width:10px;height:10px;border-radius:2px}
+  .mono{font-family:var(--mono)}
+  /* performance bar */
+  .perf{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:6px}
+  .perf-fill{height:100%;width:0%;transition:width .1s linear}
+  .perf-fill.mantis{background:var(--mantis)}
+  .perf-fill.pistol{background:var(--pistol)}
+  .small-note{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:8px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="mark">KINETICZEN LABS · Cavitation Physics Workstation</div>
+      <h1>Mantis Shrimp vs Pistol Shrimp — Cavitation Ball Race</h1>
+      <div class="sub">60FPS rigid-body rivalry simulation &middot; team_a=MANTIS &middot; team_b=PISTOL</div>
+    </div>
+    <div class="hdr-right">
+      <span class="live-badge"><span class="dot"></span>SIM LIVE</span>
+      <a class="portal-link" href="./index.html">↩ Portal / Index</a>
+      <a class="portal-link" href="https://ayodayanilukshana-alt.github.io/aether-empire">Aether Empire ↗</a>
+    </div>
+  </header>
+
+  <!-- TEAM CARDS -->
+  <div class="teams">
+    <div class="team-card mantis">
+      <div class="t-name">MANTIS</div>
+      <div class="t-spec">Stomatopod raptorial strike · cavitation bubble collapse · 2.3k accelerations</div>
+      <div class="t-score" id="scoreMantis">0.00</div>
+    </div>
+    <div class="team-card pistol">
+      <div class="t-name">PISTOL</div>
+      <div class="t-spec">Alpheidae claw snap · plasma cavitation jet · 218 dB acoustic pulse</div>
+      <div class="t-score" id="scorePistol">0.00</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT: CONTROLS -->
+    <div class="panel">
+      <div class="panel-label"><span>Simulation Controls</span><span class="mono" style="color:var(--accent)">σ</span></div>
+
+      <div class="ctrl">
+        <div class="ctrl-top"><label>Mantis Strike Velocity</label><span class="val" id="valMantisV">31.0 m/s</span></div>
+        <input type="range" id="mantisV" min="15" max="50" step="0.5" value="31">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><label>Pistol Snap Velocity</label><span class="val" id="valPistolV">28.0 m/s</span></div>
+        <input type="range" id="pistolV" min="15" max="50" step="0.5" value="28">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><label>Cavitation Density</label><span class="val" id="valDensity">0.85</span></div>
+        <input type="range" id="density" min="0.2" max="1.6" step="0.01" value="0.85">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><label>Water Viscosity</label><span class="val" id="valVisc">0.42</span></div>
+        <input type="range" id="visc" min="0.05" max="1.0" step="0.01" value="0.42">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><label>Bubble Radius</label><span class="val" id="valRadius">14 px</span></div>
+        <input type="range" id="radius" min="6" max="26" step="1" value="14">
+      </div>
+
+      <div class="panel-label" style="margin-top:18px"><span>Scenario Presets</span></div>
+      <div class="presets">
+        <div class="preset active" data-preset="classic">CLASSIC<br>Duel</div>
+        <div class="preset" data-preset="highspeed">HIGH<br>Speed</div>
+        <div class="preset" data-preset="dense">Dense<br>Medium</div>
+        <div class="preset" data-preset="chaos">Cavitation<br>Chaos</div>
+      </div>
+
+      <div class="btn-stack" style="margin-top:16px">
+        <button class="btn primary" id="runBtn">▶ RUN SIMULATION</button>
+        <button class="btn" id="resetBtn">⟲ RESET FIELD</button>
+        <button class="btn" id="pauseBtn">⏸ PAUSE</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn accent-outline" id="csvBtn">⬇ CSV Telemetry</button>
+        <button class="btn accent-outline" id="linkBtn">🔗 Copy Link</button>
+      </div>
+
+      <div class="small-note">Simulated at 60 FPS. Matter.js-style rigid-body approximations. All telemetry is generated in-browser.</div>
+    </div>
+
+    <!-- CENTER: CANVAS + HUD -->
+    <div>
+      <div class="stage">
+        <canvas id="sim" width="800" height="500"></canvas>
+        <div class="stage-hud">
+          <span class="hud-pill">FPS <strong id="hudFps">60</strong></span>
+          <span class="hud-pill">Cavitations <strong id="hudCav">0</strong></span>
+          <span class="hud-pill">t <strong id="hudTime">0.00s</strong></span>
+        </div>
+      </div>
+      <div class="legend">
+        <span><span class="sw" style="background:var(--mantis)"></span>MANTIS bubble</span>
+        <span><span class="sw" style="background:var(--pistol)"></span>PISTOL bubble</span>
+        <span><span class="sw" style="background:#f43f5e"></span>Cavitation shockwave</span>
+      </div>
+
+      <!-- ANALYTICAL TABLE -->
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-label"><span>Analytical Breakdown — Live Telemetry</span><span class="mono" id="tblStatus" style="color:var(--accent)">IDLE</span></div>
+        <div class="table-wrap">
+          <table id="analysisTable">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>MANTIS</th>
+                <th>PISTOL</th>
+                <th>Δ / Ratio</th>
+                <th>Leader</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Strike Velocity</td><td id="tMantisV">—</td><td id="tPistolV">—</td><td id="tVdelta">—</td><td id="tVlead">—</td></tr>
+              <tr><td>Cavitation Yield</td><td id="tMantisC">—</td><td id="tPistolC">—</td><td id="tCdelta">—</td><td id="tClead">—</td></tr>
+              <tr><td>Bubble Radius</td><td id="tMantisR">—</td><td id="tPistolR">—</td><td id="tRdelta">—</td><td id="tRlead">—</td></tr>
+              <tr><td>Drag Coefficient</td><td id="tMantisD">—</td><td id="tPistolD">—</td><td id="tDdelta">—</td><td id="tDlead">—</td></tr>
+              <tr><td>Energy Index</td><td id="tMantisE">—</td><td id="tPistolE">—</td><td id="tEdelta">—</td><td id="tElead">—</td></tr>
+              <tr><td>Distance Traveled</td><td id="tMantisP">—</td><td id="tPistolP">—</td><td id="tPdelta">—</td><td id="tPlead">—</td></tr>
+              <tr><td>Bubble Population</td><td id="tMantisN">—</td><td id="tPistolN">—</td><td id="tNdelta">—</td><td id="tNlead">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="perf"><div class="perf-fill mantis" id="perfMantis"></div></div>
+        <div class="perf"><div class="perf-fill pistol" id="perfPistol"></div></div>
+        <div class="small-note">Bars show relative energy index. CSV export captures the full per-frame telemetry log.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: KPIs -->
+    <div class="panel">
+      <div class="panel-label"><span>Live KPI Readouts</span></div>
+      <div class="kpi-list">
+        <div class="kpi mantis"><span class="k-lbl">Mantis Score</span><span class="k-val" id="kpiMantisScore">0.00</span></div>
+        <div class="kpi pistol"><span class="k-lbl">Pistol Score</span><span class="k-val" id="kpiPistolScore">0.00</span></div>
+        <div class="kpi"><span class="k-lbl">Cavitation Count</span><span class="k-val" id="kpiCav">0</span></div>
+        <div class="kpi"><span class="k-lbl">Max Shockwave</span><span class="k-val" id="kpiShock">0.00</span></div>
+        <div class="kpi"><span class="k-lbl">Mean Velocity</span><span class="k-val" id="kpiVel">0.00</span></div>
+        <div class="kpi"><span class="k-lbl">Frame Tick</span><span class="k-val" id="kpiTick">0</span></div>
+        <div class="kpi"><span class="k-lbl">Race Leader</span><span class="k-val" id="kpiLeader">—</span></div>
+        <div class="kpi"><span class="k-lbl">Sim Time</span><span class="k-val" id="kpiTime">0.00s</span></div>
+      </div>
+
+      <div class="panel-label" style="margin-top:20px"><span>Species Reference</span></div>
+      <div class="small-note" style="margin-top:0">
+        <strong style="color:var(--mantis)">MANTIS</strong> — Odontodactylus scyllarus. Raptorial appendage strike up to 23 m/s, producing cavitation bubbles and shockwaves on collapse.<br><br>
+        <strong style="color:var(--pistol)">PISTOL</strong> — Alpheidae. Claw snap jets water at ~25 m/s, collapsing a cavitation bubble that reaches ~4,700 °C (briefly) and emits 218 dB.
+      </div>
+
+      <div class="panel-label" style="margin-top:20px"><span>Stream</span></div>
+      <div class="video-box">
+        <iframe src="https://www.youtube.com/embed/w5_FBK-FcmQ" title="Mantis Shrimp vs Pistol Shrimp Cavitation Ball Race" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div class="section-title">Frequently Asked Questions</div>
+  <div id="faqContainer">
+    <div class="faq-item">
+      <button class="faq-q">What is a cavitation ball race?<span class="ic">+</span></button>
+      <div class="faq-a"><p>A cavitation ball race models the shockwave bubbles generated by two of the fastest strikes in the animal kingdom — the mantis shrimp's raptorial appendage and the pistol shrimp's claw snap — as competing rigid bodies travelling through a fluid medium. The simulation tracks bubble population, shockwave magnitude, and total distance to determine the winning team.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">How is the simulation calculated?<span class="ic">+</span></button>
+      <div class="faq-a"><p>Each frame advances the bubbles using a simplified rigid-body integrator with velocity, drag, and cavitation density parameters. Bubble collisions with the chamber walls spawn rapid cavitation events, which increment the cavitation counter and add to the shockwave KPI. The simulation targets 60 FPS using a fixed-timestep accumulator.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">What does the CSV telemetry export contain?<span class="ic">+</span></button>
+      <div class="faq-a"><p>The export produces a comma-separated log of every recorded frame: tick, time, mantis velocity, mantis position, mantis cavitations, pistol velocity, pistol position, pistol cavitations, shockwave, and total cavitation count. It can be opened in any spreadsheet or data-science tool for further analysis.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">How do the scenario presets work?<span class="ic">+</span></button>
+      <div class="faq-a"><p>Presets adjust velocity, cavitation density, viscosity, and bubble radius to represent different physical regimes. CLASSIC is a balanced duel, HIGH SPEED pushes both velocities to extremes, DENSE MEDIUM increases fluid resistance and cavitation density, and CAVITATION CHAOS maximizes bubble spawning and shockwave behavior for stress-testing.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Why is the canvas 800×500?<span class="ic">+</span></button>
+      <div class="faq-a"><p>The 800×500 resolution provides a wide horizontal race track with enough vertical space for multiple bubble lanes. The canvas scales responsively to the container width while the internal coordinate system stays fixed, keeping physics consistent across screens.</p></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© KINETICZEN LABS · Cavitation Physics Workstation · Built for the Mantis vs Pistol Shrimp race</p>
+    <div style="display:flex;gap:16px">
+      <a href="./index.html">Portal</a>
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire">Aether Empire</a>
+    </div>
+  </footer>
+</div>
+
+<div id="toast">COPIED</div>
+
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Mantis Shrimp vs Pistol Shrimp: Cavitation Ball Race",
+  "description": "60FPS Matter.js rigid-body physics rivalry simulation comparing mantis shrimp and pistol shrimp cavitation performance.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mantis-shrimp-vs-pistol-shrimp-cavitation-ball-race.html",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Web Browser",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "author": {"@type": "Organization", "name": "KINETICZEN LABS"},
+  "publisher": {"@type": "Organization", "name": "KINETICZEN LABS"},
+  "isPartOf": {"@type": "WebSite", "name": "Aether Empire", "url": "https://ayodayanilukshana-alt.github.io/aether-empire"}
+}
+</script>
+
+<script>
+(function(){
+  'use strict';
+
+  // ===== DOM HELPERS =====
+  const $ = id => document.getElementById(id);
+  const canvas = $('sim');
+  const ctx = canvas.getContext('2d');
+  const W = 800, H = 500;
+
+  // ===== SIMULATION STATE =====
+  const STATE = {
+    running: false,
+    paused: false,
+    time: 0,
+    tick: 0,
+    lastRealTime: 0,
+    accumulator: 0,
+    fixedDT: 1/60,
+    fps: 60,
+    fpsAccum: 0,
+    fpsFrames: 0,
+    cavitationCount: 0,
+    maxShock: 0,
+    telemetry: [],
+    config: {
+      mantisV: 31,
+      pistolV: 28,
+      density: 0.85,
+      visc: 0.42,
+      radius: 14
+    },
+    mantis: null,
+    pistol: null,
+    bubbles: [],
+    shockwaves: []
+  };
+
+  // ===== TEAM BUBBLE FACTORY =====
+  function makeCavitationBall(team, x, y, vx, vy, r){
+    return {
+      team: team,
+      x: x, y: y,
+      vx: vx, vy: vy,
+      r: r,
+      age: 0,
+      life: 1.0,
+      trail: []
+    };
+  }
+
+  function resetField(){
+    STATE.time = 0;
+    STATE.tick = 0;
+    STATE.accumulator = 0;
+    STATE.cavitationCount = 0;
+    STATE.maxShock = 0;
+    STATE.telemetry = [];
+    STATE.bubbles = [];
+    STATE.shockwaves = [];
+    STATE.mantis = {
+      team: 'MANTIS',
+      x: 120, y: H/2,
+      vx: STATE.config.mantisV,
+      vy: 0,
+      r: STATE.config.radius,
+      cavitations: 0,
+      distance: 0,
+      score: 0,
+      energy: 0
+    };
+    STATE.pistol = {
+      team: 'PISTOL',
+      x: 680, y: H/2,
+      vx: -STATE.config.pistolV,
+      vy: 0,
+      r: STATE.config.radius,
+      cavitations: 0,
+      distance: 0,
+      score: 0,
+      energy: 0
+    };
+    // seed some cavitation balls
+    for(let i=0;i<6;i++){
+      STATE.bubbles.push(makeCavitationBall(
+        i % 2 === 0 ? 'MANTIS' : 'PISTOL',
+        100 + Math.random()*600,
+        80 + Math.random()*340,
+        (Math.random()-0.5)*120,
+        (Math.random()-0.5)*120,
+        5 + Math.random()*8
+      ));
+    }
+    updateReadouts();
+    draw();
+  }
+
+  // ===== PHYSICS STEP =====
+  function step(dt){
+    if(!STATE.running || STATE.paused) return;
+    STATE.time += dt;
+    STATE.tick++;
+
+    const cfg = STATE.config;
+    const density = cfg.density;
+    const visc = cfg.visc;
+
+    // --- update team bubbles (mantis & pistol) ---
+    [STATE.mantis, STATE.pistol].forEach(teamObj => {
+      if(!teamObj) return;
+      const speed = Math.hypot(teamObj.vx, teamObj.vy);
+      const r = teamObj.r;
+
+      // drag
+      const drag = visc * speed * 0.15;
+      if(speed > 0.001){
+        teamObj.vx -= (teamObj.vx / speed) * drag * dt * 60;
+        teamObj.vy -= (teamObj.vy / speed) * drag * dt * 60;
+      }
+
+      // cavitation spawn from high speed
+      if(speed > 8 && Math.random() < density * 0.08){
+        const angle = Math.random() * Math.PI * 2;
+        const bv = 80 + Math.random() * 200;
+        STATE.bubbles.push(makeCavitationBall(
+          teamObj.team,
+          teamObj.x, teamObj.y,
+          Math.cos(angle) * bv,
+          Math.sin(angle) * bv,
+          3 + Math.random() * 6
+        ));
+        STATE.cavitationCount++;
+        teamObj.cavitations++;
+        const shock = speed * density;
+        if(shock > STATE.maxShock) STATE.maxShock = shock;
+        STATE.shockwaves.push({x: teamObj.x, y: teamObj.y, r: r, maxR: 40 + Math.random()*60, alpha: 1, team: teamObj.team});
+      }
+
+      // move
+      const oldX = teamObj.x;
+      const oldY = teamObj.y;
+      teamObj.x += teamObj.vx * dt;
+      teamObj.y += teamObj.vy * dt;
+
+      teamObj.distance += Math.hypot(teamObj.x - oldX, teamObj.y - oldY);
+
+      // wall bounce
+      if(teamObj.x < r){ teamObj.x = r; teamObj.vx = Math.abs(teamObj.vx) * 0.85; }
+      if(teamObj.x > W - r){ teamObj.x = W - r; teamObj.vx = -Math.abs(teamObj.vx) * 0.85; }
+      if(teamObj.y < r){ teamObj.y = r; teamObj.vy = Math.abs(teamObj.vy) * 0.85; }
+      if(teamObj.y > H - r){ teamObj.y = H - r; teamObj.vy = -Math.abs(teamObj.vy) * 0.85; }
+
+      // energy index
+      const sp = Math.hypot(teamObj.vx, teamObj.vy);
+      teamObj.energy = 0.5 * density * sp * sp * (teamObj.r / 10);
+      teamObj.score = teamObj.cavitations * 10 + teamObj.distance * 0.1 + teamObj.energy * 0.01;
+    });
+
+    // --- update cavitation bubbles ---
+    for(let i = STATE.bubbles.length-1; i>=0; i--){
+      const b = STATE.bubbles[i];
+      b.age += dt;
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      b.vx *= (1 - visc * 0.3 * dt * 60);
+      b.vy *= (1 - visc * 0.3 * dt * 60);
+      b.life -= dt * 0.5;
+
+      // wall collision
+      if(b.x - b.r < 0 || b.x + b.r > W) b.vx *= -0.7;
+      if(b.y - b.r < 0 || b.y + b.r > H) b.vy *= -0.7;
+      b.x = Math.max(b.r, Math.min(W - b.r, b.x));
+      b.y = Math.max(b.r, Math.min(H - b.r, b.y));
+
+      // bubble pop
+      if(b.life <= 0 || Math.hypot(b.vx, b.vy) < 2 && b.age > 3){
+        STATE.bubbles.splice(i,1);
+      }
+    }
+
+    // --- update shockwaves ---
+    for(let i = STATE.shockwaves.length-1; i>=0; i--){
+      const s = STATE.shockwaves[i];
+      s.r += (s.maxR - s.r) * 2.5 * dt;
+      s.alpha -= 2.2 * dt;
+      if(s.alpha <= 0) STATE.shockwaves.splice(i,1);
+    }
+
+    // --- telemetry log (every 3 ticks to keep memory reasonable) ---
+    if(STATE.tick % 3 === 0){
+      STATE.telemetry.push({
+        tick: STATE.tick,
+        time: +STATE.time.toFixed(3),
+        mantisV: +Math.hypot(STATE.mantis.vx, STATE.mantis.vy).toFixed(2),
+        mantisX: +STATE.mantis.x.toFixed(1),
+        mantisY: +STATE.mantis.y.toFixed(1),
+        mantisCav: STATE.mantis.cavitations,
+        pistV: +Math.hypot(STATE.pistol.vx, STATE.pistol.vy).toFixed(2),
+        pistX: +STATE.pistol.x.toFixed(1),
+        pistY: +STATE.pistol.y.toFixed(1),
+        pistCav: STATE.pistol.cavitations,
+        shock: +STATE.maxShock.toFixed(2),
+        totalCav: STATE.cavitationCount
+      });
+      if(STATE.telemetry.length > 5000) STATE.telemetry.shift();
+    }
+
+    updateReadouts();
+  }
+
+  // ===== DRAWING =====
+  function draw(){
+    // background gradient
+    const bg = ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0, '#030509');
+    bg.addColorStop(1, '#070b14');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle = 'rgba(30,41,59,0.55)';
+    ctx.lineWidth = 1;
+    for(let x=0;x<=W;x+=40){
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+    }
+    for(let y=0;y<=H;y+=40){
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    }
+
+    // center dividing line
+    ctx.strokeStyle = 'rgba(244,63,94,0.12)';
+    ctx.setLineDash([6,6]);
+    ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // shockwaves
+    STATE.shockwaves.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.strokeStyle = s.team === 'MANTIS'
+        ? `rgba(34,211,238,${Math.max(0,s.alpha)*0.6})`
+        : `rgba(245,158,11,${Math.max(0,s.alpha)*0.6})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // cavitation bubbles
+    STATE.bubbles.forEach(b => {
+      const col = b.team === 'MANTIS' ? '34,211,238' : '245,158,11';
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${col},0.35)`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r*0.55, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${col},0.7)`;
+      ctx.fill();
+    });
+
+    // team main bubbles with glow
+    [STATE.mantis, STATE.pistol].forEach(t => {
+      if(!t) return;
+      const col = t.team === 'MANTIS' ? '34,211,238' : '245,158,11';
+
+      // glow
+      const grad = ctx.createRadialGradient(t.x, t.y, 0, t.x, t.y, t.r*2.4);
+      grad.addColorStop(0, `rgba(${col},0.45)`);
+      grad.addColorStop(1, `rgba(${col},0)`);
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, t.r*2.4, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // main circle
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, t.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${col},0.9)`;
+      ctx.fill();
+      ctx.strokeStyle = `rgba(${col},1)`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // velocity vector
+      const sp = Math.hypot(t.vx, t.vy);
+      if(sp > 1){
+        const nx = t.vx/sp, ny = t.vy/sp;
+        ctx.beginPath();
+        ctx.moveTo(t.x, t.y);
+        ctx.lineTo(t.x + nx*t.r*3.2, t.y + ny*t.r*3.2);
+        ctx.strokeStyle = `rgba(${col},0.6)`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // label
+      ctx.font = '10px monospace';
+      ctx.fillStyle = `rgba(${col},1)`;
+      ctx.textAlign = 'center';
+      ctx.fillText(t.team, t.x, t.y - t.r - 8);
+    });
+
+    // HUD values
+    $('hudFps').textContent = STATE.fps;
+    $('hudCav').textContent = STATE.cavitationCount;
+    $('hudTime').textContent = STATE.time.toFixed(2) + 's';
+  }
+
+  // ===== READOUTS / KPI / TABLE =====
+  function updateReadouts(){
+    const m = STATE.mantis, p = STATE.pistol;
+    if(!m || !p) return;
+
+    const mSpeed = Math.hypot(m.vx, m.vy);
+    const pSpeed = Math.hypot(p.vx, p.vy);
+
+    // scores
+    $('scoreMantis').textContent = m.score.toFixed(2);
+    $('scorePistol').textContent = p.score.toFixed(2);
+    $('kpiMantisScore').textContent = m.score.toFixed(2);
+    $('kpiPistolScore').textContent = p.score.toFixed(2);
+    $('kpiCav').textContent = STATE.cavitationCount;
+    $('kpiShock').textContent = STATE.maxShock.toFixed(2);
+    $('kpiVel').textContent = ((mSpeed + pSpeed)/2).toFixed(2);
+    $('kpiTick').textContent = STATE.tick;
+    $('kpiTime').textContent = STATE.time.toFixed(2) + 's';
+
+    let leader = '—';
+    if(m.score > p.score + 0.01) leader = 'MANTIS';
+    else if(p.score > m.score + 0.01) leader = 'PISTOL';
+    else leader = 'TIE';
+    $('kpiLeader').textContent = leader;
+    $('kpiLeader').style.color = leader === 'MANTIS' ? 'var(--mantis)' : leader === 'PISTOL' ? 'var(--pistol)' : 'var(--text)';
+
+    // table
+    const setRow = (prefix, mv, pv, delta, lead) => {
+      $('tMantis'+prefix).textContent = mv;
+      $('tPistol'+prefix).textContent = pv;
+      $('t'+prefix+'delta').textContent = delta;
+      const leadEl = $('t'+prefix+'lead');
+      leadEl.textContent = lead;
+      leadEl.className = lead === 'MANTIS' ? 'badge-m' : lead === 'PISTOL' ? 'badge-p' : '';
+    };
+
+    const mDist = m.distance, pDist = p.distance;
+    const mCav = m.cavitations, pCav = p.cavitations;
+    const mE = m.energy, pE = p.energy;
+
+    setRow('V', mSpeed.toFixed(1), pSpeed.toFixed(1),
+      (mSpeed - pSpeed).toFixed(1),
+      mSpeed > pSpeed ? 'MANTIS' : pSpeed > mSpeed ? 'PISTOL' : 'TIE');
+    setRow('C', mCav, pCav,
+      (mCav - pCav),
+      mCav > pCav ? 'MANTIS' : pCav > mCav ? 'PISTOL' : 'TIE');
+    setRow('R', m.r.toFixed(0), p.r.toFixed(0),
+      (m.r - p.r).toFixed(0),
+      m.r > p.r ? 'MANTIS' : p.r > m.r ? 'PISTOL' : 'TIE');
+    const mDrag = (STATE.config.visc * mSpeed * 0.15).toFixed(2);
+    const pDrag = (STATE.config.visc * pSpeed * 0.15).toFixed(2);
+    setRow('D', mDrag, pDrag,
+      (mDrag - pDrag).toFixed(2),
+      parseFloat(mDrag) < parseFloat(pDrag) ? 'MANTIS' : parseFloat(pDrag) < parseFloat(mDrag) ? 'PISTOL' : 'TIE');
+    setRow('E', mE.toFixed(1), pE.toFixed(1),
+      (mE - pE).toFixed(1),
+      mE > pE ? 'MANTIS' : pE > mE ? 'PISTOL' : 'TIE');
+    setRow('P', mDist.toFixed(0), pDist.toFixed(0),
+      (mDist - pDist).toFixed(0),
+      mDist > pDist ? 'MANTIS' : pDist > mDist ? 'PISTOL' : 'TIE');
+
+    const mN = STATE.bubbles.filter(b => b.team === 'MANTIS').length;
+    const pN = STATE.bubbles.filter(b => b.team === 'PISTOL').length;
+    setRow('N', mN, pN,
+      (mN - pN),
+      mN > pN ? 'MANTIS' : pN > mN ? 'PISTOL' : 'TIE');
+
+    // performance bars (normalize to 100)
+    const maxEnergy = Math.max(mE, pE, 1);
+    $('perfMantis').style.width = Math.min(100, (mE/maxEnergy)*100) + '%';
+    $('perfPistol').style.width = Math.min(100, (pE/maxEnergy)*100) + '%';
+
+    // status
+    $('tblStatus').textContent = STATE.running ? (STATE.paused ? 'PAUSED' : 'RUNNING') : 'IDLE';
+  }
+
+  // ===== MAIN LOOP =====
+  function loop(ts){
+    if(!STATE.lastRealTime) STATE.lastRealTime = ts;
+    const realDT = Math.min((ts - STATE.lastRealTime) / 1000, 0.1);
+    STATE.lastRealTime = ts;
+
+    // fps
+    STATE.fpsAccum += realDT;
+    STATE.fpsFrames++;
+    if(STATE.fpsAccum >= 0.5){
+      STATE.fps = Math.round(STATE.fpsFrames / STATE.fpsAccum);
+      STATE.fpsAccum = 0;
+      STATE.fpsFrames = 0;
+    }
+
+    if(STATE.running && !STATE.paused){
+      STATE.accumulator += realDT;
+      while(STATE.accumulator >= STATE.fixedDT){
+        step(STATE.fixedDT);
+        STATE.accumulator -= STATE.fixedDT;
+      }
+    }
+
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // ===== CSV EXPORT =====
+  function exportCSV(){
+    const headers = [
+      'tick','time_s',
+      'mantis_vx','mantis_vy','mantis_speed','mantis_x','mantis_y','mantis_cavitations','mantis_distance','mantis_energy','mantis_score',
+      'pistol_vx','pistol_vy','pistol_speed','pistol_x','pistol_y','pistol_cavitations','pistol_distance','pistol_energy','pistol_score',
+      'shockwave_max','total_cavitations','active_bubbles','leader'
+    ];
+    const rows = [headers.join(',')];
+
+    // if telemetry is empty, push current snapshot
+    let dataRows = STATE.telemetry.slice();
+    if(dataRows.length === 0){
+      dataRows.push({
+        tick: STATE.tick, time: +STATE.time.toFixed(3),
+        mantisV: +(STATE.mantis ? Math.hypot(STATE.mantis.vx, STATE.mantis.vy).toFixed(2) : 0),
+        mantisX: STATE.mantis ? +STATE.mantis.x.toFixed(1) : 0,
+        mantisY: STATE.mantis ? +STATE.mantis.y.toFixed(1) : 0,
+        mantisCav: STATE.mantis ? STATE.mantis.cavitations : 0,
+        pistV: +(STATE.pistol ? Math.hypot(STATE.pistol.vx, STATE.pistol.vy).toFixed(2) : 0),
+        pistX: STATE.pistol ? +STATE.pistol.x.toFixed(1) : 0,
+        pistY: STATE.pistol ? +STATE.pistol.y.toFixed(1) : 0,
+        pistCav: STATE.pistol ? STATE.pistol.cavitations : 0,
+        shock: +STATE.maxShock.toFixed(2),
+        totalCav: STATE.cavitationCount
+      });
+    }
+
+    dataRows.forEach(t => {
+      const mSpeed = t.mantisV;
+      const pSpeed = t.pistV;
+      const leader = mSpeed > pSpeed ? 'MANTIS' : pSpeed > mSpeed ? 'PISTOL' : 'TIE';
+      const mDist = STATE.mantis ? STATE.mantis.distance.toFixed(1) : '0.0';
+      const pDist = STATE.pistol ? STATE.pistol.distance.toFixed(1) : '0.0';
+      const mE = STATE.mantis ? STATE.mantis.energy.toFixed(2) : '0.00';
+      const pE = STATE.pistol ? STATE.pistol.energy.toFixed(2) : '0.00';
+      const mScore = STATE.mantis ? STATE.mantis.score.toFixed(2) : '0.00';
+      const pScore = STATE.pistol ? STATE.pistol.score.toFixed(2) : '0.00';
+      const active = STATE.bubbles.length;
+      rows.push([
+        t.tick, t.time,
+        mSpeed,
+        STATE.mantis ? STATE.mantis.vy.toFixed(2) : '0.00',
+        mSpeed,
+        t.mantisX, t.mantisY, t.mantisCav, mDist, mE, mScore,
+        pSpeed,
+        STATE.pistol ? STATE.pistol.vy.toFixed(2) : '0.00',
+        pSpeed,
+        t.pistX, t.pistY, t.pistCav, pDist, pE, pScore,
+        t.shock, t.totalCav, active, leader
+      ].join(','));
+    });
+
+    const csv = rows.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kineticzen_cavitation_telemetry_' + Date.now() + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('CSV TELEMETRY EXPORTED');
+  }
+
+  // ===== TOAST =====
+  let toastTimer = null;
+  function toast(msg){
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 1900);
+  }
+
+  // ===== COPY SCENARIO LINK =====
+  function copyScenarioLink(){
+    const params = new URLSearchParams({
+      mv: STATE.config.mantisV,
+      pv: STATE.config.pistolV,
+      d: STATE.config.density,
+      v: STATE.config.visc,
+      r: STATE.config.radius,
+      run: STATE.running ? '1' : '0'
+    });
+    const url = window.location.origin + window.location.pathname + '?' + params.toString();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(() => {
+        toast('SCENARIO LINK COPIED');
+      }).catch(() => fallbackCopy(url));
+    } else {
+      fallbackCopy(url);
+    }
+  }
+
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast('SCENARIO LINK COPIED'); }
+    catch(e){ toast('COPY FAILED'); }
+    document.body.removeChild(ta);
+  }
+
+  // ===== SLIDER BINDINGS =====
+  function bindSlider(id, cfgKey, format, unit){
+    const el = $(id);
+    const valEl = $('val' + id.charAt(0).toUpperCase() + id.slice(1));
+    el.addEventListener('input', () => {
+      const v = parseFloat(el.value);
+      STATE.config[cfgKey] = v;
+      if(valEl) valEl.textContent = format(v);
+      applyConfigToBalls();
+      updateReadouts();
+      // clear presets active
+      document.querySelectorAll('.preset').forEach(p => p.classList.remove('active'));
+    });
+    // init
+    if(valEl) valEl.textContent = format(parseFloat(el.value));
+  }
+
+  function applyConfigToBalls(){
+    if(!STATE.mantis || !STATE.pistol) return;
+    STATE.mantis.r = STATE.config.radius;
+    STATE.pistol.r = STATE.config.radius;
+
+    // nudge velocities toward configured values
+    const mSpeed = Math.hypot(STATE.mantis.vx, STATE.mantis.vy) || 1;
+    const pSpeed = Math.hypot(STATE.pistol.vx, STATE.pistol.vy) || 1;
+    const mTarget = STATE.config.mantisV;
+    const pTarget = STATE.config.pistolV;
+    const mFactor = mTarget / mSpeed;
+    const pFactor = pTarget / pSpeed;
+    STATE.mantis.vx = STATE.mantis.vx * mFactor;
+    STATE.mantis.vy = STATE.mantis.vy * mFactor;
+    STATE.pistol.vx = STATE.pistol.vx * pFactor;
+    STATE.pistol.vy = STATE.pistol.vy * pFactor;
+  }
+
+  // ===== PRESETS =====
+  const PRESETS = {
+    classic: { mantisV: 31, pistolV: 28, density: 0.85, visc: 0.42, radius: 14 },
+    highspeed: { mantisV: 48, pistolV: 46, density: 1.2, visc: 0.25, radius: 18 },
+    dense: { mantisV: 26, pistolV: 24, density: 1.45, visc: 0.72, radius: 16 },
+    chaos: { mantisV: 42, pistolV: 44, density: 1.55, visc: 0.3, radius: 22 }
+  };
+
+  function applyPreset(name){
+    const p = PRESETS[name];
+    if(!p) return;
+    STATE.config.mantisV = p.mantisV;
+    STATE.config.pistolV = p.pistolV;
+    STATE.config.density = p.density;
+    STATE.config.visc = p.visc;
+    STATE.config.radius = p.radius;
+
+    $('mantisV').value = p.mantisV;
+    $('pistolV').value = p.pistolV;
+    $('density').value = p.density;
+    $('visc').value = p.visc;
+    $('radius').value = p.radius;
+
+    $('valMantisV').textContent = p.mantisV.toFixed(1) + ' m/s';
+    $('valPistolV').textContent = p.pistolV.toFixed(1) + ' m/s';
+    $('valDensity').textContent = p.density.toFixed(2);
+    $('valVisc').textContent = p.visc.toFixed(2);
+    $('valRadius').textContent = p.radius + ' px';
+
+    applyConfigToBalls();
+    document.querySelectorAll('.preset').forEach(el => el.classList.toggle('active', el.dataset.preset === name));
+    updateReadouts();
+  }
+
+  // ===== EVENT LISTENERS =====
+  document.addEventListener('DOMContentLoaded', () => {
+    // sliders
+    bindSlider('mantisV', 'mantisV', v => v.toFixed(1) + ' m/s');
+    bindSlider('pistolV', 'pistolV', v => v.toFixed(1) + ' m/s');
+    bindSlider('density', 'density', v => v.toFixed(2));
+    bindSlider('visc', 'visc', v => v.toFixed(2));
+    bindSlider('radius', 'radius', v => v.toFixed(0) + ' px');
+
+    // buttons
+    $('runBtn').addEventListener('click', () => {
+      if(!STATE.running){
+        resetField();
+        STATE.running = true;
+        STATE.paused = false;
+        $('runBtn').textContent = '⟲ RERUN SIMULATION';
+        $('pauseBtn').textContent = '⏸ PAUSE';
+        toast('SIMULATION STARTED');
+      } else if(STATE.paused){
+        STATE.paused = false;
+        $('pauseBtn').textContent = '⏸ PAUSE';
+        toast('RESUMED');
+      } else {
+        resetField();
+        toast('FIELD RESET — RUNNING');
+      }
+      updateReadouts();
+    });
+
+    $('resetBtn').addEventListener('click', () => {
+      STATE.running = false;
+      STATE.paused = false;
+      resetField();
+      $('runBtn').textContent = '▶ RUN SIMULATION';
+      $('pauseBtn').textContent = '⏸ PAUSE';
+      toast('FIELD RESET');
+      updateReadouts();
+    });
+
+    $('pauseBtn').addEventListener('click', () => {
+      if(!STATE.running) return;
+      STATE.paused = !STATE.paused;
+      $('pauseBtn').textContent = STATE.paused ? '▶ RESUME' : '⏸ PAUSE';
+      toast(STATE.paused ? 'SIMULATION PAUSED' : 'SIMULATION RESUMED');
+      updateReadouts();
+    });
+
+    $('csvBtn').addEventListener('click', exportCSV);
+    $('linkBtn').addEventListener('click', copyScenarioLink);
+
+    // presets
+    document.querySelectorAll('.preset').forEach(el => {
+      el.addEventListener('click', () => {
+        applyPreset(el.dataset.preset);
+        toast('PRESET: ' + el.dataset.preset.toUpperCase());
+      });
+    });
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-q').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ans = btn.nextElementSibling;
+        const ic = btn.querySelector('.ic');
+        const isOpen = ans.classList.contains('open');
+        ans.classList.toggle('open', !isOpen);
+        ic.textContent = isOpen ? '+' : '−';
+      });
+    });
+
+    // URL params
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('mv')) $('mantisV').value = params.get('mv');
+    if(params.get('pv')) $('pistolV').value = params.get('pv');
+    if(params.get('d')) $('density').value = params.get('d');
+    if(params.get('v')) $('visc').value = params.get('v');
+    if(params.get('r')) $('radius').value = params.get('r');
+
+    // update state from URL
+    STATE.config.mantisV = parseFloat($('mantisV').value);
+    STATE.config.pistolV = parseFloat($('pistolV').value);
+    STATE.config.density = parseFloat($('density').value);
+    STATE.config.visc = parseFloat($('visc').value);
+    STATE.config.radius = parseFloat($('radius').value);
+
+    $('valMantisV').textContent = STATE.config.mantisV.toFixed(1) + ' m/s';
+    $('valPistolV').textContent = STATE.config.pistolV.toFixed(1) + ' m/s';
+    $('valDensity').textContent = STATE.config.density.toFixed(2);
+    $('valVisc').textContent = STATE.config.visc.toFixed(2);
+    $('valRadius').textContent = STATE.config.radius.toFixed(0) + ' px';
+
+    // initial field
+    resetField();
+
+    if(params.get('run') === '1'){
+      STATE.running = true;
+      $('runBtn').textContent = '⟲ RERUN SIMULATION';
+    }
+
+    requestAnimationFrame(loop);
+  });
+
+})();
+</script>
+</body>
+</html>
