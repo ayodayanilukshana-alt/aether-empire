@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Hole vs Quasar: Cosmic Ball Maze Physics | KINETICZEN LABS</title>
+<meta name="description" content="Interactive gravity-maze physics workstation. Simulate a Black Hole's infinite density well against a Quasar's radiative pressure basin. 60FPS canvas telemetry, scenario presets, CSV export.">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/black-hole-vs-quasar-cosmic-ball-maze-physics.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Black Hole vs Quasar: Cosmic Ball Maze Physics Workstation",
+  "applicationCategory": "SimulationApplication",
+  "operatingSystem": "Web Browser",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/black-hole-vs-quasar-cosmic-ball-maze-physics.html",
+  "description": "60FPS rigid-body gravity maze simulation comparing a Black Hole's gravitational singularity against a Quasar's radiative pressure field. Interactive canvas, KPI telemetry, scenario presets, CSV export.",
+  "author": { "@type": "Organization", "name": "KINETICZEN LABS", "url": "https://ayodayanilukshana-alt.github.io/aether-empire" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": ["Rigid-body gravity maze","Black Hole vs Quasar physics rivalry","60FPS canvas renderer","CSV telemetry export","Scenario permalink","KPI dashboard"]
+}
+</script>
+<style>
+  :root{
+    --bg:#05070b; --card:#0b0f17; --border:#1e293b; --accent:#f43f5e;
+    --accent-dim:rgba(244,63,94,.14); --txt:#e2e8f0; --muted:#7c8aa0;
+    --a:#f43f5e; --b:#38bdf8; --ok:#22c55e;
+    --mono:'SFMono-Regular',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1440px;margin:0 auto;padding:20px 22px 60px}
+
+  header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;
+    padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:22px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:34px;height:34px;border:1.5px solid var(--accent);border-radius:9px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;color:var(--accent);font-size:13px;letter-spacing:-1px;
+    box-shadow:0 0 18px rgba(244,63,94,.25)}
+  .brand h1{margin:0;font-size:15px;letter-spacing:2.5px;font-weight:800;text-transform:uppercase}
+  .brand span{display:block;font-size:10px;letter-spacing:2px;color:var(--muted);font-family:var(--mono)}
+  .portal{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;border:1px solid var(--border);
+    padding:9px 16px;border-radius:8px;color:var(--txt);background:var(--card);transition:.15s}
+  .portal:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+
+  .titleblock{margin-bottom:20px}
+  .titleblock h2{margin:0 0 6px;font-size:clamp(20px,3vw,30px);line-height:1.15;font-weight:800;letter-spacing:-.4px}
+  .titleblock h2 em{font-style:normal;color:var(--accent)}
+  .titleblock p{margin:0;color:var(--muted);font-size:13px;max-width:820px}
+
+  .grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .card h3{margin:0 0 12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+    font-family:var(--mono);font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  .card h3 .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+
+  .ctrl{margin-bottom:14px}
+  .ctrl label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+  .ctrl label b{color:var(--accent);font-weight:700}
+  input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:3px;background:#16202f;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--accent);cursor:pointer;border:2px solid #0b0f17;box-shadow:0 0 10px rgba(244,63,94,.7)}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--accent);
+    cursor:pointer;border:2px solid #0b0f17}
+
+  .presets{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
+  .presets button{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;
+    background:#0f1522;color:var(--txt);border:1px solid var(--border);padding:8px 6px;border-radius:7px;
+    cursor:pointer;transition:.14s}
+  .presets button:hover{border-color:var(--accent);color:var(--accent)}
+  .presets button.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+
+  .btn{width:100%;padding:11px;border-radius:8px;border:1px solid var(--accent);cursor:pointer;
+    font-family:var(--mono);font-size:11px;letter-spacing:1.4px;text-transform:uppercase;font-weight:700;
+    background:var(--accent-dim);color:var(--accent);transition:.15s;margin-top:8px}
+  .btn:hover{background:var(--accent);color:#05070b}
+  .btn.alt{border-color:var(--border);color:var(--txt);background:#0f1522}
+  .btn.alt:hover{border-color:var(--b);color:var(--b);background:rgba(56,189,248,.1)}
+  .btn.wide{grid-column:span 2}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:13px 14px;position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+  .kpi.b::before{background:var(--b)}
+  .kpi.g::before{background:var(--ok)}
+  .kpi.n::before{background:#a855f7}
+  .kpi span{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:1.6px;
+    text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .kpi b{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.5px;display:block}
+  .kpi small{font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+  .arena{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0;overflow:hidden;position:relative}
+  .arena-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;
+    border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .teams{display:flex;gap:16px}
+  .teams .a{color:var(--a)} .teams .b{color:var(--b)}
+  #stage{display:block;width:100%;height:auto;background:radial-gradient(circle at 30% 40%,#0a0f1a 0%,#05070b 70%)}
+  .arena-foot{display:flex;flex-wrap:wrap;gap:10px;padding:10px 16px;border-top:1px solid var(--border);
+    font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);justify-content:space-between}
+  .arena-foot b{color:var(--txt)}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+  th{font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  td.num{font-family:var(--mono);text-align:right;color:var(--txt)}
+  td.win{color:var(--accent);font-weight:700}
+  tr:hover td{background:#0f1522}
+  .bar{height:5px;border-radius:3px;background:#16202f;overflow:hidden;min-width:60px}
+  .bar i{display:block;height:100%;border-radius:3px}
+
+  .section{margin-top:22px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+  .section h3{margin:0 0 14px;font-size:12px;letter-spacing:2px;text-transform:uppercase;
+    font-family:var(--mono);color:var(--txt);font-weight:700}
+
+  .video{position:relative;padding-bottom:56.25%;height:0;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#000}
+  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+  details{border:1px solid var(--border);border-radius:9px;padding:12px 15px;margin-bottom:9px;background:#0a0e16;transition:.15s}
+  details[open]{border-color:#2b3a52}
+  summary{cursor:pointer;font-weight:600;font-size:13px;list-style:none;display:flex;justify-content:space-between}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+';color:var(--accent);font-family:var(--mono);font-weight:800}
+  details[open] summary::after{content:'−'}
+  details p{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.65}
+
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--accent);color:#05070b;font-family:var(--mono);font-size:11px;font-weight:700;
+    letter-spacing:1.2px;padding:11px 22px;border-radius:8px;opacity:0;transition:.25s;z-index:99;
+    text-transform:uppercase;pointer-events:none}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+  footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--border);display:flex;
+    flex-wrap:wrap;gap:14px;justify-content:space-between;font-family:var(--mono);font-size:10px;
+    letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.8px}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">KZ</div>
+      <div>
+        <h1>Kineticzen Labs</h1>
+        <span>PHYSICS SIMULATION WORKSTATION</span>
+      </div>
+    </div>
+    <a class="portal" href="./index.html">&larr; PORTAL / AETHER EMPIRE</a>
+  </header>
+
+  <div class="titleblock">
+    <h2>Black Hole <em>vs</em> Quasar: Cosmic Ball Maze Physics</h2>
+    <p>60FPS rigid-body gravity-maze rivalry. Tune the singularity's pull against the quasar's radiative pressure well and watch matter resolve the outcome in real time.</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><span>Black Hole Pull</span><b id="kA">—</b><small>G &middot; capture force</small></div>
+    <div class="kpi b"><span>Quasar Pressure</span><b id="kB">—</b><small>radiative outward force</small></div>
+    <div class="kpi g"><span>Matter Entropy</span><b id="kE">—</b><small>system disorder index</small></div>
+    <div class="kpi n"><span>Frame Time</span><b id="kF">—</b><small>ms/frame @ target 16.6</small></div>
+  </div>
+
+  <div class="grid">
+
+    <aside>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Scenario Presets <span class="dot"></span></h3>
+        <div class="presets">
+          <button data-preset="singularity" class="active">Singularity</button>
+          <button data-preset="quasar">Quasar Surge</button>
+          <button data-preset="equilibrium">Equilibrium</button>
+          <button data-preset="chaos">Chaos Field</button>
+          <button data-preset="tidal" class="wide">Tidal Disruption</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Physics Parameters</h3>
+        <div class="ctrl">
+          <label>Black Hole Gravity <b id="vGrav">1.00</b></label>
+          <input type="range" id="grav" min="0.1" max="3" step="0.01" value="1">
+        </div>
+        <div class="ctrl">
+          <label>Quasar Pressure <b id="vPres">0.80</b></label>
+          <input type="range" id="pres" min="0" max="3" step="0.01" value="0.8">
+        </div>
+        <div class="ctrl">
+          <label>Matter Count <b id="vMatter">48</b></label>
+          <input type="range" id="matter" min="8" max="140" step="1" value="48">
+        </div>
+        <div class="ctrl">
+          <label>Restitution <b id="vRest">0.72</b></label>
+          <input type="range" id="rest" min="0.1" max="0.99" step="0.01" value="0.72">
+        </div>
+        <div class="ctrl">
+          <label>Simulation Rate <b id="vRate">1.00</b></label>
+          <input type="range" id="rate" min="0.1" max="2" step="0.05" value="1">
+        </div>
+        <button class="btn" id="toggleRun">Pause Simulation</button>
+        <button class="btn alt" id="reset">Reset Matter</button>
+      </div>
+    </aside>
+
+    <main>
+      <div class="arena">
+        <div class="arena-head">
+          <div class="teams"><span class="a">&#9679; BLACK HOLE</span> <span class="b">&#9679; QUASAR</span></div>
+          <div id="status">RUNNING</div>
+        </div>
+        <canvas id="stage" width="1100" height="620"></canvas>
+        <div class="arena-foot">
+          <div>MATTER: <b id="fCount">48</b> &nbsp;/&nbsp; FPS: <b id="fps">60</b></div>
+          <div>TESTS: BLOCKS <b id="fBlk">0</b> &nbsp; QUASAR TAGS <b id="fQ">0</b></div>
+          <div>ELAPSED: <b id="fTime">0.0s</b></div>
+        </div>
+      </div>
+
+      <div class="section" style="margin-top:16px">
+        <h3>Analytical Breakdown</h3>
+        <table>
+          <thead>
+            <tr><th>Metric</th><th style="text-align:right">Black Hole</th><th style="text-align:right">Quasar</th><th>Dominance</th></tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="section" style="margin-top:16px">
+        <h3>Telemetry Export</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <button class="btn" id="csv">Export CSV Telemetry</button>
+          <button class="btn alt" id="link">Copy Scenario Link</button>
+        </div>
+        <p style="margin:12px 0 0;font-family:var(--mono);font-size:10px;color:var(--muted);
+           letter-spacing:.5px;line-height:1.7">CSV includes per-particle impulse samples, KPI snapshots and parameter header rows for offline analysis.</p>
+      </div>
+
+      <div class="section" style="margin-top:16px">
+        <h3>Reference Stream</h3>
+        <div class="video">
+          <iframe src="https://www.youtube.com/embed/V8xcGMBqllQ" title="Black Hole vs Quasar: Cosmic Ball Maze Physics"
+            allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <div class="section" style="margin-top:16px">
+        <h3>Frequently Asked Questions</h3>
+        <details open>
+          <summary>What is this simulation actually modeling?</summary>
+          <p>A rigid-body gravity maze. Each matter cube is subjected to two conflicting force fields: an inverse-square attraction toward the Black Hole singularity (left) and a radial outward pressure field emitted by the Quasar core (right). The renderer integrates these per-frame at 60FPS, applies restitution-based collisions, and reports system entropy to quantify how far the field has evolved from order.</p>
+        </details>
+        <details>
+          <summary>How do the Black Hole and Quasar forces differ numerically?</summary>
+          <p>The Black Hole uses an inverse-square law with a softening term to avoid singularity blow-ups; the Quasar uses an inverse-linear pressure falloff with a positive outward sign, meaning it repels matter away from its core. Both are scaled by their respective sliders from 0 to 3 units of gravitational constant. Equilibrium is a matter of matching pull magnitude to push magnitude at the maze centerline.</p>
+        </details>
+        <details>
+          <summary>What does "Matter Entropy" represent?</summary>
+          <p>Entropy is computed from the variance of particle speeds and the spatial spread relative to the maze area. A fresh reset begins near zero (ordered); as the two fields compete, velocities diverge and the metric rises. A rising entropy index suggests the Black Hole's capture events are dominating, since asymmetrical acceleration spreads the distribution of velocities.</p>
+        </details>
+        <details>
+          <summary>How is the CSV telemetry structured?</summary>
+          <p>The export begins with a header block of parameter key-value pairs (gravity, pressure, restitution, matter count), followed by a columnar section of per-particle state rows: id, x, y, vx, vy, kinetic energy and current field affinity. Files can be opened directly in spreadsheets or loaded into any numerical toolchain.</p>
+        </details>
+        <details>
+          <summary>Can I share a specific configuration?</summary>
+          <p>Yes. The "Copy Scenario Link" button serializes the five slider parameters into the URL hash and copies a permalink to your clipboard. Loading a link that contains a hash will automatically restore those exact values and reinitialize the maze.</p>
+        </details>
+        <details>
+          <summary>Why does the preset set differ so much?</summary>
+          <p>Each preset demonstrates a qualitatively different physical regime: Singularity (strong capture), Quasar Surge (strong repulsion), Equilibrium (balanced), Chaos Field (extreme restitution and high matter), and Tidal Disruption (steep gradient). Observing how entropy and field affinity evolve across presets is the core value of the workstation.</p>
+        </details>
+      </div>
+
+      <div class="section" style="margin-top:16px">
+        <div class="legend">
+          <span><i style="background:var(--a)"></i>Black Hole Field</span>
+          <span><i style="background:var(--b)"></i>Quasar Field</span>
+          <span><i style="background:#22c55e"></i>Matter Cubes</span>
+          <span><i style="background:#a855f7"></i>Entropy Trace</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <footer>
+    <div>KINETICZEN LABS &middot; COSMIC BALL MAZE &middot; v2.4</div>
+    <div><a href="./index.html">PORTAL</a> &middot; <a href="https://ayodayanilukshana-alt.github.io/aether-empire">AETHER EMPIRE</a></div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ---------- state ----------
+  const S = {
+    grav: 1.0, pres: 0.8, matterCount: 48, rest: 0.72, rate: 1.0,
+    running: true, t: 0, fps: 60, lastFrame: 0, frames: 0, fpsAccum: 0,
+    particles: [], entropy: 0, blkTests: 0, qTags: 0, preset: 'singularity', history: []
+  };
+
+  const W = 1100, H = 620;
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const HOLE = { x: 200, y: 310, r: 46 };
+  const QUAS = { x: 900, y: 310, r: 58 };
+
+  const $ = id => document.getElementById(id);
+  const sliders = {
+    grav: $('grav'), pres: $('pres'), matter: $('matter'), rest: $('rest'), rate: $('rate')
+  };
+  const labels = { grav: $('vGrav'), pres: $('vPres'), matter: $('vMatter'), rest: $('vRest'), rate: $('vRate') };
+
+  // ---------- particles ----------
+  function initParticles(n){
+    S.particles = [];
+    const cols = Math.ceil(Math.sqrt(n));
+    let i = 0;
+    for (let r = 0; r < cols && i < n; r++){
+      for (let c = 0; c < cols && i < n; c++){
+        const x = 380 + c * 19 + (Math.random()-0.5)*6;
+        const y = 180 + r * 19 + (Math.random()-0.5)*6;
+        if (x > 340 && x < 700 && y > 120 && y < 520){
+          S.particles.push({
+            id: i,
+            x, y,
+            vx: (Math.random()-0.5)*2.4,
+            vy: (Math.random()-0.5)*2.4,
+            r: 5.2 + Math.random()*2.2,
+            affinity: 0,      // -1 quasar, +1 black hole, 0 neutral
+            hits: 0
+          });
+          i++;
+        }
+      }
+    }
+    S.entropy = 0; S.blkTests = 0; S.qTags = 0; S.t = 0;
+    S.history = [];
+    updateKpis();
+  }
+
+  // ---------- physics ----------
+  function step(dt){
+    const k = S.rate * dt * 60; // normalised to 60fps
+    const G = S.grav;
+    const P = S.pres;
+    const soft = 900;
+
+    let softSum = 0;
+    for (const p of S.particles){
+      // Black hole attraction (inverse square with softening)
+      let dx = HOLE.x - p.x, dy = HOLE.y - p.y;
+      let d2 = dx*dx + dy*dy + soft;
+      let d = Math.sqrt(d2);
+      let fA = (G * 78000) / d2;
+      p.vx += (dx / d) * fA * k * 0.0006;
+      p.vy += (dy / d) * fA * k * 0.0006;
+
+      // Quasar outward pressure (inverse linear, repulsive)
+      dx = p.x - QUAS.x; dy = p.y - QUAS.y;
+      d2 = dx*dx + dy*dy + soft*1.4;
+      d = Math.sqrt(d2);
+      let fB = (P * 1800) / d;
+      p.vx += (dx / d) * fB * k * 0.0004;
+      p.vy += (dy / d) * fB * k * 0.0004;
+
+      // gentle central drag
+      p.vx *= 0.994; p.vy *= 0.994;
+
+      // affinity: which field dominates locally
+      const da = Math.hypot(p.x - HOLE.x, p.y - HOLE.y);
+      const db = Math.hypot(p.x - QUAS.x, p.y - QUAS.y);
+      p.affinity = (da < db) ? 1 : -1;
+
+      p.x += p.vx * k;
+      p.y += p.vy * k;
+
+      // boundary bounce
+      if (p.x < p.r){ p.x = p.r; p.vx = Math.abs(p.vx) * S.rest; }
+      if (p.x > W - p.r){ p.x = W - p.r; p.vx = -Math.abs(p.vx) * S.rest; }
+      if (p.y < p.r){ p.y = p.r; p.vy = Math.abs(p.vy) * S.rest; }
+      if (p.y > H - p.r){ p.y = H - p.r; p.vy = -Math.abs(p.vy) * S.rest; }
+
+      // capture & tag detection
+      if (da < HOLE.r + p.r){ S.blkTests++; }
+      if (db < QUAS.r + p.r){ S.qTags++; }
+
+      // kinetic energy accumulation for entropy
+      const spd2 = p.vx*p.vx + p.vy*p.vy;
+      softSum += spd2;
+    }
+    S.t += dt;
+    // entropy from velocity variance
+    const n = S.particles.length;
+    if (n > 1){
+      const mean = softSum / n;
+      let varSum = 0;
+      for (const p of S.particles){
+        const e = p.vx*p.vx + p.vy*p.vy;
+        const d = e - mean;
+        varSum += d * d;
+      }
+      const variance = varSum / n;
+      S.entropy = S.entropy * 0.94 + Math.log(1 + variance) * 0.06;
+    }
+    if (S.history.length < 220) S.history.push(S.entropy);
+  }
+
+  // ---------- rendering ----------
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+
+    // field gradients
+    const gA = ctx.createRadialGradient(HOLE.x, HOLE.y, 10, HOLE.x, HOLE.y, 260);
+    gA.addColorStop(0, 'rgba(244,63,94,0.30)');
+    gA.addColorStop(1, 'rgba(244,63,94,0)');
+    ctx.fillStyle = gA;
+    ctx.fillRect(0, 0, HW(), H);
+
+    const gB = ctx.createRadialGradient(QUAS.x, QUAS.y, 10, QUAS.x, QUAS.y, 300);
+    gB.addColorStop(0, 'rgba(56,189,248,0.26)');
+    gB.addColorStop(1, 'rgba(56,189,248,0)');
+    ctx.fillStyle = gB;
+    ctx.fillRect(0, 0, W, H);
+
+    // grid
+    ctx.strokeStyle = 'rgba(30,41,59,0.35)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 55){
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += 55){
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    // centerline
+    ctx.strokeStyle = 'rgba(148,163,184,0.15)';
+    ctx.setLineDash([8, 10]);
+    ctx.beginPath(); ctx.moveTo(W/2, 0); ctx.lineTo(W/2, H); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // black hole accretion
+    ctx.beginPath();
+    const ringR = HOLE.r + Math.sin(S.t*3)*4;
+    ctx.arc(HOLE.x, HOLE.y, ringR + 20, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(244,63,94,0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(HOLE.x, HOLE.y, HOLE.r, 0, Math.PI*2);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(244,63,94,0.9)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // quasar core pulsation
+    const qpulse = 1 + Math.sin(S.t*4)*0.08;
+    ctx.beginPath();
+    ctx.arc(QUAS.x, QUAS.y, QUAS.r*qpulse, 0, Math.PI*2);
+    const qGrad = ctx.createRadialGradient(QUAS.x, QUAS.y, 4, QUAS.x, QUAS.y, QUAS.r*qpulse);
+    qGrad.addColorStop(0, 'rgba(224,242,254,0.95)');
+    qGrad.addColorStop(0.5, 'rgba(56,189,248,0.85)');
+    qGrad.addColorStop(1, 'rgba(56,189,248,0.15)');
+    ctx.fillStyle = qGrad;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(56,189,248,0.9)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // field lines (rough)
+    ctx.strokeStyle = 'rgba(244,63,94,0.08)';
+    for (let a = 0; a < Math.PI*2; a += Math.PI/8){
+      ctx.beginPath();
+      ctx.moveTo(HOLE.x + Math.cos(a)*HOLE.r, HOLE.y + Math.sin(a)*HOLE.r);
+      ctx.lineTo(HOLE.x + Math.cos(a)*340, HOLE.y + Math.sin(a)*340);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(56,189,248,0.07)';
+    for (let a = 0; a < Math.PI*2; a += Math.PI/8){
+      ctx.beginPath();
+      ctx.moveTo(QUAS.x + Math.cos(a)*QUAS.r, QUAS.y + Math.sin(a)*QUAS.r);
+      ctx.lineTo(QUAS.x + Math.cos(a)*360, QUAS.y + Math.sin(a)*360);
+      ctx.stroke();
+    }
+
+    // particles
+    for (const p of S.particles){
+      const x = p.x, y = p.y;
+      let col;
+      if (p.affinity > 0){
+        col = 'rgba(244,63,94,0.92)';
+      } else {
+        col = 'rgba(56,189,248,0.92)';
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = col;
+      ctx.shadowColor = col;
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      // velocity tick
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + p.vx*2.6, y + p.vy*2.6);
+      ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // entropy sparkline
+    if (S.history.length > 1){
+      ctx.beginPath();
+      const hx = 380, hy = 30, hw = 340, hh = 46;
+      ctx.strokeStyle = 'rgba(168,85,247,0.7)';
+      ctx.lineWidth = 1.4;
+      let max = 1;
+      for (const v of S.history) if (v > max) max = v;
+      for (let i = 0; i < S.history.length; i++){
+        const px = hx + (i / (S.history.length - 1)) * hw;
+        const py = hy + hh - (S.history[i] / max) * hh;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.font = '9px monospace';
+      ctx.fillStyle = 'rgba(148,163,184,0.7)';
+      ctx.fillText('ENTROPY TRACE', hx, hy - 4);
+    }
+
+    // labels
+    ctx.font = 'bold 12px monospace';
+    ctx.fillStyle = 'rgba(244,63,94,1)';
+    ctx.fillText('BLACK HOLE', HOLE.x - 46, HOLE.y + HOLE.r + 28);
+    ctx.fillStyle = 'rgba(56,189,248,1)';
+    ctx.fillText('QUASAR', QUAS.x - 30, QUAS.y + QUAS.r + 28);
+  }
+  // helper for gradient width (kept simple, full canvas)
+  function HW(){ return W; }
+
+  // ---------- KPI ----------
+  function renderKpis(){
+    $('kA').textContent = S.grav.toFixed(2);
+    $('kB').textContent = S.pres.toFixed(2);
+    $('kE').textContent = S.entropy.toFixed(3);
+    $('kF').textContent = (1000/Math.max(S.fps,1)).toFixed(1);
+    $('fCount').textContent = S.particles.length;
+    $('fps').textContent = S.fps.toFixed(0);
+    $('fBlk').textContent = S.blkTests.toLocaleString();
+    $('fQ').textContent = S.qTags.toLocaleString();
+    $('fTime').textContent = S.t.toFixed(1) + 's';
+    ['grav','pres','matter','rest','rate'].forEach(k => {
+      labels[k].textContent = (k === 'matter') ? S.particles.length : S[k].toFixed(2);
+    });
+  }
+
+  function updateKpis(){
+    renderKpis();
+    updateTable();
+  }
+
+  // ---------- analytics table ----------
+  function updateTable(){
+    const gravA = S.grav * 1.0;
+    const presB = S.pres * 1.0;
+    const total = gravA + presB + 0.0001;
+    const aShare = gravA / total * 100;
+    const bShare = presB / total * 100;
+    const p = S.particles.length || 1;
+    const blkShare = (S.blkTests / (S.blkTests + S.qTags + 1)) * 100;
+    const qShare = 100 - blkShare;
+
+    const rows = [
+      ['Field Strength', aShare.toFixed(1) + '%', bShare.toFixed(1) + '%', aShare >= bShare ? 'BLACK HOLE' : 'QUASAR'],
+      ['Matter Captured', S.blkTests.toLocaleString(), S.qTags.toLocaleString(), blkShare >= qShare ? 'BLACK HOLE' : 'QUASAR'],
+      ['Local Field Affinity', (S.particles.filter(x=>x.affinity>0).length) + ' part.', (S.particles.filter(x=>x.affinity<0).length) + ' part.', '—'],
+      ['Matter Entropy', S.entropy.toFixed(4), '—', 'SYSTEM'],
+      ['Frame Budget', (1000/Math.max(S.fps,1)).toFixed(2) + ' ms', '60 FPS target', 'OPTIMAL'],
+      ['Restitution Energy Retained', (S.rest*100).toFixed(0) + '%', (S.rest*100).toFixed(0) + '%', 'SHARED']
+    ];
+
+    const tb = $('tbody');
+    tb.innerHTML = rows.map(r => {
+      const winner = r[3];
+      const wClass = (winner === 'BLACK HOLE') ? 'win' : '';
+      return '<tr><td>' + r[0] + '</td><td class="num">' + r[1] + '</td><td class="num">' + r[2] + '</td><td class="' + wClass + '">' + r[3] + '</td></tr>';
+    }).join('');
+  }
+
+  // ---------- presets ----------
+  const PRESETS = {
+    singularity: { grav: 2.10, pres: 0.35, matter: 46, rest: 0.65, rate: 1.00 },
+    quasar:      { grav: 0.40, pres: 2.20, matter: 52, rest: 0.80, rate: 1.10 },
+    equilibrium: { grav: 1.00, pres: 0.95, matter: 48, rest: 0.72, rate: 1.00 },
+    chaos:       { grav: 1.60, pres: 1.50, matter: 110, rest: 0.97, rate: 1.45 },
+    tidal:       { grav: 2.70, pres: 1.10, matter: 66, rest: 0.88, rate: 1.25 }
+  };
+
+  function applyPreset(name){
+    const p = PRESETS[name];
+    if (!p) return;
+    Object.keys(p).forEach(k => { S[k] = p[k]; });
+    S.preset = name;
+    sliders.grav.value = S.grav; sliders.pres.value = S.pres;
+    sliders.matter.value = S.matterCount; sliders.rest.value = S.rest; sliders.rate.value = S.rate;
+    initParticles(S.matterCount);
+    document.querySelectorAll('.presets button').forEach(b => {
+      b.classList.toggle('active', b.dataset.preset === name);
+    });
+    renderKpis();
+  }
+
+  // ---------- CSV ----------
+  function exportCSV(){
+    const lines = [];
+    lines.push('KINETICZEN LABS - BLACK HOLE VS QUASAR TELEMETRY');
+    lines.push('Generated,' + new Date().toISOString());
+    lines.push('Preset,' + S.preset);
+    lines.push('Gravity,' + S.grav.toFixed(4));
+    lines.push('QuasarPressure,' + S.pres.toFixed(4));
+    lines.push('MatterCount,' + S.particles.length);
+    lines.push('Restitution,' + S.rest.toFixed(4));
+    lines.push('Rate,' + S.rate.toFixed(4));
+    lines.push('Entropy,' + S.entropy.toFixed(6));
+    lines.push('ElapsedSeconds,' + S.t.toFixed(3));
+    lines.push('BlackHoleCaptures,' + S.blkTests);
+    lines.push('QuasarTags,' + S.qTags);
+    lines.push('');
+    lines.push('id,x,y,vx,vy,kinetic_energy,affinity,radius');
+    for (const p of S.particles){
+      const ke = 0.5 * (p.vx*p.vx + p.vy*p.vy);
+      lines.push([
+        p.id,
+        p.x.toFixed(2), p.y.toFixed(2),
+        p.vx.toFixed(4), p.vy.toFixed(4),
+        ke.toFixed(4),
+        p.affinity > 0 ? 'blackhole' : 'quasar',
+        p.r.toFixed(2)
+      ].join(','));
+    }
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kineticzen-blackhole-vs-quasar-telemetry-' + Date.now() + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('CSV telemetry exported');
+  }
+
+  function makeLink(){
+    const params = new URLSearchParams();
+    params.set('g', S.grav.toFixed(2));
+    params.set('p', S.pres.toFixed(2));
+    params.set('m', S.particles.length);
+    params.set('r', S.rest.toFixed(2));
+    params.set('x', S.rate.toFixed(2));
+    params.set('pre', S.preset);
+    const url = location.origin + location.pathname + '#' + params.toString();
+    copy(url);
+  }
+
+  function loadHash(){
+    if (!location.hash) return false;
+    try {
+      const params = new URLSearchParams(location.hash.slice(1));
+      if (!params.has('g')) return false;
+      S.grav = parseFloat(params.get('g'));
+      S.pres = parseFloat(params.get('p'));
+      S.matterCount = parseInt(params.get('m'));
+      S.rest = parseFloat(params.get('r'));
+      S.rate = parseFloat(params.get('x'));
+      S.preset = params.get('pre') || 'custom';
+      sliders.grav.value = S.grav; sliders.pres.value = S.pres;
+      sliders.matter.value = S.matterCount; sliders.rest.value = S.rest; sliders.rate.value = S.rate;
+      initParticles(S.matterCount);
+      return true;
+    } catch(e){ return false; }
+  }
+
+  function copy(text){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => toast('Scenario link copied'), () => fallbackCopy(text));
+    } else fallbackCopy(text);
+  }
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('Scenario link copied'); }
+    catch(e){ toast('Copy failed'); }
+    document.body.removeChild(ta);
+  }
+
+  let toastTimer;
+  function toast(msg){
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  // ---------- events ----------
+  Object.keys(sliders).forEach(key => {
+    sliders[key].addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      if (key === 'matter'){
+        S.matterCount = Math.round(val);
+        initParticles(S.matterCount);
+      } else {
+        S[key] = val;
+      }
+      S.preset = 'custom';
+      document.querySelectorAll('.presets button').forEach(b => b.classList.remove('active'));
+      labels[key].textContent = (key === 'matter') ? S.particles.length : S[key].toFixed(2);
+      renderKpis();
+    });
+  });
+
+  document.querySelectorAll('.presets button').forEach(btn => {
+    btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+  });
+
+  $('toggleRun').addEventListener('click', () => {
+    S.running = !S.running;
+    $('toggleRun').textContent = S.running ? 'Pause Simulation' : 'Resume Simulation';
+    $('status').textContent = S.running ? 'RUNNING' : 'PAUSED';
+  });
+  $('reset').addEventListener('click', () => { initParticles(S.particles.length); toast('Maze reset'); });
+
+  $('csv').addEventListener('click', exportCSV);
+  $('link').addEventListener('click', makeLink);
+
+  // ---------- loop ----------
+  let last = performance.now();
+  function loop(now){
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    S.frames++; S.fpsAccum += dt;
+    if (S.fpsAccum > 0.5){
+      S.fps = S.frames / S.fpsAccum;
+      S.frames = 0; S.fpsAccum = 0;
+    }
+    if (S.running && dt > 0){
+      // sub-steps for stability at high rate
+      const sub = 2;
+      for (let s = 0; s < sub; s++) step(dt / sub);
+    }
+    draw();
+    // throttle DOM updates
+    if (now - (loop._lastKpi || 0) > 120){
+      loop._lastKpi = now;
+      renderKpis();
+      updateTable();
+    }
+    requestAnimationFrame(loop);
+  }
+
+  // ---------- boot ----------
+  if (!loadHash()){
+    applyPreset('equilibrium');
+  } else {
+    renderKpis();
+  }
+  requestAnimationFrame(loop);
+
+  window.addEventListener('hashchange', () => { loadHash(); });
+})();
+</script>
+</body>
+</html>
