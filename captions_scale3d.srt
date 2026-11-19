@@ -1,55 +1,47 @@
 1
-00:00:00,096 --> 00:00:02,074
-This 8.2 million chess set is
+00:00:00,096 --> 00:00:02,526
+Kepler 37b is smaller than Mercury
 
 2
-00:00:02,071 --> 00:00:04,290
-the world's most expensive game studded
+00:00:02,830 --> 00:00:05,972
+a scorched world just 3,860 kilometers
 
 3
-00:00:04,302 --> 00:00:07,054
-with diamonds and rubies The James
+00:00:05,984 --> 00:00:09,837
+across Kepler 138b is Mars sized
 
 4
-00:00:07,066 --> 00:00:09,881
-Webb Space Telescope's 6.5 meter golden
+00:00:09,977 --> 00:00:13,100
+about 6,800 kilometers wide orbiting a
 
 5
-00:00:09,893 --> 00:00:13,047
-mirror peers back 13.5 billion years for just
+00:00:13,050 --> 00:00:16,652
+red dwarf star Gliese 1132b is
 
 6
-00:00:13,059 --> 00:00:16,957
-$10 billion The International Space Station a
+00:00:16,660 --> 00:00:19,955
+a fiery lava world 14,800 kilometers
 
 7
-00:00:16,872 --> 00:00:20,342
-$150 billion orbital laboratory is the most
+00:00:19,966 --> 00:00:23,426
+across with a volcanic atmosphere WASP
 
 8
-00:00:20,353 --> 00:00:24,169
-expensive object ever constructed Antilia a
+00:00:23,437 --> 00:00:26,954
+17b is a puffy giant 268,000
 
 9
-00:00:24,131 --> 00:00:26,397
-27 story private home in Mumbai
+00:00:26,965 --> 00:00:29,454
+kilometers wide orbiting backwards around its
 
 10
-00:00:26,689 --> 00:00:29,458
-cost a staggering $2.2 billion to build
+00:00:29,465 --> 00:00:33,905
+star 2MASS J2126 8140 is the
 
 11
-00:00:29,469 --> 00:00:32,535
-for one family CERN's Large Hadron
+00:00:33,890 --> 00:00:37,593
+largest rogue planet 284,000 kilometers wide
 
 12
-00:00:32,547 --> 00:00:35,526
-Collider a 27 kilometer ring smashes
-
-13
-00:00:35,538 --> 00:00:37,173
-particles at near light speed for
-
-14
-00:00:37,185 --> 00:00:38,867
-$9.2 billion
+00:00:37,885 --> 00:00:38,925
+drifting starless
