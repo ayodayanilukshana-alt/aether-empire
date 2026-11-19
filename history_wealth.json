@@ -1,8 +1,18 @@
 {
   "seed_idx": 10,
-  "topics": [],
+  "topics": [
+    "What If You Invested $1,000 in Gold vs Bitcoin?",
+    "Deadliest Venoms Ranked by Microgram Lethality",
+    "5 Strangest Things Found Frozen in Antarctica"
+  ],
   "used_items": [],
   "used_domains": [],
-  "playlist_id": "",
-  "published_videos": []
+  "playlist_id": "PLcofexlo_XNQ",
+  "published_videos": [
+    {
+      "video_id": "ApiObPhn9sw",
+      "title": "What If You Invested $1,000 in Gold vs Bitcoin?",
+      "published_at": 1795092103
+    }
+  ]
 }
