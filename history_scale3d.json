@@ -5,7 +5,8 @@
     "Tiny Shrew to Blue Whale: Mind-Blowing Mammal Scale",
     "Mining Machines: From Giant to Gigantic",
     "Most Expensive Objects Ever Built: 5-Stage 3D Scale",
-    "Smallest to Largest Exoplanets & Rogue Planets"
+    "Smallest to Largest Exoplanets & Rogue Planets",
+    "Neutron Stars vs White Dwarfs vs Hypergiants: 3D Size Shock"
   ],
   "used_items": [
     "V-2 Rocket",
@@ -67,12 +68,19 @@
     {
       "video_id": "nuhLKZq8HRI",
       "title": "Most Expensive Objects Ever Built: 5-Stage 3D Scale #shorts",
-      "published_at": 1795023370
+      "published_at": 1795023370,
+      "ab_tested": true
     },
     {
       "video_id": "GJV6ubVkHn0",
       "title": "Smallest to Largest Exoplanets & Rogue Planets #shorts",
-      "published_at": 1795052283
+      "published_at": 1795052283,
+      "ab_tested": true
+    },
+    {
+      "video_id": "mlJ4Osu-liY",
+      "title": "Neutron Stars vs White Dwarfs vs Hypergiants: 3D Size Shock #shorts",
+      "published_at": 1795109902
     }
   ]
 }

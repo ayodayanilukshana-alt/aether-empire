@@ -1,47 +1,55 @@
 1
-00:00:00,096 --> 00:00:02,526
-Kepler 37b is smaller than Mercury
+00:00:00,096 --> 00:00:02,152
+Neutron stars crush that mass into
 
 2
-00:00:02,830 --> 00:00:05,972
-a scorched world just 3,860 kilometers
+00:00:02,164 --> 00:00:04,267
+a city sized ball spinning hundreds
 
 3
-00:00:05,984 --> 00:00:09,837
-across Kepler 138b is Mars sized
+00:00:04,278 --> 00:00:06,685
+of times per second A white
 
 4
-00:00:09,977 --> 00:00:13,100
-about 6,800 kilometers wide orbiting a
+00:00:06,697 --> 00:00:08,032
+dwarf packs the mass of the
 
 5
-00:00:13,050 --> 00:00:16,652
-red dwarf star Gliese 1132b is
+00:00:08,006 --> 00:00:09,431
+Sun into a sphere the size
 
 6
-00:00:16,660 --> 00:00:19,955
-a fiery lava world 14,800 kilometers
+00:00:09,442 --> 00:00:12,729
+of Earth Betelgeuse a red supergiant
 
 7
-00:00:19,966 --> 00:00:23,426
-across with a volcanic atmosphere WASP
+00:00:12,951 --> 00:00:14,388
+is so vast that if placed
 
 8
-00:00:23,437 --> 00:00:26,954
-17b is a puffy giant 268,000
+00:00:14,400 --> 00:00:15,907
+in our solar system it would
 
 9
-00:00:26,965 --> 00:00:29,454
-kilometers wide orbiting backwards around its
+00:00:15,918 --> 00:00:19,545
+engulf Jupiter's orbit VY Canis Majoris
 
 10
-00:00:29,465 --> 00:00:33,905
-star 2MASS J2126 8140 is the
+00:00:19,557 --> 00:00:21,251
+is a hypergiant so huge that
 
 11
-00:00:33,890 --> 00:00:37,593
-largest rogue planet 284,000 kilometers wide
+00:00:21,263 --> 00:00:22,563
+light takes over an hour to
 
 12
-00:00:37,885 --> 00:00:38,925
-drifting starless
+00:00:22,560 --> 00:00:25,818
+cross its diameter UY Scuti the
+
+13
+00:00:25,815 --> 00:00:28,233
+largest known star would swallow Saturn's
+
+14
+00:00:28,245 --> 00:00:29,612
+orbit with room to spare
