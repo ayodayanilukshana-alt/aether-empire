@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Neutron Stars vs Hypergiants</title>
+  <!-- Schema.org SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D · Cosmic Scale Workstation",
+    "applicationCategory": "Simulation",
+    "operatingSystem": "Web",
+    "description": "Interactive stellar scale comparison tool for neutron stars and hypergiants.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "SCALEVERSE 3D"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/neutron-stars-vs-hypergiants-5-cosmic-titans.html"
+  }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* Typography & layout */
+    h1, h2, h3 {
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+    h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #f0f9ff 0%, #38bdf8 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+    .subhead {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      border-left: 3px solid #38bdf8;
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Cards & surfaces */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Mono numbers */
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+
+    /* Buttons */
+    .btn {
+      background: #111827;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: inherit;
+    }
+    .btn:hover {
+      border-color: #38bdf8;
+      background: #1a1f2e;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    }
+    .btn-primary {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+
+    /* Slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 4px;
+      outline: none;
+      margin: 1rem 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 0 2px #38bdf8;
+    }
+
+    /* KPI */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi {
+      background: #0f172a;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      border: 1px solid #1e293b;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+    }
+    .kpi-value {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+    .kpi-unit {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-left: 0.25rem;
+    }
+
+    /* Canvas */
+    .canvas-wrapper {
+      background: #0a0e17;
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 0.75rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .bar-container {
+      background: #1e293b;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .bar-fill {
+      height: 100%;
+      background: #38bdf8;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 0.75rem 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-q {
+      font-weight: 500;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .faq-q::before {
+      content: '▸';
+      color: #38bdf8;
+      font-size: 0.8rem;
+    }
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+      padding-left: 1.25rem;
+    }
+
+    /* Embed */
+    .embed-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 0.75rem;
+      border: 1px solid #1e293b;
+      margin-top: 1rem;
+    }
+    .embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Link */
+    .portal-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 0.85rem;
+      border-bottom: 1px dashed #38bdf8;
+    }
+    .portal-link:hover {
+      color: #7dd3fc;
+    }
+
+    /* Utility */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .text-muted {
+      color: #64748b;
+    }
+    .text-sm {
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <div class="flex-between" style="margin-bottom: 1rem;">
+    <div>
+      <h1>SCALEVERSE 3D · Neutron Stars vs Hypergiants</h1>
+      <div class="subhead">Five cosmic titans — from city-sized remnants to solar-system-swallowing giants</div>
+    </div>
+    <a href="./index.html" class="portal-link">← Portal</a>
+  </div>
+
+  <!-- Main Grid: Controls + Canvas -->
+  <div class="grid-2">
+    <!-- LEFT: Controls and KPIs -->
+    <div>
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1rem; color: #cbd5e1; margin-bottom: 1rem;">⚙️ Scenario Workstation</h2>
+
+        <!-- Preset Buttons -->
+        <div class="btn-group">
+          <button class="btn" data-preset="all">All Objects</button>
+          <button class="btn" data-preset="compact">Compact Remnants</button>
+          <button class="btn" data-preset="giants">Hypergiants</button>
+          <button class="btn btn-primary" data-preset="reset">Reset Scale</button>
+        </div>
+
+        <!-- Slider -->
+        <div style="margin-top: 1.5rem;">
+          <div class="flex-between">
+            <label class="text-sm text-muted">Log Scale Zoom</label>
+            <span id="zoomValue" class="mono text-sm" style="color:#38bdf8;">1.00×</span>
+          </div>
+          <input type="range" id="zoomSlider" min="0" max="100" value="50" step="1">
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid" style="margin-top: 1.5rem;">
+          <div class="kpi">
+            <div class="kpi-label">Selected Object</div>
+            <div class="kpi-value" id="kpiName" style="font-size: 1rem;">UY Scuti</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Diameter</div>
+            <div class="kpi-value mono" id="kpiDiameter">2.4B<span class="kpi-unit">km</span></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">vs Earth (12,742 km)</div>
+            <div class="kpi-value mono" id="kpiEarthRatio">188,352<span class="kpi-unit">×</span></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">vs Sol (1.39M km)</div>
+            <div class="kpi-value mono" id="kpiSunRatio">1,726<span class="kpi-unit">×</span></div>
+          </div>
+        </div>
+
+        <!-- Export / Copy buttons -->
+        <div class="btn-group" style="margin-top: 1.5rem;">
+          <button class="btn" id="exportCsvBtn">📥 Export CSV Telemetry</button>
+          <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+        </div>
+        <div id="copyFeedback" class="text-sm text-muted" style="margin-top: 0.5rem; min-height: 1.2rem;"></div>
+      </div>
+
+      <!-- Analytical Breakdown Table -->
+      <div class="card">
+        <h2 style="font-size: 1rem; color: #cbd5e1; margin-bottom: 0.75rem;">📊 Analytical Breakdown</h2>
+        <table>
+          <thead>
+            <tr><th>Object</th><th>Diameter (km)</th><th>Relative to Earth</th><th>Scale Bar</th></tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- filled by JS -->
+          </tbody>
+        </table>
+        <div class="text-sm text-muted" style="margin-top: 0.75rem;">Earth diameter = 12,742 km · Sun diameter = 1.39 × 10⁶ km</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Canvas + YouTube Embed -->
+    <div>
+      <div class="canvas-wrapper">
+        <div class="flex-between" style="margin-bottom: 0.5rem;">
+          <span class="text-sm text-muted">Visual Scale Comparison (logarithmic)</span>
+          <span class="mono text-sm" id="canvasScaleLabel" style="color:#38bdf8;">Log zoom: 1.00×</span>
+        </div>
+        <canvas id="scaleCanvas" width="800" height="500"></canvas>
+        <div class="text-sm text-muted" style="text-align: center;">Click on any object bar to inspect</div>
+      </div>
+
+      <!-- YouTube -->
+      <div class="card" style="margin-top: 1.5rem;">
+        <h2 style="font-size: 1rem; color: #cbd5e1;">🎥 Video Stream</h2>
+        <div class="embed-container">
+          <iframe src="https://www.youtube.com/embed/mRMXO_BM9Q4" title="Neutron Stars vs Hypergiants" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ + JSON-LD is in head -->
+  <div class="card" style="margin-top: 2rem;">
+    <h2 style="font-size: 1rem; color: #cbd5e1; margin-bottom: 1rem;">❓ Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-q">How does a neutron star compare to a hypergiant?</div>
+      <div class="faq-a">A typical neutron star is about 20 km across — roughly the size of a city. UY Scuti, a hypergiant, is 2.4 billion km in diameter, over 100 million times larger. This simulation uses a logarithmic scale to make both visible.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What is the most massive object in this dataset?</div>
+      <div class="faq-a">UY Scuti is the largest by diameter (2.4 billion km), followed by Betelgeuse (1.2 billion km). However, mass is different: neutron stars are far denser — a teaspoon would weigh billions of tons.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What does the "Log Scale Zoom" slider do?</div>
+      <div class="faq-a">It adjusts the logarithmic compression of the visual canvas. Because the size range spans over 100 million times, a linear scale would make small objects invisible. The slider lets you focus on either compact remnants or hypergiants.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I export the data for my own analysis?</div>
+      <div class="faq-a">Yes — click "Export CSV Telemetry" to download a CSV containing all five objects with their diameters, Earth ratios, and Sun ratios. You can also "Copy Scenario Link" to share the exact state.</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="margin-top: 2rem; text-align: center; color: #334155; font-size: 0.75rem;">
+    SCALEVERSE 3D · Cosmic Scale Workstation · Data: Neutron Stars vs Hypergiants
+  </div>
+</div>
+
+<script>
+  // ---------- DATA (exact from payload) ----------
+  const ITEMS = [
+    { name: "Neutron Star (typical)", meters: 20000, metric: "20 km diameter" },
+    { name: "Sirius B", meters: 11700000, metric: "11,700 km diameter" },
+    { name: "White Dwarf (typical)", meters: 12000000, metric: "12,000 km diameter" },
+    { name: "Betelgeuse", meters: 1200000000000, metric: "1.2 billion km diameter" },
+    { name: "UY Scuti", meters: 2400000000000, metric: "2.4 billion km diameter" }
+  ];
+
+  // Earth and Sun constants (in meters, for ratios)
+  const EARTH_DIAMETER = 12742000; // 12,742 km in meters
+  const SUN_DIAMETER = 1390000000; // 1.39 million km in meters
+
+  // For display we use km
+  const toKm = (m) => m / 1000;
+
+  // ---------- STATE ----------
+  let selectedIndex = 4; // default UY Scuti
+  let zoomFactor = 50;   // slider 0-100
+
+  // ---------- CANVAS SETUP ----------
+  const canvas = document.getElementById('scaleCanvas');
+  const ctx = canvas.getContext('2d');
+  const CANVAS_W = 800, CANVAS_H = 500;
+  canvas.width = CANVAS_W;
+  canvas.height = CANVAS_H;
+
+  // ---------- HELPER: FORMAT ----------
+  function formatDiameter(km) {
+    if (km >= 1e9) return (km / 1e9).toFixed(2) + 'B';
+    if (km >= 1e6) return (km / 1e6).toFixed(2) + 'M';
+    if (km >= 1e3) return (km / 1e3).toFixed(1) + 'K';
+    return km.toFixed(0);
+  }
+
+  function formatRatio(ratio) {
+    if (ratio >= 1e6) return (ratio / 1e6).toFixed(2) + 'M';
+    if (ratio >= 1e3) return (ratio / 1e3).toFixed(1) + 'K';
+    return ratio.toFixed(1);
+  }
+
+  // ---------- UPDATE KPI ----------
+  function updateKPIs() {
+    const item = ITEMS[selectedIndex];
+    const km = toKm(item.meters);
+    const earthRatio = item.meters / EARTH_DIAMETER;
+    const sunRatio = item.meters / SUN_DIAMETER;
+
+    document.getElementById('kpiName').textContent = item.name;
+    document.getElementById('kpiDiameter').innerHTML = formatDiameter(km) + '<span class="kpi-unit">km</span>';
+    document.getElementById('kpiEarthRatio').innerHTML = formatRatio(earthRatio) + '<span class="kpi-unit">×</span>';
+    document.getElementById('kpiSunRatio').innerHTML = formatRatio(sunRatio) + '<span class="kpi-unit">×</span>';
+
+    // Update table highlight
+    document.querySelectorAll('#tableBody tr').forEach((tr, i) => {
+      tr.style.background = i === selectedIndex ? '#1a1f2e' : 'transparent';
+    });
+  }
+
+  // ---------- BUILD TABLE ----------
+  function buildTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    ITEMS.forEach((item, idx) => {
+      const km = toKm(item.meters);
+      const earthRatio = item.meters / EARTH_DIAMETER;
+      // Bar width: log scale relative to max
+      const maxMeters = Math.max(...ITEMS.map(i => i.meters));
+      const barPct = (Math.log10(item.meters) / Math.log10(maxMeters)) * 100;
+
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.addEventListener('click', () => { selectedIndex = idx; updateKPIs(); drawCanvas(); });
+      tr.innerHTML = `
+        <td style="font-family: Inter, sans-serif;">${item.name}</td>
+        <td class="mono">${formatDiameter(km)}</td>
+        <td class="mono">${formatRatio(earthRatio)}×</td>
+        <td>
+          <div class="bar-container">
+            <div class="bar-fill" style="width: ${barPct}%;"></div>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    updateKPIs();
+  }
+
+  // ---------- DRAW CANVAS ----------
+  function drawCanvas() {
+    // Clear
+    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+
+    // Background subtle grid
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < CANVAS_W; i += 40) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, CANVAS_H); ctx.stroke();
+    }
+    for (let i = 0; i < CANVAS_H; i += 40) {
+      ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(CANVAS_W, i); ctx.stroke();
+    }
+
+    // Logarithmic scaling with zoom factor
+    // Base log range: min log10(20000) ~ 4.3, max log10(2.4e12) ~ 12.38
+    const logs = ITEMS.map(item => Math.log10(item.meters));
+    const minLog = Math.min(...logs);
+    const maxLog = Math.max(...logs);
+    // zoomFactor 0 -> very compressed, 100 -> full log range
+    const zoomNorm = zoomFactor / 100;
+    const compressedMin = minLog + (1 - zoomNorm) * (maxLog - minLog) * 0.3;
+    const compressedMax = maxLog - (1 - zoomNorm) * (maxLog - minLog) * 0.3;
+    const effectiveMin = Math.max(minLog - 0.5, compressedMin);
+    const effectiveMax = Math.min(maxLog + 0.5, compressedMax);
+    const range = effectiveMax - effectiveMin;
+
+    // Bar layout
+    const barHeight = 50;
+    const gap = 20;
+    const startX = 40;
+    const maxBarW = CANVAS_W - startX - 80;
+    const startY = 60;
+
+    // Title
+    ctx.font = '500 12px Inter, sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('LOGARITHMIC SCALE — BAR LENGTH = log10(diameter)', startX, 30);
+
+    ITEMS.forEach((item, i) => {
+      const y = startY + i * (barHeight + gap);
+      const logVal = Math.log10(item.meters);
+      // Normalize between 0 and 1 with effective range
+      let norm = (logVal - effectiveMin) / range;
+      norm = Math.max(0.05, Math.min(1, norm));
+      const barW = norm * maxBarW;
+
+      // Bar
+      const isSelected = (i === selectedIndex);
+      ctx.fillStyle = isSelected ? '#38bdf8' : '#1e293b';
+      ctx.shadowColor = isSelected ? 'rgba(56, 189, 248, 0.5)' : 'transparent';
+      ctx.shadowBlur = isSelected ? 12 : 0;
+      ctx.beginPath();
+      ctx.roundRect(startX, y, barW, barHeight, 6);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Label (name)
+      ctx.fillStyle = isSelected ? '#f0f9ff' : '#94a3b8';
+      ctx.font = '500 13px Inter, sans-serif';
+      ctx.fillText(item.name, startX + 10, y + 22);
+
+      // Diameter value
+      ctx.fillStyle = isSelected ? '#0b0f17' : '#64748b';
+      ctx.font = '600 13px JetBrains Mono, monospace';
+      ctx.fillText(formatDiameter(toKm(item.meters)) + ' km', startX + 10, y + 40);
+
+      // Right side ratio (Earth)
+      const earthRatio = item.meters / EARTH_DIAMETER;
+      ctx.fillStyle = isSelected ? '#0b0f17' : '#475569';
+      ctx.font = '500 11px JetBrains Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(formatRatio(earthRatio) + '× Earth', CANVAS_W - 20, y + 30);
+      ctx.textAlign = 'left';
+    });
+
+    // Bottom info
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.fillStyle = '#334155';
+    ctx.fillText(`Range: 10^${effectiveMin.toFixed(1)} m — 10^${effectiveMax.toFixed(1)} m`, startX, CANVAS_H - 20);
+    ctx.fillText(`Zoom: ${(zoomFactor/50).toFixed(2)}×`, CANVAS_W - 120, CANVAS_H - 20);
+  }
+
+  // Rounded rect helper
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+    return this;
+  };
+
+  // ---------- ZOOM SLIDER ----------
+  const zoomSlider = document.getElementById('zoomSlider');
+  const zoomValue = document.getElementById('zoomValue');
+  const canvasScaleLabel = document.getElementById('canvasScaleLabel');
+
+  zoomSlider.addEventListener('input', (e) => {
+    zoomFactor = parseInt(e.target.value);
+    zoomValue.textContent = (zoomFactor / 50).toFixed(2) + '×';
+    canvasScaleLabel.textContent = 'Log zoom: ' + (zoomFactor / 50).toFixed(2) + '×';
+    drawCanvas();
+  });
+
+  // ---------- PRESETS ----------
+  document.querySelectorAll('[data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.dataset.preset;
+      if (preset === 'reset') {
+        selectedIndex = 4;
+        zoomFactor = 50;
+        zoomSlider.value = 50;
+        zoomValue.textContent = '1.00×';
+        canvasScaleLabel.textContent = 'Log zoom: 1.00×';
+      } else if (preset === 'all') {
+        zoomFactor = 100;
+        zoomSlider.value = 100;
+        zoomValue.textContent = '2.00×';
+        canvasScaleLabel.textContent = 'Log zoom: 2.00×';
+        selectedIndex = 4;
+      } else if (preset === 'compact') {
+        // Show compact objects: Neutron Star, Sirius B, White Dwarf
+        // Set zoom to focus on small values — use slider 20
+        zoomFactor = 20;
+        zoomSlider.value = 20;
+        zoomValue.textContent = '0.40×';
+        canvasScaleLabel.textContent = 'Log zoom: 0.40×';
+        selectedIndex = 0; // Neutron star
+      } else if (preset === 'giants') {
+        zoomFactor = 80;
+        zoomSlider.value = 80;
+        zoomValue.textContent = '1.60×';
+        canvasScaleLabel.textContent = 'Log zoom: 1.60×';
+        selectedIndex = 4; // UY Scuti
+      }
+      updateKPIs();
+      drawCanvas();
+    });
+  });
+
+  // ---------- EXPORT CSV ----------
+  document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    const headers = ['Name', 'Diameter (km)', 'Diameter (m)', 'Earth Ratio', 'Sun Ratio', 'Metric'];
+    const rows = ITEMS.map(item => {
+      const km = toKm(item.meters);
+      const earthRatio = (item.meters / EARTH_DIAMETER).toFixed(4);
+      const sunRatio = (item.meters / SUN_DIAMETER).toFixed(6);
+      return [
+        `"${item.name}"`,
+        km.toFixed(0),
+        item.meters.toFixed(0),
+        earthRatio,
+        sunRatio,
+        `"${item.metric}"`
+      ].join(',');
+    });
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'scaleverse_telemetry.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  // ---------- COPY SCENARIO LINK ----------
+  document.getElementById('copyLinkBtn').addEventListener('click', () => {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const url = `${baseUrl}?selected=${selectedIndex}&zoom=${zoomFactor}`;
+    navigator.clipboard.writeText(url).then(() => {
+      const feedback = document.getElementById('copyFeedback');
+      feedback.textContent = '✓ Scenario link copied to clipboard';
+      setTimeout(() => { feedback.textContent = ''; }, 2500);
+    }).catch(() => {
+      // Fallback
+      const feedback = document.getElementById('copyFeedback');
+      feedback.textContent = 'Press Ctrl+C to copy: ' + url;
+    });
+  });
+
+  // ---------- INIT ----------
+  buildTable();
+  drawCanvas();
+
+  // Check URL params for initial state
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('selected')) {
+    const idx = parseInt(params.get('selected'));
+    if (idx >= 0 && idx < ITEMS.length) selectedIndex = idx;
+  }
+  if (params.has('zoom')) {
+    const z = parseInt(params.get('zoom'));
+    if (z >= 0 && z <= 100) {
+      zoomFactor = z;
+      zoomSlider.value = z;
+      zoomValue.textContent = (z / 50).toFixed(2) + '×';
+      canvasScaleLabel.textContent = 'Log zoom: ' + (z / 50).toFixed(2) + '×';
+    }
+  }
+  updateKPIs();
+  drawCanvas();
+</script>
+</body>
+</html>
