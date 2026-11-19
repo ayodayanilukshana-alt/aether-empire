@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Exoplanets & Rogue Planets Scale Workstation</title>
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/smallest-to-largest-exoplanets-rogue-planets.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .main-container {
+      max-width: 1440px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 1000px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background-color: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+    }
+    .accent {
+      color: #38bdf8;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      letter-spacing: -0.01em;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+    .subhead {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      border-left: 3px solid #38bdf8;
+      padding-left: 0.75rem;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi-item {
+      background: #0f131c;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 0.9rem 0.5rem;
+      text-align: center;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+    }
+    .kpi-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-family: monospace;
+      color: #38bdf8;
+      line-height: 1.3;
+    }
+    .slider-block {
+      margin-bottom: 1.5rem;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 0.4rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 8px #38bdf8;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .preset-btn {
+      background: #10161f;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 0.5rem 0.9rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: monospace;
+    }
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #f1f5f9;
+    }
+    .preset-btn.active {
+      background: #38bdf8;
+      color: #05070b;
+      border-color: #38bdf8;
+      font-weight: 700;
+    }
+    .canvas-container {
+      position: relative;
+      background: #070b11;
+      border-radius: 20px;
+      border: 1px solid #1e293b;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #070b11;
+      border-radius: 16px;
+      cursor: crosshair;
+    }
+    .action-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: #0f131c;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.7rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: 0.15s;
+      font-family: monospace;
+      flex: 1 0 auto;
+      justify-content: center;
+    }
+    .btn:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+    }
+    .btn-primary {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 700;
+    }
+    .btn-primary:hover {
+      background: #7dd3fc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.7rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+    th {
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.7rem;
+    }
+    td {
+      font-family: monospace;
+      color: #cbd5e1;
+    }
+    .faq-item {
+      border-left: 2px solid #38bdf8;
+      padding-left: 1rem;
+      margin-bottom: 1rem;
+    }
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.2rem;
+    }
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      margin-top: 1rem;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .footer-note {
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      color: #475569;
+      text-align: center;
+    }
+    .glow-text {
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    }
+    .stat-badge {
+      background: #10161f;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      border: 1px solid #1e293b;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+<div class="main-container">
+  <!-- LEFT PANEL: CONTROLS & KPI -->
+  <div class="card">
+    <h1 class="glow-text">SCALEVERSE <span class="accent">3D</span></h1>
+    <div class="subhead">Smallest to Largest Exoplanets & Rogue Planets — interactive scale workstation</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-item">
+        <div class="kpi-label">Selected Body</div>
+        <div class="kpi-value" id="kpiSelected">Kepler-37b</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Diameter (km)</div>
+        <div class="kpi-value" id="kpiDiameter">3,860</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Scale Factor</div>
+        <div class="kpi-value" id="kpiScale">0.10×</div>
+      </div>
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-label">
+        <span>Visual scale multiplier</span>
+        <span class="mono" id="scaleMultiplierLabel">1.0×</span>
+      </div>
+      <input type="range" id="scaleSlider" min="0.3" max="3.0" value="1.0" step="0.01">
+    </div>
+
+    <div class="preset-row">
+      <button class="preset-btn active" data-index="0">Kepler-37b</button>
+      <button class="preset-btn" data-index="1">Kepler-138b</button>
+      <button class="preset-btn" data-index="2">Gliese 1132b</button>
+      <button class="preset-btn" data-index="3">WASP-17b</button>
+      <button class="preset-btn" data-index="4">2MASS J2126-8140</button>
+      <button class="preset-btn" id="resetPreset">Reset</button>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="planetCanvas" width="1000" height="500" style="width:100%; height:auto; max-height:260px;"></canvas>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-primary" id="exportCsvBtn">⤓ Export CSV Telemetry</button>
+      <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+    </div>
+    <div style="margin-top: 0.8rem; font-size:0.75rem; color:#64748b; display:flex; justify-content:space-between;">
+      <span>Active data: <span id="activeBodyName" class="accent mono">Kepler-37b</span></span>
+      <span class="stat-badge">5 bodies</span>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: TABLE + FAQ + VIDEO -->
+  <div class="card">
+    <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:1rem;">📊 Analytical breakdown</h2>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Body</th>
+          <th>Diameter</th>
+          <th>Meters</th>
+          <th>Ratio vs Earth</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <h2 style="font-size:1.1rem; font-weight:600; margin:1.5rem 0 0.8rem;">❓ Frequently asked questions</h2>
+    <div class="faq-item">
+      <div class="faq-q">Why is Kepler-37b so small?</div>
+      <div class="faq-a">It is slightly larger than the Moon, orbiting a distant star. Its diameter is only 3,860 km — smaller than Mercury.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How does WASP-17b compare to Jupiter?</div>
+      <div class="faq-a">WASP-17b has a diameter of ~268,000 km, nearly twice that of Jupiter. It is one of the most inflated exoplanets known.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What is a rogue planet?</div>
+      <div class="faq-a">A rogue planet is a planetary-mass object that does not orbit a star. 2MASS J2126-8140 is a massive rogue planet with a diameter of 284,000 km.</div>
+    </div>
+
+    <h2 style="font-size:1.1rem; font-weight:600; margin:1.5rem 0 0.8rem;">▶️ Video stream</h2>
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/GJV6ubVkHn0" title="Smallest to Largest Exoplanets & Rogue Planets" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div style="font-size:0.75rem; color:#475569; margin-top:0.8rem;">SCALEVERSE 3D — data visualization based on exact video payload.</div>
+  </div>
+</div>
+
+<div class="footer-note">
+  SCALEVERSE 3D · interactive simulation · canonical: https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/smallest-to-largest-exoplanets-rogue-planets.html
+</div>
+
+<!-- JSON-LD SoftwareApplication schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D Exoplanet Scale Workstation",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Web",
+  "description": "Interactive scale comparison of exoplanets and rogue planets from the video 'Smallest to Largest Exoplanets & Rogue Planets'.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Organization", "name": "SCALEVERSE 3D" },
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/smallest-to-largest-exoplanets-rogue-planets.html"
+}
+</script>
+
+<script>
+  // ----- DATA PAYLOAD -----
+  const planets = [
+    { name: "Kepler-37b", meters: 3860000, metric: "3,860 km diameter", diameterKm: 3860, earthRatio: 0.30, color: "#f97316" },
+    { name: "Kepler-138b", meters: 6800000, metric: "6,800 km diameter", diameterKm: 6800, earthRatio: 0.53, color: "#a855f7" },
+    { name: "Gliese 1132b", meters: 14800000, metric: "14,800 km diameter", diameterKm: 14800, earthRatio: 1.16, color: "#10b981" },
+    { name: "WASP-17b", meters: 268000000, metric: "268,000 km diameter", diameterKm: 268000, earthRatio: 21.0, color: "#f43f5e" },
+    { name: "2MASS J2126-8140", meters: 284000000, metric: "284,000 km diameter", diameterKm: 284000, earthRatio: 22.3, color: "#38bdf8" }
+  ];
+
+  // ----- STATE -----
+  let currentIndex = 0;
+  let scaleMultiplier = 1.0;
+
+  // ----- DOM ELEMENTS -----
+  const canvas = document.getElementById('planetCanvas');
+  const ctx = canvas.getContext('2d');
+  const kpiSelected = document.getElementById('kpiSelected');
+  const kpiDiameter = document.getElementById('kpiDiameter');
+  const kpiScale = document.getElementById('kpiScale');
+  const scaleSlider = document.getElementById('scaleSlider');
+  const scaleMultiplierLabel = document.getElementById('scaleMultiplierLabel');
+  const presetBtns = document.querySelectorAll('.preset-btn[data-index]');
+  const resetPresetBtn = document.getElementById('resetPreset');
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const tableBody = document.getElementById('tableBody');
+  const activeBodyName = document.getElementById('activeBodyName');
+
+  // ----- RENDER TABLE -----
+  function renderTable() {
+    tableBody.innerHTML = '';
+    planets.forEach(p => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${p.name}</td>
+        <td>${p.diameterKm.toLocaleString()} km</td>
+        <td>${(p.meters/1000).toLocaleString(undefined, {maximumFractionDigits:0})} km</td>
+        <td>${p.earthRatio.toFixed(2)}×</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  // ----- DRAW CANVAS -----
+  function drawPlanets() {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Background subtle grid
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < w; i += 50) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, h);
+      ctx.strokeStyle = "#1a1f2b";
+      ctx.stroke();
+    }
+    for (let i = 0; i < h; i += 50) {
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(w, i);
+      ctx.strokeStyle = "#1a1f2b";
+      ctx.stroke();
+    }
+
+    // Base radius mapping: max diameter 284000 km -> radius 160px at scale 1.0
+    const maxDiameter = 284000;
+    const baseRadiusFactor = 160 / (maxDiameter / 2);
+
+    // Draw all planets (smaller behind)
+    planets.forEach((p, idx) => {
+      const isActive = idx === currentIndex;
+      const radius = (p.diameterKm / 2) * baseRadiusFactor * scaleMultiplier;
+      const x = w / 2 - radius;
+      const y = h / 2 - radius;
+
+      // Glow for active planet
+      if (isActive) {
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 30;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+
+      // Draw planet circle
+      const gradient = ctx.createRadialGradient(
+        w/2 - radius*0.3, h/2 - radius*0.3, radius*0.1,
+        w/2, h/2, radius*1.1
+      );
+      gradient.addColorStop(0, p.color + 'dd');
+      gradient.addColorStop(0.7, p.color + '88');
+      gradient.addColorStop(1, p.color + '22');
+
+      ctx.beginPath();
+      ctx.arc(w/2, h/2, radius, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      if (isActive) {
+        ctx.strokeStyle = "#ffffffcc";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // Planet name label (small)
+      if (radius > 10) {
+        ctx.font = "bold 12px 'JetBrains Mono', monospace";
+        ctx.fillStyle = isActive ? "#ffffff" : "#94a3b8";
+        ctx.textAlign = "center";
+        ctx.shadowBlur = isActive ? 8 : 0;
+        ctx.shadowColor = p.color;
+        ctx.fillText(p.name, w/2, h/2 - radius - 8);
+      }
+    });
+
+    // Reset shadow
+    ctx.shadowBlur = 0;
+
+    // Active planet info in canvas corner
+    const active = planets[currentIndex];
+    ctx.font = "bold 14px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "#38bdf8";
+    ctx.textAlign = "left";
+    ctx.fillText(`▶ ${active.name}`, 20, 30);
+    ctx.fillStyle = "#64748b";
+    ctx.font = "12px monospace";
+    ctx.fillText(`Diameter: ${active.diameterKm.toLocaleString()} km`, 20, 52);
+    ctx.fillText(`Scale: ${scaleMultiplier.toFixed(2)}×`, 20, 72);
+  }
+
+  // ----- UPDATE UI (KPI, TABLE highlight, label) -----
+  function updateUI() {
+    const p = planets[currentIndex];
+    kpiSelected.textContent = p.name;
+    kpiDiameter.textContent = p.diameterKm.toLocaleString();
+    kpiScale.textContent = scaleMultiplier.toFixed(2) + '×';
+    activeBodyName.textContent = p.name;
+    scaleMultiplierLabel.textContent = scaleMultiplier.toFixed(2) + '×';
+
+    // Highlight preset button
+    presetBtns.forEach((btn, idx) => {
+      if (idx === currentIndex) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+
+    // Update table row highlight
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, idx) => {
+      if (idx === currentIndex) row.style.backgroundColor = '#1e293b66';
+      else row.style.backgroundColor = 'transparent';
+    });
+
+    drawPlanets();
+  }
+
+  // ----- SET CURRENT PLANET -----
+  function setPlanet(index) {
+    if (index >= 0 && index < planets.length) {
+      currentIndex = index;
+      updateUI();
+    }
+  }
+
+  // ----- SLIDER EVENT -----
+  scaleSlider.addEventListener('input', (e) => {
+    scaleMultiplier = parseFloat(e.target.value);
+    updateUI();
+  });
+
+  // ----- PRESET BUTTONS -----
+  presetBtns.forEach((btn, idx) => {
+    btn.addEventListener('click', () => setPlanet(idx));
+  });
+
+  resetPresetBtn.addEventListener('click', () => {
+    setPlanet(0);
+    scaleMultiplier = 1.0;
+    scaleSlider.value = 1.0;
+    updateUI();
+  });
+
+  // ----- EXPORT CSV -----
+  exportCsvBtn.addEventListener('click', () => {
+    const headers = ["Name", "Diameter (km)", "Meters", "Earth Ratio"];
+    const rows = planets.map(p => [p.name, p.diameterKm, p.meters, p.earthRatio]);
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'scaleverse_exoplanets_telemetry.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  });
+
+  // ----- COPY SCENARIO LINK -----
+  copyLinkBtn.addEventListener('click', () => {
+    const url = window.location.href.split('?')[0] + `?planet=${encodeURIComponent(planets[currentIndex].name)}&scale=${scaleMultiplier.toFixed(2)}`;
+    navigator.clipboard.writeText(url).then(() => {
+      copyLinkBtn.textContent = '✅ Link copied!';
+      setTimeout(() => { copyLinkBtn.textContent = '🔗 Copy Scenario Link'; }, 1500);
+    }).catch(() => {
+      // Fallback
+      prompt('Copy this link:', url);
+    });
+  });
+
+  // ----- INIT -----
+  function init() {
+    renderTable();
+
+    // Check URL params for preset
+    const params = new URLSearchParams(window.location.search);
+    const planetParam = params.get('planet');
+    const scaleParam = params.get('scale');
+    if (planetParam) {
+      const idx = planets.findIndex(p => p.name === decodeURIComponent(planetParam));
+      if (idx !== -1) currentIndex = idx;
+    }
+    if (scaleParam && !isNaN(parseFloat(scaleParam))) {
+      scaleMultiplier = Math.min(3.0, Math.max(0.3, parseFloat(scaleParam)));
+      scaleSlider.value = scaleMultiplier;
+    }
+
+    updateUI();
+
+    // Canvas resize observer for crispness (optional)
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const containerWidth = container.clientWidth - 16; // padding
+      if (containerWidth > 0) {
+        canvas.width = containerWidth;
+        canvas.height = Math.min(500, containerWidth * 0.55);
+      }
+      drawPlanets();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    // Initial resize after layout
+    setTimeout(resizeCanvas, 50);
+  }
+
+  init();
+</script>
+</body>
+</html>
