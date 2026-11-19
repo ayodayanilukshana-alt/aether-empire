@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KineticZen Labs: Pikachu vs Charmander – Electric vs Fire Ball Maze</title>
+  <style>
+    /* --- sleek dark institutional UI --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #05070b;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: #e2e8f0;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.5;
+    }
+
+    .app {
+      max-width: 1440px;
+      width: 100%;
+    }
+
+    /* header / brand */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-accent {
+      color: #f43f5e;
+      font-weight: 700;
+    }
+
+    .portal-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border-bottom: 1px dashed #334155;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .portal-link:hover {
+      color: #f43f5e;
+      border-color: #f43f5e;
+    }
+
+    /* main grid */
+    .workstation {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1000px) {
+      .workstation {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.5rem 1.25rem;
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.8);
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      margin-bottom: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* canvas wrapper */
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: #05070b;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      margin-bottom: 1.25rem;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #05070b;
+    }
+
+    /* monospace numbers */
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* team badges */
+    .team-badge {
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .pika {
+      background: #facc15;
+      color: #0b0f17;
+    }
+
+    .charm {
+      background: #f97316;
+      color: #0b0f17;
+    }
+
+    /* controls */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .slider-label span:last-child {
+      color: #f43f5e;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #f43f5e;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+      border: 2px solid #0b0f17;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .preset-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.55rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      background: #2d3a4f;
+      border-color: #f43f5e;
+      color: white;
+    }
+
+    .preset-btn.active {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: white;
+    }
+
+    .btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.7rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .btn:hover {
+      background: #2d3a4f;
+      border-color: #f43f5e;
+    }
+
+    .btn-primary {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #e11d48;
+      border-color: #e11d48;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-row .btn {
+      flex: 1;
+    }
+
+    /* KPI row */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .kpi-item {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 0.9rem 0.75rem;
+      text-align: center;
+    }
+
+    .kpi-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .kpi-sub {
+      font-size: 0.65rem;
+      color: #475569;
+    }
+
+    /* tables */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid #1e293b;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.9rem 1rem;
+      background: #0f151f;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .accent-red {
+      color: #f43f5e;
+    }
+
+    .accent-yellow {
+      color: #facc15;
+    }
+
+    .accent-orange {
+      color: #f97316;
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    /* embed */
+    .embed-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #0b0f17;
+    }
+
+    .embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #475569;
+      font-size: 0.75rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #1e293b;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- header -->
+  <div class="brand-bar">
+    <div class="brand">
+      <span class="brand-accent">KINETICZEN</span> LABS
+    </div>
+    <a href="./index.html" class="portal-link">← portal</a>
+  </div>
+
+  <!-- main workstation -->
+  <div class="workstation">
+
+    <!-- LEFT: controls & kpi -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <!-- controls card -->
+      <div class="card">
+        <div class="card-title">SIMULATION PARAMETERS</div>
+        <div class="control-group">
+          <div class="slider-row">
+            <div class="slider-label">
+              <span>Electric charge (Pikachu)</span>
+              <span class="mono" id="chargeVal">1.00</span>
+            </div>
+            <input type="range" id="chargeSlider" min="0.2" max="2.5" step="0.05" value="1.0">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label">
+              <span>Fire intensity (Charmander)</span>
+              <span class="mono" id="fireVal">1.00</span>
+            </div>
+            <input type="range" id="fireSlider" min="0.2" max="2.5" step="0.05" value="1.0">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label">
+              <span>Maze complexity</span>
+              <span class="mono" id="mazeVal">3</span>
+            </div>
+            <input type="range" id="mazeSlider" min="1" max="7" step="1" value="3">
+          </div>
+          <div class="slider-row">
+            <div class="slider-label">
+              <span>Gravity / friction</span>
+              <span class="mono" id="frictionVal">0.6</span>
+            </div>
+            <input type="range" id="frictionSlider" min="0.0" max="1.0" step="0.05" value="0.6">
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-top: 0.5rem;">PRESET SCENARIOS</div>
+        <div class="preset-grid">
+          <button class="preset-btn active" data-preset="default">Default</button>
+          <button class="preset-btn" data-preset="overcharge">Overcharge</button>
+          <button class="preset-btn" data-preset="inferno">Inferno</button>
+          <button class="preset-btn" data-preset="chaos">Chaos Maze</button>
+        </div>
+
+        <div class="btn-row" style="margin-top: 0.5rem;">
+          <button class="btn btn-primary" id="resetBtn">Run Simulation</button>
+          <button class="btn" id="pauseBtn">Pause</button>
+        </div>
+      </div>
+
+      <!-- KPI -->
+      <div class="card">
+        <div class="card-title">TELEMETRY KPIs</div>
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <div class="kpi-label">Pikachu energy</div>
+            <div class="kpi-value mono" id="pikaEnergy">0.00</div>
+            <div class="kpi-sub">joules</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Charmander energy</div>
+            <div class="kpi-value mono" id="charmEnergy">0.00</div>
+            <div class="kpi-sub">joules</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Collisions</div>
+            <div class="kpi-value mono" id="collisionCount">0</div>
+            <div class="kpi-sub">total</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Dominance</div>
+            <div class="kpi-value mono" id="dominance">—</div>
+            <div class="kpi-sub">ratio</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: canvas & actions -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div class="card" style="padding: 1rem;">
+        <div class="canvas-wrapper">
+          <canvas id="mazeCanvas" width="800" height="500"></canvas>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="exportCsvBtn">EXPORT CSV TELEMETRY</button>
+          <button class="btn" id="copyLinkBtn">COPY SCENARIO LINK</button>
+        </div>
+      </div>
+
+      <!-- youtube embed -->
+      <div class="card" style="padding: 1rem;">
+        <div class="card-title" style="margin-bottom: 0.75rem;">LIVE STREAM</div>
+        <div class="embed-container">
+          <iframe src="https://www.youtube.com/embed/TAmchCY2KpE" title="Pikachu vs Charmander Ball Maze Physics" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- analytical breakdown table -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-title">ANALYTICAL BREAKDOWN</div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>METRIC</th>
+            <th><span class="team-badge pika">PIKACHU</span></th>
+            <th><span class="team-badge charm">CHARMANDER</span></th>
+            <th>DELTA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Kinetic energy (avg)</td>
+            <td class="mono accent-yellow" id="tblPikaKE">0.00</td>
+            <td class="mono accent-orange" id="tblCharmKE">0.00</td>
+            <td class="mono" id="tblDeltaKE">0.00</td>
+          </tr>
+          <tr>
+            <td>Collision count</td>
+            <td class="mono accent-yellow" id="tblPikaColl">0</td>
+            <td class="mono accent-orange" id="tblCharmColl">0</td>
+            <td class="mono" id="tblDeltaColl">0</td>
+          </tr>
+          <tr>
+            <td>Maze coverage (%)</td>
+            <td class="mono accent-yellow" id="tblPikaCover">0</td>
+            <td class="mono accent-orange" id="tblCharmCover">0</td>
+            <td class="mono" id="tblDeltaCover">0</td>
+          </tr>
+          <tr>
+            <td>Dominance score</td>
+            <td class="mono accent-yellow" id="tblPikaDom">0.00</td>
+            <td class="mono accent-orange" id="tblCharmDom">0.00</td>
+            <td class="mono" id="tblDeltaDom">0.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-title">FREQUENTLY ASKED QUESTIONS</div>
+    <div class="faq-item">
+      <div class="faq-q">How does the maze physics simulation work?</div>
+      <div class="faq-a">Each team is represented by a set of rigid-body balls that bounce, collide, and interact with maze walls. The Electric charge slider scales Pikachu's kinetic energy and collision radius, while Fire intensity does the same for Charmander. The simulation runs at 60 FPS using a simple impulse-based solver.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What do the KPI readouts mean?</div>
+      <div class="faq-a">Energy (joules) is the sum of kinetic energy of all balls for each team. Collisions count total wall and inter-team impulses. Dominance is the ratio of Pikachu's total energy to Charmander's total energy (1.0 = balanced).</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I export the telemetry data?</div>
+      <div class="faq-a">Yes — click "Export CSV Telemetry" to download a CSV snapshot of the current state including timestamps, energy values, collision counts, and parameter settings.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How do I share this exact scenario?</div>
+      <div class="faq-a">Click "Copy Scenario Link" — it copies a URL containing the current slider positions as query parameters. Opening that link reloads the same simulation configuration.</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    KINETICZEN LABS • Pikachu vs Charmander • Electric vs Fire Ball Maze Physics
+  </div>
+</div>
+
+<!-- JSON-LD SoftwareApplication schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Pikachu vs Charmander: Electric vs Fire Ball Maze Physics",
+  "description": "60FPS rigid-body physics rivalry simulation. Try our Free Interactive Calculators & 3D Sandbox.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/pikachu-vs-charmander-electric-vs-fire-ball-maze-physics.html",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Any",
+  "author": {
+    "@type": "Organization",
+    "name": "KineticZen Labs"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<script>
+  (function() {
+    // --- DOM refs ---
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const chargeSlider = document.getElementById('chargeSlider');
+    const fireSlider = document.getElementById('fireSlider');
+    const mazeSlider = document.getElementById('mazeSlider');
+    const frictionSlider = document.getElementById('frictionSlider');
+
+    const chargeVal = document.getElementById('chargeVal');
+    const fireVal = document.getElementById('fireVal');
+    const mazeVal = document.getElementById('mazeVal');
+    const frictionVal = document.getElementById('frictionVal');
+
+    const pikaEnergyEl = document.getElementById('pikaEnergy');
+    const charmEnergyEl = document.getElementById('charmEnergy');
+    const collisionCountEl = document.getElementById('collisionCount');
+    const dominanceEl = document.getElementById('dominance');
+
+    const tblPikaKE = document.getElementById('tblPikaKE');
+    const tblCharmKE = document.getElementById('tblCharmKE');
+    const tblDeltaKE = document.getElementById('tblDeltaKE');
+    const tblPikaColl = document.getElementById('tblPikaColl');
+    const tblCharmColl = document.getElementById('tblCharmColl');
+    const tblDeltaColl = document.getElementById('tblDeltaColl');
+    const tblPikaCover = document.getElementById('tblPikaCover');
+    const tblCharmCover = document.getElementById('tblCharmCover');
+    const tblDeltaCover = document.getElementById('tblDeltaCover');
+    const tblPikaDom = document.getElementById('tblPikaDom');
+    const tblCharmDom = document.getElementById('tblCharmDom');
+    const tblDeltaDom = document.getElementById('tblDeltaDom');
+
+    const resetBtn = document.getElementById('resetBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    // --- simulation state ---
+    let running = true;
+    let frameId = null;
+    let tick = 0;
+
+    // world dimensions (canvas is 800x500 but we use scaled coords inside)
+    const W = 800, H = 500;
+
+    // balls arrays
+    let pikaBalls = [];
+    let charmBalls = [];
+
+    // maze walls: array of {x,y,w,h}
+    let walls = [];
+
+    // cumulative collision counters per team
+    let pikaCollisions = 0;
+    let charmCollisions = 0;
+
+    // coverage tracker (simple grid)
+    const GRID_SIZE = 20;
+    const COLS = Math.floor(W / GRID_SIZE);
+    const ROWS = Math.floor(H / GRID_SIZE);
+    let pikaGrid = new Uint8Array(COLS * ROWS);
+    let charmGrid = new Uint8Array(COLS * ROWS);
+
+    // parameters
+    let params = {
+      charge: 1.0,
+      fire: 1.0,
+      mazeComplexity: 3,
+      friction: 0.6
+    };
+
+    // friction is used as damping factor
+    function damping() {
+      return 1 - params.friction * 0.015;
+    }
+
+    // --- generate maze based on complexity ---
+    function generateMaze(complexity) {
+      const maze = [];
+      const cellW = W / (complexity + 2);
+      const cellH = H / (complexity + 2);
+
+      // border walls (thinner inner walls)
+      const border = 12;
+      maze.push({ x: 0, y: 0, w: W, h: border }); // top
+      maze.push({ x: 0, y: H - border, w: W, h: border }); // bottom
+      maze.push({ x: 0, y: 0, w: border, h: H }); // left
+      maze.push({ x: W - border, y: 0, w: border, h: H }); // right
+
+      // internal walls based on complexity
+      const numInternal = Math.min(complexity * 3, 21);
+      for (let i = 0; i < numInternal; i++) {
+        const isVertical = Math.random() > 0.5;
+        const w = isVertical ? 8 : Math.random() * cellW * 1.2 + 20;
+        const h = isVertical ? Math.random() * cellH * 1.2 + 20 : 8;
+        const x = Math.random() * (W - w - 20) + 10;
+        const y = Math.random() * (H - h - 20) + 10;
+        // avoid spawning directly on starting positions (corners)
+        if (x < 80 && y < 80) continue;
+        if (x > W - 80 && y > H - 80) continue;
+        maze.push({ x, y, w, h });
+      }
+      return maze;
+    }
+
+    // --- update wall drawing ---
+    function rebuildWalls() {
+      walls = generateMaze(params.mazeComplexity);
+    }
+
+    // --- reset simulation ---
+    function resetSimulation() {
+      // reset balls
+      pikaBalls = [];
+      charmBalls = [];
+      pikaCollisions = 0;
+      charmCollisions = 0;
+      pikaGrid.fill(0);
+      charmGrid.fill(0);
+      tick = 0;
+
+      rebuildWalls();
+
+      // spawn Pikachu balls (yellow) – top-left
+      const pikaCount = 4;
+      for (let i = 0; i < pikaCount; i++) {
+        const radius = 8 + Math.random() * 6;
+        pikaBalls.push({
+          x: 60 + Math.random() * 60,
+          y: 60 + Math.random() * 60,
+          vx: (Math.random() - 0.5) * 3,
+          vy: (Math.random() - 0.5) * 3,
+          radius: radius,
+          mass: radius * radius,
+          hue: 50 // yellow
+        });
+      }
+
+      // spawn Charmander balls (orange/red) – bottom-right
+      const charmCount = 4;
+      for (let i = 0; i < charmCount; i++) {
+        const radius = 8 + Math.random() * 6;
+        charmBalls.push({
+          x: W - 60 - Math.random() * 60,
+          y: H - 60 - Math.random() * 60,
+          vx: (Math.random() - 0.5) * 3,
+          vy: (Math.random() - 0.5) * 3,
+          radius: radius,
+          mass: radius * radius,
+          hue: 25 // orange
+        });
+      }
+
+      running = true;
+      pauseBtn.textContent = 'Pause';
+      updateKPI();
+    }
+
+    // --- physics step ---
+    function physicsStep() {
+      if (!running) return;
+
+      const damp = damping();
+
+      // apply params to velocities (scale slightly)
+      const pikaSpeedFactor = 0.6 + params.charge * 0.4;
+      const charmSpeedFactor = 0.6 + params.fire * 0.4;
+
+      // process Pikachu balls
+      for (let b of pikaBalls) {
+        // apply speed factor gently
+        b.vx *= damp * pikaSpeedFactor;
+        b.vy *= damp * pikaSpeedFactor;
+
+        // limit speed
+        const maxSpeed = 8;
+        const sp = Math.hypot(b.vx, b.vy);
+        if (sp > maxSpeed) {
+          b.vx = (b.vx / sp) * maxSpeed;
+          b.vy = (b.vy / sp) * maxSpeed;
+        }
+
+        b.x += b.vx;
+        b.y += b.vy;
+
+        // wall collisions
+        for (let w of walls) {
+          const closestX = Math.max(w.x, Math.min(b.x, w.x + w.w));
+          const closestY = Math.max(w.y, Math.min(b.y, w.y + w.h));
+          const dx = b.x - closestX;
+          const dy = b.y - closestY;
+          const dist = Math.hypot(dx, dy);
+          if (dist < b.radius && dist > 0.001) {
+            const overlap = b.radius - dist;
+            const nx = dx / dist;
+            const ny = dy / dist;
+            b.x += nx * overlap;
+            b.y += ny * overlap;
+            // reflect velocity
+            const dot = b.vx * nx + b.vy * ny;
+            if (dot < 0) {
+              b.vx -= 2 * dot * nx;
+              b.vy -= 2 * dot * ny;
+              // energy loss and collision count
+              b.vx *= 0.85;
+              b.vy *= 0.85;
+              pikaCollisions++;
+            }
+          }
+        }
+
+        // canvas bounds safety
+        if (b.x < b.radius) { b.x = b.radius; b.vx = Math.abs(b.vx); pikaCollisions++; }
+        if (b.x > W - b.radius) { b.x = W - b.radius; b.vx = -Math.abs(b.vx); pikaCollisions++; }
+        if (b.y < b.radius) { b.y = b.radius; b.vy = Math.abs(b.vy); pikaCollisions++; }
+        if (b.y > H - b.radius) { b.y = H - b.radius; b.vy = -Math.abs(b.vy); pikaCollisions++; }
+      }
+
+      // process Charmander balls
+      for (let b of charmBalls) {
+        b.vx *= damp * charmSpeedFactor;
+        b.vy *= damp * charmSpeedFactor;
+
+        const maxSpeed = 8;
+        const sp = Math.hypot(b.vx, b.vy);
+        if (sp > maxSpeed) {
+          b.vx = (b.vx / sp) * maxSpeed;
+          b.vy = (b.vy / sp) * maxSpeed;
+        }
+
+        b.x += b.vx;
+        b.y += b.vy;
+
+        for (let w of walls) {
+          const closestX = Math.max(w.x, Math.min(b.x, w.x + w.w));
+          const closestY = Math.max(w.y, Math.min(b.y, w.y + w.h));
+          const dx = b.x - closestX;
+          const dy = b.y - closestY;
+          const dist = Math.hypot(dx, dy);
+          if (dist < b.radius && dist > 0.001) {
+            const overlap = b.radius - dist;
+            const nx = dx / dist;
+            const ny = dy / dist;
+            b.x += nx * overlap;
+            b.y += ny * overlap;
+            const dot = b.vx * nx + b.vy * ny;
+            if (dot < 0) {
+              b.vx -= 2 * dot * nx;
+              b.vy -= 2 * dot * ny;
+              b.vx *= 0.85;
+              b.vy *= 0.85;
+              charmCollisions++;
+            }
+          }
+        }
+
+        if (b.x < b.radius) { b.x = b.radius; b.vx = Math.abs(b.vx); charmCollisions++; }
+        if (b.x > W - b.radius) { b.x = W - b.radius; b.vx = -Math.abs(b.vx); charmCollisions++; }
+        if (b.y < b.radius) { b.y = b.radius; b.vy = Math.abs(b.vy); charmCollisions++; }
+        if (b.y > H - b.radius) { b.y = H - b.radius; b.vy = -Math.abs(b.vy); charmCollisions++; }
+      }
+
+      // ball-ball collisions between teams
+      for (let a of pikaBalls) {
+        for (let b of charmBalls) {
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dist = Math.hypot(dx, dy);
+          const minDist = a.radius + b.radius;
+          if (dist < minDist && dist > 0.01) {
+            const overlap = minDist - dist;
+            const nx = dx / dist;
+            const ny = dy / dist;
+            // push apart
+            a.x -= nx * overlap * 0.5;
+            a.y -= ny * overlap * 0.5;
+            b.x += nx * overlap * 0.5;
+            b.y += ny * overlap * 0.5;
+            // relative velocity
+            const dvx = b.vx - a.vx;
+            const dvy = b.vy - a.vy;
+            const dot = dvx * nx + dvy * ny;
+            if (dot < 0) {
+              const restitution = 0.8;
+              const impulse = -(1 + restitution) * dot / (1/a.mass + 1/b.mass);
+              a.vx -= (impulse / a.mass) * nx;
+              a.vy -= (impulse / a.mass) * ny;
+              b.vx += (impulse / b.mass) * nx;
+              b.vy += (impulse / b.mass) * ny;
+              // count collision for both
+              pikaCollisions++;
+              charmCollisions++;
+            }
+          }
+        }
+      }
+
+      // update coverage grids (mark cells occupied by balls)
+      pikaGrid.fill(0);
+      charmGrid.fill(0);
+      for (let b of pikaBalls) {
+        const cx = Math.floor(b.x / GRID_SIZE);
+        const cy = Math.floor(b.y / GRID_SIZE);
+        if (cx >= 0 && cx < COLS && cy >= 0 && cy < ROWS) pikaGrid[cy * COLS + cx] = 1;
+      }
+      for (let b of charmBalls) {
+        const cx = Math.floor(b.x / GRID_SIZE);
+        const cy = Math.floor(b.y / GRID_SIZE);
+        if (cx >= 0 && cx < COLS && cy >= 0 && cy < ROWS) charmGrid[cy * COLS + cx] = 1;
+      }
+
+      tick++;
+    }
+
+    // --- KPI calculation ---
+    function getPikaEnergy() {
+      return pikaBalls.reduce((sum, b) => sum + 0.5 * b.mass * (b.vx*b.vx + b.vy*b.vy) * 0.001, 0);
+    }
+    function getCharmEnergy() {
+      return charmBalls.reduce((sum, b) => sum + 0.5 * b.mass * (b.vx*b.vx + b.vy*b.vy) * 0.001, 0);
+    }
+    function getPikaCoverage() {
+      let count = 0;
+      for (let i = 0; i < pikaGrid.length; i++) if (pikaGrid[i]) count++;
+      return (count / (COLS * ROWS)) * 100;
+    }
+    function getCharmCoverage() {
+      let count = 0;
+      for (let i = 0; i < charmGrid.length; i++) if (charmGrid[i]) count++;
+      return (count / (COLS * ROWS)) * 100;
+    }
+
+    function updateKPI() {
+      const pe = getPikaEnergy();
+      const ce = getCharmEnergy();
+      pikaEnergyEl.textContent = pe.toFixed(2);
+      charmEnergyEl.textContent = ce.toFixed(2);
+      collisionCountEl.textContent = pikaCollisions + charmCollisions;
+      const dom = ce > 0.001 ? (pe / ce).toFixed(2) : '∞';
+      dominanceEl.textContent = dom;
+
+      // table
+      tblPikaKE.textContent = pe.toFixed(2);
+      tblCharmKE.textContent = ce.toFixed(2);
+      tblDeltaKE.textContent = (pe - ce).toFixed(2);
+      tblPikaColl.textContent = pikaCollisions;
+      tblCharmColl.textContent = charmCollisions;
+      tblDeltaColl.textContent = pikaCollisions - charmCollisions;
+      tblPikaCover.textContent = getPikaCoverage().toFixed(1);
+      tblCharmCover.textContent = getCharmCoverage().toFixed(1);
+      tblDeltaCover.textContent = (getPikaCoverage() - getCharmCoverage()).toFixed(1);
+      tblPikaDom.textContent = pe.toFixed(2);
+      tblCharmDom.textContent = ce.toFixed(2);
+      tblDeltaDom.textContent = (pe - ce).toFixed(2);
+    }
+
+    // --- drawing ---
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // background grid
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+      }
+      for (let y = 0; y < H; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+      }
+
+      // draw walls
+      for (let w of walls) {
+        ctx.fillStyle = '#162032';
+        ctx.strokeStyle = '#2d3a4f';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(w.x, w.y, w.w, w.h, 3);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // draw Pikachu balls
+      for (let b of pikaBalls) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#facc15';
+        ctx.shadowColor = '#facc15';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // draw Charmander balls
+      for (let b of charmBalls) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#f97316';
+        ctx.shadowColor = '#f97316';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // labels
+      ctx.font = 'bold 14px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#facc15';
+      ctx.fillText('PIKACHU', 20, 30);
+      ctx.fillStyle = '#f97316';
+      ctx.fillText('CHARMANDER', W - 140, H - 20);
+
+      // tick counter
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#475569';
+      ctx.fillText('TICK: ' + tick, W - 100, 25);
+    }
+
+    // --- animation loop ---
+    function loop() {
+      physicsStep();
+      draw();
+      updateKPI();
+      frameId = requestAnimationFrame(loop);
+    }
+
+    // --- UI event handlers ---
+    chargeSlider.addEventListener('input', (e) => {
+      params.charge = parseFloat(e.target.value);
+      chargeVal.textContent = params.charge.toFixed(2);
+    });
+    fireSlider.addEventListener('input', (e) => {
+      params.fire = parseFloat(e.target.value);
+      fireVal.textContent = params.fire.toFixed(2);
+    });
+    mazeSlider.addEventListener('input', (e) => {
+      params.mazeComplexity = parseInt(e.target.value);
+      mazeVal.textContent = params.mazeComplexity;
+      rebuildWalls();
+    });
+    frictionSlider.addEventListener('input', (e) => {
+      params.friction = parseFloat(e.target.value);
+      frictionVal.textContent = params.friction.toFixed(2);
+    });
+
+    // presets
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        presetBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const preset = btn.dataset.preset;
+        switch (preset) {
+          case 'default':
+            params.charge = 1.0; params.fire = 1.0; params.mazeComplexity = 3; params.friction = 0.6;
+            break;
+          case 'overcharge':
+            params.charge = 2.3; params.fire = 0.8; params.mazeComplexity = 3; params.friction = 0.4;
+            break;
+          case 'inferno':
+            params.charge = 0.7; params.fire = 2.4; params.mazeComplexity = 4; params.friction = 0.5;
+            break;
+          case 'chaos':
+            params.charge = 1.8; params.fire = 1.8; params.mazeComplexity = 7; params.friction = 0.2;
+            break;
+        }
+        // sync sliders
+        chargeSlider.value = params.charge;
+        fireSlider.value = params.fire;
+        mazeSlider.value = params.mazeComplexity;
+        frictionSlider.value = params.friction;
+        chargeVal.textContent = params.charge.toFixed(2);
+        fireVal.textContent = params.fire.toFixed(2);
+        mazeVal.textContent = params.mazeComplexity;
+        frictionVal.textContent = params.friction.toFixed(2);
+        rebuildWalls();
+        resetSimulation();
+      });
+    });
+
+    // reset button
+    resetBtn.addEventListener('click', () => {
+      resetSimulation();
+    });
+
+    // pause
+    pauseBtn.addEventListener('click', () => {
+      running = !running;
+      pauseBtn.textContent = running ? 'Pause' : 'Resume';
+    });
+
+    // export CSV
+    exportCsvBtn.addEventListener('click', () => {
+      const rows = [
+        ['Metric', 'Pikachu', 'Charmander'],
+        ['Kinetic Energy (J)', getPikaEnergy().toFixed(4), getCharmEnergy().toFixed(4)],
+        ['Collision Count', pikaCollisions, charmCollisions],
+        ['Maze Coverage (%)', getPikaCoverage().toFixed(2), getCharmCoverage().toFixed(2)],
+        ['Charge / Fire Param', params.charge, params.fire],
+        ['Maze Complexity', params.mazeComplexity, params.mazeComplexity],
+        ['Friction', params.friction, params.friction],
+        ['Tick', tick, tick],
+        ['Timestamp', new Date().toISOString(), new Date().toISOString()]
+      ];
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'kineticzen_pikachu_vs_charmander_telemetry.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    // copy scenario link
+    copyLinkBtn.addEventListener('click', () => {
+      const base = window.location.origin + window.location.pathname;
+      const url = new URL(base);
+      url.searchParams.set('charge', params.charge.toFixed(2));
+      url.searchParams.set('fire', params.fire.toFixed(2));
+      url.searchParams.set('maze', params.mazeComplexity);
+      url.searchParams.set('friction', params.friction.toFixed(2));
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        copyLinkBtn.textContent = 'COPIED!';
+        setTimeout(() => { copyLinkBtn.textContent = 'COPY SCENARIO LINK'; }, 1500);
+      }).catch(() => {
+        copyLinkBtn.textContent = 'FAILED';
+        setTimeout(() => { copyLinkBtn.textContent = 'COPY SCENARIO LINK'; }, 1500);
+      });
+    });
+
+    // read URL params on load
+    function loadFromURL() {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('charge')) {
+        params.charge = parseFloat(url.searchParams.get('charge'));
+        chargeSlider.value = params.charge;
+        chargeVal.textContent = params.charge.toFixed(2);
+      }
+      if (url.searchParams.has('fire')) {
+        params.fire = parseFloat(url.searchParams.get('fire'));
+        fireSlider.value = params.fire;
+        fireVal.textContent = params.fire.toFixed(2);
+      }
+      if (url.searchParams.has('maze')) {
+        params.mazeComplexity = parseInt(url.searchParams.get('maze'));
+        mazeSlider.value = params.mazeComplexity;
+        mazeVal.textContent = params.mazeComplexity;
+      }
+      if (url.searchParams.has('friction')) {
+        params.friction = parseFloat(url.searchParams.get('friction'));
+        frictionSlider.value = params.friction;
+        frictionVal.textContent = params.friction.toFixed(2);
+      }
+    }
+
+    // initialize
+    loadFromURL();
+    resetSimulation();
+    loop();
+
+    // clean-up on page unload
+    window.addEventListener('beforeunload', () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    });
+  })();
+</script>
+</body>
+</html>
