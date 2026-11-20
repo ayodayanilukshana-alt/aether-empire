@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPITALGRID · Private Jet vs Air Force One vs Space Hotel</title>
+    <meta name="description" content="Interactive capital allocation workstation: $100M private jet, Air Force One, Space Hotel Aurora, and the $20B ultimate price tag.">
+    <!-- JSON-LD SoftwareApplication schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "CAPITALGRID · Private Jet vs Air Force One vs Space Hotel",
+        "description": "Interactive capital allocation simulation for three flying palaces and a space hotel suite.",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/private-jet-vs-air-force-one-vs-space-hotel.html",
+        "author": {
+            "@type": "Organization",
+            "name": "CAPITALGRID"
+        }
+    }
+    </script>
+    <style>
+        /* --- Sleek dark institutional UI --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-wrapper {
+            max-width: 1400px;
+            width: 100%;
+        }
+        /* Typography & numbers */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #f1f5f9;
+        }
+        .mono, .kpi-value, .metric-value, .table-number, code, .slider-value, .csv-btn, .preset-btn {
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+        .accent {
+            color: #10b981;
+        }
+        .accent-border {
+            border-color: #10b981;
+        }
+        /* Cards & containers */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 1.25rem;
+            padding: 1.5rem 1.8rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            transition: border-color 0.2s;
+        }
+        .card:hover {
+            border-color: #2d3a4e;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 1000px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+        /* Header & branding */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: -0.03em;
+            color: #f1f5f9;
+            text-decoration: none;
+        }
+        .logo .dot {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+        .badge {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            padding: 0.35rem 1rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+        .portal-link {
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dashed #10b98155;
+        }
+        .portal-link:hover {
+            border-bottom-color: #10b981;
+        }
+        /* Sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 999px;
+            outline: none;
+            margin: 0.5rem 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 2px solid #05070b;
+            box-shadow: 0 0 0 2px #10b98155;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #34d399;
+            box-shadow: 0 0 0 4px #10b98133;
+        }
+        .slider-group {
+            margin-bottom: 1.5rem;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 500;
+        }
+        .slider-value {
+            color: #10b981;
+            font-weight: 600;
+        }
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1.5rem 0 0.5rem;
+        }
+        .btn {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            padding: 0.6rem 1.3rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: inherit;
+        }
+        .btn:hover {
+            background: #1a2536;
+            border-color: #3b4a5f;
+        }
+        .btn-accent {
+            background: #10b981;
+            border: 1px solid #10b981;
+            color: #05070b;
+            font-weight: 700;
+        }
+        .btn-accent:hover {
+            background: #34d399;
+            border-color: #34d399;
+        }
+        .preset-btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 0.5rem 1.1rem;
+            border-radius: 2rem;
+            color: #cbd5e1;
+        }
+        .preset-btn.active {
+            border-color: #10b981;
+            color: #10b981;
+            box-shadow: 0 0 0 1px #10b98155;
+        }
+        /* KPI readout */
+        .kpi-card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 1rem;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .kpi-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .kpi-sub {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .metric-value {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        /* Canvas */
+        .canvas-container {
+            width: 100%;
+            border-radius: 1rem;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 0.75rem;
+            background: #05070b;
+        }
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 1rem;
+            border: 1px solid #1e293b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            background: #0f172a;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            padding: 1rem 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+        td {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .table-number {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .table-highlight {
+            color: #10b981;
+        }
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #f1f5f9;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            padding-right: 1.5rem;
+        }
+        /* Embed */
+        .yt-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #0b0f17;
+        }
+        .yt-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        /* Misc */
+        .text-muted { color: #64748b; }
+        .text-sm { font-size: 0.85rem; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 2rem; }
+        hr {
+            border: none;
+            border-top: 1px solid #1e293b;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Header -->
+    <div class="header">
+        <a href="./index.html" class="logo">
+            <span class="dot"></span> CAPITALGRID
+        </a>
+        <div class="flex-between" style="gap: 1.5rem;">
+            <span class="badge">FLYING PALACES · OPULENCE INDEX</span>
+            <a href="./index.html" class="portal-link text-sm">← Portal</a>
+        </div>
+    </div>
+
+    <!-- Title & summary -->
+    <div class="mb-3">
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Private Jet vs Air Force One vs Space Hotel</h1>
+        <p class="text-muted" style="max-width: 720px;">Step inside three flying palaces — a $100M private jet, the President's Air Force One, and a luxury space hotel — to see which one truly redefines opulence.</p>
+    </div>
+
+    <!-- Grid: canvas + controls -->
+    <div class="grid-2">
+        <!-- Canvas + KPIs -->
+        <div class="card">
+            <div class="flex-between mb-2">
+                <h3 style="font-size: 1.1rem;">Opulence exposure</h3>
+                <span class="badge mono">LIVE</span>
+            </div>
+            <div class="canvas-container">
+                <canvas id="opulenceCanvas" width="800" height="400"></canvas>
+            </div>
+            <div class="grid-4" style="margin-bottom: 0;">
+                <div class="kpi-card">
+                    <span class="kpi-label">Private Jet</span>
+                    <span class="kpi-value mono" id="kpiJet">$100M</span>
+                    <span class="kpi-sub">Allocation weight <span id="kpiJetWeight" class="mono accent">40%</span></span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Air Force One</span>
+                    <span class="kpi-value mono" id="kpiAF1">4,000 ft²</span>
+                    <span class="kpi-sub">Allocation weight <span id="kpiAF1Weight" class="mono accent">30%</span></span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Space Hotel</span>
+                    <span class="kpi-value mono" id="kpiSpace">400 km</span>
+                    <span class="kpi-sub">Allocation weight <span id="kpiSpaceWeight" class="mono accent">20%</span></span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Ultimate Total</span>
+                    <span class="kpi-value mono" id="kpiTotal">$20.0B</span>
+                    <span class="kpi-sub">Combined exposure <span id="kpiTotalWeight" class="mono accent">10%</span></span>
+                </div>
+            </div>
+            <p class="text-muted text-sm mt-2">Adjust sliders to re-weight capital allocation across assets. Canvas visualizes relative opulence units.</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="card">
+            <div class="flex-between mb-2">
+                <h3 style="font-size: 1.1rem;">Allocation controls</h3>
+                <span class="badge mono">SCENARIO</span>
+            </div>
+            <!-- Preset buttons -->
+            <div class="btn-row" style="margin-top: 0; margin-bottom: 1.5rem;">
+                <button class="preset-btn active" data-preset="balanced">Balanced</button>
+                <button class="preset-btn" data-preset="jetHeavy">Jet Heavy</button>
+                <button class="preset-btn" data-preset="af1Heavy">AF1 Heavy</button>
+                <button class="preset-btn" data-preset="spaceHeavy">Space Heavy</button>
+                <button class="preset-btn" data-preset="totalMax">Total Max</button>
+            </div>
+            <!-- Sliders -->
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>The $100 Million Private Jet</span>
+                    <span class="slider-value" id="sliderJetVal">40</span>
+                </div>
+                <input type="range" id="sliderJet" min="0" max="100" value="40" step="1">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Air Force One (4,000 sq ft)</span>
+                    <span class="slider-value" id="sliderAF1Val">30</span>
+                </div>
+                <input type="range" id="sliderAF1" min="0" max="100" value="30" step="1">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Space Hotel Aurora (400 km)</span>
+                    <span class="slider-value" id="sliderSpaceVal">20</span>
+                </div>
+                <input type="range" id="sliderSpace" min="0" max="100" value="20" step="1">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>The Space Hotel Suite ($10M)</span>
+                    <span class="slider-value" id="sliderSuiteVal">5</span>
+                </div>
+                <input type="range" id="sliderSuite" min="0" max="100" value="5" step="1">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>The Ultimate Price Tag ($20B)</span>
+                    <span class="slider-value" id="sliderTotalVal">5</span>
+                </div>
+                <input type="range" id="sliderTotal" min="0" max="100" value="5" step="1">
+            </div>
+            <!-- Action buttons -->
+            <div class="btn-row">
+                <button class="btn btn-accent" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+                <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+            </div>
+            <div class="mt-2 text-muted text-sm" id="copyFeedback" style="min-height: 1.2rem;"></div>
+        </div>
+    </div>
+
+    <!-- Analytical breakdown table -->
+    <div class="card mb-3">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Analytical breakdown</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Headline metric</th>
+                        <th>Allocation weight</th>
+                        <th>Opulence units</th>
+                        <th>Notional value</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- YouTube embed -->
+    <div class="card mb-3">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Video: Private Jet vs Air Force One vs Space Hotel</h3>
+        <div class="yt-container">
+            <iframe src="https://www.youtube.com/embed/emeaj5soa94" title="Private Jet vs Air Force One vs Space Hotel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card mb-3">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Frequently asked questions</h3>
+        <div class="faq-item">
+            <div class="faq-q">What does the "Allocation weight" slider represent?</div>
+            <div class="faq-a">It sets a subjective weighting for each asset in the opulence index. Higher weight increases the asset's contribution to the canvas visualization and the notional value calculation. Presets provide quick scenarios.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">How is the "Notional value" calculated?</div>
+            <div class="faq-a">Each asset has a baseline notional value derived from its headline metric (e.g., $100M private jet, $20B ultimate price tag). The slider weight scales that baseline relative to the sum of all weights, creating a dynamic capital allocation view.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Can I export my scenario?</div>
+            <div class="faq-a">Yes. Use "Export CSV Telemetry" to download the current weights, opulence units, and notional values. Use "Copy Scenario Link" to copy a shareable URL with the slider positions encoded.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">What is the ultimate price tag?</div>
+            <div class="faq-a">The $20B ultimate price tag represents a hypothetical combined valuation of all flying palaces and the space hotel suite, used as a capstone metric in the data payload.</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex-between text-muted text-sm" style="padding: 1rem 0 0.5rem; border-top: 1px solid #1e293b;">
+        <span>CAPITALGRID · Institutional opulence analytics</span>
+        <span>Canonical: <a href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/private-jet-vs-air-force-one-vs-space-hotel.html" class="portal-link" target="_blank">private-jet-vs-air-force-one-vs-space-hotel</a></span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // --- Data payload items (exact from spec) ---
+        const items = [
+            { name: "The $100 Million Private Jet", metric: "100 Million Dollars", baseline: 100, unit: "M$", displayUnit: "$100M", opulenceBase: 100 },
+            { name: "Air Force One", metric: "4000 Sq Ft", baseline: 4000, unit: "ft²", displayUnit: "4,000 ft²", opulenceBase: 4000 },
+            { name: "Space Hotel Aurora", metric: "400 Km Altitude", baseline: 400, unit: "km", displayUnit: "400 km", opulenceBase: 400 },
+            { name: "The Space Hotel Suite", metric: "10 Million Dollars", baseline: 10, unit: "M$", displayUnit: "$10M", opulenceBase: 10 },
+            { name: "The Ultimate Price Tag", metric: "20 Billion Dollars", baseline: 20000, unit: "M$", displayUnit: "$20B", opulenceBase: 20000 }
+        ];
+
+        // Map to slider elements
+        const sliderIds = ['sliderJet', 'sliderAF1', 'sliderSpace', 'sliderSuite', 'sliderTotal'];
+        const valueIds = ['sliderJetVal', 'sliderAF1Val', 'sliderSpaceVal', 'sliderSuiteVal', 'sliderTotalVal'];
+        const kpiValueIds = ['kpiJet', 'kpiAF1', 'kpiSpace', 'kpiTotal'];
+        const kpiWeightIds = ['kpiJetWeight', 'kpiAF1Weight', 'kpiSpaceWeight', 'kpiTotalWeight'];
+
+        // Note: We have 5 sliders but only 4 KPI cards (we merge Suite + Total into one "Ultimate Total" card for display, but table shows all 5)
+        // We'll compute combined for KPI total: Suite + Total.
+
+        // Canvas setup
+        const canvas = document.getElementById('opulenceCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasWidth = 800;
+        const canvasHeight = 400;
+
+        // State: weights from sliders
+        let weights = [40, 30, 20, 5, 5]; // initial balanced
+
+        // --- Helper: read sliders ---
+        function readSliders() {
+            return sliderIds.map(id => {
+                const el = document.getElementById(id);
+                return parseInt(el.value, 10) || 0;
+            });
+        }
+
+        // --- Update all UI from weights ---
+        function updateAll() {
+            const w = readSliders();
+            weights = w;
+            const sum = w.reduce((a, b) => a + b, 0) || 1; // avoid div by zero
+
+            // Update slider value labels
+            for (let i = 0; i < valueIds.length; i++) {
+                document.getElementById(valueIds[i]).textContent = w[i];
+            }
+
+            // Compute normalized weights (percent)
+            const norm = w.map(v => v / sum);
+
+            // --- KPI readouts ---
+            // 0: Jet, 1: AF1, 2: Space, 3: Suite, 4: Total
+            // For KPI cards we show asset display and weight (percent)
+            document.getElementById('kpiJet').textContent = items[0].displayUnit;
+            document.getElementById('kpiJetWeight').textContent = (norm[0] * 100).toFixed(0) + '%';
+
+            document.getElementById('kpiAF1').textContent = items[1].displayUnit;
+            document.getElementById('kpiAF1Weight').textContent = (norm[1] * 100).toFixed(0) + '%';
+
+            document.getElementById('kpiSpace').textContent = items[2].displayUnit;
+            document.getElementById('kpiSpaceWeight').textContent = (norm[2] * 100).toFixed(0) + '%';
+
+            // Ultimate Total KPI: combine Suite + Total
+            const combinedWeight = norm[3] + norm[4];
+            document.getElementById('kpiTotal').textContent = items[4].displayUnit; // $20B
+            document.getElementById('kpiTotalWeight').textContent = (combinedWeight * 100).toFixed(0) + '%';
+
+            // Update table
+            const tbody = document.getElementById('tableBody');
+            let rows = '';
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const weightPct = (norm[i] * 100).toFixed(1);
+                // Opulence units: baseline scaled by weight relative to total weight (to make it look meaningful)
+                // We'll show a scaled value: (baseline * weight / sum) rounded
+                const opUnits = (item.baseline * w[i] / sum).toFixed(1);
+                // Notional value: baseline metric interpreted as value units (we'll just present the metric string)
+                let notional = item.displayUnit;
+                if (i === 4) notional = '$20B';
+                rows += `<tr>
+                    <td><span style="font-weight: 500; color: #f1f5f9;">${item.name}</span></td>
+                    <td class="table-number">${item.metric}</td>
+                    <td class="table-number table-highlight">${weightPct}%</td>
+                    <td class="table-number">${opUnits}</td>
+                    <td class="table-number">${notional}</td>
+                </tr>`;
+            }
+            tbody.innerHTML = rows;
+
+            // --- Draw canvas ---
+            drawCanvas(norm);
+        }
+
+        // --- Canvas drawing ---
+        function drawCanvas(normWeights) {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            // Background subtle grid
+            ctx.fillStyle = '#05070b';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 0.5;
+            for (let x = 0; x < canvasWidth; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvasHeight);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvasHeight; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvasWidth, y);
+                ctx.stroke();
+            }
+
+            // Draw bars for each asset (5 bars)
+            const barCount = 5;
+            const padding = 60;
+            const availableWidth = canvasWidth - 2 * padding;
+            const barWidth = Math.min(100, availableWidth / barCount * 0.6);
+            const gap = (availableWidth - barCount * barWidth) / (barCount + 1);
+            const maxBarHeight = canvasHeight - 120;
+            const baselineY = canvasHeight - 60;
+
+            // Colors: accent for primary, variations
+            const colors = ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#f59e0b']; // last one amber for total
+            // But we want consistent with brand accent; we can use accent scale
+            const barColors = ['#10b981', '#10b981', '#10b981', '#10b981', '#f59e0b'];
+
+            for (let i = 0; i < barCount; i++) {
+                const weight = normWeights[i] || 0;
+                // Scale bar height: use weight * some factor, but ensure visible
+                // We'll use weight * 3 to make percentage visually tall, min 2% for visibility
+                let barHeight = Math.max(weight * maxBarHeight * 3.5, 4);
+                barHeight = Math.min(barHeight, maxBarHeight);
+
+                const x = padding + gap + i * (barWidth + gap);
+                const y = baselineY - barHeight;
+
+                // Bar with gradient
+                const grad = ctx.createLinearGradient(x, y, x, baselineY);
+                grad.addColorStop(0, barColors[i]);
+                grad.addColorStop(1, barColors[i] + '44');
+                ctx.fillStyle = grad;
+                ctx.shadowColor = barColors[i] + '33';
+                ctx.shadowBlur = 12;
+                ctx.beginPath();
+                ctx.roundRect(x, y, barWidth, barHeight, [6, 6, 0, 0]);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Label
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '500 11px "JetBrains Mono", monospace';
+                ctx.textAlign = 'center';
+                const shortLabels = ['Jet', 'AF1', 'Space', 'Suite', 'Total'];
+                ctx.fillText(shortLabels[i], x + barWidth / 2, baselineY + 22);
+
+                // Value on top of bar
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = '600 12px "JetBrains Mono", monospace';
+                const pctText = (weight * 100).toFixed(0) + '%';
+                ctx.fillText(pctText, x + barWidth / 2, y - 10);
+            }
+
+            // X-axis baseline
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, baselineY);
+            ctx.lineTo(canvasWidth - padding, baselineY);
+            ctx.stroke();
+
+            // Title on canvas
+            ctx.fillStyle = '#475569';
+            ctx.font = '500 12px "Inter", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('OPULENCE UNITS (weighted)', padding, 30);
+        }
+
+        // Helper for roundRect
+        CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, radii) {
+            if (typeof radii === 'number') radii = [radii];
+            const r = radii[0] || 0;
+            this.moveTo(x + r, y);
+            this.lineTo(x + w - r, y);
+            this.quadraticCurveTo(x + w, y, x + w, y + r);
+            this.lineTo(x + w, y + h - r);
+            this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            this.lineTo(x + r, y + h);
+            this.quadraticCurveTo(x, y + h, x, y + h - r);
+            this.lineTo(x, y + r);
+            this.quadraticCurveTo(x, y, x + r, y);
+            return this;
+        };
+
+        // --- Preset scenarios ---
+        const presets = {
+            balanced: [40, 30, 20, 5, 5],
+            jetHeavy: [70, 15, 5, 5, 5],
+            af1Heavy: [15, 70, 5, 5, 5],
+            spaceHeavy: [10, 10, 65, 10, 5],
+            totalMax: [20, 20, 20, 20, 20]
+        };
+
+        // Attach preset listeners
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const presetKey = this.dataset.preset;
+                const vals = presets[presetKey] || presets.balanced;
+                // Apply to sliders
+                for (let i = 0; i < sliderIds.length; i++) {
+                    document.getElementById(sliderIds[i]).value = vals[i];
+                }
+                updateAll();
+            });
+        });
+
+        // Attach slider input listeners
+        sliderIds.forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                // Deactivate preset buttons when manual change
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                updateAll();
+            });
+        });
+
+        // --- CSV Export ---
+        document.getElementById('exportCsvBtn').addEventListener('click', function() {
+            const w = readSliders();
+            const sum = w.reduce((a, b) => a + b, 0) || 1;
+            const headers = ['Asset', 'Headline Metric', 'Slider Weight', 'Normalized Weight (%)', 'Opulence Units', 'Notional Value'];
+            const rows = [];
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const weightPct = (w[i] / sum * 100).toFixed(2);
+                const opUnits = (item.baseline * w[i] / sum).toFixed(2);
+                rows.push([
+                    `"${item.name}"`,
+                    `"${item.metric}"`,
+                    w[i],
+                    weightPct,
+                    opUnits,
+                    `"${item.displayUnit}"`
+                ]);
+            }
+            const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `capitalgrid_telemetry_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showFeedback('CSV exported successfully.');
+        });
+
+        // --- Copy Scenario Link ---
+        document.getElementById('copyLinkBtn').addEventListener('click', function() {
+            const w = readSliders();
+            const baseUrl = window.location.origin + window.location.pathname;
+            const params = new URLSearchParams();
+            params.set('scenario', w.join(','));
+            const url = baseUrl + '?' + params.toString();
+            navigator.clipboard.writeText(url).then(() => {
+                showFeedback('Scenario link copied to clipboard.');
+            }).catch(() => {
+                // fallback
+                prompt('Copy this scenario link:', url);
+            });
+        });
+
+        function showFeedback(msg) {
+            const el = document.getElementById('copyFeedback');
+            el.textContent = msg;
+            setTimeout(() => { el.textContent = ''; }, 3000);
+        }
+
+        // --- Load scenario from URL if present ---
+        function loadFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const scenario = params.get('scenario');
+            if (scenario) {
+                const parts = scenario.split(',').map(Number);
+                if (parts.length === 5 && parts.every(n => !isNaN(n))) {
+                    for (let i = 0; i < sliderIds.length; i++) {
+                        const val = Math.min(100, Math.max(0, parts[i]));
+                        document.getElementById(sliderIds[i]).value = val;
+                    }
+                    updateAll();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // --- Initial render ---
+        window.addEventListener('load', () => {
+            if (!loadFromUrl()) {
+                // If no URL scenario, ensure default state matches presets.balanced
+                updateAll();
+            } else {
+                // If loaded from URL, deactivate presets (since values may not match)
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            }
+            // Resize canvas to match CSS (it's fixed 800x400 but responsive width)
+            // We'll keep internal resolution 800x400 but scale via CSS.
+            // For crisp rendering, we can set canvas width/height attributes to 800x400.
+            canvas.width = 800;
+            canvas.height = 400;
+            // Re-draw after possible size change
+            updateAll();
+        });
+
+        // Also update on window resize for safety (canvas internal size fixed)
+        window.addEventListener('resize', () => {
+            // No action needed since canvas internal size fixed; CSS scales.
+        });
+
+    })();
+</script>
+</body>
+</html>
