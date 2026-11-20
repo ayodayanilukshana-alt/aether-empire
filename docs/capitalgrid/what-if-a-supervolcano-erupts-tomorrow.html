@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPITALGRID · Supervolcano Eruption Timeline</title>
+    <meta name="description" content="Interactive simulation workstation for a supervolcano eruption timeline: 60-minute magma rise, Plinian eruption, pyroclastic fury, ash blanket, and global winter.">
+    <!-- JSON-LD SoftwareApplication schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "CapitalGrid Supervolcano Eruption Simulator",
+        "description": "Interactive workstation modeling a 24-hour supervolcano eruption timeline, with canvas visualization, timeline sliders, KPI readouts, and telemetry export.",
+        "applicationCategory": "SimulationApplication",
+        "operatingSystem": "Web Browser",
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/what-if-a-supervolcano-erupts-tomorrow.html",
+        "author": {
+            "@type": "Organization",
+            "name": "CAPITALGRID"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .mono {
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ----- Header ----- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #f1f5f9;
+        }
+
+        .brand .accent {
+            color: #10b981;
+        }
+
+        .brand a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid #1e293b;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            transition: all 0.2s;
+        }
+
+        .brand a:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .badge {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 0.25rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        /* ----- Cards & Layout ----- */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: #2a3a4f;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 700px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ----- Controls ----- */
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .control-row label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .control-row label .value {
+            color: #10b981;
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 0 1px #10b981;
+        }
+
+        .preset-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .preset-btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .preset-btn.active {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        /* ----- KPI readouts ----- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .kpi-item {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            border-radius: 0.75rem;
+            padding: 0.9rem 1rem;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+            margin-bottom: 0.3rem;
+        }
+
+        .kpi-value {
+            font-family: 'SF Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .kpi-value .unit {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #94a3b8;
+            margin-left: 0.2rem;
+        }
+
+        /* ----- Canvas ----- */
+        .canvas-wrapper {
+            position: relative;
+            margin-top: 0.5rem;
+            background: #05070b;
+            border-radius: 0.75rem;
+            border: 1px solid #1e293b;
+            overflow: hidden;
+            aspect-ratio: 16 / 8;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #05070b;
+        }
+
+        /* ----- Buttons ----- */
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.6rem;
+            font-size: 0.8rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .btn-primary {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .btn-primary:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        /* ----- Table ----- */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 0.75rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.7rem 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        td {
+            padding: 0.7rem 0.75rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-accent {
+            color: #10b981;
+        }
+
+        .mono-small {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        /* ----- FAQ ----- */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-q {
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-bottom: 0.4rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: baseline;
+        }
+
+        .faq-q span {
+            color: #10b981;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.88rem;
+            padding-left: 1.5rem;
+        }
+
+        /* ----- Video ----- */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            border: 1px solid #1e293b;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #475569;
+            padding: 1rem 0 0.5rem;
+            border-top: 1px solid #1e293b;
+            margin-top: 0.5rem;
+        }
+
+        .footer a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #10b981;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0b0f17;
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 0.7rem 1.2rem;
+            border-radius: 0.6rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.25s ease;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+    <div class="brand">
+        <h1><span class="accent">CAPITAL</span>GRID</h1>
+        <a href="./index.html">← Portal</a>
+        <span class="badge">SIM-WORKSTATION v2.1</span>
+    </div>
+    <div class="badge mono">SUPERVOLCANO // YELLOWSTONE</div>
+</header>
+
+<!-- ============ TOP GRID: CONTROLS + CANVAS ============ -->
+<div class="grid-2">
+
+    <!-- LEFT: CONTROLS & KPI -->
+    <div class="card">
+        <div class="section-title">Timeline Controller</div>
+
+        <div class="control-row">
+            <label>Elapsed Time <span class="value mono" id="timeDisplay">0 min</span></label>
+            <input type="range" id="timeSlider" min="0" max="1440" value="0" step="1">
+        </div>
+
+        <div class="preset-group">
+            <button class="preset-btn" data-minute="0">00:00 · First Hour</button>
+            <button class="preset-btn" data-minute="180">03:00 · Plinian</button>
+            <button class="preset-btn" data-minute="360">06:00 · Pyroclastic</button>
+            <button class="preset-btn" data-minute="720">12:00 · Ash Blanket</button>
+            <button class="preset-btn" data-minute="1440">24:00 · Global Winter</button>
+        </div>
+
+        <div class="kpi-grid" id="kpiGrid">
+            <div class="kpi-item">
+                <div class="kpi-label">Magma Pressure</div>
+                <div class="kpi-value" id="kpiMagma">0.0<span class="unit">MPa</span></div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">Eruption Column</div>
+                <div class="kpi-value" id="kpiColumn">0.0<span class="unit">km</span></div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">Pyroclastic Speed</div>
+                <div class="kpi-value" id="kpiSpeed">0<span class="unit">km/h</span></div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">Ash Thickness</div>
+                <div class="kpi-value" id="kpiAsh">0.0<span class="unit">cm</span></div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">Global Temps</div>
+                <div class="kpi-value" id="kpiTemp">0.0<span class="unit">°C</span></div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">Ejecta Rate</div>
+                <div class="kpi-value" id="kpiEjecta">0<span class="unit">m³/s</span></div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" id="exportCsv">⬇ Export CSV Telemetry</button>
+            <button class="btn" id="copyLink">🔗 Copy Scenario Link</button>
+        </div>
+    </div>
+
+    <!-- RIGHT: CANVAS VISUALIZATION -->
+    <div class="card">
+        <div class="section-title">Eruption Cross-Section (Live)</div>
+        <div class="canvas-wrapper">
+            <canvas id="eruptionCanvas" width="800" height="400"></canvas>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:0.6rem; font-size:0.72rem; color:#64748b;" class="mono">
+            <span>0h</span>
+            <span>6h</span>
+            <span>12h</span>
+            <span>18h</span>
+            <span>24h</span>
+        </div>
+    </div>
+</div>
+
+<!-- ============ TABLE + VIDEO ============ -->
+<div class="grid-2">
+
+    <!-- TABLE -->
+    <div class="card">
+        <div class="section-title">Analytical Breakdown</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Time</th>
+                        <th>Metric</th>
+                        <th>Magma (MPa)</th>
+                        <th>Column (km)</th>
+                        <th>Ash (cm)</th>
+                        <th>Temp Δ (°C)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- filled by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="card">
+        <div class="section-title">Source Briefing</div>
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/xY_oPkH0cBw" title="What If a Supervolcano Erupts Tomorrow?" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<!-- ============ FAQ ============ -->
+<div class="card">
+    <div class="section-title">Frequently Asked Questions</div>
+
+    <div class="faq-item">
+        <div class="faq-q"><span>Q1.</span> What do the five timeline phases represent?</div>
+        <div class="faq-a">They model the first 24 hours after a Yellowstone supervolcano eruption: magma rise (0–60 min), Plinian eruption at hour 3 (~100,000 m³/s), pyroclastic fury at hour 6 (700 km/h, 1,000 °C), ash blanket at hour 12 (30 cm), and global winter at hour 24 (−10 °C drop).</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-q"><span>Q2.</span> How is the canvas visualization computed?</div>
+        <div class="faq-a">The canvas renders a cross-section of the magma chamber, eruption column, and ash blanket. The height, width, and opacity of each element are driven by the slider position and the underlying physical model (exponential magma pressure, column height, and ash accumulation).</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-q"><span>Q3.</span> What does the CSV export contain?</div>
+        <div class="faq-a">The export includes the current time stamp, phase label, magma pressure, eruption column height, pyroclastic speed, ash thickness, global temperature drop, and ejecta rate — all in SI-compatible units.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-q"><span>Q4.</span> Can I share a specific scenario?</div>
+        <div class="faq-a">Yes. The "Copy Scenario Link" button copies the current URL with a <code>?t=</code> query parameter representing the elapsed minute, so the exact state can be reloaded and shared.</div>
+    </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <p>CAPITALGRID · Supervolcano Simulation · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/what-if-a-supervolcano-erupts-tomorrow.html">Canonical</a></p>
+</footer>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<!-- ============ SCRIPT ============ -->
+<script>
+    (function() {
+        // ---------- DATA MODEL (exact payload mapping) ----------
+        const PHASES = [
+            { name: "The First Hour: Magma Rises", time: "0–60 min", minute: 0, metric: "0 to 60 minutes" },
+            { name: "Hour 3: The Plinian Eruption", time: "180 min", minute: 180, metric: "100,000 cubic meters per second" },
+            { name: "Hour 6: Pyroclastic Fury", time: "360 min", minute: 360, metric: "700 km/h, 1,000°C" },
+            { name: "Hour 12: Ash Blanket", time: "720 min", minute: 720, metric: "30 cm of ash" },
+            { name: "Hour 24: Global Winter", time: "1440 min", minute: 1440, metric: "-10°C global drop" }
+        ];
+
+        // state
+        let currentMinute = 0;
+
+        // DOM refs
+        const timeSlider = document.getElementById('timeSlider');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const kpiMagma = document.getElementById('kpiMagma');
+        const kpiColumn = document.getElementById('kpiColumn');
+        const kpiSpeed = document.getElementById('kpiSpeed');
+        const kpiAsh = document.getElementById('kpiAsh');
+        const kpiTemp = document.getElementById('kpiTemp');
+        const kpiEjecta = document.getElementById('kpiEjecta');
+        const canvas = document.getElementById('eruptionCanvas');
+        const ctx = canvas.getContext('2d');
+        const tableBody = document.getElementById('tableBody');
+        const toast = document.getElementById('toast');
+
+        // ---------- HELPER FUNCTIONS ----------
+        function formatTime(min) {
+            const h = Math.floor(min / 60);
+            const m = min % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        // ---------- PHYSICAL MODEL (interpolated from phase anchors) ----------
+        function computeMetrics(minute) {
+            const t = Math.max(0, Math.min(1440, minute));
+
+            // Anchors (minute, value) — derived from payload
+            // magma pressure in MPa (0 → 0.5 at 60, 3.2 at 180, 5.8 at 360, 4.0 at 720, 1.2 at 1440)
+            const magmaPts = [[0, 0], [60, 0.5], [180, 3.2], [360, 5.8], [720, 4.0], [1440, 1.2]];
+            // column height km (0 → 2 at 60, 30 at 180, 45 at 360, 25 at 720, 8 at 1440)
+            const colPts = [[0, 0], [60, 2], [180, 30], [360, 45], [720, 25], [1440, 8]];
+            // pyroclastic speed km/h (0 → 0 at 60, 300 at 180, 700 at 360, 200 at 720, 0 at 1440)
+            const speedPts = [[0, 0], [60, 0], [180, 300], [360, 700], [720, 200], [1440, 0]];
+            // ash thickness cm (0 → 0 at 60, 2 at 180, 8 at 360, 30 at 720, 30 at 1440)
+            const ashPts = [[0, 0], [60, 0], [180, 2], [360, 8], [720, 30], [1440, 30]];
+            // global temp drop °C (0 → 0 at 60, -0.5 at 180, -2 at 360, -6 at 720, -10 at 1440)
+            const tempPts = [[0, 0], [60, 0], [180, -0.5], [360, -2], [720, -6], [1440, -10]];
+            // ejecta rate m³/s (0 → 0 at 60, 100000 at 180, 50000 at 360, 8000 at 720, 500 at 1440)
+            const ejectaPts = [[0, 0], [60, 0], [180, 100000], [360, 50000], [720, 8000], [1440, 500]];
+
+            function interp(pts, x) {
+                for (let i = 0; i < pts.length - 1; i++) {
+                    const x0 = pts[i][0], y0 = pts[i][1];
+                    const x1 = pts[i + 1][0], y1 = pts[i + 1][1];
+                    if (x >= x0 && x <= x1) {
+                        const f = (x1 === x0) ? 0 : (x - x0) / (x1 - x0);
+                        return y0 + f * (y1 - y0);
+                    }
+                }
+                return pts[pts.length - 1][1];
+            }
+
+            return {
+                magma: interp(magmaPts, t),
+                column: interp(colPts, t),
+                speed: interp(speedPts, t),
+                ash: interp(ashPts, t),
+                temp: interp(tempPts, t),
+                ejecta: interp(ejectaPts, t)
+            };
+        }
+
+        // ---------- RENDER CANVAS ----------
+        function drawCanvas(minute) {
+            const W = canvas.width = 800;
+            const H = canvas.height = 400;
+            const m = computeMetrics(minute);
+            const progress = minute / 1440;
+
+            ctx.clearRect(0, 0, W, H);
+            // sky gradient
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+            skyGrad.addColorStop(0, '#05070b');
+            skyGrad.addColorStop(0.5, '#0b0f17');
+            skyGrad.addColorStop(1, '#1a1f2b');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // ground line
+            const groundY = H * 0.78;
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0, groundY, W, H - groundY);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(W, groundY);
+            ctx.stroke();
+
+            // magma chamber (glowing shape)
+            const magmaX = W * 0.5;
+            const magmaY = groundY + 40;
+            const magmaRadius = 40 + m.magma * 18;
+            const magmaGrad = ctx.createRadialGradient(magmaX, magmaY, 5, magmaX, magmaY, magmaRadius);
+            magmaGrad.addColorStop(0, `rgba(239, 68, 68, ${0.3 + m.magma * 0.08})`);
+            magmaGrad.addColorStop(0.7, `rgba(239, 68, 68, ${0.15 + m.magma * 0.04})`);
+            magmaGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+            ctx.fillStyle = magmaGrad;
+            ctx.beginPath();
+            ctx.arc(magmaX, magmaY, magmaRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // eruption column
+            const colHeight = Math.min(m.column * (H * 0.65) / 50, H * 0.65);
+            const colWidth = 30 + m.column * 2.5;
+            const colGrad = ctx.createLinearGradient(magmaX, groundY, magmaX, groundY - colHeight);
+            colGrad.addColorStop(0, 'rgba(239, 68, 68, 0.7)');
+            colGrad.addColorStop(0.4, 'rgba(249, 115, 22, 0.6)');
+            colGrad.addColorStop(0.8, 'rgba(234, 179, 8, 0.4)');
+            colGrad.addColorStop(1, 'rgba(234, 179, 8, 0.05)');
+            ctx.fillStyle = colGrad;
+            ctx.beginPath();
+            ctx.moveTo(magmaX - colWidth / 2, groundY);
+            ctx.quadraticCurveTo(magmaX - colWidth * 0.8, groundY - colHeight * 0.5, magmaX - colWidth * 0.3, groundY - colHeight);
+            ctx.lineTo(magmaX + colWidth * 0.3, groundY - colHeight);
+            ctx.quadraticCurveTo(magmaX + colWidth * 0.8, groundY - colHeight * 0.5, magmaX + colWidth / 2, groundY);
+            ctx.closePath();
+            ctx.fill();
+
+            // pyroclastic flow (lateral)
+            if (m.speed > 10) {
+                const flowLen = (m.speed / 700) * W * 0.35;
+                const flowH = 15 + (m.speed / 700) * 20;
+                ctx.fillStyle = `rgba(249, 115, 22, ${0.15 + (m.speed / 700) * 0.25})`;
+                ctx.beginPath();
+                ctx.ellipse(magmaX - flowLen / 2, groundY - 10, flowLen, flowH, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(magmaX + flowLen / 2, groundY - 10, flowLen, flowH, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // ash blanket (layered haze)
+            const ashAlpha = Math.min(m.ash / 30, 1) * 0.5;
+            if (ashAlpha > 0.01) {
+                ctx.fillStyle = `rgba(148, 163, 184, ${ashAlpha * 0.6})`;
+                ctx.fillRect(0, groundY - 30, W, 30);
+                ctx.fillStyle = `rgba(100, 116, 139, ${ashAlpha * 0.3})`;
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            // plume particles (small dots)
+            ctx.fillStyle = 'rgba(234, 179, 8, 0.6)';
+            for (let i = 0; i < 20; i++) {
+                const px = magmaX + (Math.random() - 0.5) * colWidth * 2.5;
+                const py = groundY - Math.random() * colHeight;
+                const size = 1 + Math.random() * 2.5;
+                ctx.beginPath();
+                ctx.arc(px, py, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // minute marker
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+            const markerX = (minute / 1440) * W;
+            ctx.fillRect(markerX - 1, 0, 2, H);
+            ctx.fillStyle = '#10b981';
+            ctx.font = '11px "SF Mono", monospace';
+            ctx.fillText(formatTime(minute), Math.min(markerX + 6, W - 60), 20);
+
+            // labels
+            ctx.fillStyle = '#64748b';
+            ctx.font = '11px "SF Mono", monospace';
+            ctx.fillText('Magma Chamber', 20, groundY + 60);
+            ctx.fillText('Eruption Column', W - 160, 40);
+            ctx.fillText('Ash Blanket', W - 120, groundY - 15);
+        }
+
+        // ---------- UPDATE UI ----------
+        function updateAll(minute) {
+            currentMinute = minute;
+            timeSlider.value = minute;
+            timeDisplay.textContent = formatTime(minute);
+
+            const m = computeMetrics(minute);
+
+            kpiMagma.innerHTML = m.magma.toFixed(1) + '<span class="unit">MPa</span>';
+            kpiColumn.innerHTML = m.column.toFixed(1) + '<span class="unit">km</span>';
+            kpiSpeed.innerHTML = Math.round(m.speed) + '<span class="unit">km/h</span>';
+            kpiAsh.innerHTML = m.ash.toFixed(1) + '<span class="unit">cm</span>';
+            kpiTemp.innerHTML = m.temp.toFixed(1) + '<span class="unit">°C</span>';
+            kpiEjecta.innerHTML = Math.round(m.ejecta).toLocaleString() + '<span class="unit">m³/s</span>';
+
+            drawCanvas(minute);
+            renderTable(minute);
+            highlightActivePreset(minute);
+        }
+
+        // ---------- RENDER TABLE (highlight active phase) ----------
+        function renderTable(minute) {
+            const activePhase = getActivePhase(minute);
+            tableBody.innerHTML = PHASES.map(p => {
+                const m = computeMetrics(p.minute);
+                const isActive = p.name === activePhase.name;
+                const style = isActive ? 'style="background:rgba(16,185,129,0.06);"' : '';
+                return `<tr ${style}>
+                    <td><span class="text-accent">${isActive ? '●' : '○'}</span> ${p.name}</td>
+                    <td class="mono-small">${p.time}</td>
+                    <td>${p.metric}</td>
+                    <td class="mono-small">${m.magma.toFixed(1)}</td>
+                    <td class="mono-small">${m.column.toFixed(1)}</td>
+                    <td class="mono-small">${m.ash.toFixed(1)}</td>
+                    <td class="mono-small">${m.temp.toFixed(1)}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function getActivePhase(minute) {
+            // Find the phase closest to the current minute
+            let closest = PHASES[0];
+            let minDist = Infinity;
+            for (const p of PHASES) {
+                const dist = Math.abs(minute - p.minute);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = p;
+                }
+            }
+            return closest;
+        }
+
+        function highlightActivePreset(minute) {
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                const m = parseInt(btn.dataset.minute);
+                btn.classList.toggle('active', Math.abs(minute - m) < 15);
+            });
+        }
+
+        // ---------- EVENT LISTENERS ----------
+        timeSlider.addEventListener('input', (e) => {
+            updateAll(parseInt(e.target.value));
+        });
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const m = parseInt(btn.dataset.minute);
+                updateAll(m);
+                // update URL without reload
+                const url = new URL(window.location);
+                url.searchParams.set('t', m);
+                window.history.replaceState({}, '', url);
+            });
+        });
+
+        // ---------- EXPORT CSV ----------
+        document.getElementById('exportCsv').addEventListener('click', () => {
+            const m = computeMetrics(currentMinute);
+            const phase = getActivePhase(currentMinute);
+            const rows = [
+                ['Metric', 'Value', 'Unit'],
+                ['Elapsed Time', formatTime(currentMinute), 'hh:mm'],
+                ['Elapsed Minutes', currentMinute, 'min'],
+                ['Active Phase', phase.name, ''],
+                ['Magma Pressure', m.magma.toFixed(1), 'MPa'],
+                ['Eruption Column', m.column.toFixed(1), 'km'],
+                ['Pyroclastic Speed', Math.round(m.speed), 'km/h'],
+                ['Ash Thickness', m.ash.toFixed(1), 'cm'],
+                ['Global Temp Drop', m.temp.toFixed(1), '°C'],
+                ['Ejecta Rate', Math.round(m.ejecta), 'm³/s'],
+                ['', '', ''],
+                ['--- Phase Timeline ---', '', ''],
+                ...PHASES.map(p => [
+                    p.name,
+                    p.time,
+                    p.metric
+                ])
+            ];
+
+            const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `capitalgrid_supervolcano_${formatTime(currentMinute).replace(':', 'h')}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showToast('CSV telemetry exported');
+        });
+
+        // ---------- COPY SCENARIO LINK ----------
+        document.getElementById('copyLink').addEventListener('click', () => {
+            const url = new URL(window.location);
+            url.searchParams.set('t', currentMinute);
+            navigator.clipboard.writeText(url.toString()).then(() => {
+                showToast('Scenario link copied');
+            }).catch(() => {
+                // fallback
+                const input = document.createElement('input');
+                input.value = url.toString();
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast('Scenario link copied');
+            });
+        });
+
+        // ---------- INIT FROM URL ----------
+        function initFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const t = params.get('t');
+            if (t !== null) {
+                const minute = Math.max(0, Math.min(1440, parseInt(t) || 0));
+                updateAll(minute);
+            } else {
+                updateAll(0);
+            }
+        }
+
+        // ---------- START ----------
+        initFromUrl();
+
+        // redraw on resize for crispness
+        window.addEventListener('resize', () => {
+            drawCanvas(currentMinute);
+        });
+
+        // expose for debugging
+        window.__supervolcano = { computeMetrics, updateAll };
+    })();
+</script>
+</body>
+</html>
