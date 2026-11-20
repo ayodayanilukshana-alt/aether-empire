@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINETICZEN LABS · Cheetah vs Peregrine · Speed Ball Maze</title>
+    <!-- JSON-LD SoftwareApplication Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Cheetah vs Peregrine: Ultimate Speed Ball Maze Workstation",
+        "description": "Interactive rigid-body physics rivalry simulation comparing cheetah and peregrine falcon top speeds in a custom maze environment.",
+        "applicationCategory": "SimulationGame",
+        "operatingSystem": "Web",
+        "author": { "@type": "Organization", "name": "KINETICZEN LABS" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/cheetah-vs-peregrine-ultimate-speed-ball-maze.html"
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #05070b;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+        .app {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px 20px 40px;
+        }
+        /* header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 16px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand .badge {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 40px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #f43f5e;
+        }
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #1e293b;
+            padding: 8px 18px;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+        .nav-link:hover {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        /* layout grid */
+        .workstation {
+            display: grid;
+            grid-template-columns: 320px 1fr 380px;
+            gap: 20px;
+        }
+        /* cards */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            padding: 20px 16px;
+            margin-bottom: 18px;
+        }
+        .card-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title span {
+            color: #f43f5e;
+            font-size: 1rem;
+        }
+        /* sliders */
+        .slider-group {
+            margin-bottom: 22px;
+        }
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+        .slider-header .label {
+            color: #94a3b8;
+        }
+        .slider-header .value {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: #f43f5e;
+            font-weight: 600;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #f43f5e;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+        }
+        /* preset buttons */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .preset-btn {
+            background: #0f1420;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 10px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: center;
+        }
+        .preset-btn:hover {
+            border-color: #f43f5e;
+            background: #1a1f2e;
+            color: #f43f5e;
+        }
+        /* kpi row */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .kpi-item {
+            background: #0f1420;
+            border-radius: 14px;
+            padding: 12px 10px;
+            text-align: center;
+            border: 1px solid #1e293b;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f43f5e;
+            line-height: 1.2;
+        }
+        .kpi-unit {
+            font-size: 0.7rem;
+            color: #475569;
+            margin-left: 3px;
+        }
+        /* canvas */
+        .canvas-wrapper {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            padding: 10px;
+            position: relative;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #05070b;
+            border-radius: 12px;
+            aspect-ratio: 4 / 3;
+        }
+        /* buttons */
+        .btn {
+            background: #0f1420;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 12px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+        .btn:hover {
+            border-color: #f43f5e;
+            color: #f43f5e;
+            background: #1a1f2e;
+        }
+        .btn-primary {
+            background: rgba(244, 63, 94, 0.1);
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        .btn-primary:hover {
+            background: rgba(244, 63, 94, 0.2);
+        }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        /* table */
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+        .breakdown-table th, .breakdown-table td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+        .breakdown-table th {
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+        .breakdown-table td:last-child {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: #f43f5e;
+        }
+        .breakdown-table tr:last-child td {
+            border-bottom: none;
+        }
+        /* faq */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 14px 0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 6px;
+        }
+        .faq-a {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        /* iframe wrapper */
+        .iframe-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #000;
+        }
+        iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: 0;
+            display: block;
+        }
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05070b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f43f5e;
+        }
+        /* utils */
+        .text-mono {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .text-xs { font-size: 0.7rem; color: #64748b; }
+        .flex-between { display: flex; justify-content: space-between; }
+        /* responsive */
+        @media (max-width: 1200px) {
+            .workstation {
+                grid-template-columns: 1fr 1fr;
+            }
+            .canvas-wrapper {
+                grid-column: span 2;
+            }
+        }
+        @media (max-width: 800px) {
+            .workstation {
+                grid-template-columns: 1fr;
+            }
+            .canvas-wrapper {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- header -->
+    <div class="header">
+        <div class="brand">
+            <h1>KINETICZEN LABS</h1>
+            <span class="badge">v2.4</span>
+        </div>
+        <a href="./index.html" class="nav-link">← Portal</a>
+    </div>
+
+    <!-- main workstation -->
+    <div class="workstation">
+        <!-- LEFT COLUMN: controls -->
+        <div class="left-col">
+            <div class="card">
+                <div class="card-title"><span>⏵</span> SCENARIO PRESETS</div>
+                <div class="preset-grid">
+                    <button class="preset-btn" data-preset="cheetah">Cheetah Sprint</button>
+                    <button class="preset-btn" data-preset="peregrine">Peregrine Dive</button>
+                    <button class="preset-btn" data-preset="hybrid">Hybrid Maze</button>
+                    <button class="preset-btn" data-preset="chaos">Chaos</button>
+                </div>
+                <div class="text-xs mt-2">Loads speed and maze parameters for each species.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>⚙</span> SIMULATION PARAMETERS</div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="label">Cheetah Speed</span>
+                        <span class="value" id="cheetahSpeedVal">105</span>
+                    </div>
+                    <input type="range" id="cheetahSpeed" min="60" max="130" value="105" step="1">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="label">Peregrine Speed</span>
+                        <span class="value" id="peregrineSpeedVal">240</span>
+                    </div>
+                    <input type="range" id="peregrineSpeed" min="150" max="390" value="240" step="1">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="label">Maze Complexity</span>
+                        <span class="value" id="mazeComplexityVal">0.65</span>
+                    </div>
+                    <input type="range" id="mazeComplexity" min="0.2" max="0.95" value="0.65" step="0.01">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="label">Gravity</span>
+                        <span class="value" id="gravityVal">1.0</span>
+                    </div>
+                    <input type="range" id="gravity" min="0.3" max="2.0" value="1.0" step="0.05">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>⌁</span> LIVE KPIs</div>
+                <div class="kpi-grid">
+                    <div class="kpi-item">
+                        <div class="kpi-label">Cheetah</div>
+                        <div class="kpi-value" id="kpiCheetah">105<span class="kpi-unit">km/h</span></div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-label">Peregrine</div>
+                        <div class="kpi-value" id="kpiPeregrine">240<span class="kpi-unit">km/h</span></div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-label">Maze Load</div>
+                        <div class="kpi-value" id="kpiMaze">0.65</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-label">Gravity</div>
+                        <div class="kpi-value" id="kpiGravity">1.0<span class="kpi-unit">g</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER COLUMN: canvas -->
+        <div class="center-col">
+            <div class="canvas-wrapper">
+                <canvas id="mazeCanvas" width="800" height="600"></canvas>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+                <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+            </div>
+            <div class="text-xs mt-2" id="exportStatus" style="height: 18px;">Ready.</div>
+        </div>
+
+        <!-- RIGHT COLUMN: breakdown + iframe + faq -->
+        <div class="right-col">
+            <div class="card">
+                <div class="card-title"><span>▤</span> ANALYTICAL BREAKDOWN</div>
+                <table class="breakdown-table">
+                    <thead>
+                        <tr><th>Metric</th><th>Cheetah</th><th>Peregrine</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Top Speed (km/h)</td><td id="tblCheetahSpeed">105</td><td id="tblPeregrineSpeed">240</td></tr>
+                        <tr><td>Acceleration (m/s²)</td><td>9.2</td><td>12.8</td></tr>
+                        <tr><td>Mass (kg)</td><td>52</td><td>0.9</td></tr>
+                        <tr><td>Maze Agility</td><td id="tblCheetahAgility">0.82</td><td id="tblPeregrineAgility">0.65</td></tr>
+                        <tr><td>Kinetic Energy (kJ)</td><td id="tblCheetahKE">22.1</td><td id="tblPeregrineKE">7.2</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>▶</span> YOUTUBE STREAM</div>
+                <div class="iframe-wrapper">
+                    <iframe src="https://www.youtube.com/embed/nQ2mPGJ7i80" title="Cheetah vs Peregrine: Ultimate Speed Ball Maze" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>❓</span> FAQ</div>
+                <div class="faq-item">
+                    <div class="faq-q">What does the simulation model?</div>
+                    <div class="faq-a">A 60 FPS rigid-body ball maze comparing the speed and agility of a cheetah and a peregrine falcon.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">How are the KPI values updated?</div>
+                    <div class="faq-a">Sliders adjust live physics parameters: speed, maze complexity, and gravity, which update both the canvas and KPIs.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Can I export telemetry?</div>
+                    <div class="faq-a">Yes. Click "Export CSV Telemetry" to download current frame data including positions and velocities.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- DOM refs ----------
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // sliders
+        const cheetahSpeedSlider = document.getElementById('cheetahSpeed');
+        const peregrineSpeedSlider = document.getElementById('peregrineSpeed');
+        const mazeComplexitySlider = document.getElementById('mazeComplexity');
+        const gravitySlider = document.getElementById('gravity');
+
+        // displays
+        const cheetahSpeedVal = document.getElementById('cheetahSpeedVal');
+        const peregrineSpeedVal = document.getElementById('peregrineSpeedVal');
+        const mazeComplexityVal = document.getElementById('mazeComplexityVal');
+        const gravityVal = document.getElementById('gravityVal');
+
+        // kpi
+        const kpiCheetah = document.getElementById('kpiCheetah');
+        const kpiPeregrine = document.getElementById('kpiPeregrine');
+        const kpiMaze = document.getElementById('kpiMaze');
+        const kpiGravity = document.getElementById('kpiGravity');
+
+        // table
+        const tblCheetahSpeed = document.getElementById('tblCheetahSpeed');
+        const tblPeregrineSpeed = document.getElementById('tblPeregrineSpeed');
+        const tblCheetahAgility = document.getElementById('tblCheetahAgility');
+        const tblPeregrineAgility = document.getElementById('tblPeregrineAgility');
+        const tblCheetahKE = document.getElementById('tblCheetahKE');
+        const tblPeregrineKE = document.getElementById('tblPeregrineKE');
+
+        // buttons
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const exportStatus = document.getElementById('exportStatus');
+
+        // presets
+        const presetButtons = document.querySelectorAll('.preset-btn');
+
+        // ---------- STATE ----------
+        // using simple physics for visual: two balls with maze walls
+        let cheetahSpeed = 105;
+        let peregrineSpeed = 240;
+        let mazeComplexity = 0.65;
+        let gravity = 1.0;
+
+        // physical ball representation
+        const ballA = {
+            x: 120, y: 150,
+            vx: 2.5, vy: 0.8,
+            radius: 12,
+            color: '#f43f5e',
+            label: 'CHEETAH',
+            mass: 1.0
+        };
+        const ballB = {
+            x: 680, y: 450,
+            vx: -1.8, vy: -1.2,
+            radius: 12,
+            color: '#3b82f6',
+            label: 'PEREGRINE',
+            mass: 0.9
+        };
+
+        // maze walls: array of rectangles, regenerated when complexity changes
+        let walls = [];
+
+        // telemetry log (last 300 frames)
+        let telemetryLog = [];
+
+        // canvas size
+        const W = canvas.width;
+        const H = canvas.height;
+
+        // ---------- MAZE GENERATION ----------
+        function regenerateMaze() {
+            walls = [];
+            // border walls (thickness 20)
+            walls.push({ x: 0, y: 0, w: W, h: 20 });             // top
+            walls.push({ x: 0, y: H-20, w: W, h: 20 });           // bottom
+            walls.push({ x: 0, y: 0, w: 20, h: H });              // left
+            walls.push({ x: W-20, y: 0, w: 20, h: H });           // right
+
+            // internal walls based on complexity (0.2 to 0.95)
+            const numWalls = Math.floor(5 + mazeComplexity * 12); // 5 to 17
+            for (let i = 0; i < numWalls; i++) {
+                const vertical = Math.random() > 0.5;
+                const w = vertical ? 16 : 100 + Math.random() * 100;
+                const h = vertical ? 80 + Math.random() * 150 : 16;
+                const x = 40 + Math.random() * (W - 80 - w);
+                const y = 40 + Math.random() * (H - 80 - h);
+                // avoid overlap with balls start positions
+                if ((x < 200 && y < 200) || (x > 600 && y > 400)) continue;
+                walls.push({ x, y, w, h });
+            }
+        }
+
+        // ---------- PHYSICS HELPER ----------
+        function resolveBallWallCollision(ball, wall) {
+            // find closest point on rectangle to circle center
+            const closestX = Math.max(wall.x, Math.min(ball.x, wall.x + wall.w));
+            const closestY = Math.max(wall.y, Math.min(ball.y, wall.y + wall.h));
+            const dx = ball.x - closestX;
+            const dy = ball.y - closestY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < ball.radius) {
+                const overlap = ball.radius - dist;
+                let nx, ny;
+                if (dist === 0) {
+                    // fallback: use center direction
+                    nx = ball.x - (wall.x + wall.w/2);
+                    ny = ball.y - (wall.y + wall.h/2);
+                    const len = Math.sqrt(nx*nx + ny*ny) || 1;
+                    nx /= len; ny /= len;
+                } else {
+                    nx = dx / dist;
+                    ny = dy / dist;
+                }
+                // push out
+                ball.x += nx * (overlap + 0.5);
+                ball.y += ny * (overlap + 0.5);
+                // reflect velocity
+                const dot = ball.vx * nx + ball.vy * ny;
+                if (dot < 0) {
+                    ball.vx -= 1.6 * dot * nx;
+                    ball.vy -= 1.6 * dot * ny;
+                }
+                // friction
+                ball.vx *= 0.98;
+                ball.vy *= 0.98;
+            }
+        }
+
+        // ---------- UPDATE PHYSICS ----------
+        function updatePhysics() {
+            // gravity effect (vertical pull)
+            const g = gravity * 0.12;
+            ballA.vy += g;
+            ballB.vy += g;
+
+            // speed influence (from slider) — scale factor
+            const speedFactorA = cheetahSpeed / 105;
+            const speedFactorB = peregrineSpeed / 240;
+            // apply slight continuous horizontal drive
+            ballA.vx += (Math.random() - 0.5) * 0.08 * speedFactorA;
+            ballB.vx += (Math.random() - 0.5) * 0.08 * speedFactorB;
+
+            // limit velocity magnitude
+            const maxSpeedA = 3.5 * speedFactorA;
+            const maxSpeedB = 4.0 * speedFactorB;
+            const speedMagA = Math.sqrt(ballA.vx**2 + ballA.vy**2);
+            if (speedMagA > maxSpeedA) {
+                ballA.vx = (ballA.vx / speedMagA) * maxSpeedA;
+                ballA.vy = (ballA.vy / speedMagA) * maxSpeedA;
+            }
+            const speedMagB = Math.sqrt(ballB.vx**2 + ballB.vy**2);
+            if (speedMagB > maxSpeedB) {
+                ballB.vx = (ballB.vx / speedMagB) * maxSpeedB;
+                ballB.vy = (ballB.vy / speedMagB) * maxSpeedB;
+            }
+
+            // move
+            ballA.x += ballA.vx;
+            ballA.y += ballA.vy;
+            ballB.x += ballB.vx;
+            ballB.y += ballB.vy;
+
+            // collide with walls
+            for (let w of walls) {
+                resolveBallWallCollision(ballA, w);
+                resolveBallWallCollision(ballB, w);
+            }
+
+            // simple ball-ball collision
+            const dx = ballB.x - ballA.x;
+            const dy = ballB.y - ballA.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const minDist = ballA.radius + ballB.radius;
+            if (dist < minDist) {
+                const angle = Math.atan2(dy, dx);
+                const overlap = minDist - dist;
+                const pushX = Math.cos(angle) * overlap * 0.5;
+                const pushY = Math.sin(angle) * overlap * 0.5;
+                ballA.x -= pushX;
+                ballA.y -= pushY;
+                ballB.x += pushX;
+                ballB.y += pushY;
+                // exchange velocities (approx elastic)
+                const vax = ballA.vx, vay = ballA.vy;
+                const vbx = ballB.vx, vby = ballB.vy;
+                ballA.vx = vbx * 0.8 + vax * 0.2;
+                ballA.vy = vby * 0.8 + vay * 0.2;
+                ballB.vx = vax * 0.8 + vbx * 0.2;
+                ballB.vy = vay * 0.8 + vby * 0.2;
+            }
+
+            // store telemetry
+            telemetryLog.push({
+                t: Date.now(),
+                ax: ballA.x, ay: ballA.y,
+                bx: ballB.x, by: ballB.y,
+                avx: ballA.vx, avy: ballA.vy,
+                bvx: ballB.vx, bvy: ballB.vy,
+                cheetahSpeed, peregrineSpeed, mazeComplexity, gravity
+            });
+            if (telemetryLog.length > 300) telemetryLog.shift();
+        }
+
+        // ---------- RENDER ----------
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            // background grid subtle
+            ctx.strokeStyle = '#1a1f2e';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < W; i += 40) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+            }
+            for (let i = 0; i < H; i += 40) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
+            }
+
+            // draw walls
+            ctx.fillStyle = '#1e293b';
+            ctx.shadowColor = '#0f1420';
+            ctx.shadowBlur = 6;
+            for (let w of walls) {
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(w.x, w.y, w.w, w.h);
+                // highlight edge
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(w.x, w.y, w.w, w.h);
+            }
+            ctx.shadowBlur = 0;
+
+            // draw balls with glow
+            // Cheetah
+            ctx.shadowColor = '#f43f5e';
+            ctx.shadowBlur = 18;
+            ctx.beginPath();
+            ctx.arc(ballA.x, ballA.y, ballA.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = ballA.color;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            // label
+            ctx.font = 'bold 11px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('C', ballA.x, ballA.y);
+
+            // Peregrine
+            ctx.shadowColor = '#3b82f6';
+            ctx.shadowBlur = 18;
+            ctx.beginPath();
+            ctx.arc(ballB.x, ballB.y, ballB.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = ballB.color;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('P', ballB.x, ballB.y);
+
+            // draw speed marker
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'left';
+            ctx.fillText(`CHEETAH ${cheetahSpeed} km/h`, 30, 30);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillText(`PEREGRINE ${peregrineSpeed} km/h`, W-200, 30);
+        }
+
+        // ---------- ANIMATION LOOP ----------
+        function loop() {
+            updatePhysics();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        // ---------- UI UPDATE ----------
+        function updateUI() {
+            cheetahSpeedVal.textContent = cheetahSpeed;
+            peregrineSpeedVal.textContent = peregrineSpeed;
+            mazeComplexityVal.textContent = mazeComplexity.toFixed(2);
+            gravityVal.textContent = gravity.toFixed(2);
+
+            kpiCheetah.innerHTML = cheetahSpeed + '<span class="kpi-unit">km/h</span>';
+            kpiPeregrine.innerHTML = peregrineSpeed + '<span class="kpi-unit">km/h</span>';
+            kpiMaze.textContent = mazeComplexity.toFixed(2);
+            kpiGravity.innerHTML = gravity.toFixed(2) + '<span class="kpi-unit">g</span>';
+
+            tblCheetahSpeed.textContent = cheetahSpeed;
+            tblPeregrineSpeed.textContent = peregrineSpeed;
+
+            // agility: inverse of complexity (higher complexity -> lower agility)
+            const agilityC = (1 - mazeComplexity * 0.6).toFixed(2);
+            const agilityP = (1 - mazeComplexity * 0.8).toFixed(2);
+            tblCheetahAgility.textContent = agilityC;
+            tblPeregrineAgility.textContent = agilityP;
+
+            // kinetic energy simple: 0.5 * mass * v^2, v in km/h -> convert to kJ
+            const vC = cheetahSpeed / 3.6; // m/s
+            const vP = peregrineSpeed / 3.6;
+            const keC = (0.5 * 52 * vC * vC / 1000).toFixed(1);
+            const keP = (0.5 * 0.9 * vP * vP / 1000).toFixed(1);
+            tblCheetahKE.textContent = keC + ' kJ';
+            tblPeregrineKE.textContent = keP + ' kJ';
+        }
+
+        // ---------- REGENERATE ON COMPLEXITY CHANGE ----------
+        function handleMazeChange() {
+            regenerateMaze();
+            // reposition balls to safe spots
+            ballA.x = 80; ballA.y = 80;
+            ballB.x = W-80; ballB.y = H-80;
+            ballA.vx = 1.5; ballA.vy = 1.0;
+            ballB.vx = -1.0; ballB.vy = -1.5;
+        }
+
+        // ---------- INIT ----------
+        function init() {
+            regenerateMaze();
+            updateUI();
+            loop();
+
+            // slider listeners
+            cheetahSpeedSlider.addEventListener('input', (e) => {
+                cheetahSpeed = parseFloat(e.target.value);
+                updateUI();
+            });
+            peregrineSpeedSlider.addEventListener('input', (e) => {
+                peregrineSpeed = parseFloat(e.target.value);
+                updateUI();
+            });
+            mazeComplexitySlider.addEventListener('input', (e) => {
+                mazeComplexity = parseFloat(e.target.value);
+                handleMazeChange();
+                updateUI();
+            });
+            gravitySlider.addEventListener('input', (e) => {
+                gravity = parseFloat(e.target.value);
+                updateUI();
+            });
+
+            // presets
+            presetButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const preset = btn.dataset.preset;
+                    if (preset === 'cheetah') {
+                        cheetahSpeed = 120;
+                        peregrineSpeed = 180;
+                        mazeComplexity = 0.45;
+                        gravity = 1.0;
+                    } else if (preset === 'peregrine') {
+                        cheetahSpeed = 80;
+                        peregrineSpeed = 380;
+                        mazeComplexity = 0.55;
+                        gravity = 0.8;
+                    } else if (preset === 'hybrid') {
+                        cheetahSpeed = 110;
+                        peregrineSpeed = 260;
+                        mazeComplexity = 0.7;
+                        gravity = 1.2;
+                    } else if (preset === 'chaos') {
+                        cheetahSpeed = 95;
+                        peregrineSpeed = 300;
+                        mazeComplexity = 0.9;
+                        gravity = 1.8;
+                    }
+                    // sync sliders
+                    cheetahSpeedSlider.value = cheetahSpeed;
+                    peregrineSpeedSlider.value = peregrineSpeed;
+                    mazeComplexitySlider.value = mazeComplexity;
+                    gravitySlider.value = gravity;
+                    handleMazeChange();
+                    updateUI();
+                });
+            });
+
+            // CSV export
+            exportCsvBtn.addEventListener('click', () => {
+                if (telemetryLog.length === 0) {
+                    exportStatus.textContent = 'No telemetry data yet.';
+                    return;
+                }
+                const headers = ['timestamp', 'cheetahX', 'cheetahY', 'cheetahVX', 'cheetahVY',
+                    'peregrineX', 'peregrineY', 'peregrineVX', 'peregrineVY',
+                    'cheetahSpeed', 'peregrineSpeed', 'mazeComplexity', 'gravity'];
+                const rows = telemetryLog.map(d => [
+                    d.t, d.ax.toFixed(2), d.ay.toFixed(2), d.avx.toFixed(3), d.avy.toFixed(3),
+                    d.bx.toFixed(2), d.by.toFixed(2), d.bvx.toFixed(3), d.bvy.toFixed(3),
+                    d.cheetahSpeed, d.peregrineSpeed, d.mazeComplexity.toFixed(2), d.gravity.toFixed(2)
+                ]);
+                let csvContent = headers.join(',') + '\n';
+                rows.forEach(row => { csvContent += row.join(',') + '\n'; });
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kineticzen_telemetry_${Date.now()}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                exportStatus.textContent = `Exported ${telemetryLog.length} frames.`;
+            });
+
+            // copy scenario link
+            copyLinkBtn.addEventListener('click', () => {
+                const params = new URLSearchParams({
+                    cheetah: cheetahSpeed,
+                    peregrine: peregrineSpeed,
+                    maze: mazeComplexity.toFixed(2),
+                    gravity: gravity.toFixed(2)
+                });
+                const link = window.location.origin + window.location.pathname + '?' + params.toString();
+                navigator.clipboard.writeText(link).then(() => {
+                    exportStatus.textContent = 'Scenario link copied to clipboard.';
+                }).catch(() => {
+                    // fallback
+                    const textarea = document.createElement('textarea');
+                    textarea.value = link;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    exportStatus.textContent = 'Scenario link copied (fallback).';
+                });
+            });
+
+            // parse URL params on load
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('cheetah')) {
+                cheetahSpeed = parseFloat(urlParams.get('cheetah')) || 105;
+                cheetahSpeedSlider.value = cheetahSpeed;
+            }
+            if (urlParams.has('peregrine')) {
+                peregrineSpeed = parseFloat(urlParams.get('peregrine')) || 240;
+                peregrineSpeedSlider.value = peregrineSpeed;
+            }
+            if (urlParams.has('maze')) {
+                mazeComplexity = parseFloat(urlParams.get('maze')) || 0.65;
+                mazeComplexitySlider.value = mazeComplexity;
+            }
+            if (urlParams.has('gravity')) {
+                gravity = parseFloat(urlParams.get('gravity')) || 1.0;
+                gravitySlider.value = gravity;
+            }
+            handleMazeChange();
+            updateUI();
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
