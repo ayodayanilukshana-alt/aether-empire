@@ -3,858 +3,783 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scaleverse 3D · Stadium Giants Workstation</title>
-  <meta name="description" content="Interactive 3D comparison of 5 colossal arenas — Fenway Park to Indianapolis Motor Speedway. Adjust scale, export CSV, copy scenario link.">
+  <title>Stadium Giants: 5 Colossal Arenas Compared · SCALEVERSE 3D</title>
+  <meta name="description" content="Interactive workstation comparing the capacity and scale of five colossal stadiums: Plaza de Toros México, Camp Nou, Michigan Stadium, Rungrado 1st of May Stadium, and Indianapolis Motor Speedway.">
   <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/stadium-giants-5-colossal-arenas-compared.html">
   <style>
-    /* ----- Reset & Base ----- */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       background: #05070b;
       color: #e2e8f0;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.5;
-      padding: 24px;
+      padding: 2rem 1rem;
     }
-
     .workstation {
       max-width: 1440px;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1.4fr;
-      gap: 24px;
-      align-items: start;
     }
-
-    /* ----- Cards & Surfaces ----- */
+    /* header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      background: linear-gradient(to right, #e2e8f0, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand a {
+      font-size: 1rem;
+      color: #38bdf8;
+      text-decoration: none;
+      border: 1px solid #1e293b;
+      padding: 0.35rem 1rem;
+      border-radius: 40px;
+      background: #0b0f17;
+      transition: 0.2s;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .brand a:hover {
+      background: #111827;
+      border-color: #38bdf8;
+    }
+    .youtube-embed {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #0b0f17;
+      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.7);
+      aspect-ratio: 16/9;
+      width: 100%;
+      max-width: 480px;
+      flex: 1 1 360px;
+    }
+    .youtube-embed iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    /* cards */
     .card {
       background: #0b0f17;
       border: 1px solid #1e293b;
       border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px -8px rgba(0,0,0,0.8);
     }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    h1, h2, h3 {
-      font-weight: 500;
-      letter-spacing: -0.01em;
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      color: #f1f5f9;
-      margin-bottom: 8px;
-    }
-
-    h2 {
-      font-size: 1.2rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 20px;
-    }
-
-    .accent {
-      color: #38bdf8;
-    }
-
-    .mono {
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Roboto Mono', monospace;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* ----- Portal Link ----- */
-    .portal-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: #38bdf8;
-      text-decoration: none;
+    .card-title {
       font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-bottom: 1.25rem;
       font-weight: 500;
-      border: 1px solid #1e293b;
-      padding: 6px 14px;
-      border-radius: 40px;
-      transition: background 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-
-    .portal-link:hover {
-      background: #1e293b;
-      border-color: #38bdf8;
+    .card-title::before {
+      content: '';
+      width: 6px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 4px;
     }
-
-    /* ----- Controls ----- */
-    .control-group {
-      margin-bottom: 24px;
+    /* sliders */
+    .sliders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
     }
-
-    .control-label {
+    .slider-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .slider-label {
       display: flex;
       justify-content: space-between;
       font-size: 0.85rem;
-      color: #94a3b8;
-      margin-bottom: 8px;
+      font-weight: 500;
+      color: #cbd5e1;
     }
-
-    input[type="range"] {
+    .slider-value {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      color: #38bdf8;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
       width: 100%;
       height: 6px;
       background: #1e293b;
-      border-radius: 8px;
-      appearance: none;
-      -webkit-appearance: none;
+      border-radius: 10px;
       outline: none;
-      cursor: pointer;
+      margin: 0.5rem 0;
     }
-
-    input[type="range"]::-webkit-slider-thumb {
+    input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      appearance: none;
       width: 18px;
       height: 18px;
-      background: #38bdf8;
       border-radius: 50%;
-      border: 2px solid #0b0f17;
-      box-shadow: 0 0 0 2px #38bdf8;
-    }
-
-    .preset-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
-      margin-bottom: 16px;
-    }
-
-    .preset-btn {
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      color: #cbd5e1;
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
-    }
-
-    .preset-btn:hover {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #f1f5f9;
-    }
-
-    .preset-btn.active {
       background: #38bdf8;
-      color: #05070b;
-      border-color: #38bdf8;
-      font-weight: 600;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 0 1px #38bdf8;
+      cursor: pointer;
+      transition: 0.1s;
     }
-
-    /* ----- KPI Grid ----- */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 20px;
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: #7dd3fc;
+      transform: scale(1.1);
     }
-
-    .kpi-item {
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 14px;
-      padding: 14px 16px;
-    }
-
-    .kpi-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-
-    .kpi-value {
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: #f1f5f9;
-      line-height: 1.2;
-    }
-
-    .kpi-sub {
-      font-size: 0.75rem;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-
-    /* ----- Canvas Container ----- */
-    .canvas-container {
-      position: relative;
-      background: #0b0f17;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid #1e293b;
-      margin-bottom: 20px;
-      aspect-ratio: 16 / 10;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      background: #05070b;
-      cursor: grab;
-    }
-
-    canvas:active {
-      cursor: grabbing;
-    }
-
-    .canvas-badge {
-      position: absolute;
-      bottom: 16px;
-      left: 16px;
-      background: #0b0f17cc;
-      border: 1px solid #1e293b;
-      padding: 4px 12px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      color: #94a3b8;
-      backdrop-filter: blur(4px);
-      font-family: monospace;
-    }
-
-    /* ----- Buttons ----- */
-    .btn-row {
+    /* presets */
+    .preset-buttons {
       display: flex;
-      gap: 12px;
       flex-wrap: wrap;
-      margin-top: 12px;
+      gap: 0.75rem;
+      margin: 1.5rem 0 0.5rem;
     }
-
     .btn {
-      background: #0f172a;
+      background: #111827;
       border: 1px solid #1e293b;
       color: #e2e8f0;
-      padding: 10px 20px;
+      padding: 0.6rem 1.2rem;
       border-radius: 40px;
       font-size: 0.85rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s;
-      font-family: inherit;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.4rem;
+      font-family: inherit;
     }
-
     .btn:hover {
       background: #1e293b;
       border-color: #38bdf8;
+      color: #fff;
     }
-
     .btn-primary {
       background: #38bdf8;
-      border-color: #38bdf8;
       color: #05070b;
+      border: 1px solid #38bdf8;
       font-weight: 600;
     }
-
     .btn-primary:hover {
       background: #7dd3fc;
       border-color: #7dd3fc;
+      color: #05070b;
     }
-
-    /* ----- Table ----- */
-    .table-wrap {
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+    /* KPI */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi-item {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+    }
+    .kpi-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      margin-bottom: 0.25rem;
+    }
+    .kpi-value {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: #38bdf8;
+      line-height: 1.2;
+    }
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    /* canvas */
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      background: #05070b;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      overflow: hidden;
+      margin: 1rem 0;
+      padding: 0.5rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: #0b0f17;
+    }
+    /* table */
+    .table-wrapper {
       overflow-x: auto;
-      margin-top: 16px;
-      border-radius: 14px;
+      border-radius: 16px;
       border: 1px solid #1e293b;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.85rem;
+      min-width: 600px;
     }
-
     th {
       text-align: left;
-      padding: 10px 14px;
-      background: #0f172a;
+      padding: 1rem 1rem;
+      background: #0f141f;
       color: #94a3b8;
       font-weight: 500;
-      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
+      font-size: 0.7rem;
+      border-bottom: 1px solid #1e293b;
     }
-
     td {
-      padding: 10px 14px;
-      border-top: 1px solid #1e293b;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'SF Mono', 'Fira Code', monospace;
       color: #cbd5e1;
     }
-
-    tr:hover td {
-      background: #0f172a;
+    td:first-child {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      color: #f1f5f9;
     }
-
-    /* ----- FAQ ----- */
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .accent {
+      color: #38bdf8;
+    }
+    .badge {
+      background: #1e293b;
+      padding: 0.15rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+    /* faq */
     .faq-item {
       border-bottom: 1px solid #1e293b;
-      padding: 14px 0;
+      padding: 1rem 0;
     }
-
     .faq-item:last-child {
       border-bottom: none;
     }
-
     .faq-q {
-      font-weight: 500;
+      font-weight: 600;
       color: #f1f5f9;
-      margin-bottom: 6px;
+      margin-bottom: 0.4rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
     }
-
     .faq-a {
       color: #94a3b8;
       font-size: 0.9rem;
+      padding-left: 0.25rem;
     }
-
-    /* ----- Video ----- */
-    .video-wrap {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid #1e293b;
-      margin-top: 16px;
+    /* footer */
+    .footer-note {
+      text-align: center;
+      color: #475569;
+      font-size: 0.8rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #1e293b;
     }
-
-    .video-wrap iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    /* ----- Responsive ----- */
-    @media (max-width: 980px) {
-      .workstation {
-        grid-template-columns: 1fr;
-      }
-      .kpi-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-      body {
-        padding: 12px;
-      }
-      .card {
-        padding: 16px;
-      }
-      .kpi-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     /* utility */
-    .text-muted { color: #64748b; }
-    .text-accent { color: #38bdf8; }
-    .mt-2 { margin-top: 8px; }
-    .mt-3 { margin-top: 16px; }
-    .mb-2 { margin-bottom: 8px; }
-    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .mono {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+    @media (max-width: 600px) {
+      .brand h1 {
+        font-size: 1.4rem;
+      }
+      .kpi-value {
+        font-size: 1.4rem;
+      }
+    }
   </style>
 </head>
 <body>
-
-<!-- ================= MAIN WORKSTATION ================= -->
 <div class="workstation">
-  <!-- LEFT COLUMN -->
-  <div>
-    <!-- HEADER -->
-    <div class="card" style="margin-bottom: 24px;">
-      <div class="flex-between">
-        <div>
-          <h1>Stadium Giants</h1>
-          <p class="text-muted" style="font-size: 0.9rem;">5 Colossal Arenas Compared · Interactive 3D Scale Workstation</p>
-        </div>
-        <a href="./index.html" class="portal-link">
-          <span>↗</span> Portal
-        </a>
-      </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">
+      <h1>SCALEVERSE 3D</h1>
+      <a href="./index.html">← Portal</a>
     </div>
-
-    <!-- CONTROL PANEL -->
-    <div class="card" style="margin-bottom: 24px;">
-      <h2>Capacity Scale Control</h2>
-      <div class="control-group">
-        <div class="control-label">
-          <span>View scale</span>
-          <span class="mono" id="scaleValue">1.00×</span>
-        </div>
-        <input type="range" id="scaleSlider" min="0.3" max="2.0" step="0.01" value="1.0">
-      </div>
-      <div class="preset-row">
-        <button class="preset-btn active" data-preset="default">Default</button>
-        <button class="preset-btn" data-preset="compact">Compact</button>
-        <button class="preset-btn" data-preset="zoomed">Zoomed</button>
-        <button class="preset-btn" data-preset="compare">Compare Mode</button>
-      </div>
-
-      <h2 style="margin-top: 28px;">KPI Readout</h2>
-      <div class="kpi-grid">
-        <div class="kpi-item">
-          <div class="kpi-label">Largest Venue</div>
-          <div class="kpi-value mono" id="kpiLargest">257k</div>
-          <div class="kpi-sub">Indianapolis Motor Speedway</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-label">Smallest Venue</div>
-          <div class="kpi-value mono" id="kpiSmallest">48k</div>
-          <div class="kpi-sub">Fenway Park</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-label">Range</div>
-          <div class="kpi-value mono" id="kpiRange">209k</div>
-          <div class="kpi-sub">Seat capacity spread</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-label">Average Capacity</div>
-          <div class="kpi-value mono" id="kpiAvg">128.6k</div>
-          <div class="kpi-sub">Across 5 venues</div>
-        </div>
-      </div>
+    <div class="youtube-embed">
+      <iframe src="https://www.youtube.com/embed/3RsDePCUK7E" title="Stadium Giants: 5 Colossal Arenas Compared" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
+  </div>
 
-    <!-- ANALYTICAL TABLE -->
-    <div class="card">
-      <h2>Detailed Analytical Breakdown</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Venue</th>
-              <th>Capacity</th>
-              <th>Relative Scale</th>
-              <th>vs. Average</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <!-- filled by JS -->
-          </tbody>
-        </table>
+  <!-- KPI READOUT -->
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-item">
+      <div class="kpi-label">Total Capacity (adjusted)</div>
+      <div class="kpi-value" id="kpiTotalCapacity">—</div>
+      <div class="kpi-sub">seats / fans</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">Largest Arena</div>
+      <div class="kpi-value" id="kpiLargestName" style="font-size: 1.2rem;">—</div>
+      <div class="kpi-sub" id="kpiLargestCap">—</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">Smallest Arena</div>
+      <div class="kpi-value" id="kpiSmallestName" style="font-size: 1.2rem;">—</div>
+      <div class="kpi-sub" id="kpiSmallestCap">—</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">Capacity Range</div>
+      <div class="kpi-value" id="kpiRange">—</div>
+      <div class="kpi-sub">max − min</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS & CANVAS -->
+  <div class="card">
+    <div class="card-title">Interactive Capacity Scaling</div>
+    <div class="sliders-grid" id="slidersGrid">
+      <!-- JS will populate sliders -->
+    </div>
+    <div class="preset-buttons" id="presetButtons">
+      <button class="btn" data-preset="original">Original Capacities</button>
+      <button class="btn" data-preset="double">Double Capacity</button>
+      <button class="btn" data-preset="half">Half Capacity</button>
+      <button class="btn" data-preset="random">Random Mix</button>
+      <button class="btn btn-primary" id="resetBtn">Reset Original</button>
+    </div>
+    <div class="canvas-container">
+      <canvas id="stadiumCanvas" width="1200" height="400"></canvas>
+    </div>
+    <div class="btn-group">
+      <button class="btn" id="exportCsvBtn">Export CSV Telemetry</button>
+      <button class="btn" id="copyLinkBtn">Copy Scenario Link</button>
+    </div>
+  </div>
+
+  <!-- ANALYTICAL BREAKDOWN TABLE -->
+  <div class="card">
+    <div class="card-title">Analytical Breakdown · Capacity &amp; Scale</div>
+    <div class="table-wrapper">
+      <table id="breakdownTable">
+        <thead>
+          <tr>
+            <th>Stadium</th>
+            <th>Metric</th>
+            <th>Meters (scale)</th>
+            <th>Seats</th>
+            <th>× Baseline</th>
+            <th>Δ vs Largest</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- dynamic -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <div class="card-title">Frequently Asked Questions</div>
+    <div id="faqList">
+      <div class="faq-item">
+        <div class="faq-q">What does the "meters" field represent?</div>
+        <div class="faq-a">The meters value is a scale reference provided in the dataset. It is used here as a visual multiplier for the canvas representation, not as an actual physical dimension.</div>
       </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" id="exportCSV">Export CSV Telemetry</button>
-        <button class="btn" id="copyLink">Copy Scenario Link</button>
+      <div class="faq-item">
+        <div class="faq-q">How are the capacities adjusted?</div>
+        <div class="faq-a">Each slider multiplies the original seat count by a factor between 0.2× and 2.5×. The KPI cards and canvas update in real time.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What does "Export CSV Telemetry" produce?</div>
+        <div class="faq-a">A downloadable CSV file containing the current adjusted capacities, original capacities, and scale multiplier for each stadium.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is the scenario link shareable?</div>
+        <div class="faq-a">Yes. The "Copy Scenario Link" button copies a URL containing query parameters that encode all current slider positions, so you can share your exact scenario.</div>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT COLUMN -->
-  <div>
-    <!-- CANVAS -->
-    <div class="canvas-container">
-      <canvas id="glCanvas" width="1200" height="750"></canvas>
-      <div class="canvas-badge mono" id="canvasBadge">Scale: 1.00× · 5 venues</div>
-    </div>
-
-    <!-- YOUTUBE EMBED -->
-    <div class="card" style="margin-bottom: 24px;">
-      <h2>Documentary Stream</h2>
-      <div class="video-wrap">
-        <iframe src="https://www.youtube.com/embed/MXYyct0WRJQ" title="Stadium Giants: 5 Colossal Arenas Compared" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="card">
-      <h2>Frequently Asked Questions</h2>
-      <div class="faq-item">
-        <div class="faq-q">How is the 3D scale calculated?</div>
-        <div class="faq-a">Each venue's block height is proportional to its seat capacity relative to the largest venue (257,000). The scale slider further exaggerates or compresses the visual representation for comparison.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Can I export the current scenario?</div>
-        <div class="faq-a">Yes, use the "Export CSV Telemetry" button to download a CSV file containing venue names, capacities, and computed relative metrics based on the current view scale.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">What does "Compare Mode" do?</div>
-        <div class="faq-a">It resets the view scale to 1.0× and ensures all blocks are visible at their exact proportional heights, ideal for direct visual magnitude comparison.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Is this data real?</div>
-        <div class="faq-a">Yes — capacities reflect publicly listed seating capacities for these iconic venues, as referenced in the video.</div>
-      </div>
-    </div>
+  <div class="footer-note">
+    SCALEVERSE 3D · Stadium Giants comparison workstation · Data source: dataset provided.
   </div>
 </div>
 
-<!-- ================= JSON-LD SCHEMA ================= -->
+<!-- JSON-LD SCHEMA -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Scaleverse 3D Stadium Giants Workstation",
-  "description": "Interactive 3D comparison of 5 colossal arenas including Fenway Park, Camp Nou, Michigan Stadium, Narendra Modi Stadium, and Indianapolis Motor Speedway.",
-  "applicationCategory": "DataVisualization",
+  "name": "Stadium Giants: 5 Colossal Arenas Compared",
+  "description": "Interactive workstation comparing capacity and scale of five colossal stadiums: Plaza de Toros México, Camp Nou, Michigan Stadium, Rungrado 1st of May Stadium, and Indianapolis Motor Speedway.",
+  "applicationCategory": "Simulation",
   "operatingSystem": "Web",
   "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/stadium-giants-5-colossal-arenas-compared.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SCALEVERSE 3D"
+  },
   "offers": {
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "USD"
-  },
-  "author": {
-    "@type": "Organization",
-    "name": "Scaleverse 3D"
   }
 }
 </script>
 
-<!-- ================= JAVASCRIPT ================= -->
 <script>
   (function() {
-    // ----- DATA PAYLOAD -----
-    const DATA = {
-      title: "Stadium Giants: 5 Colossal Arenas Compared",
-      items: [
-        { name: "Fenway Park", meters: 48.0, metric: "48,000 seats" },
-        { name: "Camp Nou", meters: 99.0, metric: "99,000 seats" },
-        { name: "Michigan Stadium", meters: 107.0, metric: "107,000 seats" },
-        { name: "Narendra Modi Stadium", meters: 132.0, metric: "132,000 seats" },
-        { name: "Indianapolis Motor Speedway", meters: 257.0, metric: "257,000 seats" }
-      ]
-    };
+    // ---- DATA PAYLOAD ----
+    const STADIUMS = [
+      { name: "Plaza de Toros México", meters: 40, metric: "41,000 seats", originalCapacity: 41000 },
+      { name: "Camp Nou", meters: 250, metric: "99,354 seats", originalCapacity: 99354 },
+      { name: "Michigan Stadium", meters: 300, metric: "107,601 seats", originalCapacity: 107601 },
+      { name: "Rungrado 1st of May Stadium", meters: 450, metric: "114,000 seats", originalCapacity: 114000 },
+      { name: "Indianapolis Motor Speedway", meters: 4000, metric: "257,325 capacity", originalCapacity: 257325 }
+    ];
 
-    // Normalize capacity for 3D height: use item.meters as thousands of seats
-    const maxCapacity = Math.max(...DATA.items.map(d => d.meters)); // 257
-    const minCapacity = Math.min(...DATA.items.map(d => d.meters)); // 48
-    const avgCapacity = DATA.items.reduce((s, d) => s + d.meters, 0) / DATA.items.length;
-    const range = maxCapacity - minCapacity;
+    // State: multipliers for each stadium (initial 1.0)
+    let multipliers = STADIUMS.map(() => 1.0);
 
-    // ----- DOM Elements -----
-    const canvas = document.getElementById('glCanvas');
-    const ctx = canvas.getContext('2d');
-    const scaleSlider = document.getElementById('scaleSlider');
-    const scaleValue = document.getElementById('scaleValue');
-    const canvasBadge = document.getElementById('canvasBadge');
-    const kpiLargest = document.getElementById('kpiLargest');
-    const kpiSmallest = document.getElementById('kpiSmallest');
+    // DOM elements
+    const slidersGrid = document.getElementById('slidersGrid');
+    const kpiTotalCapacity = document.getElementById('kpiTotalCapacity');
+    const kpiLargestName = document.getElementById('kpiLargestName');
+    const kpiLargestCap = document.getElementById('kpiLargestCap');
+    const kpiSmallestName = document.getElementById('kpiSmallestName');
+    const kpiSmallestCap = document.getElementById('kpiSmallestCap');
     const kpiRange = document.getElementById('kpiRange');
-    const kpiAvg = document.getElementById('kpiAvg');
     const tableBody = document.getElementById('tableBody');
-    const exportBtn = document.getElementById('exportCSV');
-    const copyBtn = document.getElementById('copyLink');
-    const presetBtns = document.querySelectorAll('.preset-btn');
+    const canvas = document.getElementById('stadiumCanvas');
+    const ctx = canvas.getContext('2d');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const presetButtons = document.querySelectorAll('[data-preset]');
 
-    // State
-    let viewScale = 1.0;
-    let cameraAngle = 0.3; // radians for slight perspective
-    let isDragging = false;
-    let lastMouseX = 0;
-
-    // ----- KPI Update -----
-    function updateKPIs() {
-      kpiLargest.textContent = (maxCapacity * 1000).toLocaleString().replace(/,/g, '') + 'k';
-      kpiSmallest.textContent = (minCapacity * 1000).toLocaleString().replace(/,/g, '') + 'k';
-      kpiRange.textContent = (range * 1000).toLocaleString().replace(/,/g, '') + 'k';
-      kpiAvg.textContent = (avgCapacity * 1000).toLocaleString().replace(/,/g, '') + 'k';
-      // Fix formatting: actually we want "257k" not "257,000k"
-      kpiLargest.textContent = maxCapacity + 'k';
-      kpiSmallest.textContent = minCapacity + 'k';
-      kpiRange.textContent = range + 'k';
-      kpiAvg.textContent = (Math.round(avgCapacity * 10) / 10) + 'k';
-    }
-    updateKPIs();
-
-    // ----- Table Population -----
-    function populateTable() {
-      let html = '';
-      DATA.items.forEach(item => {
-        const relative = (item.meters / maxCapacity * 100).toFixed(1);
-        const vsAvg = ((item.meters - avgCapacity) / avgCapacity * 100).toFixed(1);
-        const sign = vsAvg > 0 ? '+' : '';
-        html += `
-          <tr>
-            <td style="font-weight:500; color:#f1f5f9;">${item.name}</td>
-            <td class="mono">${(item.meters * 1000).toLocaleString()}</td>
-            <td class="mono">${relative}%</td>
-            <td class="mono" style="color:${vsAvg > 0 ? '#38bdf8' : '#f87171'};">${sign}${vsAvg}%</td>
-          </tr>
-        `;
+    // Initialize sliders
+    function buildSliders() {
+      slidersGrid.innerHTML = '';
+      STADIUMS.forEach((stadium, idx) => {
+        const div = document.createElement('div');
+        div.className = 'slider-item';
+        const label = document.createElement('div');
+        label.className = 'slider-label';
+        label.innerHTML = `<span>${stadium.name}</span><span class="slider-value" id="sliderValue${idx}">1.00×</span>`;
+        const input = document.createElement('input');
+        input.type = 'range';
+        input.min = 0.2;
+        input.max = 2.5;
+        input.step = 0.01;
+        input.value = multipliers[idx];
+        input.dataset.index = idx;
+        input.addEventListener('input', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          multipliers[index] = parseFloat(e.target.value);
+          document.getElementById(`sliderValue${index}`).textContent = multipliers[index].toFixed(2) + '×';
+          updateAll();
+        });
+        div.appendChild(label);
+        div.appendChild(input);
+        slidersGrid.appendChild(div);
       });
-      tableBody.innerHTML = html;
     }
-    populateTable();
 
-    // ----- Canvas Drawing -----
-    function drawScene() {
+    // Update all visualizations & readouts
+    function updateAll() {
+      // Update slider value labels (in case of preset)
+      STADIUMS.forEach((_, idx) => {
+        const el = document.getElementById(`sliderValue${idx}`);
+        if (el) el.textContent = multipliers[idx].toFixed(2) + '×';
+        const input = document.querySelector(`input[data-index="${idx}"]`);
+        if (input) input.value = multipliers[idx];
+      });
+
+      // Calculate adjusted capacities
+      const adjusted = STADIUMS.map((s, i) => Math.round(s.originalCapacity * multipliers[i]));
+
+      // KPI: total
+      const total = adjusted.reduce((a, b) => a + b, 0);
+      kpiTotalCapacity.textContent = total.toLocaleString();
+
+      // largest / smallest
+      let maxIdx = 0, minIdx = 0;
+      adjusted.forEach((cap, i) => {
+        if (cap > adjusted[maxIdx]) maxIdx = i;
+        if (cap < adjusted[minIdx]) minIdx = i;
+      });
+      kpiLargestName.textContent = STADIUMS[maxIdx].name;
+      kpiLargestCap.textContent = adjusted[maxIdx].toLocaleString() + ' seats';
+      kpiSmallestName.textContent = STADIUMS[minIdx].name;
+      kpiSmallestCap.textContent = adjusted[minIdx].toLocaleString() + ' seats';
+      const range = adjusted[maxIdx] - adjusted[minIdx];
+      kpiRange.textContent = range.toLocaleString();
+
+      // Update table
+      renderTable(adjusted);
+
+      // Draw canvas
+      drawCanvas(adjusted);
+    }
+
+    function renderTable(adjustedCaps) {
+      tableBody.innerHTML = '';
+      const maxCap = Math.max(...adjustedCaps);
+      STADIUMS.forEach((s, i) => {
+        const cap = adjustedCaps[i];
+        const baseline = s.originalCapacity;
+        const ratio = (cap / baseline).toFixed(2) + '×';
+        const diffVsLargest = maxCap - cap;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${s.name}</td>
+          <td>${s.metric}</td>
+          <td>${s.meters.toLocaleString()} m</td>
+          <td class="accent">${cap.toLocaleString()}</td>
+          <td>${ratio}</td>
+          <td>${diffVsLargest.toLocaleString()} <span class="badge">below max</span></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function drawCanvas(adjustedCaps) {
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      // Background gradient
-      const bgGrad = ctx.createRadialGradient(w/2, h/2, 100, w/2, h/2, w*0.8);
-      bgGrad.addColorStop(0, '#0b0f17');
-      bgGrad.addColorStop(1, '#05070b');
-      ctx.fillStyle = bgGrad;
+      // Background
+      ctx.fillStyle = '#0b0f17';
       ctx.fillRect(0, 0, w, h);
 
-      // Grid lines for reference
+      // Grid lines (subtle)
       ctx.strokeStyle = '#1e293b';
       ctx.lineWidth = 0.5;
       for (let i = 0; i < 10; i++) {
-        const y = (i / 10) * h;
+        const y = (h / 10) * i;
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(w, y);
         ctx.stroke();
       }
-      for (let i = 0; i < 12; i++) {
-        const x = (i / 12) * w;
+
+      // Determine max capacity for scaling
+      const maxCap = Math.max(...adjustedCaps, 1);
+      const barWidth = (w - 200) / STADIUMS.length;
+      const leftMargin = 120;
+      const baseY = h - 60;
+      const maxBarHeight = h - 120;
+
+      // Draw bars
+      STADIUMS.forEach((s, i) => {
+        const cap = adjustedCaps[i];
+        const barHeight = (cap / maxCap) * maxBarHeight;
+        const x = leftMargin + i * barWidth + (barWidth * 0.1);
+        const y = baseY - barHeight;
+        const barW = barWidth * 0.8;
+
+        // Gradient fill
+        const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
+        gradient.addColorStop(0, '#38bdf8');
+        gradient.addColorStop(1, '#1e6b9c');
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 12;
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-
-      // Map items to blocks
-      const n = DATA.items.length;
-      const totalWidth = w * 0.82;
-      const startX = w * 0.09;
-      const spacing = totalWidth / n;
-      const blockWidth = Math.min(spacing * 0.6, 120);
-      const baseY = h * 0.88;
-      const maxBlockHeight = h * 0.65;
-
-      // Sort a copy for consistent ordering? Keep original order for labels.
-      DATA.items.forEach((item, index) => {
-        const xCenter = startX + spacing * (index + 0.5);
-        const x = xCenter - blockWidth / 2;
-
-        // Height proportional to capacity/maxCapacity, then scaled by viewScale
-        const ratio = item.meters / maxCapacity;
-        let blockHeight = maxBlockHeight * ratio * viewScale;
-        // clamp to avoid crazy overflow
-        blockHeight = Math.min(blockHeight, h * 0.85);
-        const yTop = baseY - blockHeight;
-
-        // 3D-ish effect: draw top face and side
-        const depth = 14 * (viewScale * 0.5 + 0.5);
-        const skew = 8 * Math.sin(cameraAngle);
-
-        // Front face gradient
-        const grad = ctx.createLinearGradient(x, yTop, x, baseY);
-        grad.addColorStop(0, '#38bdf8');
-        grad.addColorStop(1, '#1e3a5f');
-        ctx.fillStyle = grad;
-        ctx.shadowColor = '#38bdf855';
-        ctx.shadowBlur = 20;
-        ctx.shadowOffsetY = 4;
-        ctx.beginPath();
-        if (ctx.roundRect) {
-          ctx.roundRect(x, yTop, blockWidth, blockHeight, [6, 6, 0, 0]);
-        } else {
-          ctx.rect(x, yTop, blockWidth, blockHeight);
-        }
+        ctx.roundRect(x, y, barW, barHeight, 8);
         ctx.fill();
-        ctx.shadowColor = 'transparent';
         ctx.shadowBlur = 0;
-        ctx.shadowOffsetY = 0;
 
-        // Top face (lighter)
-        ctx.fillStyle = '#7dd3fc';
-        ctx.beginPath();
-        ctx.moveTo(x, yTop);
-        ctx.lineTo(x + skew, yTop - depth);
-        ctx.lineTo(x + blockWidth + skew, yTop - depth);
-        ctx.lineTo(x + blockWidth, yTop);
-        ctx.closePath();
-        ctx.fill();
-
-        // Right face (darker)
-        ctx.fillStyle = '#0c4a6e';
-        ctx.beginPath();
-        ctx.moveTo(x + blockWidth, yTop);
-        ctx.lineTo(x + blockWidth + skew, yTop - depth);
-        ctx.lineTo(x + blockWidth + skew, baseY - depth);
-        ctx.lineTo(x + blockWidth, baseY);
-        ctx.closePath();
-        ctx.fill();
-
-        // Label
+        // Label: capacity value
         ctx.fillStyle = '#e2e8f0';
         ctx.font = 'bold 13px "SF Mono", "Fira Code", monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(item.name, xCenter, baseY + 24);
+        ctx.fillText(cap.toLocaleString(), x + barW / 2, y - 8);
 
-        // Capacity label
-        ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 12px monospace';
-        ctx.fillText((item.meters * 1000).toLocaleString(), xCenter, baseY + 44);
-
-        // Height indicator
-        ctx.fillStyle = '#64748b';
-        ctx.font = '10px monospace';
-        ctx.fillText(ratio.toFixed(2) + '×', xCenter, yTop - 12);
+        // Stadium name (abbreviated)
+        ctx.save();
+        ctx.translate(x + barW / 2, baseY + 15);
+        ctx.rotate(-0.3);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px "Inter", sans-serif';
+        ctx.textAlign = 'right';
+        // Short name
+        let shortName = s.name.replace(' Stadium', '').replace(' 1st of May', '').replace(' Motor Speedway', ' Speedway');
+        if (shortName.length > 18) shortName = shortName.substring(0, 16) + '…';
+        ctx.fillText(shortName, 0, 0);
+        ctx.restore();
       });
 
-      // Base line
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(startX - 20, baseY);
-      ctx.lineTo(startX + totalWidth + 20, baseY);
-      ctx.stroke();
-
-      // Draw scale indicator
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px monospace';
+      // Baseline line (original capacities scaled to same max? we'll just add a reference)
+      // Instead, add title
+      ctx.fillStyle = '#64748b';
+      ctx.font = '12px "Inter", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('Scale: ' + viewScale.toFixed(2) + '×', 20, 30);
-      ctx.fillText('Max height: ' + maxCapacity + 'k seats', 20, 48);
-
-      // Update badge
-      canvasBadge.textContent = `Scale: ${viewScale.toFixed(2)}× · ${n} venues`;
+      ctx.fillText('Adjusted Capacity (seats)', 20, 30);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 12px "SF Mono", monospace';
+      ctx.fillText('Max: ' + maxCap.toLocaleString(), 20, 50);
     }
 
-    // Animation loop
-    let animFrame;
-    function animate() {
-      drawScene();
-      animFrame = requestAnimationFrame(animate);
+    // Helper to draw rounded rect
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      this.moveTo(x + r, y);
+      this.lineTo(x + w - r, y);
+      this.quadraticCurveTo(x + w, y, x + w, y + r);
+      this.lineTo(x + w, y + h - r);
+      this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      this.lineTo(x + r, y + h);
+      this.quadraticCurveTo(x, y + h, x, y + h - r);
+      this.lineTo(x, y + r);
+      this.quadraticCurveTo(x, y, x + r, y);
+      return this;
+    };
+
+    // Preset actions
+    function applyPreset(preset) {
+      if (preset === 'original') {
+        multipliers = STADIUMS.map(() => 1.0);
+      } else if (preset === 'double') {
+        multipliers = STADIUMS.map(() => 2.0);
+      } else if (preset === 'half') {
+        multipliers = STADIUMS.map(() => 0.5);
+      } else if (preset === 'random') {
+        multipliers = STADIUMS.map(() => 0.4 + Math.random() * 1.8); // between 0.4 and 2.2
+      }
+      updateAll();
     }
 
-    // ----- Scale Slider -----
-    scaleSlider.addEventListener('input', (e) => {
-      viewScale = parseFloat(e.target.value);
-      scaleValue.textContent = viewScale.toFixed(2) + '×';
-      // Remove active from presets if custom
-      presetBtns.forEach(b => b.classList.remove('active'));
+    // Reset button
+    resetBtn.addEventListener('click', () => {
+      multipliers = STADIUMS.map(() => 1.0);
+      updateAll();
     });
 
-    // ----- Preset Buttons -----
-    presetBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        presetBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const preset = btn.dataset.preset;
-        if (preset === 'default') viewScale = 1.0;
-        else if (preset === 'compact') viewScale = 0.6;
-        else if (preset === 'zoomed') viewScale = 1.6;
-        else if (preset === 'compare') viewScale = 1.0;
-        scaleSlider.value = viewScale;
-        scaleValue.textContent = viewScale.toFixed(2) + '×';
+    // Preset buttons
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const preset = e.currentTarget.dataset.preset;
+        applyPreset(preset);
       });
     });
 
-    // ----- Mouse drag for camera angle -----
-    canvas.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      lastMouseX = e.clientX;
-    });
-    window.addEventListener('mouseup', () => isDragging = false);
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      const dx = e.clientX - lastMouseX;
-      cameraAngle += dx * 0.005;
-      lastMouseX = e.clientX;
-    });
-
-    // ----- CSV Export -----
-    exportBtn.addEventListener('click', () => {
-      let csv = 'Venue,Capacity (seats),Relative Scale (%),Vs Average (%)\n';
-      DATA.items.forEach(item => {
-        const relative = (item.meters / maxCapacity * 100).toFixed(1);
-        const vsAvg = ((item.meters - avgCapacity) / avgCapacity * 100).toFixed(1);
-        csv += `${item.name},${item.meters * 1000},${relative},${vsAvg}\n`;
+    // Export CSV
+    exportCsvBtn.addEventListener('click', () => {
+      const adjusted = STADIUMS.map((s, i) => Math.round(s.originalCapacity * multipliers[i]));
+      let csv = 'Stadium,Original Capacity,Metric,Meters,Scale Multiplier,Adjusted Capacity\n';
+      STADIUMS.forEach((s, i) => {
+        csv += `"${s.name}",${s.originalCapacity},"${s.metric}",${s.meters},${multipliers[i].toFixed(2)},${adjusted[i]}\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'stadium_giants_telemetry.csv';
-      a.click();
+      link.href = url;
+      link.setAttribute('download', 'stadium_capacity_telemetry.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       URL.revokeObjectURL(url);
     });
 
-    // ----- Copy Scenario Link -----
-    copyBtn.addEventListener('click', () => {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const scenarioUrl = `${baseUrl}?scale=${viewScale.toFixed(2)}&angle=${cameraAngle.toFixed(3)}`;
-      navigator.clipboard.writeText(scenarioUrl).then(() => {
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => { copyBtn.textContent = originalText; }, 1500);
+    // Copy Scenario Link
+    copyLinkBtn.addEventListener('click', () => {
+      const params = multipliers.map(m => m.toFixed(2)).join(',');
+      const url = new URL(window.location.href);
+      url.searchParams.set('scenario', params);
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        const originalText = copyLinkBtn.textContent;
+        copyLinkBtn.textContent = 'Copied!';
+        setTimeout(() => { copyLinkBtn.textContent = originalText; }, 1500);
       }).catch(() => {
-        // Fallback
-        const textarea = document.createElement('textarea');
-        textarea.value = scenarioUrl;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => { copyBtn.textContent = 'Copy Scenario Link'; }, 1500);
+        prompt('Copy this scenario link:', url.toString());
       });
     });
 
-    // ----- Load from URL params -----
-    function loadFromParams() {
-      const params = new URLSearchParams(window.location.search);
-      const scaleParam = params.get('scale');
-      if (scaleParam !== null && !isNaN(parseFloat(scaleParam))) {
-        viewScale = Math.min(2.0, Math.max(0.3, parseFloat(scaleParam)));
-        scaleSlider.value = viewScale;
-        scaleValue.textContent = viewScale.toFixed(2) + '×';
-        presetBtns.forEach(b => b.classList.remove('active'));
-        // find matching preset if exists
-        if (viewScale === 1.0) document.querySelector('[data-preset="default"]')?.classList.add('active');
-        else if (viewScale === 0.6) document.querySelector('[data-preset="compact"]')?.classList.add('active');
-        else if (viewScale === 1.6) document.querySelector('[data-preset="zoomed"]')?.classList.add('active');
-      }
-      const angleParam = params.get('angle');
-      if (angleParam !== null && !isNaN(parseFloat(angleParam))) {
-        cameraAngle = parseFloat(angleParam);
+    // Read scenario from URL on load
+    function loadScenarioFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const scenario = urlParams.get('scenario');
+      if (scenario) {
+        const parts = scenario.split(',');
+        if (parts.length === STADIUMS.length) {
+          multipliers = parts.map(p => {
+            const v = parseFloat(p);
+            return isNaN(v) ? 1.0 : Math.min(2.5, Math.max(0.2, v));
+          });
+        }
       }
     }
-    loadFromParams();
 
-    // Set default active preset
-    document.querySelector('[data-preset="default"]')?.classList.add('active');
+    // Initialize
+    buildSliders();
+    loadScenarioFromUrl();
+    updateAll();
 
-    // Start animation
-    animate();
-
-    // Clean up on page hide
-    window.addEventListener('beforeunload', () => {
-      if (animFrame) cancelAnimationFrame(animFrame);
+    // Window resize: redraw canvas for crispness (optional)
+    window.addEventListener('resize', () => {
+      const adjusted = STADIUMS.map((s, i) => Math.round(s.originalCapacity * multipliers[i]));
+      drawCanvas(adjusted);
     });
+
+    // Fix for canvas rendering after font load
+    setTimeout(() => {
+      const adjusted = STADIUMS.map((s, i) => Math.round(s.originalCapacity * multipliers[i]));
+      drawCanvas(adjusted);
+    }, 100);
 
   })();
 </script>
