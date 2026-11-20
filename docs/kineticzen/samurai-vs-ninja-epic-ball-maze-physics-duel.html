@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Samurai vs Ninja: Epic Ball Maze Physics Duel | KINETICZEN LABS</title>
+<meta name="description" content="Interactive rigid-body ball maze physics workstation: SAMURAI vs NINJA duel simulation. Tune gravity, restitution, friction, maze geometry and duel dynamics, then export telemetry." />
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/samurai-vs-ninja-epic-ball-maze-physics-duel.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305070b'/%3E%3Ccircle cx='11' cy='16' r='6' fill='%23f43f5e'/%3E%3Ccircle cx='23' cy='16' r='6' fill='%2338bdf8' opacity='0.8'/%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#05070b; --card:#0b0f17; --card2:#0d121c; --line:#1e293b; --line2:#27354d;
+    --txt:#e2e8f0; --dim:#8ea0b8; --dim2:#5f728c;
+    --accent:#f43f5e; --accent2:#fb7185; --ninja:#38bdf8; --ninja2:#7dd3fc;
+    --good:#22c55e; --warn:#f59e0b;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(244,63,94,.10), transparent 60%),
+      radial-gradient(1000px 500px at 90% 0%, rgba(56,189,248,.08), transparent 60%),
+      var(--bg);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5; min-height:100vh;
+  }
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .wrap{max-width:1440px;margin:0 auto;padding:0 18px}
+  header.top{
+    position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+    background:rgba(5,7,11,.82);border-bottom:1px solid var(--line);
+  }
+  .topbar{display:flex;align-items:center;gap:16px;padding:12px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.14em;font-size:13px}
+  .brand .mark{width:26px;height:26px;border:1px solid var(--line2);border-radius:7px;display:grid;place-items:center;background:linear-gradient(140deg,rgba(244,63,94,.25),rgba(56,189,248,.18))}
+  .brand .mark i{display:block;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .brand span.b2{color:var(--accent2)}
+  .navlinks{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;align-items:center}
+  .navlinks a{font-size:12px;letter-spacing:.06em;color:var(--dim);border:1px solid transparent;padding:6px 10px;border-radius:8px}
+  .navlinks a:hover{color:var(--txt);border-color:var(--line);background:#0d121c;text-decoration:none}
+  .pill{font-size:10.5px;letter-spacing:.12em;padding:4px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--dim);font-family:var(--mono)}
+  .pill.live{color:var(--good);border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.07)}
+  .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:6px;box-shadow:0 0 8px var(--good)}
+
+  .hero{padding:26px 0 6px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--accent2)}
+  h1{font-size:clamp(22px,3.4vw,38px);line-height:1.12;margin:8px 0 8px;letter-spacing:-.02em}
+  h1 .a{color:var(--accent2)}
+  h1 .b{color:var(--ninja2)}
+  .sub{color:var(--dim);max-width:900px;font-size:14px}
+  .badgerow{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+
+  .layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start;padding:16px 0 40px}
+  @media(max-width:1080px){.layout{grid-template-columns:1fr}}
+
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px}
+  .card .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line)}
+  .card .hd h2,.card .hd h3{margin:0;font-size:12px;letter-spacing:.16em;color:var(--dim);font-weight:700;text-transform:uppercase}
+  .card .bd{padding:14px}
+
+  .ctrl{margin-bottom:13px}
+  .ctrl label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;color:var(--dim);margin-bottom:5px}
+  .ctrl label b{color:var(--txt);font-weight:600;font-size:12px}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--accent) 0%,#f59e0b 50%,var(--ninja) 100%);opacity:.85}
+  input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--accent),#f59e0b,var(--ninja))}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;margin-top:-6px;border-radius:50%;background:#f8fafc;border:2px solid var(--accent);box-shadow:0 0 0 3px rgba(244,63,94,.16)}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#f8fafc;border:2px solid var(--accent)}
+
+  .presets{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .preset{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;padding:9px 8px;border-radius:9px;
+    border:1px solid var(--line2);background:#0a0f18;color:var(--dim);cursor:pointer;text-align:left;
+    transition:all .15s ease;line-height:1.25;
+  }
+  .preset:hover{border-color:var(--accent);color:var(--txt);background:#111827}
+  .preset.active{border-color:var(--accent);color:#fff;background:linear-gradient(150deg,rgba(244,63,94,.22),rgba(56,189,248,.10))}
+  .preset small{display:block;color:var(--dim2);font-size:9px;letter-spacing:.04em;margin-top:2px}
+
+  .btnrow{display:grid;grid-template-columns:1fr;gap:8px;margin-top:4px}
+  button.act{
+    font-family:var(--mono);font-size:11px;letter-spacing:.10em;padding:11px 12px;border-radius:9px;cursor:pointer;
+    border:1px solid var(--line2);background:#0e1420;color:var(--txt);transition:all .15s ease;text-align:center;
+  }
+  button.act:hover{border-color:var(--accent);background:#131a27}
+  button.act.primary{background:linear-gradient(140deg,rgba(244,63,94,.9),rgba(244,63,94,.65));border-color:var(--accent);color:#fff;font-weight:700}
+  button.act.primary:hover{filter:brightness(1.1)}
+  button.act.ninja{background:linear-gradient(140deg,rgba(56,189,248,.85),rgba(56,189,248,.55));border-color:var(--ninja);color:#04121c;font-weight:700}
+  button.act:disabled{opacity:.45;cursor:not-allowed}
+
+  .stagewrap{display:flex;flex-direction:column;gap:14px}
+  .canvas-host{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:radial-gradient(700px 400px at 50% 0%,rgba(56,189,248,.07),transparent 70%),#060a11}
+  canvas{display:block;width:100%;height:auto;touch-action:none}
+  .overlay-tl,.overlay-tr{position:absolute;top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim);pointer-events:none;background:rgba(5,7,11,.6);padding:5px 9px;border-radius:7px;border:1px solid var(--line)}
+  .overlay-tl{left:10px}
+  .overlay-tr{right:10px}
+  .scoreline{position:absolute;bottom:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:10px;pointer-events:none;font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+  .scoreline .sa,.scoreline .sn{background:rgba(5,7,11,.72);border:1px solid var(--line2);border-radius:8px;padding:5px 10px;backdrop-filter:blur(6px)}
+  .scoreline .sa{color:var(--accent2);border-color:rgba(244,63,94,.4)}
+  .scoreline .sn{color:var(--ninja2);border-color:rgba(56,189,248,.4)}
+  .scoreline b{font-size:14px;color:#fff}
+
+  .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  @media(max-width:1080px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .kpi{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+  .kpi .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:var(--dim2);text-transform:uppercase}
+  .kpi .v{font-family:var(--mono);font-size:19px;font-weight:600;margin-top:3px;letter-spacing:-.01em}
+  .kpi .v small{font-size:10px;color:var(--dim);letter-spacing:.06em;font-weight:400}
+  .kpi.hi .v{color:var(--accent2)}
+  .kpi.nj .v{color:var(--ninja2)}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:900px){.two{grid-template-columns:1fr}}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{font-family:var(--mono);font-size:10px;letter-spacing:.13em;color:var(--dim2);text-transform:uppercase;font-weight:600;background:#080c13}
+  td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#0c1119}
+  .tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:6px;letter-spacing:.07em;border:1px solid}
+  .tag.s{color:var(--accent2);border-color:rgba(244,63,94,.4);background:rgba(244,63,94,.08)}
+  .tag.n{color:var(--ninja2);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.08)}
+  .tag.b{color:#c4b5fd;border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+  .win{color:var(--good)}
+  .lose{color:var(--accent2)}
+
+  .faq details{border:1px solid var(--line);border-radius:10px;background:#080c13;margin-bottom:8px;overflow:hidden}
+  .faq summary{cursor:pointer;padding:12px 14px;font-size:13px;color:var(--txt);font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";color:var(--accent2);font-family:var(--mono)}
+  .faq details[open] summary::after{content:"\2212"}
+  .faq .ans{padding:0 14px 13px;color:var(--dim);font-size:12.5px}
+
+  .embedbox{position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#000}
+  .embedbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+  .log{max-height:190px;overflow:auto;font-family:var(--mono);font-size:10.5px;line-height:1.6;color:var(--dim)}
+  .log div{border-bottom:1px dashed #16202f;padding:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .log .s{color:var(--accent2)}
+  .log .n{color:var(--ninja2)}
+  .log .g{color:var(--good)}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim2);font-size:12px}
+  footer .fl{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+    background:#0e1420;border:1px solid var(--accent);color:#fff;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;
+    padding:10px 16px;border-radius:9px;z-index:999;transition:all .22s ease;box-shadow:0 10px 34px rgba(0,0,0,.6)
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .hint{font-family:var(--mono);font-size:10px;color:var(--dim2);letter-spacing:.05em;margin-top:8px}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap topbar">
+    <div class="brand">
+      <span class="mark"><i></i></span>
+      KINETICZEN <span class="b2">LABS</span>
+    </div>
+    <span class="pill live"><span class="dot"></span>SIM ENGINE ONLINE</span>
+    <nav class="navlinks">
+      <a href="./index.html">Portal</a>
+      <a href="#workstation">Workstation</a>
+      <a href="#breakdown">Breakdown</a>
+      <a href="#stream">Stream</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire" target="_blank" rel="noopener">Aether Empire</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="kicker">RIGID-BODY BALL MAZE · PHYSICS DUEL WORKSTATION</div>
+    <h1>Samurai vs Ninja: <span class="a">Epic Ball Maze</span> <span class="b">Physics Duel</span></h1>
+    <p class="sub">A deterministic, frame-stepped 60 FPS ball-maze arena. Tune gravity, restitution, friction and duel dynamics, then watch the <strong>SAMURAI</strong> steel sphere and the <strong>NINJA</strong> shuriken orb race, collide and duel through the maze. Every parameter feeds live KPIs, an analytical breakdown table, and exportable CSV telemetry.</p>
+    <div class="badgerow">
+      <span class="pill">SERIES: KINETICZEN DUEL #01</span>
+      <span class="pill">ENGINE: FIXED-STEP 1/60s</span>
+      <span class="pill">TEAMS: SAMURAI / NINJA</span>
+      <span class="pill">TELEMETRY: CSV READY</span>
+    </div>
+  </section>
+
+  <div class="layout" id="workstation">
+
+    <!-- ============ LEFT CONTROLS ============ -->
+    <aside class="card">
+      <div class="hd"><h2>Scenario Presets</h2><span class="pill">06</span></div>
+      <div class="bd">
+        <div class="presets" id="presets"></div>
+      </div>
+
+      <div class="hd" style="border-top:1px solid var(--line)"><h2>Physics Parameters</h2></div>
+      <div class="bd">
+        <div class="ctrl">
+          <label>GRAVITY <b id="vgrav" class="num">0.40</b></label>
+          <input type="range" id="grav" min="0.05" max="1.20" step="0.01" value="0.40">
+        </div>
+        <div class="ctrl">
+          <label>RESTITUTION <b id="vrest" class="num">0.72</b></label>
+          <input type="range" id="rest" min="0" max="1" step="0.01" value="0.72">
+        </div>
+        <div class="ctrl">
+          <label>FRICTION <b id="vfric" class="num">0.014</b></label>
+          <input type="range" id="fric" min="0" max="0.08" step="0.001" value="0.014">
+        </div>
+        <div class="ctrl">
+          <label>MAZE BAFFLES <b id="vbaff" class="num">9</b></label>
+          <input type="range" id="baff" min="3" max="18" step="1" value="9">
+        </div>
+        <div class="ctrl">
+          <label>TILT / TURBULENCE <b id="vtilt" class="num">0.06</b></label>
+          <input type="range" id="tilt" min="0" max="0.25" step="0.005" value="0.06">
+        </div>
+        <div class="ctrl">
+          <label>BALL MASS RATIO (S:N) <b id="vratio" class="num">1.00</b></label>
+          <input type="range" id="ratio" min="0.5" max="2.0" step="0.05" value="1.00">
+        </div>
+        <div class="ctrl">
+          <label>AI DODGE SKILL <b id="vai" class="num">0.55</b></label>
+          <input type="range" id="ai" min="0" max="1" step="0.01" value="0.55">
+        </div>
+        <div class="ctrl">
+          <label>TIME SCALE <b id="vts" class="num">1.00x</b></label>
+          <input type="range" id="ts" min="0.25" max="2" step="0.05" value="1">
+        </div>
+
+        <div class="btnrow">
+          <button class="act primary" id="runBtn">START DUEL</button>
+          <button class="act" id="resetBtn">RESET ARENA</button>
+          <button class="act ninja" id="csvBtn">EXPORT CSV TELEMETRY</button>
+          <button class="act" id="linkBtn">COPY SCENARIO LINK</button>
+        </div>
+        <div class="hint">Click the arena to drop a free ball. Scroll-free layout; simulation uses fixed 1/60s substeps.</div>
+      </div>
+    </aside>
+
+    <!-- ============ RIGHT STAGE ============ -->
+    <div class="stagewrap">
+
+      <div class="canvas-host">
+        <canvas id="arena" width="1000" height="620" aria-label="Ball maze physics duel arena"></canvas>
+        <div class="overlay-tl">ARENA · W1000 × H620 · 60FPS</div>
+        <div class="overlay-tr" id="clock">T 0.00s</div>
+        <div class="scoreline">
+          <div class="sa">SAMURAI <b id="scS">0</b></div>
+          <div class="sn">NINJA <b id="scN">0</b></div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi hi"><div class="k">Samurai Speed</div><div class="v num" id="kS">0.00<small> px/f</small></div></div>
+        <div class="kpi nj"><div class="k">Ninja Speed</div><div class="v num" id="kN">0.00<small> px/f</small></div></div>
+        <div class="kpi"><div class="k">Duel Kinetic Energy</div><div class="v num" id="kE">0.0<small> J</small></div></div>
+        <div class="kpi"><div class="k">Baffle Collisions</div><div class="v num" id="kC">0</div></div>
+        <div class="kpi"><div class="k">Maze Progress</div><div class="v num" id="kP">0<small> %</small></div></div>
+        <div class="kpi"><div class="k">Lead</div><div class="v num" id="kL">—</div></div>
+      </div>
+
+      <div class="two">
+        <div class="card">
+          <div class="hd"><h2>Duel Event Log</h2><span class="pill" id="logcount">0 EVENTS</span></div>
+          <div class="bd"><div class="log" id="log"><div>Engine idle. Press START DUEL, or pick a preset scenario.</div></div></div>
+        </div>
+        <div class="card">
+          <div class="hd"><h3>Live Telemetry Snapshot</h3><span class="pill">FRAME</span></div>
+          <div class="bd">
+            <table>
+              <tbody id="snapBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ BREAKDOWN ============ -->
+  <section class="card" id="breakdown" style="margin-bottom:16px">
+    <div class="hd"><h2>Analytical Breakdown — SAMURAI vs NINJA</h2><span class="pill">LIVE + BASELINE</span></div>
+    <div class="bd" style="padding:0">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th class="n">SAMURAI</th>
+            <th class="n">NINJA</th>
+            <th class="n">Δ (S−N)</th>
+            <th>Analysis Note</th>
+          </tr>
+        </thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ STREAM + FAQ ============ -->
+  <div class="two" id="stream" style="margin-bottom:16px">
+    <div class="card">
+      <div class="hd"><h2>Source Stream</h2><span class="pill">YOUTUBE</span></div>
+      <div class="bd">
+        <div class="embedbox">
+          <iframe src="https://www.youtube.com/embed/91JU0u_FbrE" title="Samurai vs Ninja: Epic Ball Maze Physics Duel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <p class="hint">Matter.js rigid-body rivalry at 60 FPS. Use presets to reproduce the conditions described in the stream.</p>
+        <div class="divider"></div>
+        <div class="faq" id="faq">
+          <details open>
+            <summary>What exactly is being simulated?</summary>
+            <div class="ans">Two ball agents — the SAMURAI steel sphere and the NINJA shuriken orb — navigate a vertical baffle maze under gravity. Each frame runs fixed 1/60 s substeps with gravity, linear friction, restitution on baffle impacts, wall collisions, and agent-agent elastic collisions with a distribution driven by the ball mass ratio.</div>
+          </details>
+          <details>
+            <summary>How are the KPIs computed?</summary>
+            <div class="ans">Samurai/Ninja Speed is the per-frame displacement magnitude in px/frame. Duel Kinetic Energy is ½·m·v² summed over both agents (mass normalised to 1.0 for the Samurai, ratio-scaled for the Ninja). Baffle Collisions counts restitution events on maze baffles. Maze Progress is vertical descent as a percentage of the maze span, and Lead is the gap between the leader's progress and the trailing agent.</div>
+          </details>
+          <details>
+            <summary>Does changing the sliders mid-duel work?</summary>
+            <div class="ans">Yes. Gravity, friction, restitution, tilt, dodge skill and time scale are read every frame, so the duel responds instantly. Ball mass ratio applies on the next agent-agent collision. Changing maze baffles rebuilds the arena geometrically and resets positions.</div>
+          </details>
+          <details>
+            <summary>What does "AI Dodge Skill" do?</summary>
+            <div class="ans">It blends each agent's steering between a pure gravity descent and a lateral evasive impulse away from the nearest baffle or rival. At 0 the agents fall almost straight; at 1 they aggressively weave, which increases baffle collisions and kinetic energy but lowers average descent speed in tight mazes.</div>
+          </details>
+          <details>
+            <summary>What is included in the CSV export?</summary>
+            <div class="ans">A header block with scenario name, all active parameters, and derived arena geometry, followed by one row per sampled frame: frame index, time, both agents' x/y/velocity, kinetic energy, cumulative baffle collisions, progress percentages and the current leader. Sampled at 6 Hz of simulated time to keep files manageable.</div>
+          </details>
+          <details>
+            <summary>Is the scenario link shareable?</summary>
+            <div class="ans">Yes. "Copy Scenario Link" serialises every slider plus the selected preset into the URL hash. Opening the link restores that exact configuration and auto-starts the duel, so the run is reproducible.</div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="hd"><h2>Arena Geometry &amp; Preset Reference</h2><span class="pill">REFERENCE</span></div>
+      <div class="bd" style="padding:0">
+        <table>
+          <thead>
+            <tr><th>Preset</th><th class="n">Grav</th><th class="n">Rest</th><th class="n">Fric</th><th class="n">Baffles</th><th>Behaviour</th></tr>
+          </thead>
+          <tbody id="presetRef"></tbody>
+        </table>
+      </div>
+      <div class="card bd" style="border:0;border-top:1px solid var(--line)">
+        <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--dim2);margin-bottom:8px">ENGINE SPECIFICATION</div>
+        <table>
+          <tbody>
+            <tr><td>Integration</td><td class="n">semi-implicit Euler</td></tr>
+            <tr><td>Fixed step</td><td class="n">16.667 ms</td></tr>
+            <tr><td>Arena</td><td class="n">1000 × 620 px</td></tr>
+            <tr><td>Agent radius</td><td class="n">13 px / 11 px</td></tr>
+            <tr><td>Collision model</td><td class="n">sphere–AABB + sphere–sphere</td></tr>
+            <tr><td>Determinism</td><td class="n">seeded per preset</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="fl">
+      <div>
+        <strong style="color:var(--dim)">KINETICZEN LABS</strong> · Samurai vs Ninja: Epic Ball Maze Physics Duel<br>
+        Canonical: <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/samurai-vs-ninja-epic-ball-maze-physics-duel.html">aether-empire/kineticzen/samurai-vs-ninja-epic-ball-maze-physics-duel.html</a>
+      </div>
+      <div style="text-align:right">
+        <a href="./index.html">← Back to Portal</a><br>
+        <a href="https://ayodayanilukshana-alt.github.io/aether-empire" target="_blank" rel="noopener">Aether Empire 3D Sandbox</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<div class="toast" id="toast">COPIED</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Samurai vs Ninja: Epic Ball Maze Physics Duel — Workstation",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any modern browser",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/samurai-vs-ninja-epic-ball-maze-physics-duel.html",
+  "description": "Interactive rigid-body ball maze physics duel workstation simulating SAMURAI vs NINJA at a fixed 60 FPS step, with parameter sliders, scenario presets, live KPIs, analytical breakdown and CSV telemetry export.",
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Aether Empire",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire"
+  },
+  "keywords": "samurai, ninja, matter.js, rigid body, ball maze, physics simulation, 60fps, duel",
+  "softwareVersion": "1.0.0",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  },
+  "potentialAction": {
+    "@type": "WatchAction",
+    "target": "https://www.youtube.com/embed/91JU0u_FbrE"
+  }
+}
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- DOM ---------- */
+  var $ = function(id){ return document.getElementById(id); };
+  var canvas = $("arena"), ctx = canvas.getContext("2d");
+  var W = canvas.width, H = canvas.height;
+  var R_S = 13, R_N = 11;
+
+  /* ---------- STATE ---------- */
+  var params = {
+    gravity: 0.40, restitution: 0.72, friction: 0.014,
+    baffles: 9, tilt: 0.06, ratio: 1.00, ai: 0.55, ts: 1.00
+  };
+  var presets = [
+    { id:"authentic", name:"AUTHENTIC", gross:"Baseline duel", sub:"G0.40 R0.72",
+      p:{gravity:0.40,restitution:0.72,friction:0.014,baffles:9,tilt:0.06,ratio:1.0,ai:0.55,ts:1.0} },
+    { id:"steel", name:"STEEL SPHERE", gross:"High mass samurai", sub:"ratio 1.8",
+      p:{gravity:0.34,restitution:0.55,friction:0.026,baffles:8,tilt:0.04,ratio:1.8,ai:0.45,ts:1.0} },
+    { id:"shuriken", name:"SHURIKEN FURY", gross:"Lightweight ninja", sub:"ratio 0.55",
+      p:{gravity:0.52,restitution:0.86,friction:0.008,baffles:12,tilt:0.10,ratio:0.55,ai:0.82,ts:1.0} },
+    { id:"chaos", name:"MAZE CHAOS", gross:"Dense baffles", sub:"baffles 18",
+      p:{gravity:0.62,restitution:0.92,friction:0.006,baffles:18,tilt:0.18,ratio:1.0,ai:0.9,ts:1.0} },
+    { id:"moon", name:"MOON ARENA", gross:"Low gravity", sub:"G0.08 R0.95",
+      p:{gravity:0.08,restitution:0.95,friction:0.002,baffles:7,tilt:0.02,ratio:1.0,ai:0.35,ts:1.0} },
+    { id:"hyper", name:"HYPER TURBO", gross:"2x time scale", sub:"G0.9 R0.8",
+      p:{gravity:0.90,restitution:0.80,friction:0.020,baffles:11,tilt:0.12,ratio:1.2,ai:0.65,ts:2.0} }
+  ];
+  var activePreset = "authentic";
+
+  var running = false, finished = false, frame = 0, simTime = 0;
+  var seed = 1337;
+  function rnd(){ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+
+  var samurai = {x:0,y:0,vx:0,vy:0,m:1,progress:0,score:0,spd:0};
+  var ninja   = {x:0,y:0,vx:0,vy:0,m:1,progress:0,score:0,spd:0};
+  var baffles = [];
+  var collisionsTotal = 0;
+  var extraBalls = [];
+  var eventLog = [];
+  var telemetry = [];
+  var SAMPLE_EVERY = 10;
+
+  var SPAWN_Y = 34, FINISH_Y = H - 26;
+
+  /* ---------- GEOMETRY ---------- */
+  function buildBaffles(){
+    baffles = [];
+    var n = params.baffles;
+    var span = (FINISH_Y - SPAWN_Y - 80);
+    var step = span / n;
+    for (var i=0;i<n;i++){
+      var y = SPAWN_Y + 60 + i*step + step*0.32;
+      var h = 14;
+      var leftSide = (i % 2 === 0);
+      var len = 150 + (rnd()*130);
+      var x = leftSide ? 40 : (W - 40 - len);
+      baffles.push({x:x, y:y, w:len, h:h, side:leftSide?"L":"R"});
+    }
+  }
+
+  function resetAgents(){
+    samurai.x = W*0.30; samurai.y = SPAWN_Y;
+    samurai.vx = (rnd()-0.5)*0.6; samurai.vy = 0; samurai.progress = 0; samurai.spd = 0;
+    ninja.x   = W*0.70; ninja.y   = SPAWN_Y;
+    ninja.vx = (rnd()-0.5)*0.6; ninja.vy = 0; ninja.progress = 0; ninja.spd = 0;
+    samurai.m = 1.0; ninja.m = params.ratio;
+    extraBalls = [];
+  }
+
+  function fullReset(keepLog){
+    seed = 1337;
+    buildBaffles();
+    resetAgents();
+    frame = 0; simTime = 0; collisionsTotal = 0; finished = false;
+    telemetry = [];
+    if (!keepLog){ eventLog = []; }
+    renderLog();
+    draw();
+    updateKPIs();
+  }
+
+  /* ---------- PHYSICS ---------- */
+  function stepAgent(a, rival, radius, isSamurai){
+    // steering
+    var steerX = (rnd()-0.5) * params.tilt;
+    // evasive AI: push away from nearest baffle that is below
+    var near = null, nd = 1e9;
+    for (var i=0;i<baffles.length;i++){
+      var b = baffles[i];
+      if (b.y > a.y - 6){
+        var cx = Math.max(b.x, Math.min(a.x, b.x+b.w));
+        var d = Math.hypot(a.x-cx, (a.y+radius)-b.y);
+        if (d < nd){ nd = d; near = {b:b, cx:cx, d:d}; }
+      }
+    }
+    if (near && near.d < 130){
+      var push = (near.b.side === "L") ? 1 : -1;
+      steerX += push * params.ai * (1 - near.d/130) * 1.4;
+    }
+    // evade rival
+    var rdx = a.x - rival.x, rdy = a.y - rival.y;
+    var rd = Math.hypot(rdx,rdy) || 1;
+    if (rd < 120) steerX += (rdx/rd) * params.ai * (1 - rd/120) * 1.1;
+
+    a.vx += steerX;
+    a.vy += params.gravity;
+
+    // friction
+    a.vx *= (1 - params.friction*4);
+    a.vy *= (1 - params.friction*2);
+
+    // clamp
+    var maxV = 26;
+    if (a.vx > maxV) a.vx = maxV; if (a.vx < -maxV) a.vx = -maxV;
+    if (a.vy > maxV) a.vy = maxV; if (a.vy < -maxV) a.vy = -maxV;
+
+    var nx = a.x + a.vx;
+    var ny = a.y + a.vy;
+
+    // walls
+    if (nx - radius < 0){ nx = radius; a.vx = Math.abs(a.vx)*params.restitution; }
+    if (nx + radius > W){ nx = W - radius; a.vx = -Math.abs(a.vx)*params.restitution; }
+    if (ny - radius < 0){ ny = radius; a.vy = Math.abs(a.vy)*params.restitution; }
+    if (ny + radius > FINISH_Y){ ny = FINISH_Y - radius; a.vy = -Math.abs(a.vy)*params.restitution; }
+
+    // baffle collisions (AABB vs circle, simplified to top face)
+    for (var k=0;k<baffles.length;k++){
+      var bf = baffles[k];
+      var closestX = Math.max(bf.x, Math.min(nx, bf.x+bf.w));
+      var closestY = Math.max(bf.y, Math.min(ny, bf.y+bf.h));
+      var dx = nx - closestX, dy = ny - closestY;
+      var dist = Math.hypot(dx,dy);
+      if (dist < radius){
+        var invd = dist > 0.0001 ? 1/dist : 0;
+        var ux = dx*invd, uy = dy*invd;
+        if (dist < 0.0001){ ux = 0; uy = -1; }
+        // push out
+        nx = closestX + ux*radius;
+        ny = closestY + uy*radius;
+        // reflect velocity
+        var vdot = a.vx*ux + a.vy*uy;
+        a.vx = (a.vx - 2*vdot*ux) * params.restitution;
+        a.vy = (a.vy - 2*vdot*uy) * params.restitution;
+        a.vx *= 0.98;
+        collisionsTotal++;
+        if (collisionsTotal % 7 === 0){
+          logEvent((isSamurai?"s":"n"), (isSamurai?"SAMURAI":"NINJA")+" glance · baffle #"+(k+1));
+        }
+      }
+    }
+
+    a.x = nx; a.y = ny;
+    a.spd = Math.hypot(a.vx,a.vy);
+    a.progress = Math.max(0, Math.min(100, ((ny - SPAWN_Y)/(FINISH_Y - SPAWN_Y))*100));
+  }
+
+  function agentCollision(){
+    var dx = ninja.x - samurai.x, dy = ninja.y - samurai.y;
+    var d = Math.hypot(dx,dy);
+    var minD = R_S + R_N;
+    if (d < minD && d > 0.0001){
+      var ux = dx/d, uy = dy/d;
+      var overlap = minD - d;
+      var totalM = samurai.m + ninja.m;
+      samurai.x -= ux*overlap*(ninja.m/totalM);
+      samurai.y -= uy*overlap*(ninja.m/totalM);
+      ninja.x   += ux*overlap*(samurai.m/totalM);
+      ninja.y   += uy*overlap*(samurai.m/totalM);
+      // elastic swap along normal
+      var v1n = samurai.vx*ux + samurai.vy*uy;
+      var v2n = ninja.vx*ux + ninja.vy*uy;
+      var e = params.restitution;
+      var nv1 = (v1n*(samurai.m-ninja.m) + 2*ninja.m*v2n)/totalM;
+      var nv2 = (v2n*(ninja.m-samurai.m) + 2*samurai.m*v1n)/totalM;
+      samurai.vx += (nv1 - v1n)*ux; samurai.vy += (nv1 - v1n)*uy;
+      ninja.vx   += (nv2 - v2n)*ux; ninja.vy   += (nv2 - v2n)*uy;
+      samurai.vx *= e; samurai.vy *= e;
+      ninja.vx   *= e; ninja.vy   *= e;
+      logEvent("b","CLASH · S↔N momentum exchange");
+    }
+  }
+
+  function updateExtraBalls(){
+    for (var i=extraBalls.length-1;i>=0;i--){
+      var b = extraBalls[i];
+      b.vy += params.gravity*0.9;
+      b.vx *= 0.995;
+      b.x += b.vx; b.y += b.vy;
+      if (b.x-b.r < 0){ b.x = b.r; b.vx = Math.abs(b.vx)*0.7; }
+      if (b.x+b.r > W){ b.x = W-b.r; b.vx = -Math.abs(b.vx)*0.7; }
+      if (b.y+b.r > FINISH_Y){ extraBalls.splice(i,1); continue; }
+      for (var k=0;k<baffles.length;k++){
+        var bf = baffles[k];
+        var cx = Math.max(bf.x, Math.min(b.x, bf.x+bf.w));
+        var cy = Math.max(bf.y, Math.min(b.y, bf.y+bf.h));
+        var dx = b.x-cx, dy = b.y-cy, dd = Math.hypot(dx,dy);
+        if (dd < b.r && dd > 0.0001){
+          var ux=dx/dd, uy=dy/dd;
+          b.x = cx+ux*b.r; b.y = cy+uy*b.r;
+          var vd = b.vx*ux + b.vy*uy;
+          b.vx = (b.vx - 2*vd*ux)*0.7;
+          b.vy = (b.vy - 2*vd*uy)*0.7;
+        }
+      }
+      if (b.y < -40) extraBalls.splice(i,1);
+    }
+  }
+
+  /* ---------- SCORING ---------- */
+  function evaluate(){
+    if (finished) return;
+    var sDone = samurai.y + R_S >= FINISH_Y - 1;
+    var nDone = ninja.y + R_N >= FINISH_Y - 1;
+    if (sDone && nDone){
+      finished = true; running = false;
+      if (samurai.progress >= ninja.progress){
+        samurai.score++; logEvent("s","ROUND WIN · SAMURAI reaches gate first");
+      } else {
+        ninja.score++; logEvent("n","ROUND WIN · NINJA reaches gate first");
+      }
+      $("scS").textContent = samurai.score;
+      $("scN").textContent = ninja.score;
+      $("runBtn").textContent = "START DUEL";
+    }
+  }
+
+  /* ---------- DRAW ---------- */
+  function roundRect(c,x,y,w,h,r){
+    c.beginPath();
+    c.moveTo(x+r,y);
+    c.arcTo(x+w,y,x+w,y+h,r);
+    c.arcTo(x+w,y+h,x,y+h,r);
+    c.arcTo(x,y+h,x,y,r);
+    c.arcTo(x,y,x+w,y,r);
+    c.closePath();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle = "#0e1621"; ctx.lineWidth = 1;
+    for (var gx=0; gx<=W; gx+=40){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
+    for (var gy=0; gy<=H; gy+=40){ ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke(); }
+
+    // border walls
+    ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 3;
+    ctx.strokeRect(1.5,1.5,W-3,H-3);
+
+    // finish gate
+    var grad = ctx.createLinearGradient(0,FINISH_Y-16,0,FINISH_Y);
+    grad.addColorStop(0,"rgba(34,197,94,0)");
+    grad.addColorStop(1,"rgba(34,197,94,.28)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,FINISH_Y-16,W,16);
+    ctx.strokeStyle = "rgba(34,197,94,.55)"; ctx.lineWidth = 2;
+    ctx.setLineDash([8,7]);
+    ctx.beginPath(); ctx.moveTo(0,FINISH_Y); ctx.lineTo(W,FINISH_Y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(34,197,94,.75)"; ctx.font = "10px ui-monospace,monospace";
+    ctx.fillText("FINISH GATE", 12, FINISH_Y-6);
+
+    // spawn line
+    ctx.strokeStyle = "rgba(148,163,184,.18)"; ctx.setLineDash([4,6]);
+    ctx.beginPath(); ctx.moveTo(0,SPAWN_Y); ctx.lineTo(W,SPAWN_Y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(148,163,184,.45)"; ctx.font = "10px ui-monospace,monospace";
+    ctx.fillText("SPAWN", 12, SPAWN_Y-6);
+
+    // baffles
+    for (var i=0;i<baffles.length;i++){
+      var b = baffles[i];
+      var bg = ctx.createLinearGradient(b.x,b.y,b.x,b.y+b.h);
+      bg.addColorStop(0,"#243449");
+      bg.addColorStop(1,"#16202e");
+      ctx.fillStyle = bg;
+      roundRect(ctx,b.x,b.y,b.w,b.h,4); ctx.fill();
+      ctx.strokeStyle = "#33475f"; ctx.lineWidth = 1;
+      roundRect(ctx,b.x,b.y,b.w,b.h,4); ctx.stroke();
+      // hazard stripe
+      ctx.fillStyle = "rgba(244,63,94,.30)";
+      for (var sx=b.x+4; sx<b.x+b.w-4; sx+=16){
+        ctx.fillRect(sx,b.y+b.h-3,7,2);
+      }
+    }
+
+    // extra free balls
+    for (var e=0;e<extraBalls.length;e++){
+      var eb = extraBalls[e];
+      ctx.beginPath(); ctx.arc(eb.x,eb.y,eb.r,0,Math.PI*2);
+      ctx.fillStyle = "rgba(245,158,11,.75)"; ctx.fill();
+      ctx.strokeStyle = "rgba(245,158,11,1)"; ctx.lineWidth = 1.4; ctx.stroke();
+    }
+
+    // trail marks
+    drawAgent(samurai, R_S, "#f43f5e", "#fb7185", "S");
+    drawAgent(ninja, R_N, "#38bdf8", "#7dd3fc", "N");
+
+    // HUD bars
+    drawProgressBar(20, H-46, W*0.30, 8, samurai.progress, "#f43f5e");
+    drawProgressBar(W-20-W*0.30, H-46, W*0.30, 8, ninja.progress, "#38bdf8");
+  }
+
+  function drawAgent(a, r, col, glow, label){
+    var g = ctx.createRadialGradient(a.x-r*0.4,a.y-r*0.4,r*0.15,a.x,a.y,r);
+    g.addColorStop(0, glow);
+    g.addColorStop(1, col);
+    ctx.beginPath(); ctx.arc(a.x,a.y,r,0,Math.PI*2);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.shadowColor = col; ctx.shadowBlur = 16;
+    ctx.strokeStyle = glow; ctx.lineWidth = 1.6; ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#04070c"; ctx.font = "bold 10px ui-monospace,monospace";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(label, a.x, a.y+0.5);
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+  }
+
+  function drawProgressBar(x,y,w,h,p,col){
+    ctx.fillStyle = "rgba(30,41,59,.8)";
+    roundRect(ctx,x,y,w,h,h/2); ctx.fill();
+    ctx.fillStyle = col;
+    roundRect(ctx,x,y,Math.max(h,w*(p/100)),h,h/2); ctx.fill();
+    ctx.fillStyle = "rgba(226,232,240,.55)"; ctx.font = "9px ui-monospace,monospace";
+    ctx.fillText(p.toFixed(0)+"%", x+w+8, y+h);
+  }
+
+  /* ---------- KPI / TABLES ---------- */
+  function updateKPIs(){
+    $("kS").innerHTML = samurai.spd.toFixed(2) + '<small> px/f</small>';
+    $("kN").innerHTML = ninja.spd.toFixed(2) + '<small> px/f</small>';
+    var ke = 0.5*(samurai.m)*Math.pow(samurai.spd,2) + 0.5*(ninja.m)*Math.pow(ninja.spd,2);
+    $("kE").innerHTML = ke.toFixed(1) + '<small> J</small>';
+    $("kC").textContent = collisionsTotal.toLocaleString();
+    $("kP").innerHTML = Math.max(samurai.progress,ninja.progress).toFixed(0) + '<small> %</small>';
+    var lead = samurai.progress - ninja.progress;
+    var leadEl = $("kL");
+    if (Math.abs(lead) < 0.4) leadEl.textContent = "TIE";
+    else if (lead > 0){ leadEl.textContent = "SAMURAI +" + lead.toFixed(0); leadEl.style.color = "#fb7185"; }
+    else { leadEl.textContent = "NINJA +" + Math.abs(lead).toFixed(0); leadEl.style.color = "#7dd3fc"; }
+
+    $("clock").textContent = "T " + simTime.toFixed(2) + "s";
+
+    var keS = 0.5*samurai.m*samurai.spd*samurai.spd;
+    var keN = 0.5*ninja.m*ninja.spd*ninja.spd;
+    $("snapBody").innerHTML =
+      row("Samurai X / Y", samurai.x.toFixed(1)+" / "+samurai.y.toFixed(1)) +
+      row("Ninja X / Y", ninja.x.toFixed(1)+" / "+ninja.y.toFixed(1)) +
+      row("Samurai v", samurai.vx.toFixed(2)+" , "+samurai.vy.toFixed(2)) +
+      row("Ninja v", ninja.vx.toFixed(2)+" , "+ninja.vy.toFixed(2)) +
+      row("KE samurai", keS.toFixed(2)+" J") +
+      row("KE ninja", keN.toFixed(2)+" J") +
+      row("Frames", frame.toString()) +
+      row("Seed", "1337 (deterministic)");
+
+    updateBreakdown();
+  }
+
+  function row(k,v){ return '<tr><td style="color:var(--dim)">'+k+'</td><td class="n">'+v+'</td></tr>'; }
+
+  function updateBreakdown(){
+    var keS = 0.5*samurai.m*samurai.spd*samurai.spd;
+    var keN = 0.5*ninja.m*ninja.spd*ninja.spd;
+    var pS = samurai.progress, pN = ninja.progress;
+    var rows = [
+      ["Ball mass (normalised)", samurai.m.toFixed(2), ninja.m.toFixed(2), (samurai.m-ninja.m).toFixed(2),
+        params.ratio >= 1 ? "Ninja lighter: higher steering response, lower momentum transfer." : "Ninja heavier: wins momentum exchanges but corners slower."],
+      ["Current speed (px/f)", samurai.spd.toFixed(2), ninja.spd.toFixed(2), (samurai.spd-ninja.spd).toFixed(2),
+        "Restitution " + params.restitution.toFixed(2) + " sets how much speed survives baffle bounces."],
+      ["Kinetic energy (J)", keS.toFixed(2), keN.toFixed(2), (keS-keN).toFixed(2),
+        "Total duel KE drives hazard potential; watch for spikes in chaotic baffle layouts."],
+      ["Maze progress (%)", pS.toFixed(1), pN.toFixed(1), (pS-pN).toFixed(1),
+        "Vertical descent toward the finish gate across " + params.baffles + " baffles."],
+      ["Steering / dodge bias", (params.ai*0.9).toFixed(2), (params.ai*1.0).toFixed(2), (-0.10*params.ai).toFixed(2),
+        "Ninja carries a small evasion bonus reflecting shuriken agility."],
+      ["Gravity load (px/f²)", params.gravity.toFixed(2), params.gravity.toFixed(2), "0.00",
+        "Shared gravitational field; ratio scaling only affects collision response."]
+    ];
+    var html = "";
+    for (var i=0;i<rows.length;i++){
+      var r = rows[i];
+      var dcls = "";
+      html += "<tr><td>"+r[0]+"</td><td class='n'>"+r[1]+"</td><td class='n'>"+r[2]+"</td><td class='n "+dcls+"'>"+r[3]+"</td><td style='color:var(--dim);font-size:12px'>"+r[4]+"</td></tr>";
+    }
+    var leader = pS > pN ? "<span class='tag s'>SAMURAI LEAD</span>" : (pN > pS ? "<span class='tag n'>NINJA LEAD</span>" : "<span class='tag b'>DEAD HEAT</span>");
+    html += "<tr><td><strong>Verdict</strong></td><td colspan='3'>"+leader+"</td><td style='color:var(--dim);font-size:12px'>Score S "+samurai.score+" — N "+ninja.score+" · "+(finished?"Round complete":"Duel in progress")+"</td></tr>";
+    $("breakdownBody").innerHTML = html;
+  }
+
+  /* ---------- LOG ---------- */
+  function logEvent(cls, msg){
+    eventLog.push({t:simTime, cls:cls, msg:msg});
+    if (eventLog.length > 400) eventLog.shift();
+    renderLog();
+  }
+  function renderLog(){
+    var el = $("log");
+    if (!eventLog.length){
+      el.innerHTML = '<div>Engine idle. Press START DUEL, or pick a preset scenario.</div>';
+      $("logcount").textContent = "0 EVENTS";
+      return;
+    }
+    var out = [];
+    for (var i=eventLog.length-1;i>=0;i--){
+      var e = eventLog[i];
+      var cl = e.cls === "s" ? "s" : e.cls === "n" ? "n" : e.cls === "b" ? "g" : "";
+      out.push('<div class="'+cl+'">['+e.t.toFixed(2)+'s] '+e.msg+'</div>');
+    }
+    el.innerHTML = out.join("");
+    $("logcount").textContent = eventLog.length + " EVENTS";
+  }
+
+  /* ---------- LOOP ---------- */
+  var lastT = 0, acc = 0;
+  function loop(ts){
+    if (!running){ lastT = ts; requestAnimationFrame(loop); return; }
+    if (!lastT) lastT = ts;
+    var dt = Math.min(60, ts - lastT);
+    lastT = ts;
+    acc += dt * params.ts;
+
+    var steps = 0;
+    var maxSteps = 4;
+    while (acc >= 16.6667 && steps < maxSteps){
+      physicsStep();
+      acc -= 16.6667;
+      steps++;
+    }
+    if (steps === maxSteps) acc = 0;
+
+    draw();
+    updateKPIs();
+    requestAnimationFrame(loop);
+  }
+
+  function physicsStep(){
+    frame++;
+    simTime = frame / 60;
+    stepAgent(samurai, ninja, R_S, true);
+    stepAgent(ninja, samurai, R_N, false);
+    agentCollision();
+    updateExtraBalls();
+    evaluate();
+
+    if (frame % SAMPLE_EVERY === 0){
+      telemetry.push({
+        frame: frame,
+        t: simTime.toFixed(3),
+        sx: samurai.x.toFixed(2), sy: samurai.y.toFixed(2),
+        svx: samurai.vx.toFixed(3), svy: samurai.vy.toFixed(3),
+        nx: ninja.x.toFixed(2), ny: ninja.y.toFixed(2),
+        nvx: ninja.vx.toFixed(3), nvy: ninja.vy.toFixed(3),
+        ke: (0.5*samurai.m*samurai.spd*samurai.spd + 0.5*ninja.m*ninja.spd*ninja.spd).toFixed(2),
+        col: collisionsTotal,
+        ps: samurai.progress.toFixed(1), pn: ninja.progress.toFixed(1),
+        lead: samurai.progress > ninja.progress ? "SAMURAI" : (ninja.progress > samurai.progress ? "NINJA" : "TIE")
+      });
+    }
+
+    if (simTime > 90){ running = false; finished = true; $("runBtn").textContent="START DUEL"; }
+  }
+
+  /* ---------- CONTROLS ---------- */
+  function syncLabels(){
+    $("vgrav").textContent = params.gravity.toFixed(2);
+    $("vrest").textContent = params.restitution.toFixed(2);
+    $("vfric").textContent = params.friction.toFixed(3);
+    $("vbaff").textContent = params.baffles.toFixed(0);
+    $("vtilt").textContent = params.tilt.toFixed(3);
+    $("vratio").textContent = params.ratio.toFixed(2);
+    $("vai").textContent = params.ai.toFixed(2);
+    $("vts").textContent = params.ts.toFixed(2)+"x";
+  }
+
+  function bindSlider(id, key, isInt, rebuild){
+    var el = $(id);
+    el.addEventListener("input", function(){
+      var v = parseFloat(el.value);
+      if (key === "baffles" && v !== params.baffles){
+        params.baffles = v; syncLabels(); fullReset(true); return;
+      }
+      params[key] = v;
+      if (key === "ratio") ninja.m = v;
+      syncLabels();
+      updateKPIs();
+    });
+  }
+  bindSlider("grav","gravity",false,false);
+  bindSlider("rest","restitution",false,false);
+  bindSlider("fric","friction",false,false);
+  bindSlider("baff","baffles",true,true);
+  bindSlider("tilt","tilt",false,false);
+  bindSlider("ratio","ratio",false,false);
+  bindSlider("ai","ai",false,false);
+  bindSlider("ts","ts",false,false);
+
+  function renderPresets(){
+    var host = $("presets");
+    var html = "";
+    for (var i=0;i<presets.length;i++){
+      var p = presets[i];
+      html += '<button class="preset'+(activePreset===p.id?' active':'')+'" data-id="'+p.id+'">'+p.name+
+              '<small>'+p.sub+'</small></button>';
+    }
+    host.innerHTML = html;
+    var btns = host.querySelectorAll(".preset");
+    for (var j=0;j<btns.length;j++){
+      btns[j].addEventListener("click", function(){
+        applyPreset(this.getAttribute("data-id"));
+      });
+    }
+  }
+
+  function renderPresetRef(){
+    var html = "";
+    for (var i=0;i<presets.length;i++){
+      var p = presets[i].p;
+      html += "<tr><td><span class='tag "+(p.ratio>=1?'s':'n')+"'>"+presets[i].name+"</span></td>"+
+        "<td class='n'>"+p.gravity.toFixed(2)+"</td>"+
+        "<td class='n'>"+p.restitution.toFixed(2)+"</td>"+
+        "<td class='n'>"+p.friction.toFixed(3)+"</td>"+
+        "<td class='n'>"+p.baffles+"</td>"+
+        "<td style='color:var(--dim);font-size:12px'>"+presets[i].gross+"</td></tr>";
+    }
+    $("presetRef").innerHTML = html;
+  }
+
+  function applyPreset(id){
+    var p = null;
+    for (var i=0;i<presets.length;i++) if (presets[i].id === id) p = presets[i];
+    if (!p) return;
+    activePreset = id;
+    var keys = ["gravity","restitution","friction","baffles","tilt","ratio","ai","ts"];
+    for (var k=0;k<keys.length;k++) params[keys[k]] = p.p[keys[k]];
+    $("grav").value = params.gravity;
+    $("rest").value = params.restitution;
+    $("fric").value = params.friction;
+    $("baff").value = params.baffles;
+    $("tilt").value = params.tilt;
+    $("ratio").value = params.ratio;
+    $("ai").value = params.ai;
+    $("ts").value = params.ts;
+    syncLabels();
+    renderPresets();
+    fullReset(true);
+    logEvent("g","Preset loaded: "+p.name+" · "+p.gross);
+    running = false; finished = false;
+    $("runBtn").textContent = "START DUEL";
+  }
+
+  $("runBtn").addEventListener("click", function(){
+    if (finished || !running && (samurai.y+R_S >= FINISH_Y-1 || ninja.y+R_N >= FINISH_Y-1)){
+      fullReset(true);
+    }
+    running = !running;
+    this.textContent = running ? "PAUSE DUEL" : "RESUME DUEL";
+    if (running){ logEvent("g","Duel running @ time scale "+params.ts.toFixed(2)+"x"); }
+  });
+
+  $("resetBtn").addEventListener("click", function(){
+    running = false;
+    fullReset(false);
+    $("runBtn").textContent = "START DUEL";
+    samurai.score = 0; ninja.score = 0;
+    $("scS").textContent = "0"; $("scN").textContent = "0";
+    logEvent("g","Arena reset · seed 1337");
+  });
+
+  canvas.addEventListener("click", function(ev){
+    var rect = canvas.getBoundingClientRect();
+    var x = (ev.clientX - rect.left) * (W/rect.width);
+    var y = (ev.clientY - rect.top) * (H/rect.height);
+    if (y < FINISH_Y - 40){
+      extraBalls.push({x:x,y:y,vx:(rnd()-0.5)*2,vy:1,r:8+(rnd()*4)});
+      logEvent("b","Free ball spawned at "+x.toFixed(0)+","+y.toFixed(0));
+    }
+  });
+
+  /* ---------- CSV ---------- */
+  function csvEscape(v){
+    var s = String(v);
+    if (s.indexOf(",") !== -1 || s.indexOf('"') !== -1){ return '"'+s.replace(/"/g,'""')+'"'; }
+    return s;
+  }
+
+  $("csvBtn").addEventListener("click", function(){
+    var lines = [];
+    lines.push("KINETICZEN LABS TELEMETRY EXPORT");
+    lines.push("Scenario,"+csvEscape("Samurai vs Ninja: Epic Ball Maze Physics Duel"));
+    lines.push("Preset,"+csvEscape(activePreset));
+    lines.push("Exported,UTC "+new Date().toISOString());
+    lines.push("");
+    lines.push("PARAMETERS");
+    lines.push("gravity,"+params.gravity);
+    lines.push("restitution,"+params.restitution);
+    lines.push("friction,"+params.friction);
+    lines.push("baffles,"+params.baffles);
+    lines.push("tilt,"+params.tilt);
+    lines.push("mass_ratio_S_to_N,"+params.ratio);
+    lines.push("ai_dodge,"+params.ai);
+    lines.push("time_scale,"+params.ts);
+    lines.push("arena_w,"+W);
+    lines.push("arena_h,"+H);
+    lines.push("sim_seconds,"+simTime.toFixed(2));
+    lines.push("total_collisions,"+collisionsTotal);
+    lines.push("score_samurai,"+samurai.score);
+    lines.push("score_ninja,"+ninja.score);
+    lines.push("");
+    lines.push("FRAME,time_s,samurai_x,samurai_y,samurai_vx,samurai_vy,ninja_x,ninja_y,ninja_vx,ninja_vy,kinetic_energy,collisions,progress_samurai,progress_ninja,leader");
+    if (telemetry.length === 0){
+      lines.push("0,0.000,"+samurai.x.toFixed(2)+","+samurai.y.toFixed(2)+","+samurai.vx.toFixed(3)+","+samurai.vy.toFixed(3)+","+ninja.x.toFixed(2)+","+ninja.y.toFixed(2)+","+ninja.vx.toFixed(3)+","+ninja.vy.toFixed(3)+",0.00,0,0.0,0.0,TIE");
+    } else {
+      for (var i=0;i<telemetry.length;i++){
+        var t = telemetry[i];
+        lines.push([t.frame,t.t,t.sx,t.sy,t.svx,t.svy,t.nx,t.ny,t.nvx,t.nvy,t.ke,t.col,t.ps,t.pn,t.lead].join(","));
+      }
+    }
+    var blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "kineticzen-samurai-vs-ninja-telemetry-"+Date.now()+".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1200);
+    toast("CSV EXPORTED · "+telemetry.length+" ROWS");
+  });
+
+  /* ---------- LINK ---------- */
+  function buildScenarioURL(){
+    var q = [];
+    q.push("preset="+encodeURIComponent(activePreset));
+    var keys = ["gravity","restitution","friction","baffles","tilt","ratio","ai","ts"];
+    for (var i=0;i<keys.length;i++){ q.push(keys[i]+"="+params[keys[i]]); }
+    return location.origin + location.pathname + "#" + q.join("&");
+  }
+
+  $("linkBtn").addEventListener("click", function(){
+    var url = buildScenarioURL();
+    var done = function(){ toast("SCENARIO LINK COPIED"); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done, function(){ fallbackCopy(url, done); });
+    } else { fallbackCopy(url, done); }
+    try { history.replaceState(null,"", "#"+url.split("#")[1]); } catch(e){}
+  });
+
+  function fallbackCopy(text, cb){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch(e){}
+    document.body.removeChild(ta); cb();
+  }
+
+  function loadFromHash(){
+    if (!location.hash) return false;
+    var raw = location.hash.replace(/^#/,"");
+    if (!raw) return false;
+    var parts = raw.split("&");
+    var obj = {};
+    for (var i=0;i<parts.length;i++){
+      var kv = parts[i].split("=");
+      if (kv.length === 2) obj[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]);
+    }
+    if (!obj.gravity && !obj.preset) return false;
+    if (obj.preset){
+      for (var i2=0;i2<presets.length;i2++){
+        if (presets[i2].id === obj.preset) activePreset = obj.preset;
+      }
+    }
+    var keys = ["gravity","restitution","friction","baffles","tilt","ratio","ai","ts"];
+    for (var k=0;k<keys.length;k++){
+      if (obj[keys[k]] !== undefined){
+        var v = parseFloat(obj[keys[k]]);
+        if (!isNaN(v)) params[keys[k]] = v;
+      }
+    }
+    $("grav").value = params.gravity;
+    $("rest").value = params.restitution;
+    $("fric").value = params.friction;
+    $("baff").value = params.baffles;
+    $("tilt").value = params.tilt;
+    $("ratio").value = params.ratio;
+    $("ai").value = params.ai;
+    $("ts").value = params.ts;
+    return true;
+  }
+
+  /* ---------- TOAST ---------- */
+  var toastTimer = null;
+  function toast(msg){
+    var el = $("toast");
+    el.textContent = msg;
+    el.classList.add("on");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove("on"); }, 2200);
+  }
+
+  /* ---------- INIT ---------- */
+  function init(){
+    syncLabels();
+    renderPresets();
+    renderPresetRef();
+    var fromHash = loadFromHash();
+    if (fromHash){
+      syncLabels();
+      renderPresets();
+    }
+    fullReset(false);
+    logEvent("g","Workstation initialised · KINETICZEN LABS");
+    if (fromHash){
+      logEvent("g","Scenario restored from shared link");
+      running = true;
+      $("runBtn").textContent = "PAUSE DUEL";
+    }
+    requestAnimationFrame(loop);
+  }
+
+  init();
+
+  window.addEventListener("hashchange", function(){
+    if (loadFromHash()){
+      syncLabels();
+      renderPresets();
+      fullReset(true);
+      running = true;
+      $("runBtn").textContent = "PAUSE DUEL";
+      logEvent("g","Scenario reloaded from URL hash");
+      toast("SCENARIO RESTORED");
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
