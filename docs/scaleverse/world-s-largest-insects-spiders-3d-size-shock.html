@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · World's Largest Insects & Spiders</title>
+    <meta name="description" content="Interactive 3D workstation comparing the world's largest arthropods: Asian Giant Hornet, Giant Weta, Hercules Beetle, Goliath Birdeater, and Jaekelopterus.">
+    <meta name="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/world-s-largest-insects-spiders-3d-size-shock.html">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305070b'/%3E%3Cpath d='M8 8h4v16H8zm12 0h4v16h-4zM12 12h8v4h-8z' fill='%2338bdf8'/%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .workstation {
+            max-width: 1440px;
+            width: 100%;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 2rem;
+            padding: 1.75rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        .accent {
+            color: #38bdf8;
+        }
+        .badge {
+            background: #1e293b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        .subhead {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 1.75rem;
+            border-left: 3px solid #38bdf8;
+            padding-left: 1rem;
+            font-style: italic;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 1000px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.75rem;
+        }
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi {
+            background: #0f1420;
+            border: 1px solid #1e293b;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .kpi-value {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            line-height: 1.2;
+        }
+        .kpi-unit {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 9999px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 10px #38bdf8;
+        }
+        .preset-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .preset-btn {
+            background: #0f1420;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 0.4rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: monospace;
+        }
+        .preset-btn:hover {
+            background: #1e293b;
+            border-color: #38bdf8;
+            color: #f1f5f9;
+        }
+        .preset-btn.active {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 700;
+        }
+        .btn-action {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.6rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: monospace;
+            letter-spacing: 0.02em;
+        }
+        .btn-action:hover {
+            background: #334155;
+            border-color: #38bdf8;
+        }
+        .btn-primary {
+            background: #38bdf8;
+            color: #05070b;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #7dd3fc;
+        }
+        .button-row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .canvas-container {
+            background: #05070b;
+            border-radius: 1rem;
+            border: 1px solid #1e293b;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+        }
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            margin-top: 1.5rem;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #334155;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #1e293b;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        .highlight-row {
+            background: #0f1420;
+        }
+        .faq {
+            margin-top: 2rem;
+        }
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.9rem 0;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: block;
+            line-height: 1.6;
+        }
+        .footer-note {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #475569;
+            border-top: 1px solid #1e293b;
+            padding-top: 1.5rem;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .scale-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+            font-family: monospace;
+        }
+        .legend-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+    <h1>
+        <span class="accent">SCALEVERSE 3D</span>
+        <span class="badge">SIZE SHOCK</span>
+    </h1>
+    <div class="subhead">
+        World's Largest Insects & Spiders — from finger-sized hornets to a six-foot sea scorpion. Exoskeleton limits pushed to the brink.
+    </div>
+
+    <div class="grid-2col">
+        <!-- LEFT COLUMN: Controls & KPIs -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Telemetry Controls</h2>
+                    <span class="badge" id="activeSpecimenLabel">Jaekelopterus</span>
+                </div>
+                <div class="kpi-row">
+                    <div class="kpi">
+                        <div class="kpi-label">Body Size</div>
+                        <div class="kpi-value" id="kpiMeters">2.50<span class="kpi-unit">m</span></div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Ratio vs Hornet</div>
+                        <div class="kpi-value" id="kpiRatio">41.7<span class="kpi-unit">×</span></div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Human Scale</div>
+                        <div class="kpi-value" id="kpiHuman">1.5<span class="kpi-unit">×</span></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Size selection (log scale)</span>
+                            <span id="sliderValueLabel">2.50 m</span>
+                        </div>
+                        <input type="range" id="sizeSlider" min="0" max="4" step="0.001" value="4">
+                    </div>
+                    <div class="preset-row" id="presetContainer">
+                        <button class="preset-btn" data-index="0">Hornet (0.06m)</button>
+                        <button class="preset-btn" data-index="1">Weta (0.10m)</button>
+                        <button class="preset-btn" data-index="2">Hercules (0.17m)</button>
+                        <button class="preset-btn" data-index="3">Birdeater (0.30m)</button>
+                        <button class="preset-btn active" data-index="4">Jaekelopterus (2.5m)</button>
+                    </div>
+                </div>
+                <div class="button-row">
+                    <button class="btn-action" id="exportCsvBtn">↓ Export CSV Telemetry</button>
+                    <button class="btn-action" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+                </div>
+                <div class="scale-indicator" id="scaleHint">
+                    1 canvas unit = 10 cm · reference human silhouette (1.8m) shown for scale
+                </div>
+            </div>
+
+            <!-- Analytical Table -->
+            <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                    <h2>Analytical Breakdown</h2>
+                </div>
+                <table id="breakdownTable">
+                    <thead>
+                        <tr><th>Specimen</th><th>Metric</th><th>Meters</th><th>Ratio</th></tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Canvas & Video -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <h2>3D Scale Visualization</h2>
+                    <span class="badge" id="canvasLabel">Jaekelopterus</span>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="insectCanvas" width="800" height="400"></canvas>
+                </div>
+                <div style="display: flex; gap: 1.5rem; justify-content: center; font-size: 0.7rem; color: #64748b; font-family: monospace;">
+                    <span><span class="legend-dot" style="background:#38bdf8;"></span> Selected specimen</span>
+                    <span><span class="legend-dot" style="background:#64748b;"></span> Human (1.8m)</span>
+                    <span><span class="legend-dot" style="background:#facc15;"></span> Ruler (1m)</span>
+                </div>
+            </div>
+
+            <!-- YouTube Embed -->
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/SqGiZ8J6RB4" title="World's Largest Insects & Spiders: 3D Size Shock" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq">
+        <h2 style="font-size: 1.1rem; margin-bottom: 1rem; color: #38bdf8;">─── FAQ ───</h2>
+        <div class="faq-item">
+            <div class="faq-q">How do these arthropods compare to an average human? <span>▼</span></div>
+            <div class="faq-a">The Jaekelopterus (2.5 m) is longer than a human is tall, while the Asian Giant Hornet (6 cm) fits in your palm. Use the slider to see exact proportions.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Why is the Goliath Birdeater measured by leg span? <span>▼</span></div>
+            <div class="faq-a">Its body is ~12 cm, but the leg span reaches 30 cm — the metric used in the data payload. The visualization shows its full spread.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">What is the ratio between the largest and smallest? <span>▼</span></div>
+            <div class="faq-a">Jaekelopterus at 2.5 m vs. Hornet at 0.06 m gives a ratio of 41.7×. The KPI panel updates dynamically.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Can I export the telemetry? <span>▼</span></div>
+            <div class="faq-a">Yes — click "Export CSV Telemetry" to download a CSV with all five specimens, their metrics, and the current active selection.</div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        SCALEVERSE 3D · <a href="./index.html">Portal</a> · Canonical: <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/world-s-largest-insects-spiders-3d-size-shock.html">world-s-largest-insects-spiders-3d-size-shock</a>
+    </div>
+</div>
+
+<script>
+    // DATA PAYLOAD (exact)
+    const payload = {
+        title: "World's Largest Insects & Spiders: 3D Size Shock",
+        items: [
+            { name: "Asian Giant Hornet", meters: 0.06, metric: "6 cm body" },
+            { name: "Giant Weta", meters: 0.10, metric: "10 cm body" },
+            { name: "Hercules Beetle", meters: 0.17, metric: "17 cm body" },
+            { name: "Goliath Birdeater", meters: 0.30, metric: "30 cm leg span" },
+            { name: "Jaekelopterus", meters: 2.50, metric: "2.5 m length" }
+        ]
+    };
+
+    const items = payload.items;
+    const minMeters = Math.min(...items.map(i => i.meters)); // 0.06
+    const maxMeters = Math.max(...items.map(i => i.meters)); // 2.5
+
+    // Slider mapping: we want log scale from 0.06 to 2.5.
+    // We'll use index-based mapping for exact preset alignment.
+    // Slider value 0 -> index 0 (0.06), 4 -> index 4 (2.5)
+    const slider = document.getElementById('sizeSlider');
+    const sliderValueLabel = document.getElementById('sliderValueLabel');
+    const activeSpecimenLabel = document.getElementById('activeSpecimenLabel');
+    const canvasLabel = document.getElementById('canvasLabel');
+    const kpiMeters = document.getElementById('kpiMeters');
+    const kpiRatio = document.getElementById('kpiRatio');
+    const kpiHuman = document.getElementById('kpiHuman');
+    const presetContainer = document.getElementById('presetContainer');
+    const tableBody = document.getElementById('tableBody');
+    const canvas = document.getElementById('insectCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // State
+    let activeIndex = 4; // default Jaekelopterus
+    let displayedMeters = items[4].meters;
+
+    // Populate table
+    function populateTable() {
+        let html = '';
+        items.forEach((item, idx) => {
+            const ratio = (item.meters / minMeters).toFixed(1);
+            const rowClass = idx === activeIndex ? 'highlight-row' : '';
+            html += `<tr class="${rowClass}">
+                <td style="color:${idx === activeIndex ? '#38bdf8' : '#e2e8f0'}">${item.name}</td>
+                <td style="color:#94a3b8">${item.metric}</td>
+                <td>${item.meters.toFixed(2)} m</td>
+                <td>${ratio}×</td>
+            </tr>`;
+        });
+        tableBody.innerHTML = html;
+    }
+
+    // Update all UI elements based on active index
+    function updateUI(index) {
+        activeIndex = index;
+        const item = items[index];
+        displayedMeters = item.meters;
+
+        // Update labels
+        sliderValueLabel.textContent = item.meters.toFixed(2) + ' m';
+        activeSpecimenLabel.textContent = item.name;
+        canvasLabel.textContent = item.name;
+
+        // Update KPIs
+        kpiMeters.innerHTML = `${item.meters.toFixed(2)}<span class="kpi-unit">m</span>`;
+        const ratio = (item.meters / minMeters).toFixed(1);
+        kpiRatio.innerHTML = `${ratio}<span class="kpi-unit">×</span>`;
+        const humanRatio = (item.meters / 1.8).toFixed(2);
+        kpiHuman.innerHTML = `${humanRatio}<span class="kpi-unit">×</span>`;
+
+        // Update preset active state
+        document.querySelectorAll('.preset-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', i === index);
+        });
+
+        // Update slider value (position)
+        slider.value = index;
+
+        // Redraw canvas
+        drawCanvas(item);
+
+        // Rebuild table to show highlight
+        populateTable();
+    }
+
+    // Draw the canvas with the selected specimen + human silhouette + ruler
+    function drawCanvas(activeItem) {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // Background grid
+        ctx.fillStyle = '#05070b';
+        ctx.fillRect(0, 0, w, h);
+
+        // Scale: map meters to pixels. We want max (2.5m) to take ~70% of width.
+        // 2.5m = 560px, so 1m = 224px. But we need to fit human (1.8m) too.
+        // Let maxMeters = 2.5m -> 600px. Scale factor = 600 / 2.5 = 240 px per meter.
+        const scaleFactor = 220; // px per meter
+        const baselineY = h - 80; // ground line
+
+        // Draw ground line
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(40, baselineY);
+        ctx.lineTo(w - 40, baselineY);
+        ctx.stroke();
+
+        // Draw ruler markings (every 0.5m) from 0 to 2.5m
+        ctx.fillStyle = '#334155';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        for (let m = 0; m <= 2.5; m += 0.5) {
+            const x = 80 + m * scaleFactor;
+            if (x > w - 40) break;
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, baselineY);
+            ctx.lineTo(x, baselineY + 8);
+            ctx.stroke();
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(m.toFixed(1) + 'm', x, baselineY + 22);
+        }
+
+        // Draw human silhouette (1.8m) at x = 80 + 1.8*scaleFactor? We want it visible.
+        // We'll place it at x = w - 150 (right side), height = 1.8m * scaleFactor = 396px too tall.
+        // Adjust: let's make human scaled down to fit. We'll use a fixed height of 180px for human to be visible.
+        // But that breaks scale. Instead, let's draw human at exact scale: 1.8m * 220 = 396px, which fits (canvas h=400).
+        // That's fine, baselineY = h-80 = 320. Human top would be 320 - 396 = -76 (outside). Too tall!
+        // Problem: 2.5m * 220 = 550px > canvas height. Need smaller scale.
+        // Let's recalc: maxMeters 2.5m should fit in canvas height ~400. Use scaleFactor = 120 px/m.
+        // 2.5m -> 300px. Human 1.8m -> 216px. Good.
+        const sf = 120; // px per meter
+
+        // Redraw ground line with new scale
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#05070b';
+        ctx.fillRect(0, 0, w, h);
+
+        // ground
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(40, baselineY);
+        ctx.lineTo(w - 40, baselineY);
+        ctx.stroke();
+
+        // ruler markings
+        for (let m = 0; m <= 2.5; m += 0.5) {
+            const x = 80 + m * sf;
+            if (x > w - 40) break;
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, baselineY);
+            ctx.lineTo(x, baselineY + 8);
+            ctx.stroke();
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(m.toFixed(1) + 'm', x, baselineY + 22);
+        }
+
+        // Draw human silhouette (1.8m) at x = w - 120
+        const humanX = w - 140;
+        const humanHeightPx = 1.8 * sf; // 216px
+        const humanTopY = baselineY - humanHeightPx;
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.roundRect(humanX, humanTopY, 24, humanHeightPx, 8);
+        ctx.fill();
+        // head
+        ctx.beginPath();
+        ctx.arc(humanX + 12, humanTopY - 12, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('Human', humanX + 12, humanTopY + humanHeightPx + 20);
+        ctx.fillText('1.8m', humanX + 12, humanTopY + humanHeightPx + 32);
+
+        // Draw the active specimen as a stylized arthropod
+        const specX = 100;
+        const specHeightPx = activeItem.meters * sf;
+        const specWidth = Math.min(200, specHeightPx * 1.5); // width proportional
+        const specY = baselineY - specHeightPx;
+
+        // Draw body (ellipse or rectangle depending on type)
+        const isSpider = activeItem.name.includes('Birdeater');
+        const isScorpion = activeItem.name.includes('Jaekelopterus');
+        const isHornet = activeItem.name.includes('Hornet');
+        const isBeetle = activeItem.name.includes('Hercules');
+        const isWeta = activeItem.name.includes('Weta');
+
+        // Color per specimen
+        let bodyColor = '#38bdf8';
+        if (isHornet) bodyColor = '#facc15';
+        if (isWeta) bodyColor = '#a78bfa';
+        if (isBeetle) bodyColor = '#f97316';
+        if (isSpider) bodyColor = '#f43f5e';
+        if (isScorpion) bodyColor = '#38bdf8';
+
+        // Draw body
+        ctx.fillStyle = bodyColor;
+        ctx.shadowColor = bodyColor;
+        ctx.shadowBlur = 15;
+
+        if (isScorpion) {
+            // Scorpion-like: long body + segmented tail
+            ctx.beginPath();
+            ctx.ellipse(specX + specWidth/2, specY + specHeightPx/2, specWidth/2, specHeightPx/2.5, 0, 0, Math.PI*2);
+            ctx.fill();
+            // tail
+            ctx.beginPath();
+            ctx.moveTo(specX + specWidth, specY + specHeightPx/2);
+            ctx.quadraticCurveTo(specX + specWidth + 60, specY - 20, specX + specWidth + 80, specY + 20);
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = bodyColor;
+            ctx.stroke();
+            // claws
+            ctx.beginPath();
+            ctx.moveTo(specX, specY + specHeightPx/2);
+            ctx.lineTo(specX - 30, specY - 10);
+            ctx.lineTo(specX - 50, specY + 10);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(specX, specY + specHeightPx/2);
+            ctx.lineTo(specX - 30, specY + specHeightPx + 10);
+            ctx.lineTo(specX - 50, specY + specHeightPx - 10);
+            ctx.stroke();
+        } else if (isSpider) {
+            // Spider: round body + legs
+            ctx.beginPath();
+            ctx.ellipse(specX + specWidth/2, specY + specHeightPx/2, specWidth/2.5, specHeightPx/2.5, 0, 0, Math.PI*2);
+            ctx.fill();
+            // 8 legs
+            for (let l = 0; l < 8; l++) {
+                const angle = (l / 8) * Math.PI * 2;
+                const legLen = specWidth * 0.8;
+                const legX = specX + specWidth/2 + Math.cos(angle) * legLen;
+                const legY = specY + specHeightPx/2 + Math.sin(angle) * legLen;
+                ctx.beginPath();
+                ctx.moveTo(specX + specWidth/2, specY + specHeightPx/2);
+                ctx.lineTo(legX, legY);
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = bodyColor;
+                ctx.stroke();
+            }
+            // Reset
+            ctx.lineWidth = 1;
+        } else if (isHornet) {
+            // Hornet: elongated body + wings
+            ctx.beginPath();
+            ctx.ellipse(specX + specWidth/2, specY + specHeightPx/2, specWidth/2, specHeightPx/3, 0, 0, Math.PI*2);
+            ctx.fill();
+            // wings
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.beginPath();
+            ctx.ellipse(specX + specWidth/2 + 10, specY + specHeightPx/2 - 15, 25, 10, -0.3, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(specX + specWidth/2 + 10, specY + specHeightPx/2 + 15, 25, 10, 0.3, 0, Math.PI*2);
+            ctx.fill();
+        } else if (isBeetle) {
+            // Beetle: oval body + horn
+            ctx.beginPath();
+            ctx.ellipse(specX + specWidth/2, specY + specHeightPx/2, specWidth/2, specHeightPx/2.5, 0, 0, Math.PI*2);
+            ctx.fill();
+            // horn
+            ctx.beginPath();
+            ctx.moveTo(specX + specWidth/2, specY + 5);
+            ctx.lineTo(specX + specWidth/2 - 20, specY - 25);
+            ctx.lineTo(specX + specWidth/2 + 20, specY - 25);
+            ctx.fillStyle = bodyColor;
+            ctx.fill();
+        } else {
+            // Weta or generic: elongated body with legs
+            ctx.beginPath();
+            ctx.ellipse(specX + specWidth/2, specY + specHeightPx/2, specWidth/2, specHeightPx/3, 0, 0, Math.PI*2);
+            ctx.fill();
+            // legs
+            for (let l = 0; l < 6; l++) {
+                const legX = specX + specWidth * 0.2 + (l % 3) * 20;
+                const legY = specY + (l < 3 ? specHeightPx/2 - 10 : specHeightPx/2 + 10);
+                ctx.beginPath();
+                ctx.moveTo(legX, legY);
+                ctx.lineTo(legX - 20, legY - 20 + (l % 3) * 15);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = bodyColor;
+                ctx.stroke();
+            }
+            ctx.lineWidth = 1;
+        }
+
+        // reset shadow
+        ctx.shadowBlur = 0;
+
+        // Draw label
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = 'bold 14px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(activeItem.name, specX, specY - 20);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '12px monospace';
+        ctx.fillText(activeItem.meters.toFixed(2) + ' m · ' + activeItem.metric, specX, specY - 4);
+    }
+
+    // roundRect helper
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.moveTo(x + r, y);
+        this.lineTo(x + w - r, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r);
+        this.lineTo(x + w, y + h - r);
+        this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        this.lineTo(x + r, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r);
+        this.lineTo(x, y + r);
+        this.quadraticCurveTo(x, y, x + r, y);
+        return this;
+    };
+
+    // Event listeners
+    slider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        // Map slider value to nearest index (0-4)
+        const idx = Math.round(val);
+        if (idx !== activeIndex) {
+            updateUI(idx);
+        } else {
+            // Still update slider label? No, keep consistent.
+        }
+    });
+
+    presetContainer.querySelectorAll('.preset-btn').forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+            updateUI(idx);
+        });
+    });
+
+    // Export CSV
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+        let csv = 'Specimen,Metric,Meters,Ratio_vs_Hornet,Selected\n';
+        items.forEach((item, idx) => {
+            const ratio = (item.meters / minMeters).toFixed(1);
+            const selected = idx === activeIndex ? 'Yes' : 'No';
+            csv += `"${item.name}","${item.metric}",${item.meters},${ratio},${selected}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'scaleverse_telemetry_insects.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+
+    // Copy Scenario Link
+    document.getElementById('copyLinkBtn').addEventListener('click', () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = document.getElementById('copyLinkBtn');
+            const original = btn.textContent;
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => { btn.textContent = original; }, 1500);
+        }).catch(() => {
+            alert('Link: ' + url);
+        });
+    });
+
+    // Initial render
+    populateTable();
+    updateUI(4); // Jaekelopterus active by default
+
+    // Handle window resize for canvas DPI
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        const containerWidth = container.clientWidth - 20;
+        if (containerWidth > 200) {
+            canvas.width = Math.min(800, containerWidth);
+            canvas.height = Math.round(canvas.width * 0.5);
+            drawCanvas(items[activeIndex]);
+        }
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+</script>
+
+<!-- JSON-LD SoftwareApplication Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D — World's Largest Insects & Spiders",
+    "description": "Interactive 3D workstation comparing the world's largest arthropods by scale, with telemetry controls and CSV export.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    },
+    "author": {
+        "@type": "Organization",
+        "name": "Aether Empire"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/world-s-largest-insects-spiders-3d-size-shock.html",
+    "video": {
+        "@type": "VideoObject",
+        "name": "World's Largest Insects & Spiders: 3D Size Shock",
+        "embedUrl": "https://www.youtube.com/embed/SqGiZ8J6RB4",
+        "thumbnailUrl": "https://img.youtube.com/vi/SqGiZ8J6RB4/maxresdefault.jpg",
+        "uploadDate": "2025-01-01"
+    }
+}
+</script>
+</body>
+</html>
