@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D — Earth's Ancient Giants</title>
+    <meta name="description" content="Interactive workstation modelling the 5 oldest living organisms by scale. Export telemetry, copy scenario links, and explore the data.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1e293b;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: #38bdf8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #05070b;
+            font-size: 20px;
+        }
+
+        .brand h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand h1 span {
+            color: #38bdf8;
+        }
+
+        .portal-link,
+        .canonical-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .portal-link:hover,
+        .canonical-link:hover {
+            color: #38bdf8;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Cards */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Canvas area */
+        .canvas-container {
+            position: relative;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 16 / 10;
+            width: 100%;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(5, 7, 11, 0.8);
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+            color: #38bdf8;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Controls */
+        .slider-group {
+            margin-bottom: 16px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .slider-value {
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1e293b;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #38bdf8;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Presets */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .preset-btn {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 10px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .preset-btn:hover {
+            border-color: #38bdf8;
+            background: #131c2e;
+        }
+
+        .preset-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .preset-btn .preset-size {
+            font-size: 10px;
+            opacity: 0.6;
+            font-family: 'SF Mono', monospace;
+        }
+
+        /* KPIs */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .kpi {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .kpi-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .kpi-unit {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            flex: 1;
+            justify-content: center;
+            min-width: 140px;
+        }
+
+        .btn:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: #7dd3fc;
+            border-color: #7dd3fc;
+            color: #05070b;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #0f172a;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #1e293b;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #0f172a;
+        }
+
+        .mono {
+            font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+        }
+
+        .accent {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+
+        .badge-clone {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+        }
+
+        .badge-colony {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 16px 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .faq-question::before {
+            content: "?";
+            color: #38bdf8;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .faq-answer {
+            color: #94a3b8;
+            font-size: 13px;
+            padding-left: 16px;
+            line-height: 1.6;
+        }
+
+        /* Video */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #0f172a;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: #1e293b;
+            margin: 24px 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #475569;
+            font-size: 12px;
+            padding: 24px 0;
+            margin-top: 24px;
+            border-top: 1px solid #1e293b;
+            width: 100%;
+        }
+
+        .footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        .stat-highlight {
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .scale-log {
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #64748b;
+            padding: 8px 12px;
+            background: #0f172a;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            margin-top: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-icon">SV</div>
+                <div>
+                    <h1>SCALE<span>VERSE</span> 3D</h1>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Earth's Ancient Giants · Interactive Workstation</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <a href="./index.html" class="portal-link">← Back to Portal</a>
+                <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/earth-s-ancient-giants-5-oldest-living-organisms.html" class="canonical-link" target="_blank" rel="noopener">Canonical ↗</a>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- Canvas -->
+                <div class="canvas-container">
+                    <canvas id="simCanvas"></canvas>
+                    <div class="canvas-overlay" id="canvasInfo">SCALE VIEW · 0 m</div>
+                </div>
+
+                <!-- Presets -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-title">Scenario Presets</div>
+                    <div class="preset-grid" id="presetGrid"></div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Scale Zoom</span>
+                            <span class="slider-value" id="zoomValue">1.0×</span>
+                        </div>
+                        <input type="range" id="zoomSlider" min="0.1" max="10" step="0.1" value="1">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Viewport Offset</span>
+                            <span class="slider-value" id="offsetValue">0 m</span>
+                        </div>
+                        <input type="range" id="offsetSlider" min="0" max="15000" step="100" value="0">
+                    </div>
+                </div>
+
+                <!-- Analytical Table -->
+                <div class="card">
+                    <div class="card-title">Analytical Breakdown · 5 Oldest Living Organisms</div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Organism</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>Metric</th>
+                                    <th>Scale Factor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="scale-log" id="scaleLog">Selected: none · Position: 0 m · Zoom: 1.0×</div>
+                </div>
+
+                <!-- YouTube Embed -->
+                <div class="card">
+                    <div class="card-title">Embedded Stream · Earth's Ancient Giants</div>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/KWeSbiXlg4o" title="Earth's Ancient Giants: 5 Oldest Living Organisms" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="card">
+                    <div class="card-title">Frequently Asked Questions</div>
+                    <div class="faq-item">
+                        <div class="faq-question">How are the organisms ordered in the simulation?</div>
+                        <div class="faq-answer">They are ordered by their physical scale in meters, from smallest (Old Tjikko at 5 m) to largest (Posidonia oceanica clone at 15,000 m / 15 km). The canvas visualizes them proportionally with a dynamic zoom system.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">What does "Scale Factor" mean in the table?</div>
+                        <div class="faq-answer">It represents the relative size ratio compared to the smallest organism (Old Tjikko, 5 m). For example, Pando has a scale factor of 26× because its clonal colony spans 130 m.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Can I export the current telemetry?</div>
+                        <div class="faq-answer">Yes. Click "Export CSV Telemetry" to download a CSV file containing all organism data, current zoom level, offset position, and timestamp. The data is generated live from the simulation state.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">How does "Copy Scenario Link" work?</div>
+                        <div class="faq-answer">It copies a URL to your clipboard that includes the current zoom and offset parameters as query strings. Opening that link will restore the exact viewport state when the page loads.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Why is the Posidonia clone shown at 15 km but labeled 15,000 m?</div>
+                        <div class="faq-answer">The metric uses meters for consistency across all organisms. 15,000 meters equals 15 kilometers, which is the estimated width of the Posidonia oceanica clone discovered in the Mediterranean.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- KPIs -->
+                <div class="card">
+                    <div class="card-title">Live Telemetry</div>
+                    <div class="kpi-grid">
+                        <div class="kpi">
+                            <div class="kpi-label">Selected Organism</div>
+                            <div class="kpi-value" id="kpiSelected" style="font-size: 14px;">Old Tjikko</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">Size (m)</div>
+                            <div class="kpi-value" id="kpiSize">5 <span class="kpi-unit">m</span></div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">Viewport Zoom</div>
+                            <div class="kpi-value" id="kpiZoom">1.0<span class="kpi-unit">×</span></div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">Offset Position</div>
+                            <div class="kpi-value" id="kpiOffset">0 <span class="kpi-unit">m</span></div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">Scale Ratio</div>
+                            <div class="kpi-value" id="kpiRatio">1.0<span class="kpi-unit">×</span></div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">Visible Organisms</div>
+                            <div class="kpi-value" id="kpiVisible">5 <span class="kpi-unit">/5</span></div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="exportBtn">Export CSV Telemetry</button>
+                        <button class="btn" id="copyBtn">Copy Scenario Link</button>
+                    </div>
+                </div>
+
+                <!-- Scale Reference -->
+                <div class="card">
+                    <div class="card-title">Scale Reference</div>
+                    <div style="font-size: 13px; color: #94a3b8; line-height: 1.8;">
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1e293b;">
+                            <span>Old Tjikko</span>
+                            <span class="mono accent">5 m</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1e293b;">
+                            <span>Methuselah</span>
+                            <span class="mono accent">10 m</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1e293b;">
+                            <span>President Tree</span>
+                            <span class="mono accent">75 m</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1e293b;">
+                            <span>Pando</span>
+                            <span class="mono accent">130 m</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                            <span>Posidonia clone</span>
+                            <span class="mono accent">15,000 m</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scale Conversion -->
+                <div class="card">
+                    <div class="card-title">Scale Conversion</div>
+                    <div style="font-size: 13px; color: #94a3b8;">
+                        <div style="margin-bottom: 12px;">1 m = <span class="stat-highlight" id="pxPerMeter">0.04</span> px</div>
+                        <div style="margin-bottom: 12px;">Canvas width: <span class="stat-highlight" id="canvasWidth">0</span> px</div>
+                        <div style="margin-bottom: 12px;">Viewport span: <span class="stat-highlight" id="viewportSpan">0</span> m</div>
+                        <div>Scale mode: <span class="stat-highlight" id="scaleMode">Auto</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>SCALEVERSE 3D · Earth's Ancient Giants · Data-driven interactive simulation</p>
+            <p style="margin-top: 8px;">
+                <a href="./index.html">Portal</a> · 
+                <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/earth-s-ancient-giants-5-oldest-living-organisms.html" target="_blank" rel="noopener">Canonical</a> · 
+                YouTube Stream Embedded
+            </p>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SCALEVERSE 3D — Earth's Ancient Giants",
+        "description": "Interactive workstation modelling the 5 oldest living organisms by scale, with telemetry export and scenario linking.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/earth-s-ancient-giants-5-oldest-living-organisms.html",
+        "author": {
+            "@type": "Organization",
+            "name": "SCALEVERSE 3D"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Interactive canvas simulation",
+            "Scenario presets",
+            "CSV telemetry export",
+            "Copy scenario link",
+            "Analytical breakdown table",
+            "FAQ section",
+            "YouTube stream embed"
+        ]
+    }
+    </script>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ==================== DATA ====================
+            const DATA = {
+                title: "Earth's Ancient Giants: 5 Oldest Living Organisms",
+                items: [
+                    { name: "Old Tjikko", meters: 5, metric: "5 m tall", type: "Tree", color: "#38bdf8" },
+                    { name: "Methuselah", meters: 10, metric: "10 m tall", type: "Tree", color: "#22d3ee" },
+                    { name: "President Tree", meters: 75, metric: "75 m tall", type: "Tree", color: "#2dd4bf" },
+                    { name: "Pando", meters: 130, metric: "43 ha colony", type: "Colony", color: "#fbbf24" },
+                    { name: "Posidonia oceanica clone", meters: 15000, metric: "15 km wide", type: "Clone", color: "#c084fc" }
+                ]
+            };
+
+            const ITEMS = DATA.items;
+            const MIN_SIZE = 5;
+            const MAX_SIZE = 15000;
+
+            // ==================== STATE ====================
+            let state = {
+                zoom: 1,
+                offset: 0,
+                selectedIndex: 0,
+                hoverIndex: -1,
+                canvasWidth: 0,
+                canvasHeight: 0,
+                dpr: 1
+            };
+
+            // ==================== DOM REFS ====================
+            const canvas = document.getElementById('simCanvas');
+            const ctx = canvas.getContext('2d');
+            const canvasInfo = document.getElementById('canvasInfo');
+            const zoomSlider = document.getElementById('zoomSlider');
+            const offsetSlider = document.getElementById('offsetSlider');
+            const zoomValue = document.getElementById('zoomValue');
+            const offsetValue = document.getElementById('offsetValue');
+            const kpiSelected = document.getElementById('kpiSelected');
+            const kpiSize = document.getElementById('kpiSize');
+            const kpiZoom = document.getElementById('kpiZoom');
+            const kpiOffset = document.getElementById('kpiOffset');
+            const kpiRatio = document.getElementById('kpiRatio');
+            const kpiVisible = document.getElementById('kpiVisible');
+            const tableBody = document.getElementById('tableBody');
+            const presetGrid = document.getElementById('presetGrid');
+            const scaleLog = document.getElementById('scaleLog');
+            const toast = document.getElementById('toast');
+            const pxPerMeterEl = document.getElementById('pxPerMeter');
+            const canvasWidthEl = document.getElementById('canvasWidth');
+            const viewportSpanEl = document.getElementById('viewportSpan');
+            const scaleModeEl = document.getElementById('scaleMode');
+
+            // ==================== UTILS ====================
+            function clamp(v, min, max) {
+                return Math.max(min, Math.min(max, v));
+            }
+
+            function formatNumber(n) {
+                if (n >= 1000) {
+                    return n.toLocaleString('en-US');
+                }
+                return String(n);
+            }
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }
+
+            // ==================== SCALE MATH ====================
+            // We map the world [offset, offset + viewportSpan] to canvas width
+            // viewportSpan = canvasWidth / (basePxPerMeter * zoom)
+            // basePxPerMeter = 1 (so 1 meter = 1 pixel at zoom 1... but that's too large)
+            // We use a log scale for the base to fit everything
+            function getViewportSpan() {
+                // At zoom 1, fit the full range [0, MAX_SIZE * 1.2] on screen
+                // viewportSpan = (MAX_SIZE * 1.2) / zoom
+                return (MAX_SIZE * 1.15) / state.zoom;
+            }
+
+            function getPxPerMeter() {
+                const span = getViewportSpan();
+                if (span <= 0) return 1;
+                return state.canvasWidth / span;
+            }
+
+            function worldToScreen(meters) {
+                const pxPerMeter = getPxPerMeter();
+                const screenX = (meters - state.offset) * pxPerMeter;
+                return screenX;
+            }
+
+            function screenToWorld(screenX) {
+                const pxPerMeter = getPxPerMeter();
+                return screenX / pxPerMeter + state.offset;
+            }
+
+            // ==================== RESIZE ====================
+            function resizeCanvas() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                state.canvasWidth = rect.width;
+                state.canvasHeight = rect.height;
+                state.dpr = dpr;
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                render();
+            }
+
+            // ==================== RENDER ====================
+            function render() {
+                const w = state.canvasWidth;
+                const h = state.canvasHeight;
+                if (w === 0 || h === 0) return;
+
+                // Background
+                ctx.fillStyle = '#0b0f17';
+                ctx.fillRect(0, 0, w, h);
+
+                // Grid lines
+                drawGrid(w, h);
+
+                // Determine visible range
+                const span = getViewportSpan();
+                const startM = state.offset;
+                const endM = state.offset + span;
+
+                // Draw organisms
+                const pxPerMeter = getPxPerMeter();
+                const baseY = h * 0.72;
+                const maxBarHeight = h * 0.55;
+
+                // Sort by size for layering
+                const sorted = ITEMS.map((item, i) => ({...item, index: i}))
+                    .sort((a, b) => a.meters - b.meters);
+
+                sorted.forEach(item => {
+                    const x = worldToScreen(item.meters);
+                    if (x < -200 || x > w + 200) return;
+
+                    const relativeSize = Math.log10(item.meters + 1) / Math.log10(MAX_SIZE + 1);
+                    const barHeight = 20 + relativeSize * maxBarHeight;
+                    const barWidth = clamp(pxPerMeter * item.meters * 0.4, 8, 60);
+
+                    const isSelected = state.selectedIndex === item.index;
+                    const isHovered = state.hoverIndex === item.index;
+
+                    // Draw base marker
+                    ctx.save();
+
+                    // Glow for selected/hovered
+                    if (isSelected || isHovered) {
+                        ctx.shadowColor = item.color;
+                        ctx.shadowBlur = 20;
+                    }
+
+                    // Column
+                    const grad = ctx.createLinearGradient(x, baseY - barHeight, x, baseY);
+                    grad.addColorStop(0, item.color + (isSelected ? 'ff' : '88'));
+                    grad.addColorStop(1, item.color + '22');
+                    ctx.fillStyle = grad;
+
+                    // Rounded rect
+                    const bw = clamp(barWidth, 10, 50);
+                    ctx.beginPath();
+                    ctx.roundRect(x - bw / 2, baseY - barHeight, bw, barHeight, 4);
+                    ctx.fill();
+
+                    // Border
+                    ctx.strokeStyle = isSelected ? '#ffffff' : item.color + 'aa';
+                    ctx.lineWidth = isSelected ? 2 : 1;
+                    ctx.stroke();
+
+                    ctx.restore();
+
+                    // Label
+                    ctx.save();
+                    ctx.font = isSelected ? 'bold 12px "SF Mono", monospace' : '11px "SF Mono", monospace';
+                    ctx.fillStyle = isSelected ? '#ffffff' : '#94a3b8';
+                    ctx.textAlign = 'center';
+                    const labelY = baseY - barHeight - 8;
+                    const label = item.meters >= 1000 ? (item.meters / 1000) + ' km' : item.meters + ' m';
+                    ctx.fillText(label, x, labelY);
+
+                    // Name
+                    ctx.font = '10px "Inter", sans-serif';
+                    ctx.fillStyle = isSelected ? item.color : '#64748b';
+                    ctx.fillText(item.name.length > 18 ? item.name.slice(0, 16) + '…' : item.name, x, baseY + 16);
+                    ctx.restore();
+                });
+
+                // Ground line
+                ctx.beginPath();
+                ctx.moveTo(0, baseY);
+                ctx.lineTo(w, baseY);
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Scale ruler
+                drawScaleRuler(w, h, pxPerMeter, startM, endM);
+
+                // Selected highlight overlay
+                drawSelectionOverlay(w, h, baseY);
+
+                // Update canvas info
+                const selectedItem = ITEMS[state.selectedIndex];
+                canvasInfo.textContent = selectedItem.name + ' · ' + selectedItem.metric + ' · Zoom ' + state.zoom.toFixed(1) + '×';
+
+                // Update KPI and scale info
+                updateScaleInfo(pxPerMeter, span);
+            }
+
+            function drawGrid(w, h) {
+                ctx.save();
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 1;
+                // Vertical grid
+                const step = 80;
+                for (let x = 0; x < w; x += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                }
+                // Horizontal grid
+                for (let y = 0; y < h; y += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            function drawScaleRuler(w, h, pxPerMeter, startM, endM) {
+                const y = h * 0.72 + 40;
+                ctx.save();
+                ctx.strokeStyle = '#1e293b';
+                ctx.fillStyle = '#475569';
+                ctx.font = '10px "SF Mono", monospace';
+                ctx.textAlign = 'center';
+
+                const span = endM - startM;
+                let stepM;
+                if (span > 10000) stepM = 2000;
+                else if (span > 5000) stepM = 1000;
+                else if (span > 2000) stepM = 500;
+                else if (span > 1000) stepM = 200;
+                else if (span > 500) stepM = 100;
+                else if (span > 200) stepM = 50;
+                else stepM = 10;
+
+                const firstTick = Math.ceil(startM / stepM) * stepM;
+                for (let m = firstTick; m <= endM; m += stepM) {
+                    const x = worldToScreen(m);
+                    if (x < 0 || x > w) continue;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - 6);
+                    ctx.lineTo(x, y + 6);
+                    ctx.stroke();
+                    const label = m >= 1000 ? (m / 1000) + 'k' : m;
+                    ctx.fillText(label + 'm', x, y + 20);
+                }
+                ctx.restore();
+            }
+
+            function drawSelectionOverlay(w, h, baseY) {
+                const item = ITEMS[state.selectedIndex];
+                const x = worldToScreen(item.meters);
+                if (x < 0 || x > w) return;
+
+                ctx.save();
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            function updateScaleInfo(pxPerMeter, span) {
+                pxPerMeterEl.textContent = pxPerMeter.toFixed(4);
+                canvasWidthEl.textContent = Math.round(state.canvasWidth);
+                viewportSpanEl.textContent = Math.round(span).toLocaleString() + ' m';
+                scaleModeEl.textContent = state.zoom <= 1 ? 'Wide' : (state.zoom <= 5 ? 'Medium' : 'Macro');
+            }
+
+            // ==================== KPI UPDATE ====================
+            function updateKPIs() {
+                const item = ITEMS[state.selectedIndex];
+                kpiSelected.textContent = item.name;
+                kpiSize.innerHTML = formatNumber(item.meters) + ' <span class="kpi-unit">m</span>';
+                kpiZoom.textContent = state.zoom.toFixed(1) + '×';
+                kpiOffset.textContent = formatNumber(Math.round(state.offset)) + ' m';
+                const ratio = item.meters / MIN_SIZE;
+                kpiRatio.textContent = ratio.toFixed(1) + '×';
+
+                // Visible count
+                const span = getViewportSpan();
+                const startM = state.offset;
+                const endM = state.offset + span;
+                let visible = 0;
+                ITEMS.forEach(it => {
+                    if (it.meters >= startM * 0.8 && it.meters <= endM * 1.2) visible++;
+                });
+                kpiVisible.innerHTML = visible + ' <span class="kpi-unit">/5</span>';
+
+                // Table highlight
+                document.querySelectorAll('#tableBody tr').forEach((tr, i) => {
+                    tr.style.background = i === state.selectedIndex ? 'rgba(56, 189, 248, 0.1)' : '';
+                });
+
+                // Slider sync
+                zoomValue.textContent = state.zoom.toFixed(1) + '×';
+                offsetValue.textContent = formatNumber(Math.round(state.offset)) + ' m';
+
+                // Log
+                scaleLog.textContent = 'Selected: ' + item.name + ' · Position: ' + formatNumber(Math.round(state.offset)) + ' m · Zoom: ' + state.zoom.toFixed(1) + '×';
+            }
+
+            // ==================== TABLE ====================
+            function buildTable() {
+                tableBody.innerHTML = '';
+                ITEMS.forEach((item, i) => {
+                    const tr = document.createElement('tr');
+                    tr.style.cursor = 'pointer';
+                    tr.addEventListener('click', () => {
+                        state.selectedIndex = i;
+                        updateKPIs();
+                        render();
+                    });
+
+                    const typeBadge = item.type === 'Clone' ? 'badge-clone' : (item.type === 'Colony' ? 'badge-colony' : '');
+                    const ratio = (item.meters / MIN_SIZE).toFixed(1);
+
+                    tr.innerHTML = `
+                        <td><strong style="color: #e2e8f0;">${item.name}</strong></td>
+                        <td><span class="badge ${typeBadge}">${item.type}</span></td>
+                        <td class="mono">${formatNumber(item.meters)} m</td>
+                        <td style="color: #94a3b8;">${item.metric}</td>
+                        <td class="mono accent">${ratio}×</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // ==================== PRESETS ====================
+            function buildPresets() {
+                presetGrid.innerHTML = '';
+                ITEMS.forEach((item, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'preset-btn' + (i === state.selectedIndex ? ' active' : '');
+                    btn.innerHTML = `
+                        <span>${item.name.length > 14 ? item.name.slice(0, 12) + '…' : item.name}</span>
+                        <span class="preset-size">${formatNumber(item.meters)} m</span>
+                    `;
+                    btn.addEventListener('click', () => {
+                        state.selectedIndex = i;
+                        // Auto-center on item
+                        const span = getViewportSpan();
+                        state.offset = clamp(item.meters - span / 2, 0, MAX_SIZE);
+                        offsetSlider.value = state.offset;
+                        updatePresetActive();
+                        updateKPIs();
+                        render();
+                    });
+                    presetGrid.appendChild(btn);
+                });
+            }
+
+            function updatePresetActive() {
+                document.querySelectorAll('.preset-btn').forEach((btn, i) => {
+                    btn.classList.toggle('active', i === state.selectedIndex);
+                });
+            }
+
+            // ==================== EVENTS ====================
+            zoomSlider.addEventListener('input', function() {
+                state.zoom = parseFloat(this.value);
+                // Clamp offset to valid range
+                const span = getViewportSpan();
+                state.offset = clamp(state.offset, 0, Math.max(0, MAX_SIZE * 1.15 - span));
+                offsetSlider.value = state.offset;
+                updateKPIs();
+                render();
+            });
+
+            offsetSlider.addEventListener('input', function() {
+                state.offset = parseFloat(this.value);
+                updateKPIs();
+                render();
+            });
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const span = getViewportSpan();
+                const pxPerMeter = getPxPerMeter();
+                const baseY = state.canvasHeight * 0.72;
+
+                // Calculate bar heights for hit test
+                let found = -1;
+                ITEMS.forEach((item, i) => {
+                    const x = worldToScreen(item.meters);
+                    const relativeSize = Math.log10(item.meters + 1) / Math.log10(MAX_SIZE + 1);
+                    const barHeight = 20 + relativeSize * (state.canvasHeight * 0.55);
+                    const bw = clamp(pxPerMeter * item.meters * 0.4, 8, 60);
+                    if (mouseX >= x - bw / 2 - 5 && mouseX <= x + bw / 2 + 5) {
+                        if (e.clientY - rect.top >= baseY - barHeight - 10 && e.clientY - rect.top <= baseY + 20) {
+                            found = i;
+                        }
+                    }
+                });
+
+                if (found !== state.hoverIndex) {
+                    state.hoverIndex = found;
+                    canvas.style.cursor = found >= 0 ? 'pointer' : 'crosshair';
+                    render();
+                }
+            });
+
+            canvas.addEventListener('mouseleave', function() {
+                if (state.hoverIndex !== -1) {
+                    state.hoverIndex = -1;
+                    canvas.style.cursor = 'crosshair';
+                    render();
+                }
+            });
+
+            canvas.addEventListener('click', function(e) {
+                if (state.hoverIndex >= 0) {
+                    state.selectedIndex = state.hoverIndex;
+                    updatePresetActive();
+                    updateKPIs();
+                    render();
+                }
+            });
+
+            // ==================== EXPORT CSV ====================
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                const selected = ITEMS[state.selectedIndex];
+                const span = getViewportSpan();
+                const pxPerMeter = getPxPerMeter();
+
+                const rows = [
+                    ['SCALEVERSE 3D — Earth\'s Ancient Giants', '', '', ''],
+                    ['Telemetry Export', new Date().toISOString(), '', ''],
+                    ['', '', '', ''],
+                    ['Organism', 'Size (m)', 'Type', 'Metric'],
+                ];
+
+                ITEMS.forEach(item => {
+                    rows.push([item.name, item.meters, item.type, item.metric]);
+                });
+
+                rows.push(['', '', '', '']);
+                rows.push(['SIMULATION STATE', '', '', '']);
+                rows.push(['Selected Organism', selected.name, '', '']);
+                rows.push(['Zoom Level', state.zoom.toFixed(2), '', '']);
+                rows.push(['Offset (m)', Math.round(state.offset), '', '']);
+                rows.push(['Pixels per Meter', pxPerMeter.toFixed(4), '', '']);
+                rows.push(['Viewport Span (m)', Math.round(span), '', '']);
+                rows.push(['Scale Ratio (vs Old Tjikko)', (selected.meters / MIN_SIZE).toFixed(2), '', '']);
+                rows.push(['Capture Timestamp', new Date().toISOString(), '', '']);
+
+                const csv = rows.map(r => r.map(c => {
+                    const s = String(c);
+                    return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s;
+                }).join(',')).join('\n');
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'scaleverse_earth_giants_telemetry_' + Date.now() + '.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showToast('CSV telemetry exported');
+            });
+
+            // ==================== COPY LINK ====================
+            document.getElementById('copyBtn').addEventListener('click', function() {
+                const baseUrl = window.location.href.split('?')[0];
+                const params = new URLSearchParams({
+                    zoom: state.zoom.toFixed(2),
+                    offset: Math.round(state.offset),
+                    selected: state.selectedIndex
+                });
+                const url = baseUrl + '?' + params.toString();
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showToast('Scenario link copied to clipboard');
+                    }).catch(() => {
+                        fallbackCopy(url);
+                    });
+                } else {
+                    fallbackCopy(url);
+                }
+            });
+
+            function fallbackCopy(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Scenario link copied to clipboard');
+                } catch (e) {
+                    showToast('Failed to copy — ' + text.slice(0, 40) + '...');
+                }
+                document.body.removeChild(ta);
+            }
+
+            // ==================== LOAD FROM URL ====================
+            function loadFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('zoom')) {
+                    const z = parseFloat(params.get('zoom'));
+                    if (!isNaN(z) && z >= 0.1 && z <= 10) {
+                        state.zoom = z;
+                        zoomSlider.value = z;
+                    }
+                }
+                if (params.has('offset')) {
+                    const o = parseFloat(params.get('offset'));
+                    if (!isNaN(o) && o >= 0 && o <= 15000) {
+                        state.offset = o;
+                        offsetSlider.value = o;
+                    }
+                }
+                if (params.has('selected')) {
+                    const s = parseInt(params.get('selected'), 10);
+                    if (!isNaN(s) && s >= 0 && s < ITEMS.length) {
+                        state.selectedIndex = s;
+                    }
+                }
+            }
+
+            // ==================== POLYFILL roundRect ====================
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                    if (w < 2 * r) r = w / 2;
+                    if (h < 2 * r) r = h / 2;
+                    this.beginPath();
+                    this.moveTo(x + r, y);
+                    this.arcTo(x + w, y, x + w, y + h, r);
+                    this.arcTo(x + w, y + h, x, y + h, r);
+                    this.arcTo(x, y + h, x, y, r);
+                    this.arcTo(x, y, x + w, y, r);
+                    this.closePath();
+                    return this;
+                };
+            }
+
+            // ==================== INIT ====================
+            function init() {
+                buildTable();
+                buildPresets();
+                loadFromURL();
+                updatePresetActive();
+                updateKPIs();
+                resizeCanvas();
+
+                // Resize observer
+                const ro = new ResizeObserver(() => {
+                    resizeCanvas();
+                });
+                ro.observe(canvas.parentElement);
+
+                // Sync slider initial state
+                zoomSlider.value = state.zoom;
+                offsetSlider.value = state.offset;
+                zoomValue.textContent = state.zoom.toFixed(1) + '×';
+                offsetValue.textContent = formatNumber(Math.round(state.offset)) + ' m';
+
+                render();
+            }
+
+            // Start
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+            });
+
+        })();
+    </script>
+</body>
+</html>
