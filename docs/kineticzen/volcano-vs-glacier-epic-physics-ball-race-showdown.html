@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KineticZen Labs — Volcano vs Glacier · Physics Race Workstation</title>
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/volcano-vs-glacier-epic-physics-ball-race-showdown.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #05070b;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #e2e8f0;
+      padding: 2rem 1.5rem;
+      line-height: 1.5;
+    }
+
+    .workstation {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* header / brand */
+    .brand-bar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-accent {
+      width: 8px;
+      height: 28px;
+      background: #f43f5e;
+      border-radius: 4px;
+    }
+
+    .brand h1 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .brand h1 span {
+      color: #f43f5e;
+    }
+
+    .portal-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid #1e293b;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      transition: 0.2s;
+    }
+
+    .portal-link:hover {
+      border-color: #f43f5e;
+      color: #f1f5f9;
+    }
+
+    /* KPI row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1.2rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .kpi-value {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+
+    .kpi-value .accent-volcano {
+      color: #f43f5e;
+    }
+
+    .kpi-value .accent-glacier {
+      color: #38bdf8;
+    }
+
+    /* main layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* canvas area */
+    .canvas-wrapper {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #020408;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      aspect-ratio: 16 / 9;
+      cursor: pointer;
+    }
+
+    .race-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      border-color: #f43f5e;
+      background: #111827;
+    }
+
+    .btn-primary {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: #05070b;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #fb7185;
+      border-color: #fb7185;
+    }
+
+    .btn-secondary {
+      border-color: #334155;
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .slider-group label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #f43f5e;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #05070b;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #f43f5e;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #05070b;
+    }
+
+    .slider-value {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #f1f5f9;
+      min-width: 3.5rem;
+      text-align: right;
+    }
+
+    /* sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.3rem;
+    }
+
+    .panel h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 0.7rem 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: 0.15s;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .preset-btn:hover {
+      border-color: #f43f5e;
+      color: #f1f5f9;
+    }
+
+    .preset-btn.active {
+      border-color: #f43f5e;
+      background: rgba(244, 63, 94, 0.1);
+      color: #f43f5e;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .action-buttons .btn {
+      justify-content: center;
+      padding: 0.8rem;
+    }
+
+    /* table */
+    .table-section {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.8rem 1rem;
+      color: #64748b;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #1e293b;
+      font-family: monospace;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .team-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-volcano {
+      background: #f43f5e;
+    }
+
+    .dot-glacier {
+      background: #38bdf8;
+    }
+
+    /* FAQ */
+    .faq-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 700px) {
+      .faq-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .faq-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.3rem;
+    }
+
+    .faq-item h4 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: #f1f5f9;
+    }
+
+    .faq-item p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    /* youtube */
+    .video-wrapper {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .video-wrapper iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      display: block;
+    }
+
+    .video-caption {
+      margin-top: 0.8rem;
+      font-size: 0.85rem;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* footer */
+    .footer-note {
+      text-align: center;
+      color: #475569;
+      font-size: 0.8rem;
+      padding-top: 1rem;
+      border-top: 1px solid #1e293b;
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+  <!-- brand bar -->
+  <div class="brand-bar">
+    <div class="brand">
+      <div class="brand-accent"></div>
+      <h1>KINETIC<span>ZEN</span> LABS</h1>
+    </div>
+    <a href="./index.html" class="portal-link">← Portal</a>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Leader</div>
+      <div class="kpi-value" id="kpiLeader">—</div>
+      <div class="kpi-sub" id="kpiLeaderSub">ready</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Volcano Velocity</div>
+      <div class="kpi-value"><span class="accent-volcano" id="kpiVolcanoVel">0.0</span> <span style="font-size:0.9rem; color:#64748b;">m/s</span></div>
+      <div class="kpi-sub" id="kpiVolcanoSub">ball A · mass 2.4 kg</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Glacier Velocity</div>
+      <div class="kpi-value"><span class="accent-glacier" id="kpiGlacierVel">0.0</span> <span style="font-size:0.9rem; color:#64748b;">m/s</span></div>
+      <div class="kpi-sub" id="kpiGlacierSub">ball B · mass 1.8 kg</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Race Progress</div>
+      <div class="kpi-value" id="kpiProgress">0%</div>
+      <div class="kpi-sub" id="kpiProgressSub">finish line 100%</div>
+    </div>
+  </div>
+
+  <!-- main grid -->
+  <div class="main-grid">
+    <!-- canvas & controls -->
+    <div class="canvas-wrapper">
+      <canvas id="raceCanvas" width="960" height="540"></canvas>
+      <div class="race-controls">
+        <button class="btn btn-primary" id="startBtn">▶ Start Race</button>
+        <button class="btn btn-secondary" id="resetBtn">↺ Reset</button>
+        <div class="slider-group">
+          <label for="gravitySlider">Gravity</label>
+          <input type="range" id="gravitySlider" min="0.2" max="2.5" step="0.1" value="1.0">
+          <span class="slider-value" id="gravityValue">1.0</span>
+        </div>
+        <div class="slider-group">
+          <label for="frictionSlider">Friction</label>
+          <input type="range" id="frictionSlider" min="0.0" max="1.0" step="0.05" value="0.02">
+          <span class="slider-value" id="frictionValue">0.02</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- sidebar -->
+    <div class="sidebar">
+      <div class="panel">
+        <h3>Scenario Presets</h3>
+        <div class="preset-grid">
+          <button class="preset-btn active" data-preset="balanced">Balanced</button>
+          <button class="preset-btn" data-preset="volcano">Volcano Boost</button>
+          <button class="preset-btn" data-preset="glacier">Glacier Boost</button>
+          <button class="preset-btn" data-preset="chaos">Chaos</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Telemetry</h3>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+          <button class="btn btn-secondary" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- breakdown table -->
+  <div class="table-section">
+    <table>
+      <thead>
+        <tr>
+          <th>Entity</th>
+          <th>Mass</th>
+          <th>Velocity (m/s)</th>
+          <th>Acceleration</th>
+          <th>Distance (px)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="telemetryTableBody">
+        <tr>
+          <td><span class="team-label"><span class="dot dot-volcano"></span> VOLCANO</span></td>
+          <td>2.4 kg</td>
+          <td id="tableVolcanoVel">0.00</td>
+          <td id="tableVolcanoAcc">0.00</td>
+          <td id="tableVolcanoDist">0</td>
+          <td id="tableVolcanoStatus">idle</td>
+        </tr>
+        <tr>
+          <td><span class="team-label"><span class="dot dot-glacier"></span> GLACIER</span></td>
+          <td>1.8 kg</td>
+          <td id="tableGlacierVel">0.00</td>
+          <td id="tableGlacierAcc">0.00</td>
+          <td id="tableGlacierDist">0</td>
+          <td id="tableGlacierStatus">idle</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="faq-item">
+      <h4>How is the race physics modeled?</h4>
+      <p>Each ball is simulated with a simplified rigid-body integration: gravity, surface friction, and a preset initial impulse. The Volcano ball has a higher mass (2.4 kg) but lower base friction, while Glacier is lighter (1.8 kg) with slightly higher friction. The slider values adjust global parameters in real time.</p>
+    </div>
+    <div class="faq-item">
+      <h4>What do the presets change?</h4>
+      <p>Presets alter the initial velocity and friction coefficients. "Volcano Boost" increases Volcano's initial impulse, "Glacier Boost" gives Glacier a head start, "Chaos" adds random perturbations to both, and "Balanced" restores the default competitive setup.</p>
+    </div>
+  </div>
+
+  <!-- YouTube embed -->
+  <div class="video-wrapper">
+    <iframe src="https://www.youtube.com/embed/eq2tL3vksMQ" title="Volcano vs Glacier: Epic Physics Ball Race Showdown" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="video-caption">
+      <span>Volcano vs Glacier: Epic Physics Ball Race Showdown</span>
+      <span>60FPS Matter.js rivalry simulation</span>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="footer-note">
+    KineticZen Labs · Physics Race Workstation · data payload: VOLCANO vs GLACIER
+  </div>
+</div>
+
+<!-- JSON-LD SoftwareApplication schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "KineticZen Labs — Volcano vs Glacier Physics Race Workstation",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Any",
+  "description": "Interactive rigid-body physics rivalry simulation comparing VOLCANO and GLACIER teams with real-time telemetry, presets, and CSV export.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/volcano-vs-glacier-epic-physics-ball-race-showdown.html",
+  "author": {
+    "@type": "Organization",
+    "name": "KineticZen Labs"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "additionalProperty": {
+    "@type": "PropertyValue",
+    "name": "Embedded Stream",
+    "value": "https://www.youtube.com/embed/eq2tL3vksMQ"
+  }
+}
+</script>
+
+<script>
+  (function() {
+    // ---------- core state ----------
+    const canvas = document.getElementById('raceCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // DOM references
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const gravitySlider = document.getElementById('gravitySlider');
+    const gravityValue = document.getElementById('gravityValue');
+    const frictionSlider = document.getElementById('frictionSlider');
+    const frictionValue = document.getElementById('frictionValue');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const kpiLeader = document.getElementById('kpiLeader');
+    const kpiLeaderSub = document.getElementById('kpiLeaderSub');
+    const kpiVolcanoVel = document.getElementById('kpiVolcanoVel');
+    const kpiGlacierVel = document.getElementById('kpiGlacierVel');
+    const kpiProgress = document.getElementById('kpiProgress');
+    const kpiVolcanoSub = document.getElementById('kpiVolcanoSub');
+    const kpiGlacierSub = document.getElementById('kpiGlacierSub');
+
+    // table cells
+    const tableVolcanoVel = document.getElementById('tableVolcanoVel');
+    const tableVolcanoAcc = document.getElementById('tableVolcanoAcc');
+    const tableVolcanoDist = document.getElementById('tableVolcanoDist');
+    const tableVolcanoStatus = document.getElementById('tableVolcanoStatus');
+    const tableGlacierVel = document.getElementById('tableGlacierVel');
+    const tableGlacierAcc = document.getElementById('tableGlacierAcc');
+    const tableGlacierDist = document.getElementById('tableGlacierDist');
+    const tableGlacierStatus = document.getElementById('tableGlacierStatus');
+
+    // ---------- physics state ----------
+    const W = 960, H = 540;
+    const GROUND_Y = 420;
+    const START_X_VOLCANO = 120;
+    const START_X_GLACIER = 120;
+    const FINISH_X = 860;
+    const BALL_RADIUS = 18;
+
+    let gravity = 1.0;
+    let friction = 0.02;
+    let running = false;
+    let animationFrame = null;
+    let frameCount = 0;
+
+    // balls
+    let volcano = {
+      x: START_X_VOLCANO,
+      y: GROUND_Y - BALL_RADIUS,
+      vx: 0,
+      vy: 0,
+      mass: 2.4,
+      ax: 0,
+      ay: 0,
+      status: 'idle',
+      color: '#f43f5e',
+      label: 'VOLCANO'
+    };
+
+    let glacier = {
+      x: START_X_GLACIER,
+      y: GROUND_Y - BALL_RADIUS,
+      vx: 0,
+      vy: 0,
+      mass: 1.8,
+      ax: 0,
+      ay: 0,
+      status: 'idle',
+      color: '#38bdf8',
+      label: 'GLACIER'
+    };
+
+    // default preset velocities (before gravity/friction)
+    const PRESETS = {
+      balanced: { volcanoVx: 3.2, glacierVx: 3.2, friction: 0.02, gravity: 1.0 },
+      volcano: { volcanoVx: 5.0, glacierVx: 2.6, friction: 0.015, gravity: 1.0 },
+      glacier: { volcanoVx: 2.6, glacierVx: 5.0, friction: 0.03, gravity: 1.0 },
+      chaos: { volcanoVx: 4.2, glacierVx: 4.2, friction: 0.06, gravity: 1.3 }
+    };
+
+    // initial velocities store (for reset)
+    let initialVolcanoVx = PRESETS.balanced.volcanoVx;
+    let initialGlacierVx = PRESETS.balanced.glacierVx;
+
+    // ---------- helpers ----------
+    function updateSliderDisplay() {
+      gravityValue.textContent = gravity.toFixed(1);
+      frictionValue.textContent = friction.toFixed(2);
+    }
+
+    function setPreset(name) {
+      const p = PRESETS[name] || PRESETS.balanced;
+      gravity = p.gravity;
+      friction = p.friction;
+      gravitySlider.value = gravity;
+      frictionSlider.value = friction;
+      initialVolcanoVx = p.volcanoVx;
+      initialGlacierVx = p.glacierVx;
+      updateSliderDisplay();
+      // update active class
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.preset === name);
+      });
+      // reset race to apply new initial velocities
+      resetRace(false);
+    }
+
+    function resetRace(keepRunning = true) {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+      }
+      running = false;
+      frameCount = 0;
+
+      volcano = {
+        x: START_X_VOLCANO, y: GROUND_Y - BALL_RADIUS,
+        vx: initialVolcanoVx, vy: 0,
+        mass: 2.4, ax: 0, ay: 0, status: 'idle',
+        color: '#f43f5e', label: 'VOLCANO'
+      };
+      glacier = {
+        x: START_X_GLACIER, y: GROUND_Y - BALL_RADIUS,
+        vx: initialGlacierVx, vy: 0,
+        mass: 1.8, ax: 0, ay: 0, status: 'idle',
+        color: '#38bdf8', label: 'GLACIER'
+      };
+
+      // reset KPI and table
+      updateUI();
+      draw();
+      startBtn.textContent = '▶ Start Race';
+    }
+
+    function updateUI() {
+      // KPI
+      kpiVolcanoVel.textContent = volcano.vx.toFixed(1);
+      kpiGlacierVel.textContent = glacier.vx.toFixed(1);
+      kpiVolcanoSub.textContent = `ball A · mass 2.4 kg · ${volcano.status}`;
+      kpiGlacierSub.textContent = `ball B · mass 1.8 kg · ${glacier.status}`;
+
+      const vxV = volcano.vx;
+      const vxG = glacier.vx;
+      if (volcano.status === 'finished' && glacier.status !== 'finished') {
+        kpiLeader.textContent = 'VOLCANO';
+        kpiLeader.style.color = '#f43f5e';
+        kpiLeaderSub.textContent = 'winner';
+      } else if (glacier.status === 'finished' && volcano.status !== 'finished') {
+        kpiLeader.textContent = 'GLACIER';
+        kpiLeader.style.color = '#38bdf8';
+        kpiLeaderSub.textContent = 'winner';
+      } else if (volcano.status === 'finished' && glacier.status === 'finished') {
+        kpiLeader.textContent = 'TIE';
+        kpiLeader.style.color = '#e2e8f0';
+        kpiLeaderSub.textContent = 'both finished';
+      } else {
+        if (vxV > vxG + 0.1) {
+          kpiLeader.textContent = 'VOLCANO';
+          kpiLeader.style.color = '#f43f5e';
+          kpiLeaderSub.textContent = 'leading';
+        } else if (vxG > vxV + 0.1) {
+          kpiLeader.textContent = 'GLACIER';
+          kpiLeader.style.color = '#38bdf8';
+          kpiLeaderSub.textContent = 'leading';
+        } else {
+          kpiLeader.textContent = '—';
+          kpiLeader.style.color = '#e2e8f0';
+          kpiLeaderSub.textContent = 'tied';
+        }
+      }
+
+      // progress (max distance of either ball)
+      const maxDistV = Math.min(volcano.x - START_X_VOLCANO, FINISH_X - START_X_VOLCANO);
+      const maxDistG = Math.min(glacier.x - START_X_GLACIER, FINISH_X - START_X_GLACIER);
+      const progress = Math.min(100, Math.round(Math.max(0, maxDistV, maxDistG) / (FINISH_X - START_X_VOLCANO) * 100));
+      kpiProgress.textContent = progress + '%';
+      kpiProgressSub.textContent = progress >= 100 ? 'race complete' : 'finish line 100%';
+
+      // table
+      tableVolcanoVel.textContent = volcano.vx.toFixed(2);
+      tableVolcanoAcc.textContent = volcano.ax.toFixed(2);
+      tableVolcanoDist.textContent = Math.round(Math.max(0, volcano.x - START_X_VOLCANO));
+      tableVolcanoStatus.textContent = volcano.status;
+
+      tableGlacierVel.textContent = glacier.vx.toFixed(2);
+      tableGlacierAcc.textContent = glacier.ax.toFixed(2);
+      tableGlacierDist.textContent = Math.round(Math.max(0, glacier.x - START_X_GLACIER));
+      tableGlacierStatus.textContent = glacier.status;
+    }
+
+    // ---------- draw ----------
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // background gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, '#05070b');
+      grad.addColorStop(1, '#0b0f17');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // grid lines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < W; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, H);
+        ctx.stroke();
+      }
+      for (let i = 0; i < H; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(W, i);
+        ctx.stroke();
+      }
+
+      // ground
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, GROUND_Y);
+      ctx.lineTo(W, GROUND_Y);
+      ctx.stroke();
+
+      // finish line
+      ctx.setLineDash([8, 8]);
+      ctx.strokeStyle = '#f43f5e';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(FINISH_X, GROUND_Y - 80);
+      ctx.lineTo(FINISH_X, GROUND_Y + 20);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // finish label
+      ctx.fillStyle = '#64748b';
+      ctx.font = '12px monospace';
+      ctx.fillText('FINISH', FINISH_X - 20, GROUND_Y - 90);
+
+      // volcano ball
+      ctx.beginPath();
+      ctx.arc(volcano.x, volcano.y, BALL_RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = volcano.color;
+      ctx.shadowColor = volcano.color;
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // volcano label
+      ctx.fillStyle = '#f1f5f9';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('V', volcano.x, volcano.y + 4);
+
+      // glacier ball
+      ctx.beginPath();
+      ctx.arc(glacier.x, glacier.y, BALL_RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = glacier.color;
+      ctx.shadowColor = glacier.color;
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // glacier label
+      ctx.fillStyle = '#05070b';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('G', glacier.x, glacier.y + 4);
+
+      // team names above balls
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#f43f5e';
+      ctx.fillText('VOLCANO', volcano.x, volcano.y - BALL_RADIUS - 8);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('GLACIER', glacier.x, glacier.y - BALL_RADIUS - 8);
+      ctx.textAlign = 'left';
+
+      // velocity vector (small line)
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(volcano.x, volcano.y);
+      ctx.lineTo(volcano.x + volcano.vx * 6, volcano.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(glacier.x, glacier.y);
+      ctx.lineTo(glacier.x + glacier.vx * 6, glacier.y);
+      ctx.stroke();
+    }
+
+    // ---------- physics step ----------
+    function step() {
+      if (!running) return;
+
+      // adjust friction and gravity from sliders
+      gravity = parseFloat(gravitySlider.value);
+      friction = parseFloat(frictionSlider.value);
+      updateSliderDisplay();
+
+      const dt = 0.1;
+
+      // volcano update
+      if (volcano.status !== 'finished') {
+        // apply friction (opposes motion)
+        let fricDecelV = friction * gravity * 1.2;
+        if (Math.abs(volcano.vx) <= fricDecelV) {
+          volcano.vx = 0;
+        } else {
+          volcano.vx -= Math.sign(volcano.vx) * fricDecelV;
+        }
+        volcano.ax = -Math.sign(volcano.vx) * friction * gravity * 1.2;
+        volcano.x += volcano.vx * dt * 10;
+
+        // check finish
+        if (volcano.x >= FINISH_X) {
+          volcano.x = FINISH_X;
+          volcano.vx = 0;
+          volcano.status = 'finished';
+          volcano.ax = 0;
+        } else {
+          volcano.status = 'running';
+        }
+      }
+
+      // glacier update
+      if (glacier.status !== 'finished') {
+        let fricDecelG = friction * gravity * 1.5; // glacier higher friction due to mass
+        if (Math.abs(glacier.vx) <= fricDecelG) {
+          glacier.vx = 0;
+        } else {
+          glacier.vx -= Math.sign(glacier.vx) * fricDecelG;
+        }
+        glacier.ax = -Math.sign(glacier.vx) * friction * gravity * 1.5;
+        glacier.x += glacier.vx * dt * 10;
+
+        if (glacier.x >= FINISH_X) {
+          glacier.x = FINISH_X;
+          glacier.vx = 0;
+          glacier.status = 'finished';
+          glacier.ax = 0;
+        } else {
+          glacier.status = 'running';
+        }
+      }
+
+      // clamp positions
+      volcano.x = Math.max(START_X_VOLCANO, Math.min(FINISH_X, volcano.x));
+      glacier.x = Math.max(START_X_GLACIER, Math.min(FINISH_X, glacier.x));
+
+      // stop when both finished
+      if (volcano.status === 'finished' && glacier.status === 'finished') {
+        running = false;
+        startBtn.textContent = '▶ Start Race';
+      }
+
+      frameCount++;
+      updateUI();
+      draw();
+
+      if (running) {
+        animationFrame = requestAnimationFrame(step);
+      }
+    }
+
+    // ---------- event handlers ----------
+    startBtn.addEventListener('click', () => {
+      if (running) {
+        // pause
+        running = false;
+        if (animationFrame) {
+          cancelAnimationFrame(animationFrame);
+          animationFrame = null;
+        }
+        startBtn.textContent = '▶ Start Race';
+        return;
+      }
+
+      // if both finished, reset first
+      if (volcano.status === 'finished' && glacier.status === 'finished') {
+        resetRace();
+      }
+
+      // set initial velocities if idle
+      if (volcano.status === 'idle' || volcano.status === 'finished') {
+        volcano.vx = initialVolcanoVx;
+        volcano.status = 'running';
+      }
+      if (glacier.status === 'idle' || glacier.status === 'finished') {
+        glacier.vx = initialGlacierVx;
+        glacier.status = 'running';
+      }
+
+      running = true;
+      startBtn.textContent = '⏸ Pause';
+      updateUI();
+      step();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      resetRace();
+    });
+
+    gravitySlider.addEventListener('input', () => {
+      gravity = parseFloat(gravitySlider.value);
+      updateSliderDisplay();
+      if (!running) draw();
+    });
+
+    frictionSlider.addEventListener('input', () => {
+      friction = parseFloat(frictionSlider.value);
+      updateSliderDisplay();
+      if (!running) draw();
+    });
+
+    // preset buttons
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setPreset(btn.dataset.preset);
+      });
+    });
+
+    // export CSV
+    exportCsvBtn.addEventListener('click', () => {
+      const rows = [
+        ['Entity', 'Mass (kg)', 'Velocity (m/s)', 'Acceleration', 'Distance (px)', 'Status'],
+        ['VOLCANO', '2.4', volcano.vx.toFixed(3), volcano.ax.toFixed(3), Math.round(Math.max(0, volcano.x - START_X_VOLCANO)), volcano.status],
+        ['GLACIER', '1.8', glacier.vx.toFixed(3), glacier.ax.toFixed(3), Math.round(Math.max(0, glacier.x - START_X_GLACIER)), glacier.status]
+      ];
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kineticzen_volcano_glacier_telemetry.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // copy scenario link
+    copyLinkBtn.addEventListener('click', () => {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        copyLinkBtn.textContent = '✓ Copied!';
+        setTimeout(() => { copyLinkBtn.textContent = '🔗 Copy Scenario Link'; }, 1500);
+      }).catch(() => {
+        // fallback
+        prompt('Copy this link:', url);
+      });
+    });
+
+    // ---------- initialize ----------
+    function init() {
+      setPreset('balanced');
+      resetRace();
+      updateSliderDisplay();
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>
