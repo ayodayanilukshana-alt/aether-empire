@@ -1,51 +1,55 @@
 1
-00:00:00,096 --> 00:00:02,818
-DSV Alvin famously explored the Titanic
+00:00:00,096 --> 00:00:01,720
+A quark star crams a Sun's
 
 2
-00:00:02,830 --> 00:00:05,692
-wreck and hydrothermal vents revolutionizing deep
+00:00:01,732 --> 00:00:03,799
+mass into just twelve kilometers matter
 
 3
-00:00:05,704 --> 00:00:08,706
-sea science Sealab III was an
+00:00:03,811 --> 00:00:07,607
+crushed beyond neutron degeneracy Neutron stars
 
 4
-00:00:08,715 --> 00:00:10,911
-underwater habitat that housed aquanauts for
+00:00:07,619 --> 00:00:09,242
+spin hundreds of times per second
 
 5
-00:00:10,923 --> 00:00:13,248
-weeks testing human endurance at depth
+00:00:09,546 --> 00:00:11,497
+their density so extreme a teaspoon
 
 6
-00:00:14,160 --> 00:00:15,913
-The NR 1 a nuclear mini
+00:00:11,509 --> 00:00:14,053
+weighs a mountain White dwarfs are
 
 7
-00:00:15,924 --> 00:00:18,097
-sub could stay submerged for weeks
+00:00:14,065 --> 00:00:16,857
+Earth sized embers crystallizing into diamonds
 
 8
-00:00:18,342 --> 00:00:21,577
-exploring the ocean floor Typhoon class
+00:00:16,868 --> 00:00:18,527
+over billions of years of cooling
 
 9
-00:00:21,589 --> 00:00:23,330
-submarines are the largest ever built
+00:00:19,440 --> 00:00:21,847
+Betelgeuse would engulf Jupiter's orbit its
 
 10
-00:00:23,575 --> 00:00:27,648
-displacing 48,000 tons when submerged Future
+00:00:21,858 --> 00:00:23,961
+surface boiling with convective cells larger
 
 11
-00:00:27,660 --> 00:00:29,610
-concepts like the Atlantis Habitat could
+00:00:23,973 --> 00:00:27,021
+than our Sun VY Canis Majoris
 
 12
-00:00:29,622 --> 00:00:31,947
-be 300 meters wide housing hundreds
+00:00:27,033 --> 00:00:29,124
+could swallow Saturn's orbit a hypergiant
 
 13
-00:00:31,959 --> 00:00:33,010
-of people underwater
+00:00:29,136 --> 00:00:31,063
+so vast it challenges stellar physics
+
+14
+00:00:31,075 --> 00:00:31,636
+itself
