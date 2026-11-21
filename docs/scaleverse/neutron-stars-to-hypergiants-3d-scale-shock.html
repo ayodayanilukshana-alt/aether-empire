@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Neutron Stars to Hypergiants</title>
+
+  <!-- JSON-LD SoftwareApplication Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D — Neutron Stars to Hypergiants: 3D Scale Shock",
+    "description": "A neutron star packs a Sun's mass into a city-sized sphere, while hypergiants stretch billions of kilometers—prepare for the ultimate size shock.",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/neutron-stars-to-hypergiants-3d-scale-shock.html",
+    "applicationCategory": "SimulationGame",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "SCALEVERSE 3D"
+    }
+  }
+  </script>
+
+  <style>
+    /* ---------- RESET & GLOBAL ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    .workstation {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ---------- TYPOGRAPHY ---------- */
+    h1, h2, h3 {
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #f8fafc;
+      border-left: 4px solid #38bdf8;
+      padding-left: 16px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: #38bdf8;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .mono, .metric, .kpi-value, .slider-value, .table-num {
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---------- CARDS ---------- */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ---------- HEADER / SUMMARY ---------- */
+    .header-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .summary-text {
+      color: #94a3b8;
+      font-size: 1rem;
+      max-width: 700px;
+      margin-top: 4px;
+    }
+
+    .portal-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid #1e293b;
+      padding: 8px 16px;
+      border-radius: 999px;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .portal-link:hover {
+      background: #1e293b;
+    }
+
+    .portal-link span {
+      margin-right: 4px;
+    }
+
+    /* ---------- CONTROLS ---------- */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .control-group {
+      background: #0f141e;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .control-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .slider-value {
+      color: #38bdf8;
+      font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 0 2px #38bdf8;
+    }
+
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preset-btn {
+      background: transparent;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    .preset-btn.active {
+      background: #38bdf8;
+      color: #05070b;
+      border-color: #38bdf8;
+      font-weight: 600;
+    }
+
+    /* ---------- KPI ROW ---------- */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: #0f141e;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+    }
+
+    .kpi-value {
+      font-size: 1.2rem;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .kpi-unit {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* ---------- CANVAS ---------- */
+    .canvas-wrapper {
+      position: relative;
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      cursor: crosshair;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .btn:hover {
+      background: #334155;
+      border-color: #38bdf8;
+    }
+
+    .btn-primary {
+      background: #38bdf8;
+      color: #05070b;
+      border-color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #7dd3fc;
+    }
+
+    /* ---------- TABLE ---------- */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: #0f141e;
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.7rem;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    td {
+      padding: 10px 16px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #0f141e;
+    }
+
+    .table-num {
+      text-align: right;
+      color: #e2e8f0;
+    }
+
+    /* ---------- FAQ ---------- */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 12px 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      font-weight: 500;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+    }
+
+    .faq-answer {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      padding-left: 12px;
+      border-left: 2px solid #1e293b;
+    }
+
+    /* ---------- VIDEO EMBED ---------- */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #0b0f17;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ---------- UTILS ---------- */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mt-16 { margin-top: 16px; }
+    .mb-16 { margin-bottom: 16px; }
+    .text-accent { color: #38bdf8; }
+    .small { font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="workstation">
+
+    <!-- HEADER -->
+    <div class="card header-panel">
+      <div>
+        <h1>Neutron Stars to Hypergiants: 3D Scale Shock</h1>
+        <p class="summary-text">
+          A neutron star packs a Sun's mass into a city-sized sphere, while hypergiants stretch billions of kilometers—prepare for the ultimate size shock.
+        </p>
+      </div>
+      <a href="./index.html" class="portal-link"><span>◀</span> SCALEVERSE PORTAL</a>
+    </div>
+
+    <!-- CONTROLS + PRESETS -->
+    <div class="card">
+      <div class="flex-between mb-16">
+        <h2>Simulation Controls</h2>
+        <span class="small mono text-accent">SCALEVERSE 3D</span>
+      </div>
+      <div class="controls-grid">
+        <div class="control-group">
+          <div class="control-label">
+            <span>Object Diameter Scale</span>
+            <span class="slider-value" id="scaleDisplay">1.00x</span>
+          </div>
+          <input type="range" id="scaleSlider" min="0.1" max="2.5" step="0.01" value="1.0">
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>Log Compression Factor</span>
+            <span class="slider-value" id="compressionDisplay">0.50</span>
+          </div>
+          <input type="range" id="compressionSlider" min="0.1" max="1.0" step="0.01" value="0.5">
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>Highlight Object</span>
+            <span class="slider-value" id="highlightDisplay">0</span>
+          </div>
+          <input type="range" id="highlightSlider" min="0" max="4" step="1" value="0">
+        </div>
+      </div>
+
+      <div class="preset-buttons">
+        <button class="preset-btn active" data-preset="neutral">Default</button>
+        <button class="preset-btn" data-preset="compact">Compact</button>
+        <button class="preset-btn" data-preset="extreme">Extreme</button>
+        <button class="preset-btn" data-preset="compare">Compare</button>
+      </div>
+    </div>
+
+    <!-- KPI READOUTS -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Smallest Object</div>
+        <div class="kpi-value mono" id="kpiSmallest">12.00 km</div>
+        <div class="kpi-unit">Quark Star</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Largest Object</div>
+        <div class="kpi-value mono" id="kpiLargest">2.00 B km</div>
+        <div class="kpi-unit">Yellow Hypergiant</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Scale Ratio</div>
+        <div class="kpi-value mono" id="kpiRatio">166,667x</div>
+        <div class="kpi-unit">largest / smallest</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Active Objects</div>
+        <div class="kpi-value mono" id="kpiActive">5</div>
+        <div class="kpi-unit">in dataset</div>
+      </div>
+    </div>
+
+    <!-- CANVAS -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="canvas-wrapper">
+        <canvas id="scaleCanvas" width="1200" height="500"></canvas>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-bar">
+      <button class="btn btn-primary" id="exportCSV">⬇ Export CSV Telemetry</button>
+      <button class="btn" id="copyLink">🔗 Copy Scenario Link</button>
+      <button class="btn" id="resetView">↺ Reset View</button>
+    </div>
+
+    <!-- ANALYTICAL TABLE -->
+    <div class="card">
+      <h2>Analytical Breakdown</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Object</th>
+              <th>Diameter (m)</th>
+              <th>Diameter (km)</th>
+              <th>Visual Radius (px)</th>
+              <th>Relative Scale</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <div class="faq-question">What is the smallest object in this simulation?</div>
+        <div class="faq-answer">The Quark Star (Strange Star) with a diameter of 12 kilometers, followed closely by the Neutron Star at 20 km.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Why is a logarithmic scale used?</div>
+        <div class="faq-answer">The size difference between a quark star and a hypergiant spans over 8 orders of magnitude, making a linear scale impractical for visual comparison.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">What is the largest object shown?</div>
+        <div class="faq-answer">The Yellow Hypergiant (VY Canis Majoris) with a diameter of 2 billion kilometers.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Can I export the data?</div>
+        <div class="faq-answer">Yes, use the "Export CSV Telemetry" button to download a CSV file containing all object names, diameters, and computed visual scales.</div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE EMBED -->
+    <div class="card">
+      <h2>Video Reference</h2>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/JiUjfuSQoW0" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      // ---------- DATA ----------
+      const items = [
+        { name: "Quark Star (Strange Star)", meters: 12000, metric: "12 km diameter" },
+        { name: "Neutron Star", meters: 20000, metric: "20 km diameter" },
+        { name: "White Dwarf", meters: 12000000, metric: "12,000 km diameter" },
+        { name: "Red Supergiant (Betelgeuse)", meters: 1200000000000, metric: "1.2 billion km diameter" },
+        { name: "Yellow Hypergiant (VY Canis Majoris)", meters: 2000000000000, metric: "2 billion km diameter" }
+      ];
+
+      // ---------- STATE ----------
+      let scaleFactor = 1.0;
+      let compression = 0.5;
+      let highlightIndex = 0;
+
+      // ---------- DOM REFS ----------
+      const canvas = document.getElementById('scaleCanvas');
+      const ctx = canvas.getContext('2d');
+      const scaleSlider = document.getElementById('scaleSlider');
+      const scaleDisplay = document.getElementById('scaleDisplay');
+      const compressionSlider = document.getElementById('compressionSlider');
+      const compressionDisplay = document.getElementById('compressionDisplay');
+      const highlightSlider = document.getElementById('highlightSlider');
+      const highlightDisplay = document.getElementById('highlightDisplay');
+      const tableBody = document.getElementById('tableBody');
+      const exportBtn = document.getElementById('exportCSV');
+      const copyLinkBtn = document.getElementById('copyLink');
+      const resetBtn = document.getElementById('resetView');
+      const presetBtns = document.querySelectorAll('.preset-btn');
+
+      // ---------- KPI ELEMENTS ----------
+      const kpiSmallest = document.getElementById('kpiSmallest');
+      const kpiLargest = document.getElementById('kpiLargest');
+      const kpiRatio = document.getElementById('kpiRatio');
+      const kpiActive = document.getElementById('kpiActive');
+
+      // ---------- HELPER FUNCTIONS ----------
+      function formatMeters(m) {
+        if (m >= 1e12) return (m / 1e12).toFixed(2) + ' T';
+        if (m >= 1e9) return (m / 1e9).toFixed(2) + ' B';
+        if (m >= 1e6) return (m / 1e6).toFixed(2) + ' M';
+        if (m >= 1e3) return (m / 1e3).toFixed(2) + ' K';
+        return m.toString();
+      }
+
+      function formatKm(m) {
+        const km = m / 1000;
+        if (km >= 1e6) return (km / 1e6).toFixed(2) + ' M km';
+        if (km >= 1e3) return (km / 1e3).toFixed(2) + ' K km';
+        return km.toFixed(2) + ' km';
+      }
+
+      function logScale(value, minVal, maxVal, outMin, outMax) {
+        // Map value on logarithmic scale
+        const logMin = Math.log10(minVal);
+        const logMax = Math.log10(maxVal);
+        const logVal = Math.log10(value);
+        const t = (logVal - logMin) / (logMax - logMin);
+        return outMin + t * (outMax - outMin);
+      }
+
+      // ---------- UPDATE KPIs & TABLE ----------
+      function updateMetrics() {
+        const smallest = items[0].meters;
+        const largest = items[items.length - 1].meters;
+        kpiSmallest.textContent = formatKm(smallest);
+        kpiLargest.textContent = formatKm(largest);
+        const ratio = largest / smallest;
+        kpiRatio.textContent = ratio.toLocaleString('en-US', { maximumFractionDigits: 0 }) + 'x';
+        kpiActive.textContent = items.length;
+
+        // Update table
+        let html = '';
+        items.forEach((item, idx) => {
+          const relScale = item.meters / smallest;
+          const visualRadius = computeVisualRadius(item.meters);
+          html += `<tr${idx === highlightIndex ? ' style="background:#0f141e;border-left:2px solid #38bdf8;"' : ''}>
+            <td>${item.name}</td>
+            <td class="table-num mono">${item.meters.toLocaleString()}</td>
+            <td class="table-num mono">${(item.meters / 1000).toLocaleString()}</td>
+            <td class="table-num mono">${visualRadius.toFixed(1)}</td>
+            <td class="table-num mono">${relScale.toFixed(1)}x</td>
+          </tr>`;
+        });
+        tableBody.innerHTML = html;
+      }
+
+      // ---------- COMPUTE VISUAL RADIUS ----------
+      function computeVisualRadius(meters) {
+        const minM = items[0].meters;
+        const maxM = items[items.length - 1].meters;
+        const baseRadius = logScale(meters, minM, maxM, 4, 80);
+        return baseRadius * scaleFactor * (1 + compression * 0.5);
+      }
+
+      // ---------- DRAW CANVAS ----------
+      function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // Background grid
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < w; x += 40) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        for (let y = 0; y < h; y += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
+
+        // Draw objects
+        const centerX = w / 2;
+        const centerY = h / 2;
+        const totalW = w - 100;
+        const spacing = totalW / (items.length + 1);
+
+        items.forEach((item, idx) => {
+          const x = 80 + spacing * (idx + 1);
+          const y = centerY;
+          const radius = Math.max(2, computeVisualRadius(item.meters));
+
+          // Glow for highlighted
+          if (idx === highlightIndex) {
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 40;
+          } else {
+            ctx.shadowBlur = 0;
+          }
+
+          // Color gradient
+          const gradient = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, radius * 0.1, x, y, radius);
+          const colors = ['#1e3a8a', '#1d4ed8', '#2563eb', '#3b82f6', '#38bdf8'];
+          const col = colors[idx % colors.length];
+          gradient.addColorStop(0, '#e2e8f0');
+          gradient.addColorStop(0.3, col);
+          gradient.addColorStop(1, '#0f172a');
+
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, 2 * Math.PI);
+          ctx.fillStyle = gradient;
+          ctx.fill();
+
+          // Border
+          ctx.strokeStyle = idx === highlightIndex ? '#38bdf8' : '#334155';
+          ctx.lineWidth = idx === highlightIndex ? 3 : 1.5;
+          ctx.stroke();
+
+          // Label
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = idx === highlightIndex ? '#f1f5f9' : '#94a3b8';
+          ctx.font = '11px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(item.name.split('(')[0].trim(), x, y - radius - 12);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.fillText(item.metric, x, y - radius - 26);
+        });
+
+        // Legend
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#64748b';
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('LOG SCALE · COMPRESSION ' + compression.toFixed(2), 20, 30);
+        ctx.fillText('SCALE ' + scaleFactor.toFixed(2) + 'x', 20, 50);
+      }
+
+      // ---------- UPDATE ALL ----------
+      function updateAll() {
+        scaleDisplay.textContent = scaleFactor.toFixed(2) + 'x';
+        compressionDisplay.textContent = compression.toFixed(2);
+        highlightDisplay.textContent = highlightIndex;
+        updateMetrics();
+        draw();
+      }
+
+      // ---------- EVENT LISTENERS ----------
+      scaleSlider.addEventListener('input', (e) => {
+        scaleFactor = parseFloat(e.target.value);
+        updateAll();
+      });
+
+      compressionSlider.addEventListener('input', (e) => {
+        compression = parseFloat(e.target.value);
+        updateAll();
+      });
+
+      highlightSlider.addEventListener('input', (e) => {
+        highlightIndex = parseInt(e.target.value, 10);
+        updateAll();
+      });
+
+      // ---------- PRESETS ----------
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const preset = btn.dataset.preset;
+          switch (preset) {
+            case 'neutral':
+              scaleFactor = 1.0;
+              compression = 0.5;
+              highlightIndex = 0;
+              break;
+            case 'compact':
+              scaleFactor = 0.6;
+              compression = 0.2;
+              highlightIndex = 1;
+              break;
+            case 'extreme':
+              scaleFactor = 2.2;
+              compression = 0.9;
+              highlightIndex = 4;
+              break;
+            case 'compare':
+              scaleFactor = 1.4;
+              compression = 0.7;
+              highlightIndex = 2;
+              break;
+          }
+          scaleSlider.value = scaleFactor;
+          compressionSlider.value = compression;
+          highlightSlider.value = highlightIndex;
+          updateAll();
+        });
+      });
+
+      // ---------- RESET ----------
+      resetBtn.addEventListener('click', () => {
+        scaleFactor = 1.0;
+        compression = 0.5;
+        highlightIndex = 0;
+        scaleSlider.value = scaleFactor;
+        compressionSlider.value = compression;
+        highlightSlider.value = highlightIndex;
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.preset-btn[data-preset="neutral"]').classList.add('active');
+        updateAll();
+      });
+
+      // ---------- EXPORT CSV ----------
+      exportBtn.addEventListener('click', () => {
+        let csv = 'Object,Meters,Diameter(km),Visual Radius(px),Relative Scale\n';
+        const smallest = items[0].meters;
+        items.forEach((item) => {
+          const relScale = item.meters / smallest;
+          const visualRadius = computeVisualRadius(item.meters);
+          csv += `"${item.name}",${item.meters},${(item.meters / 1000).toFixed(2)},${visualRadius.toFixed(2)},${relScale.toFixed(2)}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scaleverse_neutron_hypergiant_telemetry.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // ---------- COPY LINK ----------
+      copyLinkBtn.addEventListener('click', () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+          const originalText = copyLinkBtn.textContent;
+          copyLinkBtn.textContent = '✓ Copied!';
+          setTimeout(() => {
+            copyLinkBtn.textContent = originalText;
+          }, 2000);
+        }).catch(() => {
+          prompt('Copy this link:', url);
+        });
+      });
+
+      // ---------- INITIAL DRAW ----------
+      updateAll();
+
+      // ---------- RESIZE HANDLING ----------
+      function handleResize() {
+        // Keep internal resolution fixed for crisp drawing
+        // But adjust display size via CSS if needed
+      }
+      window.addEventListener('resize', handleResize);
+
+    })();
+  </script>
+</body>
+</html>
