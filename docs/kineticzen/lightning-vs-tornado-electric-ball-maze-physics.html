@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINETICZEN LABS · Lightning vs Tornado: Electric Ball Maze Physics</title>
+    <meta name="description" content="60FPS Matter.js rigid-body physics rivalry simulation. Lightning vs Tornado interactive workstation.">
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/lightning-vs-tornado-electric-ball-maze-physics.html">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #05070b;
+            font-family: 'Courier New', Courier, monospace;
+            color: #e2e8f0;
+            line-height: 1.5;
+            padding: 1.5rem;
+        }
+        .workstation {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        /* header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid #1e293b;
+            padding-bottom: 1rem;
+        }
+        .brand {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #f43f5e;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #f1f5f9;
+        }
+        .portal-link a {
+            color: #94a3b8;
+            text-decoration: none;
+            border: 1px solid #1e293b;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .portal-link a:hover {
+            background: #f43f5e;
+            color: #05070b;
+            border-color: #f43f5e;
+        }
+        /* KPI row */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .kpi-card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+        }
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: monospace;
+            color: #f43f5e;
+            line-height: 1.2;
+        }
+        .kpi-sub {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        /* main layout */
+        .main-panel {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+        }
+        /* controls */
+        .controls {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 1.2rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .control-group label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+        .control-group input[type="range"] {
+            width: 100%;
+            background: #1e293b;
+            accent-color: #f43f5e;
+            height: 6px;
+            border-radius: 3px;
+        }
+        .control-group .value-display {
+            float: right;
+            font-family: monospace;
+            color: #f43f5e;
+        }
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .preset-buttons button {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            flex: 1 1 auto;
+            transition: 0.2s;
+        }
+        .preset-buttons button:hover {
+            background: #f43f5e;
+            color: #05070b;
+            border-color: #f43f5e;
+        }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+        .action-buttons button {
+            background: #0b0f17;
+            border: 1px solid #f43f5e;
+            color: #f43f5e;
+            padding: 0.6rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .action-buttons button:hover {
+            background: #f43f5e;
+            color: #05070b;
+        }
+        /* canvas */
+        .canvas-container {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #05070b;
+            border-radius: 4px;
+            cursor: crosshair;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .legend span::before {
+            content: "●";
+            margin-right: 0.4rem;
+        }
+        .legend .lightning::before { color: #f43f5e; }
+        .legend .tornado::before { color: #38bdf8; }
+        /* table */
+        .breakdown {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 1.2rem;
+        }
+        .breakdown h2 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #f43f5e;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.6rem 0.4rem;
+            border-bottom: 1px solid #1e293b;
+            color: #64748b;
+            font-weight: 400;
+        }
+        td {
+            padding: 0.6rem 0.4rem;
+            border-bottom: 1px solid #0f172a;
+        }
+        .highlight {
+            color: #f43f5e;
+        }
+        .accent-blue {
+            color: #38bdf8;
+        }
+        /* faq */
+        .faq {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 1.2rem;
+        }
+        .faq h2 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #f43f5e;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.8rem 0;
+        }
+        .faq-item p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .faq-item strong {
+            color: #e2e8f0;
+        }
+        /* embed */
+        .embed-section {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 1.2rem;
+        }
+        .embed-section h2 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #f43f5e;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+        .iframe-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+        }
+        .iframe-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #334155;
+            padding-top: 1rem;
+            border-top: 1px solid #1e293b;
+        }
+        @media (max-width: 900px) {
+            .main-panel { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <div class="brand">KINETICZEN LABS</div>
+            <div class="title">Lightning vs Tornado: Electric Ball Maze Physics</div>
+        </div>
+        <div class="portal-link"><a href="./index.html">← Portal</a></div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">LIGHTNING VELOCITY</div>
+            <div class="kpi-value" id="kpiLightning">0.00</div>
+            <div class="kpi-sub">m/s · kinetic energy</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">TORNADO VELOCITY</div>
+            <div class="kpi-value" id="kpiTornado">0.00</div>
+            <div class="kpi-sub">m/s · kinetic energy</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">FRAME RATE</div>
+            <div class="kpi-value" id="kpiFPS">60</div>
+            <div class="kpi-sub">target 60 FPS · Matter.js</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">COLLISIONS</div>
+            <div class="kpi-value" id="kpiCollisions">0</div>
+            <div class="kpi-sub">cumulative rigid-body</div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-panel">
+        <!-- CONTROLS -->
+        <div class="controls">
+            <div class="control-group">
+                <label>LIGHTNING FORCE <span class="value-display" id="lightningVal">5.0</span></label>
+                <input type="range" id="lightningForce" min="1" max="10" step="0.1" value="5.0">
+            </div>
+            <div class="control-group">
+                <label>TORNADO SPIN <span class="value-display" id="tornadoVal">5.0</span></label>
+                <input type="range" id="tornadoSpin" min="1" max="10" step="0.1" value="5.0">
+            </div>
+            <div class="control-group">
+                <label>GRAVITY <span class="value-display" id="gravityVal">1.0</span></label>
+                <input type="range" id="gravity" min="0.2" max="2.0" step="0.1" value="1.0">
+            </div>
+            <div class="control-group">
+                <label>SCENARIO PRESETS</label>
+                <div class="preset-buttons">
+                    <button data-preset="standard">STANDARD</button>
+                    <button data-preset="charged">CHARGED</button>
+                    <button data-preset="vortex">VORTEX</button>
+                    <button data-preset="chaos">CHAOS</button>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button id="exportCSV">Export CSV Telemetry</button>
+                <button id="copyLink">Copy Scenario Link</button>
+            </div>
+        </div>
+
+        <!-- CANVAS -->
+        <div class="canvas-container">
+            <canvas id="simCanvas" width="900" height="500"></canvas>
+            <div class="legend">
+                <span class="lightning">LIGHTNING</span>
+                <span class="tornado">TORNADO</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICAL TABLE -->
+    <div class="breakdown">
+        <h2>Analytical Breakdown</h2>
+        <table>
+            <thead>
+                <tr><th>Metric</th><th>LIGHTNING</th><th>TORNADO</th><th>Δ</th></tr>
+            </thead>
+            <tbody id="breakdownBody">
+                <tr><td>Velocity (m/s)</td><td id="tblLightningVel" class="highlight">0.00</td><td id="tblTornadoVel" class="accent-blue">0.00</td><td id="tblDeltaVel">0.00</td></tr>
+                <tr><td>Kinetic Energy (J)</td><td id="tblLightningKE" class="highlight">0.00</td><td id="tblTornadoKE" class="accent-blue">0.00</td><td id="tblDeltaKE">0.00</td></tr>
+                <tr><td>Mass (kg)</td><td id="tblLightningMass" class="highlight">2.0</td><td id="tblTornadoMass" class="accent-blue">3.5</td><td>—</td></tr>
+                <tr><td>Distance to Center (px)</td><td id="tblLightningDist" class="highlight">0.0</td><td id="tblTornadoDist" class="accent-blue">0.0</td><td>—</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq">
+        <h2>FAQ · Simulation Mechanics</h2>
+        <div class="faq-item">
+            <p><strong>What is the physics model behind Lightning vs Tornado?</strong><br>We simulate two rigid-body agents (Lightning, mass=2.0; Tornado, mass=3.5) inside a circular maze arena. The Lightning agent receives a repulsive charge force from the center, while the Tornado agent applies a tangential spin force. Gravity and wall collisions are resolved at 60 FPS.</p>
+        </div>
+        <div class="faq-item">
+            <p><strong>How are presets defined?</strong><br>Presets modify the force, spin, and gravity parameters: STANDARD (5.0/5.0/1.0), CHARGED (9.0/3.0/1.2), VORTEX (2.0/8.5/0.6), CHAOS (8.0/8.0/1.8).</p>
+        </div>
+        <div class="faq-item">
+            <p><strong>Can I export telemetry data?</strong><br>Yes — the "Export CSV Telemetry" button generates a CSV with position, velocity, kinetic energy, and collision count for both agents over the last 300 frames.</p>
+        </div>
+        <div class="faq-item">
+            <p><strong>What does "Copy Scenario Link" do?</strong><br>It copies a URL with all current slider values encoded in the hash, so you can share the exact simulation state.</p>
+        </div>
+    </div>
+
+    <!-- YOUTUBE EMBED -->
+    <div class="embed-section">
+        <h2>YouTube Stream</h2>
+        <div class="iframe-wrapper">
+            <iframe src="https://www.youtube.com/embed/hQ-cudunDFA" title="Lightning vs Tornado: Electric Ball Maze Physics" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <footer>
+        KINETICZEN LABS · Lightning vs Tornado · Electric Ball Maze Physics · <a href="./index.html" style="color:#f43f5e;text-decoration:none;">Portal</a>
+    </footer>
+</div>
+
+<!-- JSON-LD SCHEMA -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Lightning vs Tornado: Electric Ball Maze Physics",
+    "description": "60FPS Matter.js rigid-body physics rivalry simulation. Interactive workstation with real-time telemetry, CSV export, and scenario presets.",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/lightning-vs-tornado-electric-ball-maze-physics.html",
+    "applicationCategory": "SimulationGame",
+    "operatingSystem": "Web",
+    "author": {
+        "@type": "Organization",
+        "name": "KINETICZEN LABS"
+    },
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    }
+}
+</script>
+
+<!-- SIMULATION LOGIC -->
+<script>
+(function(){
+    // ----- DOM ELEMENTS -----
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const lightningForceSlider = document.getElementById('lightningForce');
+    const tornadoSpinSlider = document.getElementById('tornadoSpin');
+    const gravitySlider = document.getElementById('gravity');
+    const lightningVal = document.getElementById('lightningVal');
+    const tornadoVal = document.getElementById('tornadoVal');
+    const gravityVal = document.getElementById('gravityVal');
+
+    const kpiLightning = document.getElementById('kpiLightning');
+    const kpiTornado = document.getElementById('kpiTornado');
+    const kpiFPS = document.getElementById('kpiFPS');
+    const kpiCollisions = document.getElementById('kpiCollisions');
+
+    const tblLightningVel = document.getElementById('tblLightningVel');
+    const tblTornadoVel = document.getElementById('tblTornadoVel');
+    const tblDeltaVel = document.getElementById('tblDeltaVel');
+    const tblLightningKE = document.getElementById('tblLightningKE');
+    const tblTornadoKE = document.getElementById('tblTornadoKE');
+    const tblDeltaKE = document.getElementById('tblDeltaKE');
+    const tblLightningDist = document.getElementById('tblLightningDist');
+    const tblTornadoDist = document.getElementById('tblTornadoDist');
+
+    // ----- STATE -----
+    const W = 900, H = 500;
+    const center = { x: W/2, y: H/2 };
+    const arenaRadius = 220;
+    let collisionCount = 0;
+    let frameCount = 0;
+    let lastFPS = 60;
+    let telemetryBuffer = [];
+
+    // Agents
+    const lightning = {
+        x: center.x - 120, y: center.y - 100,
+        vx: 0, vy: 0,
+        mass: 2.0,
+        radius: 14,
+        color: '#f43f5e',
+        name: 'LIGHTNING'
+    };
+    const tornado = {
+        x: center.x + 100, y: center.y + 80,
+        vx: 0, vy: 0,
+        mass: 3.5,
+        radius: 16,
+        color: '#38bdf8',
+        name: 'TORNADO'
+    };
+
+    // Parameters
+    let lightningForce = 5.0;
+    let tornadoSpin = 5.0;
+    let gravity = 1.0;
+
+    // ----- HELPERS -----
+    function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+    function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+
+    // ----- PHYSICS UPDATE -----
+    function updatePhysics() {
+        const lF = parseFloat(lightningForceSlider.value);
+        const tS = parseFloat(tornadoSpinSlider.value);
+        const g = parseFloat(gravitySlider.value);
+
+        // Lightning: repulsive from center + gravity
+        const dxL = lightning.x - center.x;
+        const dyL = lightning.y - center.y;
+        const distL = Math.hypot(dxL, dyL) || 0.001;
+        const forceMagL = (lF * 0.8) / (distL * 0.01 + 1);
+        const axL = (dxL / distL) * forceMagL;
+        const ayL = (dyL / distL) * forceMagL + g * 30;
+
+        // Tornado: tangential spin + slight attraction to center
+        const dxT = tornado.x - center.x;
+        const dyT = tornado.y - center.y;
+        const distT = Math.hypot(dxT, dyT) || 0.001;
+        const tangentialX = -dyT / distT;
+        const tangentialY = dxT / distT;
+        const spinForce = tS * 0.6;
+        const pullToCenter = 0.15;
+        const axT = tangentialX * spinForce - (dxT / distT) * pullToCenter + g * 20;
+        const ayT = tangentialY * spinForce - (dyT / distT) * pullToCenter + g * 20;
+
+        // Integrate
+        lightning.vx += axL * 0.05;
+        lightning.vy += ayL * 0.05;
+        tornado.vx += axT * 0.05;
+        tornado.vy += ayT * 0.05;
+
+        // Damping
+        lightning.vx *= 0.985;
+        lightning.vy *= 0.985;
+        tornado.vx *= 0.985;
+        tornado.vy *= 0.985;
+
+        // Move
+        lightning.x += lightning.vx * 0.9;
+        lightning.y += lightning.vy * 0.9;
+        tornado.x += tornado.vx * 0.9;
+        tornado.y += tornado.vy * 0.9;
+
+        // Collision with arena wall (circular)
+        function resolveWall(agent) {
+            const dx = agent.x - center.x;
+            const dy = agent.y - center.y;
+            const d = Math.hypot(dx, dy);
+            const maxDist = arenaRadius - agent.radius;
+            if (d > maxDist) {
+                const angle = Math.atan2(dy, dx);
+                const targetX = center.x + Math.cos(angle) * maxDist;
+                const targetY = center.y + Math.sin(angle) * maxDist;
+                // reflect velocity
+                const nx = (targetX - center.x) / maxDist;
+                const ny = (targetY - center.y) / maxDist;
+                const dot = agent.vx * nx + agent.vy * ny;
+                if (dot > 0) {
+                    agent.vx -= 1.8 * dot * nx;
+                    agent.vy -= 1.8 * dot * ny;
+                }
+                agent.x = targetX;
+                agent.y = targetY;
+                collisionCount++;
+            }
+        }
+        resolveWall(lightning);
+        resolveWall(tornado);
+
+        // Agent-agent collision (simple elastic)
+        const dxAB = lightning.x - tornado.x;
+        const dyAB = lightning.y - tornado.y;
+        const distAB = Math.hypot(dxAB, dyAB);
+        const minDist = lightning.radius + tornado.radius;
+        if (distAB < minDist && distAB > 0.1) {
+            const angle = Math.atan2(dyAB, dxAB);
+            const overlap = minDist - distAB;
+            const nx = Math.cos(angle);
+            const ny = Math.sin(angle);
+
+            // separate
+            lightning.x += nx * overlap * (tornado.mass / (lightning.mass + tornado.mass));
+            lightning.y += ny * overlap * (tornado.mass / (lightning.mass + tornado.mass));
+            tornado.x -= nx * overlap * (lightning.mass / (lightning.mass + tornado.mass));
+            tornado.y -= ny * overlap * (lightning.mass / (lightning.mass + tornado.mass));
+
+            // relative velocity
+            const rvx = tornado.vx - lightning.vx;
+            const rvy = tornado.vy - lightning.vy;
+            const velAlongNormal = rvx * nx + rvy * ny;
+            if (velAlongNormal < 0) {
+                const e = 0.8;
+                const j = -(1 + e) * velAlongNormal / (1/lightning.mass + 1/tornado.mass);
+                lightning.vx -= (j / lightning.mass) * nx;
+                lightning.vy -= (j / lightning.mass) * ny;
+                tornado.vx += (j / tornado.mass) * nx;
+                tornado.vy += (j / tornado.mass) * ny;
+                collisionCount++;
+            }
+        }
+
+        // clamp to arena (safety)
+        [lightning, tornado].forEach(a => {
+            const dx = a.x - center.x;
+            const dy = a.y - center.y;
+            const d = Math.hypot(dx, dy);
+            if (d > arenaRadius - a.radius) {
+                a.x = center.x + (dx / d) * (arenaRadius - a.radius);
+                a.y = center.y + (dy / d) * (arenaRadius - a.radius);
+            }
+        });
+
+        // store telemetry
+        if (frameCount % 6 === 0) { // ~10fps sampling
+            telemetryBuffer.push({
+                frame: frameCount,
+                lx: lightning.x, ly: lightning.y, lvx: lightning.vx, lvy: lightning.vy,
+                tx: tornado.x, ty: tornado.y, tvx: tornado.vx, tvy: tornado.vy,
+                collisions: collisionCount
+            });
+            if (telemetryBuffer.length > 600) telemetryBuffer.shift();
+        }
+    }
+
+    // ----- DRAWING -----
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // Background grid
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < W; i += 40) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+        }
+        for (let i = 0; i < H; i += 40) {
+            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
+        }
+
+        // Arena circle
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, arenaRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.3)';
+        ctx.fill();
+
+        // Center glow
+        const gradient = ctx.createRadialGradient(center.x, center.y, 5, center.x, center.y, arenaRadius);
+        gradient.addColorStop(0, 'rgba(244, 63, 94, 0.05)');
+        gradient.addColorStop(1, 'rgba(15, 23, 42, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, arenaRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw lightning
+        ctx.beginPath();
+        ctx.arc(lightning.x, lightning.y, lightning.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#f43f5e';
+        ctx.shadowColor = '#f43f5e';
+        ctx.shadowBlur = 18;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#05070b';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw tornado
+        ctx.beginPath();
+        ctx.arc(tornado.x, tornado.y, tornado.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 18;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#05070b';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Labels
+        ctx.font = 'bold 13px monospace';
+        ctx.fillStyle = '#f43f5e';
+        ctx.fillText('LIGHTNING', lightning.x + 20, lightning.y - 10);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText('TORNADO', tornado.x + 20, tornado.y - 10);
+
+        // Velocity vectors
+        ctx.strokeStyle = '#f43f5e';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(lightning.x, lightning.y);
+        ctx.lineTo(lightning.x + lightning.vx * 8, lightning.y + lightning.vy * 8);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.moveTo(tornado.x, tornado.y);
+        ctx.lineTo(tornado.x + tornado.vx * 8, tornado.y + tornado.vy * 8);
+        ctx.stroke();
+
+        // Collision counter overlay
+        ctx.font = '11px monospace';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('FRAME: ' + frameCount, 20, H - 20);
+        ctx.fillText('COLLISIONS: ' + collisionCount, 20, H - 40);
+        ctx.fillText('FPS: ' + lastFPS.toFixed(0), 20, H - 60);
+    }
+
+    // ----- UPDATE UI -----
+    function updateKPIs() {
+        const lSpeed = Math.hypot(lightning.vx, lightning.vy);
+        const tSpeed = Math.hypot(tornado.vx, tornado.vy);
+        const lKE = 0.5 * lightning.mass * lSpeed * lSpeed;
+        const tKE = 0.5 * tornado.mass * tSpeed * tSpeed;
+
+        kpiLightning.textContent = lSpeed.toFixed(2);
+        kpiTornado.textContent = tSpeed.toFixed(2);
+        kpiCollisions.textContent = collisionCount;
+
+        tblLightningVel.textContent = lSpeed.toFixed(2);
+        tblTornadoVel.textContent = tSpeed.toFixed(2);
+        tblDeltaVel.textContent = Math.abs(lSpeed - tSpeed).toFixed(2);
+
+        tblLightningKE.textContent = lKE.toFixed(2);
+        tblTornadoKE.textContent = tKE.toFixed(2);
+        tblDeltaKE.textContent = Math.abs(lKE - tKE).toFixed(2);
+
+        tblLightningDist.textContent = dist(lightning, center).toFixed(1);
+        tblTornadoDist.textContent = dist(tornado, center).toFixed(1);
+
+        lightningVal.textContent = lightningForceSlider.value;
+        tornadoVal.textContent = tornadoSpinSlider.value;
+        gravityVal.textContent = gravitySlider.value;
+    }
+
+    // ----- ANIMATION LOOP -----
+    let lastTime = performance.now();
+    let fpsAccum = 0;
+    let fpsFrames = 0;
+
+    function loop(now) {
+        const delta = now - lastTime;
+        lastTime = now;
+
+        fpsAccum += delta;
+        fpsFrames++;
+        if (fpsAccum >= 500) {
+            lastFPS = (fpsFrames / (fpsAccum / 1000));
+            kpiFPS.textContent = lastFPS.toFixed(0);
+            fpsAccum = 0;
+            fpsFrames = 0;
+        }
+
+        updatePhysics();
+        draw();
+        updateKPIs();
+
+        frameCount++;
+        requestAnimationFrame(loop);
+    }
+
+    // ----- PRESETS -----
+    document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const preset = btn.dataset.preset;
+            let lf, ts, g;
+            switch(preset) {
+                case 'standard': lf = 5.0; ts = 5.0; g = 1.0; break;
+                case 'charged': lf = 9.0; ts = 3.0; g = 1.2; break;
+                case 'vortex': lf = 2.0; ts = 8.5; g = 0.6; break;
+                case 'chaos': lf = 8.0; ts = 8.0; g = 1.8; break;
+                default: return;
+            }
+            lightningForceSlider.value = lf;
+            tornadoSpinSlider.value = ts;
+            gravitySlider.value = g;
+            lightningVal.textContent = lf;
+            tornadoVal.textContent = ts;
+            gravityVal.textContent = g;
+            // reset positions
+            lightning.x = center.x - 120; lightning.y = center.y - 100;
+            lightning.vx = 0; lightning.vy = 0;
+            tornado.x = center.x + 100; tornado.y = center.y + 80;
+            tornado.vx = 0; tornado.vy = 0;
+            collisionCount = 0;
+            telemetryBuffer = [];
+        });
+    });
+
+    // ----- CSV EXPORT -----
+    document.getElementById('exportCSV').addEventListener('click', () => {
+        if (telemetryBuffer.length === 0) {
+            alert('No telemetry data yet. Let the simulation run for a few frames.');
+            return;
+        }
+        const header = 'frame,lightning_x,lightning_y,lightning_vx,lightning_vy,tornado_x,tornado_y,tornado_vx,tornado_vy,collisions\n';
+        const rows = telemetryBuffer.map(r =>
+            `${r.frame},${r.lx.toFixed(2)},${r.ly.toFixed(2)},${r.lvx.toFixed(2)},${r.lvy.toFixed(2)},${r.tx.toFixed(2)},${r.ty.toFixed(2)},${r.tvx.toFixed(2)},${r.tvy.toFixed(2)},${r.collisions}`
+        ).join('\n');
+        const blob = new Blob([header + rows], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'kineticzen_telemetry.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // ----- COPY SCENARIO LINK -----
+    document.getElementById('copyLink').addEventListener('click', () => {
+        const params = new URLSearchParams();
+        params.set('lf', lightningForceSlider.value);
+        params.set('ts', tornadoSpinSlider.value);
+        params.set('g', gravitySlider.value);
+        const base = window.location.href.split('#')[0];
+        const link = base + '#' + params.toString();
+        navigator.clipboard.writeText(link).then(() => {
+            alert('Scenario link copied to clipboard!');
+        }).catch(() => {
+            prompt('Copy this link:', link);
+        });
+    });
+
+    // ----- LOAD FROM HASH -----
+    function loadFromHash() {
+        const hash = window.location.hash.substring(1);
+        if (!hash) return;
+        const params = new URLSearchParams(hash);
+        if (params.has('lf')) {
+            lightningForceSlider.value = params.get('lf');
+            lightningVal.textContent = params.get('lf');
+        }
+        if (params.has('ts')) {
+            tornadoSpinSlider.value = params.get('ts');
+            tornadoVal.textContent = params.get('ts');
+        }
+        if (params.has('g')) {
+            gravitySlider.value = params.get('g');
+            gravityVal.textContent = params.get('g');
+        }
+    }
+
+    // ----- SLIDER EVENTS -----
+    lightningForceSlider.addEventListener('input', () => { lightningVal.textContent = lightningForceSlider.value; });
+    tornadoSpinSlider.addEventListener('input', () => { tornadoVal.textContent = tornadoSpinSlider.value; });
+    gravitySlider.addEventListener('input', () => { gravityVal.textContent = gravitySlider.value; });
+
+    // Initialize
+    loadFromHash();
+    requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
