@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Prehistoric Giants – Extinct Predators by Size</title>
+  <meta name="description" content="Interactive size comparison of 5 extinct predators, from Deinonychus to Mosasaurus. Sliders, canvas, CSV export.">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 1.5rem;
+      line-height: 1.5;
+    }
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    /* header / brand */
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #f1f5f9;
+    }
+    .brand a {
+      text-decoration: none;
+      color: #38bdf8;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border: 1px solid #1e293b;
+      padding: 0.3rem 0.9rem;
+      border-radius: 40px;
+      transition: 0.2s;
+    }
+    .brand a:hover {
+      background: #38bdf8;
+      color: #05070b;
+      border-color: #38bdf8;
+    }
+    .canonical {
+      font-size: 0.7rem;
+      color: #64748b;
+      word-break: break-all;
+      max-width: 400px;
+    }
+    /* cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .grid-2col { grid-template-columns: 1fr; }
+    }
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      border-left: 4px solid #38bdf8;
+      padding-left: 0.75rem;
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-bottom: 0.75rem;
+    }
+    /* slider & presets */
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row label {
+      width: 180px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+    input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 10px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+    }
+    .slider-value {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      background: #1e293b;
+      padding: 0.25rem 0.75rem;
+      border-radius: 30px;
+      min-width: 70px;
+      text-align: center;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    .preset-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .preset-btns button {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.4rem 0.9rem;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.15s;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+    }
+    .preset-btns button:hover {
+      background: #2d3b4f;
+      border-color: #38bdf8;
+      color: #f1f5f9;
+    }
+    .preset-btns button.active {
+      background: #38bdf8;
+      color: #05070b;
+      border-color: #38bdf8;
+      font-weight: 600;
+    }
+    /* canvas container */
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      background: #070b10;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: radial-gradient(circle at 20% 30%, #0f172a, #05070b);
+    }
+    .canvas-caption {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 0.65rem;
+      color: #475569;
+      font-family: monospace;
+      background: rgba(5,7,11,0.7);
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+    }
+    /* KPI row */
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 0.7rem 1.2rem;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+    .kpi .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #64748b;
+    }
+    .kpi .value {
+      font-family: monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #38bdf8;
+      line-height: 1.3;
+    }
+    /* buttons */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.15s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-primary {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #7dd3fc;
+    }
+    .btn:hover {
+      border-color: #38bdf8;
+      background: #2d3b4f;
+    }
+    .btn-primary:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+    }
+    /* table */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.75rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+    th {
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+    td {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #cbd5e1;
+    }
+    td:first-child {
+      font-family: inherit;
+      font-weight: 500;
+      color: #f1f5f9;
+    }
+    .highlight {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    /* faq */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 0.9rem 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-q {
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    /* embed */
+    .yt-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    .yt-embed iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .summary-text {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      border-left: 3px solid #38bdf8;
+      padding-left: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      background: #1e293b;
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      color: #38bdf8;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="top-bar">
+    <div class="brand">
+      <h1>SCALEVERSE 3D</h1>
+      <a href="./index.html">← Portal</a>
+    </div>
+    <div class="canonical">https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/prehistoric-giants-5-extinct-predators-by-size.html</div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="card">
+    <p class="summary-text">
+      <strong style="color:#f1f5f9;">Prehistoric Giants: 5 Extinct Predators by Size</strong> — From a 1.5-meter raptor to a 17-meter marine super-predator, these extinct killers dwarf modern carnivores. Drag sliders to compare, click presets for quick scenarios, and export telemetry.
+    </p>
+  </div>
+
+  <!-- MAIN GRID: CONTROLS + CANVAS -->
+  <div class="grid-2col">
+    <!-- LEFT: CONTROLS -->
+    <div class="card">
+      <h2>Size Controls</h2>
+      <div class="slider-group" id="sliderGroup">
+        <!-- dynamically filled with sliders from JS -->
+      </div>
+      <div id="presetContainer" class="preset-btns"></div>
+      <div class="kpi-row" id="kpiRow">
+        <!-- dynamic KPIs -->
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="exportCSV">⬇ Export CSV Telemetry</button>
+        <button class="btn" id="copyLink">🔗 Copy Scenario Link</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: CANVAS -->
+    <div class="card" style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <h2>Scale Comparison · Visual</h2>
+      <div class="canvas-wrapper">
+        <canvas id="sizeCanvas" width="800" height="450"></canvas>
+        <div class="canvas-caption">meters · 1 unit = 1 m</div>
+      </div>
+      <div style="font-size:0.8rem; color:#64748b; text-align:center;">Drag sliders to adjust each species length · Max 17 m</div>
+    </div>
+  </div>
+
+  <!-- ANALYTICAL TABLE -->
+  <div class="card">
+    <h2>Analytical Breakdown</h2>
+    <div class="table-wrapper">
+      <table id="breakdownTable">
+        <thead>
+          <tr><th>Species</th><th>Length (m)</th><th>Metric (original)</th><th>Relative to Deinonychus</th></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- YOUTUBE EMBED -->
+  <div class="card">
+    <h2>Video Reference</h2>
+    <div class="yt-embed">
+      <iframe src="https://www.youtube.com/embed/TUr3u8x7OOg" title="Prehistoric Giants: 5 Extinct Predators by Size" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <h2>FAQ</h2>
+    <div class="faq-item">
+      <div class="faq-q">How were the sizes measured?</div>
+      <div class="faq-a">Length estimates are based on peer-reviewed fossil analyses and represent typical adult sizes. Deinonychus ≈ 1.5 m, Mosasaurus ≈ 17 m.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I export the current scenario?</div>
+      <div class="faq-a">Yes — click “Export CSV Telemetry” to download a CSV with all current slider values and KPIs. “Copy Scenario Link” copies a shareable URL with all parameters encoded.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What do the preset buttons do?</div>
+      <div class="faq-a">They instantly set all five sliders to specific configurations: “Original Data”, “Max Scale”, “Raptor Focus”, “Marine Dominance”, and “Balanced”.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is this a 3D model?</div>
+      <div class="faq-a">The main view is a 2D scale comparison canvas (optimized for clarity). It accurately reflects real-world lengths using a 1 meter = 1 unit scale.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JSON-LD SCHEMA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D · Prehistoric Giants Size Workstation",
+  "description": "Interactive size comparison of 5 extinct predators: Deinonychus, Megalania, Tyrannosaurus rex, Spinosaurus, Mosasaurus. Adjust lengths, export CSV, copy scenario link.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/prehistoric-giants-5-extinct-predators-by-size.html",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "data": {
+    "items": [
+      {"name": "Deinonychus", "meters": 1.5},
+      {"name": "Megalania", "meters": 7},
+      {"name": "Tyrannosaurus rex", "meters": 12},
+      {"name": "Spinosaurus aegyptiacus", "meters": 15},
+      {"name": "Mosasaurus hoffmannii", "meters": 17}
+    ]
+  }
+}
+</script>
+
+<script>
+  // ── DATA ──────────────────────────────────────────────
+  const SPECIES = [
+    { name: 'Deinonychus',            baseMeters: 1.5,  color: '#38bdf8' },
+    { name: 'Megalania',              baseMeters: 7.0,  color: '#f97316' },
+    { name: 'Tyrannosaurus rex',      baseMeters: 12.0, color: '#ef4444' },
+    { name: 'Spinosaurus aegyptiacus',baseMeters: 15.0, color: '#a855f7' },
+    { name: 'Mosasaurus hoffmannii',  baseMeters: 17.0, color: '#10b981' }
+  ];
+
+  // current values (start at base)
+  let values = SPECIES.map(s => s.baseMeters);
+  const MAX_METERS = 17.0;
+
+  // ── DOM refs ──────────────────────────────────────────
+  const sliderGroup = document.getElementById('sliderGroup');
+  const presetContainer = document.getElementById('presetContainer');
+  const kpiRow = document.getElementById('kpiRow');
+  const canvas = document.getElementById('sizeCanvas');
+  const ctx = canvas.getContext('2d');
+  const tableBody = document.getElementById('tableBody');
+
+  // ── SLIDER BUILD ─────────────────────────────────────
+  function buildSliders() {
+    sliderGroup.innerHTML = '';
+    SPECIES.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'slider-row';
+      row.innerHTML = `
+        <label>${s.name}</label>
+        <input type="range" id="slider-${i}" min="0.5" max="${MAX_METERS}" step="0.1" value="${values[i]}" data-index="${i}">
+        <span class="slider-value" id="val-${i}">${values[i].toFixed(1)} m</span>
+      `;
+      sliderGroup.appendChild(row);
+    });
+    // attach listeners
+    SPECIES.forEach((s, i) => {
+      const slider = document.getElementById(`slider-${i}`);
+      slider.addEventListener('input', (e) => {
+        values[i] = parseFloat(e.target.value);
+        document.getElementById(`val-${i}`).textContent = values[i].toFixed(1) + ' m';
+        updateAll();
+      });
+    });
+  }
+
+  // ── PRESET BUTTONS ────────────────────────────────────
+  const presets = [
+    { label: 'Original Data', values: [1.5, 7.0, 12.0, 15.0, 17.0] },
+    { label: 'Max Scale',      values: [17.0, 17.0, 17.0, 17.0, 17.0] },
+    { label: 'Raptor Focus',   values: [5.0, 2.0, 1.0, 1.0, 1.0] },
+    { label: 'Marine Dominance', values: [1.0, 1.0, 5.0, 5.0, 17.0] },
+    { label: 'Balanced',       values: [7.5, 7.5, 7.5, 7.5, 7.5] }
+  ];
+
+  function buildPresets() {
+    presetContainer.innerHTML = '';
+    presets.forEach((p, idx) => {
+      const btn = document.createElement('button');
+      btn.textContent = p.label;
+      btn.dataset.preset = idx;
+      btn.addEventListener('click', () => {
+        values = [...p.values];
+        SPECIES.forEach((_, i) => {
+          document.getElementById(`slider-${i}`).value = values[i];
+          document.getElementById(`val-${i}`).textContent = values[i].toFixed(1) + ' m';
+        });
+        updateAll();
+        // visual active state
+        document.querySelectorAll('#presetContainer button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      presetContainer.appendChild(btn);
+    });
+    // set first preset active by default
+    if (presetContainer.firstChild) presetContainer.firstChild.classList.add('active');
+  }
+
+  // ── KPI UPDATE ────────────────────────────────────────
+  function updateKPIs() {
+    const total = values.reduce((a,b) => a+b, 0);
+    const avg = total / values.length;
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    kpiRow.innerHTML = `
+      <div class="kpi"><div class="label">Total length</div><div class="value">${total.toFixed(1)} m</div></div>
+      <div class="kpi"><div class="label">Average</div><div class="value">${avg.toFixed(1)} m</div></div>
+      <div class="kpi"><div class="label">Largest</div><div class="value">${max.toFixed(1)} m</div></div>
+      <div class="kpi"><div class="label">Smallest</div><div class="value">${min.toFixed(1)} m</div></div>
+    `;
+  }
+
+  // ── TABLE UPDATE ──────────────────────────────────────
+  function updateTable() {
+    const smallest = Math.min(...values);
+    tableBody.innerHTML = SPECIES.map((s, i) => {
+      const ratio = (values[i] / smallest).toFixed(2);
+      return `<tr>
+        <td>${s.name}</td>
+        <td>${values[i].toFixed(1)}</td>
+        <td>${s.baseMeters.toFixed(1)} m</td>
+        <td><span class="highlight">${ratio}×</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── CANVAS DRAWING ────────────────────────────────────
+  function drawCanvas() {
+    const W = 800, H = 450;
+    canvas.width = W;
+    canvas.height = H;
+    ctx.clearRect(0, 0, W, H);
+
+    // background grid (subtle)
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.5;
+    for (let x = 40; x < W; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, 30);
+      ctx.lineTo(x, H - 30);
+      ctx.strokeStyle = '#1e293b';
+      ctx.stroke();
+    }
+    // horizontal baseline
+    ctx.beginPath();
+    ctx.moveTo(40, H - 60);
+    ctx.lineTo(W - 40, H - 60);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // scale labels (meters)
+    const maxScale = 18; // for visual comfort
+    const xStart = 60;
+    const xEnd = W - 60;
+    const scaleX = (m) => xStart + (m / maxScale) * (xEnd - xStart);
+
+    // draw meter ticks
+    ctx.fillStyle = '#475569';
+    ctx.font = '10px "SF Mono", monospace';
+    for (let m = 0; m <= maxScale; m += 2) {
+      const x = scaleX(m);
+      ctx.beginPath();
+      ctx.moveTo(x, H - 60);
+      ctx.lineTo(x, H - 55);
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillText(m + 'm', x - 10, H - 40);
+    }
+
+    // draw bars for each species (adjusted by values)
+    const barHeight = 38;
+    const startY = 50;
+    const gap = 14;
+    const barColors = ['#38bdf8', '#f97316', '#ef4444', '#a855f7', '#10b981'];
+
+    SPECIES.forEach((s, i) => {
+      const y = startY + i * (barHeight + gap);
+      const w = (values[i] / maxScale) * (xEnd - xStart);
+      const x = xStart;
+
+      // bar
+      ctx.fillStyle = barColors[i] + 'cc';
+      ctx.shadowColor = barColors[i] + '40';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.roundRect(x, y, Math.max(w, 4), barHeight, 6);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // border
+      ctx.strokeStyle = barColors[i];
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x, y, Math.max(w, 4), barHeight, 6);
+      ctx.stroke();
+
+      // label
+      ctx.fillStyle = '#f1f5f9';
+      ctx.font = 'bold 12px system-ui, sans-serif';
+      ctx.fillText(s.name, x + 8, y + 24);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px "SF Mono", monospace';
+      ctx.fillText(values[i].toFixed(1) + ' m', x + 8 + ctx.measureText(s.name).width + 10, y + 24);
+    });
+
+    // footer note
+    ctx.fillStyle = '#475569';
+    ctx.font = '9px "SF Mono", monospace';
+    ctx.fillText('SCALEVERSE 3D · values reflect slider positions · 1 unit = 1 meter', 20, H - 12);
+  }
+
+  // helper: roundRect
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+    return this;
+  };
+
+  // ── MASTER UPDATE ─────────────────────────────────────
+  function updateAll() {
+    updateKPIs();
+    updateTable();
+    drawCanvas();
+  }
+
+  // ── CSV EXPORT ────────────────────────────────────────
+  function exportCSV() {
+    let csv = 'species,length_m,original_metric\n';
+    SPECIES.forEach((s, i) => {
+      csv += `"${s.name}",${values[i].toFixed(1)},"${s.baseMeters.toFixed(1)} m"\n`;
+    });
+    csv += `\n"total",${values.reduce((a,b)=>a+b,0).toFixed(1)}\n`;
+    csv += `"average",${(values.reduce((a,b)=>a+b,0)/values.length).toFixed(1)}\n`;
+    csv += `"exported_at","${new Date().toISOString()}"\n`;
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `scaleverse_prehistoric_giants_${Date.now()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  // ── COPY SCENARIO LINK ────────────────────────────────
+  function copyScenarioLink() {
+    const params = new URLSearchParams();
+    SPECIES.forEach((s, i) => {
+      params.set(`m${i}`, values[i].toFixed(1));
+    });
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('copyLink');
+      const original = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = original; }, 1800);
+    }).catch(() => {
+      prompt('Copy this link:', url);
+    });
+  }
+
+  // ── LOAD FROM URL QUERY (optional) ────────────────────
+  function loadFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    let changed = false;
+    SPECIES.forEach((_, i) => {
+      if (params.has(`m${i}`)) {
+        const val = parseFloat(params.get(`m${i}`));
+        if (!isNaN(val) && val >= 0.5 && val <= MAX_METERS) {
+          values[i] = val;
+          changed = true;
+        }
+      }
+    });
+    if (changed) {
+      SPECIES.forEach((_, i) => {
+        const slider = document.getElementById(`slider-${i}`);
+        if (slider) slider.value = values[i];
+        const span = document.getElementById(`val-${i}`);
+        if (span) span.textContent = values[i].toFixed(1) + ' m';
+      });
+    }
+  }
+
+  // ── INIT ──────────────────────────────────────────────
+  function init() {
+    buildSliders();
+    buildPresets();
+    loadFromQuery();
+    updateAll();
+
+    document.getElementById('exportCSV').addEventListener('click', exportCSV);
+    document.getElementById('copyLink').addEventListener('click', copyScenarioLink);
+
+    // mark active preset if values match any preset
+    updatePresetActiveState();
+  }
+
+  function updatePresetActiveState() {
+    // remove all active classes
+    document.querySelectorAll('#presetContainer button').forEach(b => b.classList.remove('active'));
+    // check if current values match any preset exactly (within 0.1 tolerance)
+    presets.forEach((p, idx) => {
+      const match = p.values.every((v, i) => Math.abs(v - values[i]) < 0.05);
+      if (match) {
+        const btn = document.querySelector(`#presetContainer button[data-preset="${idx}"]`);
+        if (btn) btn.classList.add('active');
+      }
+    });
+  }
+
+  // deck out preset active state on slider change
+  const originalUpdateAll = updateAll;
+  updateAll = function() {
+    originalUpdateAll();
+    updatePresetActiveState();
+  };
+
+  window.addEventListener('load', init);
+</script>
+</body>
+</html>
