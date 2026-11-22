@@ -1,240 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SCALEVERSE 3D — Most Expensive Objects Ever Built</title>
-  <meta name="description" content="Interactive 3D scale workstation comparing the most expensive objects ever built. Powered by SCALEVERSE 3D." />
-  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/most-expensive-objects-ever-built-5-stage-3d-scale.html" />
-
-  <!-- Fonts / basic styling -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Most Expensive Objects · 5-Stage Scale</title>
+  <meta name="description" content="Interactive 3D scale workstation: $2B AMS-02 to $150B ISS & LHC ring. Canvas visualization, telemetry CSV, scenario presets.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/most-expensive-objects-ever-built-5-stage-3d-scale.html">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.5;
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
     :root {
       --bg: #05070b;
       --card: #0b0f17;
       --border: #1e293b;
       --accent: #38bdf8;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --font-mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+      --text-dim: #94a3b8;
+      --mono: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-
-    .container {
-      max-width: 1400px;
+    .app-wrapper {
+      max-width: 1600px;
       margin: 0 auto;
-      width: 100%;
     }
-
-    /* Header */
-    .brand-bar {
+    /* header */
+    .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 1.5rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
     }
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 80%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
-    .brand .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
+    .brand span {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      font-weight: 400;
+      margin-left: 0.75rem;
+      background: none;
+      -webkit-background-clip: unset;
+      color: #94a3b8;
     }
-    .brand a {
+    .portal-link {
       color: var(--accent);
       text-decoration: none;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       border: 1px solid var(--border);
-      padding: 0.3rem 1rem;
-      border-radius: 20px;
-      transition: background 0.2s;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      transition: all 0.2s;
+      background: #0b0f17;
     }
-    .brand a:hover {
-      background: rgba(56, 189, 248, 0.1);
+    .portal-link:hover {
+      background: #1e293b;
+      border-color: var(--accent);
     }
-
-    /* Layout grid */
-    .workstation {
+    /* grid layout */
+    .main-grid {
       display: grid;
-      grid-template-columns: 1fr 320px;
+      grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
       margin-bottom: 1.5rem;
     }
-    @media (max-width: 1000px) {
-      .workstation { grid-template-columns: 1fr; }
+    @media (max-width: 1024px) {
+      .main-grid { grid-template-columns: 1fr; }
     }
-
+    /* cards */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 20px -10px rgba(0,0,0,0.5);
     }
-    .card h2, .card h3 {
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.75rem;
-      color: var(--muted);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-    }
-
-    /* Canvas */
-    #scaleCanvas {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 8px;
-      background: #080c14;
-      border: 1px solid var(--border);
-      cursor: crosshair;
-    }
-
-    /* KPI row */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .kpi {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.9rem 1rem;
-    }
-    .kpi .label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .kpi .value {
-      font-family: var(--font-mono);
-      font-size: 1.8rem;
+    .card h2 {
+      font-size: 1.1rem;
       font-weight: 600;
-      color: var(--accent);
-      line-height: 1.3;
-    }
-    .kpi .sub {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    /* Controls */
-    .control-group {
-      margin-bottom: 1.2rem;
-    }
-    .control-group label {
+      margin-bottom: 1rem;
+      color: #f1f5f9;
       display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 0.3rem;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: 0.02em;
     }
-    .control-group label span {
-      font-family: var(--font-mono);
-      color: var(--accent);
+    .card h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1.2rem;
+      background: var(--accent);
+      border-radius: 4px;
     }
-    input[type=range] {
+    /* canvas */
+    .canvas-container {
+      position: relative;
       width: 100%;
-      -webkit-appearance: none;
-      background: transparent;
-      height: 6px;
+      aspect-ratio: 16 / 10;
+      background: #080c14;
+      border-radius: 0.75rem;
+      border: 1px solid #1e293b;
+      overflow: hidden;
     }
-    input[type=range]::-webkit-slider-runnable-track {
-      height: 4px;
-      background: var(--border);
-      border-radius: 2px;
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
     }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin-top: -6px;
-      box-shadow: 0 0 8px var(--accent);
-      cursor: pointer;
+    canvas:active {
+      cursor: grabbing;
     }
-    input[type=range]::-moz-range-track {
-      height: 4px;
-      background: var(--border);
-      border-radius: 2px;
-    }
-    input[type=range]::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: none;
-      cursor: pointer;
-    }
-
-    /* Buttons */
-    .btn-row {
+    /* controls */
+    .control-group {
+      margin-top: 1.2rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-top: 1rem;
+      gap: 0.75rem;
+      align-items: center;
     }
-    .btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.5rem 1rem;
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 0.25rem;
+      font-family: var(--mono);
+    }
+    input[type="range"] {
+      width: 100%;
+      background: #1e293b;
+      height: 6px;
       border-radius: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #38bdf880;
+    }
+    .preset-btn {
+      background: #111827;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
       font-size: 0.8rem;
-      font-family: var(--font-mono);
-      letter-spacing: 0.3px;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.15s;
+      font-family: var(--mono);
       flex: 1 0 auto;
-      text-align: center;
+    }
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: var(--accent);
+    }
+    .preset-btn.active {
+      background: #38bdf8;
+      color: #05070b;
+      border-color: #38bdf8;
+      font-weight: 700;
+    }
+    .btn {
+      background: #0b0f17;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     .btn:hover {
+      background: #1e293b;
       border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.07);
     }
-    .btn.accent {
+    .btn-accent {
+      background: #0b0f17;
       border-color: var(--accent);
       color: var(--accent);
     }
-    .btn.accent:hover {
-      background: rgba(56, 189, 248, 0.15);
+    .btn-accent:hover {
+      background: #38bdf8;
+      color: #05070b;
     }
-    .btn.sm {
-      padding: 0.3rem 0.6rem;
+    /* KPI row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .kpi {
+      background: #0f141f;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.9rem 1rem;
+    }
+    .kpi-label {
       font-size: 0.7rem;
-      flex: 0 1 auto;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
     }
-
-    /* Table */
-    .table-wrap {
+    .kpi-value {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 0.25rem;
+      line-height: 1.2;
+    }
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-family: var(--mono);
+    }
+    /* table */
+    .table-wrapper {
       overflow-x: auto;
       margin-top: 1rem;
     }
@@ -245,694 +260,518 @@
     }
     th {
       text-align: left;
-      padding: 0.6rem 0.5rem;
-      color: var(--muted);
+      padding: 0.7rem 0.5rem;
+      color: var(--text-dim);
       font-weight: 500;
       border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
       font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
     }
     td {
-      padding: 0.6rem 0.5rem;
-      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
+      padding: 0.7rem 0.5rem;
+      border-bottom: 1px solid #1a2332;
+      font-family: var(--mono);
     }
-    td:first-child {
-      font-family: inherit;
-      font-weight: 500;
-      color: var(--text);
+    tr:last-child td {
+      border-bottom: none;
     }
-    .right { text-align: right; }
     .highlight {
       color: var(--accent);
+      font-weight: 600;
     }
-
     /* FAQ */
     .faq-item {
-      border-bottom: 1px solid var(--border);
-      padding: 0.75rem 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #1a2332;
+      padding-bottom: 1rem;
     }
-    .faq-item:last-child { border-bottom: none; }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
     .faq-q {
-      font-weight: 500;
-      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
     }
     .faq-a {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-top: 0.3rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
     }
-
-    /* YouTube embed */
-    .video-wrap {
+    /* embed */
+    .embed-wrapper {
       position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #0f141f;
+      border-radius: 0.75rem;
       overflow: hidden;
-      border-radius: 8px;
       border: 1px solid var(--border);
-      margin-top: 0.5rem;
     }
-    .video-wrap iframe {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
-
-    /* Mobile */
-    @media (max-width: 600px) {
-      .brand-bar { flex-direction: column; align-items: flex-start; }
-      .kpi .value { font-size: 1.4rem; }
-      .btn-row { flex-direction: column; }
+    /* additional */
+    .footer-note {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #475569;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
     }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #334155; }
-
-    /* Unit toggle */
-    .unit-toggle {
+    .flex-between {
       display: flex;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-    .unit-toggle button {
-      flex: 1;
-      padding: 0.4rem;
-      font-size: 0.75rem;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: var(--font-mono);
+    .mono {
+      font-family: var(--mono);
     }
-    .unit-toggle button.active {
-      border-color: var(--accent);
+    .text-accent {
       color: var(--accent);
-      background: rgba(56, 189, 248, 0.1);
     }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .gap-1 { gap: 0.5rem; }
+    .full-width { width: 100%; }
   </style>
 </head>
 <body>
-  <div class="container">
+<div class="app-wrapper">
+  <!-- HEADER -->
+  <div class="topbar">
+    <div class="brand">SCALEVERSE 3D <span>// 5-stage scale</span></div>
+    <a class="portal-link" href="./index.html">← Portal</a>
+  </div>
 
-    <!-- Brand bar -->
-    <div class="brand-bar">
-      <div class="brand">
-        <span class="dot"></span>
-        SCALEVERSE 3D &nbsp;|&nbsp; MOST EXPENSIVE OBJECTS
+  <!-- MAIN GRID: CANVAS + CONTROLS -->
+  <div class="main-grid">
+    <!-- LEFT: CANVAS -->
+    <div class="card" style="display:flex; flex-direction:column;">
+      <h2>3D Scale Model · Interactive</h2>
+      <div class="canvas-container">
+        <canvas id="scaleCanvas" width="800" height="500"></canvas>
       </div>
-      <a href="./index.html">← Portal</a>
-    </div>
-
-    <!-- KPI row -->
-    <div class="kpi-grid" id="kpiRow">
-      <div class="kpi">
-        <div class="label">Largest Object</div>
-        <div class="value" id="kpiLargest">LHC</div>
-        <div class="sub" id="kpiLargestM">27,000 m</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Smallest Object</div>
-        <div class="value" id="kpiSmallest">Chess Set</div>
-        <div class="sub" id="kpiSmallestM">0.5 m</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Scale Ratio</div>
-        <div class="value" id="kpiRatio">54,000×</div>
-        <div class="sub">Largest / Smallest</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Total Span</div>
-        <div class="value" id="kpiTotalSpan">27,000.5 m</div>
-        <div class="sub">Sum of all objects</div>
-      </div>
-    </div>
-
-    <!-- Workstation grid -->
-    <div class="workstation">
-
-      <!-- Left: Canvas + Table -->
-      <div class="card" style="display: flex; flex-direction: column;">
-        <h2>3D Scale Comparison</h2>
-        <canvas id="scaleCanvas" width="800" height="400"></canvas>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div class="unit-toggle" style="margin-bottom:0;">
-            <button id="unitMetric" class="active">METERS</button>
-            <button id="unitFeet">FEET</button>
+      <div class="control-group" style="margin-top:1rem;">
+        <div style="flex:1; min-width:180px;">
+          <div class="slider-label">
+            <span>Scale factor</span>
+            <span id="scaleFactorValue" class="mono">1.00x</span>
           </div>
-          <div style="display:flex; gap:0.6rem;">
-            <button class="btn sm accent" id="exportCSV">↓ CSV Telemetry</button>
-            <button class="btn sm accent" id="copyLink">🔗 Copy Scenario Link</button>
-          </div>
+          <input type="range" id="scaleSlider" min="0.3" max="2.5" step="0.01" value="1.0">
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button class="btn btn-accent" id="resetViewBtn">Reset view</button>
+          <button class="btn" id="toggleLabelsBtn">Labels: ON</button>
         </div>
       </div>
-
-      <!-- Right: Controls -->
-      <div class="card" style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <h2>Scene Controls</h2>
-
-        <div class="control-group">
-          <label>Zoom <span id="zoomVal">1.0×</span></label>
-          <input type="range" id="zoomSlider" min="0.2" max="3" step="0.05" value="1" />
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Max size</div>
+          <div class="kpi-value" id="kpiMaxSize">27,000 m</div>
+          <div class="kpi-sub">LHC ring</div>
         </div>
-        <div class="control-group">
-          <label>Camera Angle <span id="angleVal">0°</span></label>
-          <input type="range" id="angleSlider" min="-45" max="45" step="1" value="0" />
+        <div class="kpi">
+          <div class="kpi-label">Total metric</div>
+          <div class="kpi-value" id="kpiTotalCost">$182B</div>
+          <div class="kpi-sub">cumulative</div>
         </div>
-        <div class="control-group">
-          <label>Perspective <span id="perspVal">0.8</span></label>
-          <input type="range" id="perspSlider" min="0.2" max="1.5" step="0.05" value="0.8" />
-        </div>
-        <div class="control-group">
-          <label>Object Spacing <span id="spacingVal">1.0×</span></label>
-          <input type="range" id="spacingSlider" min="0.5" max="2" step="0.1" value="1" />
-        </div>
-
-        <h2 style="margin-top:0.5rem;">Scenario Presets</h2>
-        <div class="btn-row">
-          <button class="btn" data-preset="overview">Overview</button>
-          <button class="btn" data-preset="zoomSmall">Zoom Small</button>
-          <button class="btn" data-preset="zoomLarge">Zoom Large</button>
-          <button class="btn" data-preset="reset">Reset</button>
-        </div>
-
-        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
-          <h3 style="font-size:0.8rem;">Active Objects <span id="activeCount" style="color:var(--accent);">5</span></h3>
-          <div id="objectList" style="font-size:0.75rem; color:var(--muted); display:flex; flex-direction:column; gap:0.2rem; margin-top:0.4rem;">
-            <!-- populated via JS -->
-          </div>
+        <div class="kpi">
+          <div class="kpi-label">Objects</div>
+          <div class="kpi-value" id="kpiObjects">5</div>
+          <div class="kpi-sub">5-stage</div>
         </div>
       </div>
     </div>
 
-    <!-- Analytical Table -->
-    <div class="card" style="margin-top: 1.5rem;">
-      <h2>Analytical Breakdown</h2>
-      <div class="table-wrap">
-        <table id="dataTable">
+    <!-- RIGHT: PRESETS + ACTIONS -->
+    <div class="card">
+      <h2>Scenario presets</h2>
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <button class="preset-btn active" data-preset="all">All objects (5)</button>
+        <button class="preset-btn" data-preset="big">Large-scale (ISS + LHC)</button>
+        <button class="preset-btn" data-preset="quantum">Quantum / Particle (AMS-02 + LHC magnet)</button>
+        <button class="preset-btn" data-preset="telescope">Space Telescopes (JWST + ISS)</button>
+      </div>
+
+      <h2 style="margin-top:1.5rem;">Telemetry & sharing</h2>
+      <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+        <button class="btn btn-accent" id="exportCsvBtn">Export CSV Telemetry</button>
+        <button class="btn" id="copyScenarioBtn">Copy Scenario Link</button>
+      </div>
+
+      <div class="mt-3">
+        <div class="flex-between" style="font-size:0.8rem; color:var(--text-dim);">
+          <span>Active preset</span>
+          <span id="activePresetLabel" class="mono text-accent">ALL OBJECTS</span>
+        </div>
+      </div>
+
+      <h2 style="margin-top:1.75rem;">Object breakdown</h2>
+      <div class="table-wrapper">
+        <table>
           <thead>
-            <tr>
-              <th>Object</th>
-              <th class="right">Length (m)</th>
-              <th class="right">Length (ft)</th>
-              <th class="right">Cost</th>
-              <th class="right">Ratio vs Smallest</th>
-            </tr>
+            <tr><th>Object</th><th>Size (m)</th><th>Metric</th></tr>
           </thead>
-          <tbody id="tableBody">
-            <!-- populated via JS -->
+          <tbody id="objectTableBody">
+            <!-- dynamically populated -->
           </tbody>
         </table>
       </div>
     </div>
-
-    <!-- FAQ + Video row -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;" class="workstation" id="faqVideoRow">
-      <div class="card">
-        <h2>FAQ</h2>
-        <div id="faqContainer">
-          <div class="faq-item">
-            <div class="faq-q">What is SCALEVERSE 3D?</div>
-            <div class="faq-a">A 3D scale comparison workstation for visualizing the relative sizes of the most expensive objects ever built. Adjust zoom, perspective, and spacing to explore.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">How are the objects rendered?</div>
-            <div class="faq-a">The canvas uses an isometric 3D projection. Each object is drawn as a labeled block with a height proportional to its real-world length in metres.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Why is the Large Hadron Collider so large?</div>
-            <div class="faq-a">The LHC is a 27 km ring of superconducting magnets. At this scale, it dwarfs all other objects—its length is over 54,000× the chess set.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Can I export the data?</div>
-            <div class="faq-a">Yes. Click "CSV Telemetry" to download a spreadsheet of all object lengths, costs, and ratios. Use "Copy Scenario Link" to share the current viewer state.</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Video Reference</h2>
-        <div class="video-wrap">
-          <iframe src="https://www.youtube.com/embed/nuhLKZq8HRI" title="Most Expensive Objects Ever Built" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- JSON-LD SoftwareApplication schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "SCALEVERSE 3D — Most Expensive Objects Ever Built",
-    "description": "Interactive 3D scale comparison workstation for the most expensive objects ever built.",
-    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/most-expensive-objects-ever-built-5-stage-3d-scale.html",
-    "applicationCategory": "DesignApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "creator": {
-      "@type": "Organization",
-      "name": "SCALEVERSE 3D"
-    }
+  <!-- FAQ + EMBED -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+    <div class="card">
+      <h2>Analytical FAQ</h2>
+      <div class="faq-item">
+        <div class="faq-q">Why does the LHC ring dominate the scale?</div>
+        <div class="faq-a">At 27 km circumference it is 250× longer than the ISS width. The visualization uses logarithmic compression to keep all objects visible.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What does the cost per meter indicate?</div>
+        <div class="faq-a">AMS-02: $400M/m, LHC dipole: $667M/m, JWST: $476M/m, ISS: $1.38B/m, LHC ring: $0.37M/m. High precision small objects cost more per meter.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I export the current view?</div>
+        <div class="faq-a">Yes. The CSV telemetry includes the current scale factor, active preset, and per-object costs.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Video deep-dive</h2>
+      <div class="embed-wrapper">
+        <iframe src="https://www.youtube.com/embed/mM2vE3iC7Zk" title="Most Expensive Objects Ever Built" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="mt-2" style="font-size:0.8rem; color:var(--text-dim);">
+        <span>Source: Scaleverse 3D — Most Expensive Objects Ever Built: 5-Stage 3D Scale</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-note">
+    SCALEVERSE 3D · Most Expensive Objects · Canonical: 
+    <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/most-expensive-objects-ever-built-5-stage-3d-scale.html" style="color:#38bdf8;">most-expensive-objects-ever-built-5-stage-3d-scale.html</a>
+  </div>
+</div>
+
+<!-- JSON-LD Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D · Most Expensive Objects 5-Stage Scale",
+  "description": "Interactive 3D scale workstation: $2B AMS-02 to $150B ISS & LHC ring. Canvas visualization, telemetry CSV, scenario presets.",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Web",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/most-expensive-objects-ever-built-5-stage-3d-scale.html",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
   }
-  </script>
+}
+</script>
 
-  <script>
-    // ============================================================
-    // DATA PAYLOAD (exact items)
-    // ============================================================
-    const DATA = {
-      title: "Most Expensive Objects Ever Built: 5-Stage 3D Scale",
-      items: [
-        { name: "Gold and Jewel Chess Set", meters: 0.5, metric: "£8.2M" },
-        { name: "James Webb Space Telescope", meters: 21, metric: "$10B" },
-        { name: "International Space Station", meters: 109, metric: "$150B" },
-        { name: "Antilia", meters: 173, metric: "$2.2B" },
-        { name: "Large Hadron Collider", meters: 27000, metric: "$9.2B" }
-      ]
-    };
+<script>
+  // DATA PAYLOAD
+  const DATA = {
+    "title": "Most Expensive Objects Ever Built: 5-Stage 3D Scale",
+    "summary": "From a $2 billion particle detector to a $150 billion space station, these are humanity's most expensive engineering marvels, ranked by physical size.",
+    "items": [
+      { "name": "Alpha Magnetic Spectrometer (AMS-02)", "meters": 5, "metric": "$2 billion / 5 m" },
+      { "name": "Large Hadron Collider (LHC) dipole magnet", "meters": 15, "metric": "$10 billion / 15 m per magnet" },
+      { "name": "James Webb Space Telescope", "meters": 21, "metric": "$10 billion / 21 m sunshield" },
+      { "name": "International Space Station (ISS)", "meters": 109, "metric": "$150 billion / 109 m wide" },
+      { "name": "CERN's Large Hadron Collider (LHC) ring", "meters": 27000, "metric": "$10 billion / 27 km ring" }
+    ]
+  };
 
-    // ============================================================
-    // STATE
-    // ============================================================
-    const state = {
-      zoom: 1,
-      angle: 0,
-      persp: 0.8,
-      spacing: 1,
-      unit: 'm',
-      activeIndex: -1
-    };
+  // --- State ---
+  const state = {
+    scaleFactor: 1.0,
+    activePreset: 'all',
+    showLabels: true,
+    items: DATA.items.map((item, idx) => ({
+      ...item,
+      id: idx,
+      cost: parseCost(item.metric),
+      color: ['#38bdf8', '#a78bfa', '#f472b6', '#fbbf24', '#34d399'][idx % 5]
+    }))
+  };
 
-    // ============================================================
-    // CANVAS SETUP
-    // ============================================================
-    const canvas = document.getElementById('scaleCanvas');
-    const ctx = canvas.getContext('2d');
+  function parseCost(metricStr) {
+    const match = metricStr.match(/\$(\d+(?:\.\d+)?)\s*billion/);
+    return match ? parseFloat(match[1]) : 0;
+  }
 
-    // Resize canvas to match container width
-    function resizeCanvas() {
-      const container = canvas.parentElement;
-      const w = container.clientWidth - 2; // account for padding/border
-      const h = Math.min(500, Math.max(320, w * 0.55));
-      canvas.width = w;
-      canvas.height = h;
-      draw();
-    }
-    window.addEventListener('resize', resizeCanvas);
+  // --- Canvas Setup ---
+  const canvas = document.getElementById('scaleCanvas');
+  const ctx = canvas.getContext('2d');
+  let canvasW, canvasH;
 
-    // ============================================================
-    // COLORS
-    // ============================================================
-    const COLORS = [
-      '#fbbf24', // chess gold
-      '#38bdf8', // jwst blue
-      '#a78bfa', // iss purple
-      '#f472b6', // antilia pink
-      '#34d399'  // lhc green
-    ];
+  function resizeCanvas() {
+    const container = canvas.parentElement;
+    const rect = container.getBoundingClientRect();
+    canvas.width = rect.width * 2;
+    canvas.height = rect.height * 2;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    canvasW = canvas.width;
+    canvasH = canvas.height;
+    drawCanvas();
+  }
+  window.addEventListener('resize', resizeCanvas);
 
-    // ============================================================
-    // DRAW
-    // ============================================================
-    function draw() {
-      const W = canvas.width;
-      const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
+  // --- Drawing ---
+  function drawCanvas() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvasW, canvasH);
 
-      // background grid
-      ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < W; x += 40) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-      }
-      for (let y = 0; y < H; y += 40) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-      }
-
-      const items = DATA.items;
-      const n = items.length;
-
-      // Max meters for scaling
-      const maxM = Math.max(...items.map(i => i.meters));
-      const minM = Math.min(...items.map(i => i.meters));
-
-      // Layout: divide horizontal space
-      const pad = 40;
-      const usableW = W - pad * 2;
-      const baseY = H - 60; // ground line
-      const maxBarH = H - 140; // max visual height
-
-      // bar width depending on spacing and zoom
-      const totalBars = n;
-      const gap = (usableW / totalBars) * 0.15 * state.spacing;
-      const barW = Math.min(70, (usableW - gap * (n - 1)) / n) * Math.min(1.5, state.zoom);
-
-      const totalW = n * barW + (n - 1) * gap;
-      const startX = (W - totalW) / 2;
-
-      // Draw each object as 3D-ish bar
-      items.forEach((item, i) => {
-        const x = startX + i * (barW + gap);
-        // map meters to height: use log scale for LHC (27000 vs 0.5)
-        // but we'll use linear with a cap for readability; use sqrt for balance
-        let ratio;
-        if (maxM / minM > 100) {
-          // log-ish scale for huge range
-          ratio = Math.log10(item.meters / minM + 1) / Math.log10(maxM / minM + 1);
-        } else {
-          ratio = (item.meters - minM) / (maxM - minM);
-        }
-        ratio = Math.max(0.08, ratio); // minimum visible
-        const barH = Math.max(20, ratio * maxBarH * 0.9);
-
-        const color = COLORS[i % COLORS.length];
-        const y = baseY - barH;
-
-        // shadow / floor
-        ctx.fillStyle = 'rgba(0,0,0,0.3)';
-        ctx.beginPath();
-        ctx.ellipse(x + barW / 2, baseY + 4, barW * 0.55, 6, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 3D block: front face
-        ctx.fillStyle = color + '30'; // transparent
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        const depth = 8 * state.persp;
-
-        // front rect
-        ctx.fillRect(x, y, barW, barH);
-        ctx.strokeRect(x, y, barW, barH);
-
-        // top face (parallelogram)
-        ctx.fillStyle = color + '20';
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + depth, y - depth * 0.7);
-        ctx.lineTo(x + barW + depth, y - depth * 0.7);
-        ctx.lineTo(x + barW, y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        // right face
-        ctx.beginPath();
-        ctx.moveTo(x + barW, y);
-        ctx.lineTo(x + barW + depth, y - depth * 0.7);
-        ctx.lineTo(x + barW + depth, y + barH - depth * 0.7);
-        ctx.lineTo(x + barW, y + barH);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        // Label
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '10px monospace';
-        ctx.textAlign = 'center';
-        const shortName = item.name.length > 14 ? item.name.slice(0, 12) + '…' : item.name;
-        ctx.fillText(shortName, x + barW / 2, baseY + 24);
-
-        // meters
-        ctx.fillStyle = color;
-        ctx.font = 'bold 10px monospace';
-        const meterText = item.meters >= 1000 ? (item.meters / 1000).toFixed(1) + 'km' : item.meters + 'm';
-        ctx.fillText(meterText, x + barW / 2, y - 8);
-
-        // cost
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '9px monospace';
-        ctx.fillText(item.metric, x + barW / 2, y - 20);
-      });
-
-      // Ground line
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 1;
+    // background grid
+    ctx.strokeStyle = '#1a2332';
+    ctx.lineWidth = 1;
+    const gridStep = 40 * state.scaleFactor;
+    for (let x = 0; x < canvasW; x += gridStep) {
       ctx.beginPath();
-      ctx.moveTo(20, baseY);
-      ctx.lineTo(W - 20, baseY);
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvasH);
+      ctx.strokeStyle = '#121a26';
       ctx.stroke();
-
-      // Scale note
-      ctx.fillStyle = '#475569';
-      ctx.font = '9px monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText('LOG-SCALE VISUALIZATION', 20, H - 12);
-      ctx.textAlign = 'right';
-      ctx.fillText('SCALEVERSE 3D', W - 20, H - 12);
+    }
+    for (let y = 0; y < canvasH; y += gridStep) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvasW, y);
+      ctx.strokeStyle = '#121a26';
+      ctx.stroke();
     }
 
-    // ============================================================
-    // UPDATE UI
-    // ============================================================
-    function updateKPIs() {
-      const items = DATA.items;
-      const maxM = Math.max(...items.map(i => i.meters));
-      const minM = Math.min(...items.map(i => i.meters));
-      const maxItem = items.find(i => i.meters === maxM);
-      const minItem = items.find(i => i.meters === minM);
-      const totalSpan = items.reduce((a, b) => a + b.meters, 0);
-
-      document.getElementById('kpiLargest').textContent = maxItem.name.length > 12 ? maxItem.name.slice(0, 10) + '…' : maxItem.name;
-      document.getElementById('kpiLargestM').textContent = formatMeters(maxM);
-      document.getElementById('kpiSmallest').textContent = minItem.name.length > 12 ? minItem.name.slice(0, 10) + '…' : minItem.name;
-      document.getElementById('kpiSmallestM').textContent = formatMeters(minM);
-      document.getElementById('kpiRatio').textContent = (maxM / minM).toLocaleString('en-US', { maximumFractionDigits: 0 }) + '×';
-      document.getElementById('kpiTotalSpan').textContent = formatMeters(totalSpan);
+    // filter items based on preset
+    let filteredItems = [...state.items];
+    if (state.activePreset === 'big') {
+      filteredItems = state.items.filter(i => i.meters > 100);
+    } else if (state.activePreset === 'quantum') {
+      filteredItems = state.items.filter(i => i.id === 0 || i.id === 1);
+    } else if (state.activePreset === 'telescope') {
+      filteredItems = state.items.filter(i => i.id === 2 || i.id === 3);
     }
 
-    function formatMeters(m) {
-      if (m >= 1000) return (m / 1000).toFixed(1) + ' km';
-      return m + ' m';
-    }
+    // log scale for visualization (meters range 5 -> 27000)
+    const maxMeters = Math.max(...filteredItems.map(i => i.meters), 1);
+    const minMeters = Math.min(...filteredItems.map(i => i.meters), 1);
+    const logMax = Math.log10(maxMeters);
+    const logMin = Math.log10(Math.max(1, minMeters));
+    const range = logMax - logMin || 1;
 
-    function updateTable() {
-      const tbody = document.getElementById('tableBody');
-      const items = DATA.items;
-      const minM = Math.min(...items.map(i => i.meters));
-      tbody.innerHTML = items.map(item => {
-        const ratio = (item.meters / minM).toFixed(1);
-        return `<tr>
-          <td>${item.name}</td>
-          <td class="right">${item.meters.toLocaleString()}</td>
-          <td class="right">${(item.meters * 3.28084).toLocaleString('en-US', { maximumFractionDigits: 1 })}</td>
-          <td class="right highlight">${item.metric}</td>
-          <td class="right">${ratio}×</td>
-        </tr>`;
-      }).join('');
-    }
+    const barHeight = Math.min(60, canvasH / (filteredItems.length + 1.5));
+    const startY = canvasH * 0.15;
+    const barMaxWidth = canvasW * 0.7;
+    const baseX = canvasW * 0.15;
 
-    function updateObjectList() {
-      const list = document.getElementById('objectList');
-      list.innerHTML = DATA.items.map((item, i) => {
-        return `<div style="display:flex; align-items:center; gap:0.4rem;">
-          <span style="width:8px;height:8px;border-radius:2px;background:${COLORS[i]};display:inline-block;"></span>
-          ${item.name}
-        </div>`;
-      }).join('');
-      document.getElementById('activeCount').textContent = DATA.items.length;
-    }
+    filteredItems.forEach((item, idx) => {
+      const logVal = Math.log10(Math.max(1, item.meters));
+      const normalized = (logVal - logMin) / range;
+      const barWidth = 40 + normalized * barMaxWidth * state.scaleFactor;
+      const y = startY + idx * (barHeight + 25);
 
-    // ============================================================
-    // CONTROLS (sliders)
-    // ============================================================
-    const zoomSlider = document.getElementById('zoomSlider');
-    const angleSlider = document.getElementById('angleSlider');
-    const perspSlider = document.getElementById('perspSlider');
-    const spacingSlider = document.getElementById('spacingSlider');
+      // bar background
+      ctx.fillStyle = '#0f141f';
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.roundRect(baseX, y, barMaxWidth, barHeight, 8);
+      ctx.fill();
+      ctx.shadowBlur = 0;
 
-    zoomSlider.addEventListener('input', () => {
-      state.zoom = parseFloat(zoomSlider.value);
-      document.getElementById('zoomVal').textContent = state.zoom.toFixed(2) + '×';
-      draw();
-    });
-    angleSlider.addEventListener('input', () => {
-      state.angle = parseInt(angleSlider.value);
-      document.getElementById('angleVal').textContent = state.angle + '°';
-      draw();
-    });
-    perspSlider.addEventListener('input', () => {
-      state.persp = parseFloat(perspSlider.value);
-      document.getElementById('perspVal').textContent = state.persp.toFixed(2);
-      draw();
-    });
-    spacingSlider.addEventListener('input', () => {
-      state.spacing = parseFloat(spacingSlider.value);
-      document.getElementById('spacingVal').textContent = state.spacing.toFixed(1) + '×';
-      draw();
-    });
+      // actual bar
+      ctx.fillStyle = item.color + 'cc';
+      ctx.beginPath();
+      ctx.roundRect(baseX, y, barWidth, barHeight, 8);
+      ctx.fill();
+      ctx.shadowColor = item.color + '60';
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
 
-    // ============================================================
-    // PRESETS
-    // ============================================================
-    document.querySelectorAll('[data-preset]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const preset = btn.dataset.preset;
-        if (preset === 'overview') {
-          zoomSlider.value = 1; state.zoom = 1;
-          angleSlider.value = 0; state.angle = 0;
-          perspSlider.value = 0.8; state.persp = 0.8;
-          spacingSlider.value = 1; state.spacing = 1;
-        } else if (preset === 'zoomSmall') {
-          zoomSlider.value = 2.5; state.zoom = 2.5;
-          spacingSlider.value = 0.7; state.spacing = 0.7;
-          perspSlider.value = 1.2; state.persp = 1.2;
-        } else if (preset === 'zoomLarge') {
-          zoomSlider.value = 0.4; state.zoom = 0.4;
-          spacingSlider.value = 1.6; state.spacing = 1.6;
-          perspSlider.value = 0.4; state.persp = 0.4;
-        } else if (preset === 'reset') {
-          zoomSlider.value = 1; state.zoom = 1;
-          angleSlider.value = 0; state.angle = 0;
-          perspSlider.value = 0.8; state.persp = 0.8;
-          spacingSlider.value = 1; state.spacing = 1;
-        }
-        // update readouts
-        document.getElementById('zoomVal').textContent = state.zoom.toFixed(2) + '×';
-        document.getElementById('angleVal').textContent = state.angle + '°';
-        document.getElementById('perspVal').textContent = state.persp.toFixed(2);
-        document.getElementById('spacingVal').textContent = state.spacing.toFixed(1) + '×';
-        draw();
-      });
-    });
-
-    // ============================================================
-    // UNIT TOGGLE (visual only, table always shows both)
-    // ============================================================
-    document.getElementById('unitMetric').addEventListener('click', () => {
-      document.getElementById('unitMetric').classList.add('active');
-      document.getElementById('unitFeet').classList.remove('active');
-      state.unit = 'm';
-      draw();
-    });
-    document.getElementById('unitFeet').addEventListener('click', () => {
-      document.getElementById('unitFeet').classList.add('active');
-      document.getElementById('unitMetric').classList.remove('active');
-      state.unit = 'ft';
-      draw();
-    });
-
-    // ============================================================
-    // EXPORT CSV
-    // ============================================================
-    document.getElementById('exportCSV').addEventListener('click', () => {
-      const items = DATA.items;
-      const minM = Math.min(...items.map(i => i.meters));
-      let csv = 'Object,Length (m),Length (ft),Cost,Cost (USD est),Ratio vs Smallest\n';
-      items.forEach(item => {
-        const ratio = (item.meters / minM).toFixed(2);
-        csv += `"${item.name}",${item.meters},${(item.meters * 3.28084).toFixed(2)},"${item.metric}","${item.metric}",${ratio}\n`;
-      });
-      // telemetry summary
-      csv += `\n--- TELEMETRY ---\n`;
-      csv += `Timestamp,${new Date().toISOString()}\n`;
-      csv += `Zoom,${state.zoom}\n`;
-      csv += `Angle,${state.angle}\n`;
-      csv += `Perspective,${state.persp}\n`;
-      csv += `Spacing,${state.spacing}\n`;
-      csv += `Unit,${state.unit}\n`;
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'scaleverse_telemetry.csv';
-      link.click();
-      URL.revokeObjectURL(link.href);
-    });
-
-    // ============================================================
-    // COPY SCENARIO LINK
-    // ============================================================
-    document.getElementById('copyLink').addEventListener('click', () => {
-      const params = new URLSearchParams({
-        zoom: state.zoom,
-        angle: state.angle,
-        persp: state.persp,
-        spacing: state.spacing,
-        unit: state.unit
-      });
-      const url = window.location.origin + window.location.pathname + '?' + params.toString();
-      navigator.clipboard.writeText(url).then(() => {
-        const btn = document.getElementById('copyLink');
-        const orig = btn.textContent;
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => { btn.textContent = orig; }, 2000);
-      }).catch(() => {
-        alert('Copy failed. URL: ' + url);
-      });
-    });
-
-    // ============================================================
-    // INIT FROM URL PARAMS (if any)
-    // ============================================================
-    function initFromURL() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.has('zoom')) {
-        state.zoom = parseFloat(params.get('zoom'));
-        zoomSlider.value = state.zoom;
-        document.getElementById('zoomVal').textContent = state.zoom.toFixed(2) + '×';
+      // label
+      if (state.showLabels) {
+        ctx.font = '500 16px "Fira Code", "Cascadia Code", monospace';
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillText(item.name.length > 38 ? item.name.slice(0, 35) + '…' : item.name, baseX, y - 8);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '400 14px "Fira Code", monospace';
+        ctx.fillText(item.meters.toLocaleString() + ' m', baseX + barMaxWidth + 20, y + barHeight / 2 + 5);
       }
-      if (params.has('angle')) {
-        state.angle = parseInt(params.get('angle'));
-        angleSlider.value = state.angle;
-        document.getElementById('angleVal').textContent = state.angle + '°';
-      }
-      if (params.has('persp')) {
-        state.persp = parseFloat(params.get('persp'));
-        perspSlider.value = state.persp;
-        document.getElementById('perspVal').textContent = state.persp.toFixed(2);
-      }
-      if (params.has('spacing')) {
-        state.spacing = parseFloat(params.get('spacing'));
-        spacingSlider.value = state.spacing;
-        document.getElementById('spacingVal').textContent = state.spacing.toFixed(1) + '×';
-      }
-      if (params.has('unit')) {
-        state.unit = params.get('unit');
-        if (state.unit === 'ft') {
-          document.getElementById('unitFeet').classList.add('active');
-          document.getElementById('unitMetric').classList.remove('active');
-        }
+    });
+
+    // title overlay
+    ctx.font = '600 18px "Inter", sans-serif';
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillText('5-STAGE SCALE · LOG COMPRESSION', 20, 40);
+    ctx.font = '400 12px "Fira Code", monospace';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('Preset: ' + state.activePreset.toUpperCase() + ' | Scale: ' + state.scaleFactor.toFixed(2) + 'x', 20, 65);
+  }
+
+  // Polyfill for roundRect
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+    return this;
+  };
+
+  // --- KPI updates ---
+  function updateKPIs() {
+    const maxMeters = Math.max(...state.items.map(i => i.meters));
+    const totalCost = state.items.reduce((sum, i) => sum + i.cost, 0);
+    document.getElementById('kpiMaxSize').innerText = maxMeters.toLocaleString() + ' m';
+    document.getElementById('kpiTotalCost').innerText = '$' + totalCost.toFixed(1) + 'B';
+    document.getElementById('kpiObjects').innerText = state.items.length;
+  }
+
+  // --- Table population ---
+  function populateTable() {
+    const tbody = document.getElementById('objectTableBody');
+    tbody.innerHTML = '';
+    state.items.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.name}</td>
+        <td class="highlight">${item.meters.toLocaleString()}</td>
+        <td>${item.metric}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // --- Preset handling ---
+  function setPreset(preset) {
+    state.activePreset = preset;
+    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.preset-btn[data-preset="${preset}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    document.getElementById('activePresetLabel').innerText = preset.toUpperCase() + ' OBJECTS';
+    drawCanvas();
+  }
+
+  // --- Scale slider ---
+  const scaleSlider = document.getElementById('scaleSlider');
+  const scaleFactorValue = document.getElementById('scaleFactorValue');
+  scaleSlider.addEventListener('input', (e) => {
+    state.scaleFactor = parseFloat(e.target.value);
+    scaleFactorValue.innerText = state.scaleFactor.toFixed(2) + 'x';
+    drawCanvas();
+  });
+
+  // reset
+  document.getElementById('resetViewBtn').addEventListener('click', () => {
+    state.scaleFactor = 1.0;
+    scaleSlider.value = '1.0';
+    scaleFactorValue.innerText = '1.00x';
+    setPreset('all');
+    document.getElementById('toggleLabelsBtn').innerText = 'Labels: ON';
+    state.showLabels = true;
+    drawCanvas();
+  });
+
+  // labels toggle
+  document.getElementById('toggleLabelsBtn').addEventListener('click', (e) => {
+    state.showLabels = !state.showLabels;
+    e.target.innerText = 'Labels: ' + (state.showLabels ? 'ON' : 'OFF');
+    drawCanvas();
+  });
+
+  // preset buttons
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setPreset(btn.dataset.preset);
+    });
+  });
+
+  // --- Export CSV ---
+  document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    const headers = ['name', 'meters', 'metric', 'cost_billion', 'scale_factor', 'preset'];
+    const rows = state.items.map(item => [
+      `"${item.name}"`,
+      item.meters,
+      `"${item.metric}"`,
+      item.cost,
+      state.scaleFactor,
+      state.activePreset
+    ].join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `scaleverse_telemetry_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // --- Copy scenario link ---
+  document.getElementById('copyScenarioBtn').addEventListener('click', () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('scale', state.scaleFactor.toFixed(2));
+    url.searchParams.set('preset', state.activePreset);
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      const btn = document.getElementById('copyScenarioBtn');
+      const original = btn.innerText;
+      btn.innerText = 'Copied!';
+      setTimeout(() => { btn.innerText = original; }, 1500);
+    }).catch(() => {
+      prompt('Copy scenario link:', url.toString());
+    });
+  });
+
+  // --- Initialize ---
+  function init() {
+    resizeCanvas();
+    updateKPIs();
+    populateTable();
+    setPreset('all');
+    drawCanvas();
+    // read URL params
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('scale')) {
+      const s = parseFloat(params.get('scale'));
+      if (!isNaN(s) && s >= 0.3 && s <= 2.5) {
+        state.scaleFactor = s;
+        scaleSlider.value = s.toString();
+        scaleFactorValue.innerText = s.toFixed(2) + 'x';
       }
     }
-
-    // ============================================================
-    // INIT
-    // ============================================================
-    function init() {
-      resizeCanvas();
-      updateKPIs();
-      updateTable();
-      updateObjectList();
-      initFromURL();
-      draw();
-    }
-
-    init();
-
-    // ============================================================
-    // RESPONSIVE FAQ/VIDEO ROW (on mobile stack)
-    // ============================================================
-    function handleResponsive() {
-      const row = document.getElementById('faqVideoRow');
-      if (window.innerWidth < 800) {
-        row.style.gridTemplateColumns = '1fr';
-      } else {
-        row.style.gridTemplateColumns = '1fr 1fr';
+    if (params.has('preset')) {
+      const p = params.get('preset');
+      if (['all', 'big', 'quantum', 'telescope'].includes(p)) {
+        setPreset(p);
       }
     }
-    window.addEventListener('resize', handleResponsive);
-    handleResponsive();
-  </script>
+    drawCanvas();
+  }
+
+  window.addEventListener('load', init);
+
+  // force redraw on orientation change
+  window.addEventListener('resize', () => { resizeCanvas(); drawCanvas(); });
+</script>
 </body>
 </html>
