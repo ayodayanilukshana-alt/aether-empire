@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samurai vs Cowboy · Blade & Bullet Ball Maze · KINETICZEN LABS</title>
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/samurai-vs-cowboy-blade-bullet-ball-maze-physics.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: #e2e8f0;
+      line-height: 1.5;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .app {
+      max-width: 1400px;
+      width: 100%;
+    }
+    /* header */
+    .brand-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .brand h1 {
+      font-size: 1.75rem;
+      letter-spacing: -0.01em;
+      font-weight: 600;
+      background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand span {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: #f43f5e;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(244, 63, 94, 0.1);
+      padding: 4px 10px;
+      border-radius: 40px;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+    .portal-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid #1e293b;
+      padding: 8px 16px;
+      border-radius: 40px;
+      transition: all 0.2s;
+    }
+    .portal-link:hover {
+      background: #0b0f17;
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+    /* main layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* canvas panel */
+    .canvas-panel {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .canvas-header h2 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: #f1f5f9;
+    }
+    .team-badge {
+      display: flex;
+      gap: 18px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .team-badge .samurai {
+      color: #f43f5e;
+    }
+    .team-badge .cowboy {
+      color: #fbbf24;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      box-shadow: 0 0 30px rgba(244, 63, 94, 0.05);
+      aspect-ratio: 16 / 9;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .kpi {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .kpi-value {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+    .kpi-value small {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    /* control panel */
+    .control-panel {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: fit-content;
+    }
+    .control-panel h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .slider-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+    .slider-group label span {
+      font-family: monospace;
+      color: #f43f5e;
+      background: #1e293b;
+      padding: 0 6px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #f43f5e;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 0 2px #f43f5e;
+    }
+    .preset-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .preset-btn {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex: 1 0 auto;
+      text-align: center;
+    }
+    .preset-btn:hover {
+      border-color: #f43f5e;
+      color: #f43f5e;
+      background: rgba(244, 63, 94, 0.05);
+    }
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .btn {
+      padding: 12px 16px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: #f43f5e;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #e11d48;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+    .btn-outline:hover {
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+    /* table section */
+    .analytics-section {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 18px;
+      color: #f1f5f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      padding: 12px 8px;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2e8f0;
+    }
+    td:first-child {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      color: #f1f5f9;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .win-highlight {
+      color: #f43f5e;
+      font-weight: 600;
+    }
+    /* faq */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 700px) {
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+    }
+    .faq-item h4 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    .faq-item h4::before {
+      content: "▹";
+      color: #f43f5e;
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+    .faq-item p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      padding-left: 24px;
+    }
+    /* embed */
+    .embed-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid #1e293b;
+      margin: 24px 0;
+    }
+    .embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    /* footer */
+    .footer {
+      margin-top: 40px;
+      color: #475569;
+      font-size: 0.8rem;
+      text-align: center;
+      border-top: 1px solid #1e293b;
+      padding-top: 20px;
+    }
+    .footer a {
+      color: #64748b;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      color: #f43f5e;
+    }
+    .copy-feedback {
+      font-size: 0.8rem;
+      color: #10b981;
+      text-align: center;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- header -->
+  <div class="brand-bar">
+    <div class="brand">
+      <h1>KINETICZEN LABS</h1>
+      <span>BLADE & BULLET</span>
+    </div>
+    <a class="portal-link" href="./index.html">⟵ Return to Portal</a>
+  </div>
+
+  <!-- main simulation area -->
+  <div class="main-grid">
+    <!-- Canvas + KPIs -->
+    <div class="canvas-panel">
+      <div class="canvas-header">
+        <h2>Ball Maze Physics · 60FPS</h2>
+        <div class="team-badge">
+          <span class="samurai">◈ SAMURAI</span>
+          <span class="cowboy">◈ COWBOY</span>
+        </div>
+      </div>
+      <canvas id="mazeCanvas" width="960" height="540"></canvas>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Samurai Impact</div>
+          <div class="kpi-value" id="kpiSamurai">0.0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Cowboy Impact</div>
+          <div class="kpi-value" id="kpiCowboy">0.0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Maze Speed</div>
+          <div class="kpi-value" id="kpiSpeed">1.0<small>x</small></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Collisions</div>
+          <div class="kpi-value" id="kpiCollisions">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="control-panel">
+      <h3>SCENARIO CONTROLS</h3>
+      <div class="slider-group">
+        <label>Blade Force <span id="bladeVal">1.2</span></label>
+        <input type="range" id="bladeForce" min="0.2" max="3.0" step="0.1" value="1.2">
+      </div>
+      <div class="slider-group">
+        <label>Bullet Speed <span id="bulletVal">2.0</span></label>
+        <input type="range" id="bulletSpeed" min="0.5" max="4.0" step="0.1" value="2.0">
+      </div>
+      <div class="slider-group">
+        <label>Maze Gravity <span id="gravityVal">0.6</span></label>
+        <input type="range" id="gravity" min="0.0" max="1.5" step="0.05" value="0.6">
+      </div>
+      <div class="slider-group">
+        <label>Restitution <span id="restitutionVal">0.7</span></label>
+        <input type="range" id="restitution" min="0.1" max="0.95" step="0.05" value="0.7">
+      </div>
+
+      <h3>PRESETS</h3>
+      <div class="preset-buttons">
+        <button class="preset-btn" data-preset="default">Default</button>
+        <button class="preset-btn" data-preset="samurai">Samurai Edge</button>
+        <button class="preset-btn" data-preset="cowboy">Cowboy Quickdraw</button>
+        <button class="preset-btn" data-preset="chaos">Maze Chaos</button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="resetSim">⟲ Reset Simulation</button>
+        <button class="btn btn-outline" id="exportCSV">⤓ Export CSV Telemetry</button>
+        <button class="btn btn-outline" id="copyLink">🔗 Copy Scenario Link</button>
+        <div class="copy-feedback" id="copyFeedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- analytic table -->
+  <div class="analytics-section">
+    <div class="section-title">⚔️ Blade & Bullet Analysis</div>
+    <table>
+      <thead>
+        <tr><th>Combatant</th><th>Weapon</th><th>Impact Energy (J)</th><th>Trajectory</th><th>Edge</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Samurai</td><td>Katana</td><td id="samuraiEnergy">2.45</td><td>Arc / Deflect</td><td class="win-highlight" id="samuraiEdge">+12%</td></tr>
+        <tr><td>Cowboy</td><td>Revolver</td><td id="cowboyEnergy">3.10</td><td>Linear / Ricochet</td><td class="win-highlight" id="cowboyEdge">+8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-grid">
+    <div class="faq-item">
+      <h4>How does the maze physics simulation work?</h4>
+      <p>The canvas uses rigid-body ball dynamics with adjustable gravity, restitution, and collision forces. Samurai (red) and Cowboy (yellow) projectiles bounce through a procedural maze, with real-time telemetry.</p>
+    </div>
+    <div class="faq-item">
+      <h4>What do the sliders control?</h4>
+      <p>Blade Force scales Samurai impact energy. Bullet Speed scales Cowboy projectile velocity. Gravity and Restitution affect all bodies. Presets instantly load balanced scenarios.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Can I export the live collision data?</h4>
+      <p>Yes — press "Export CSV Telemetry" to download a CSV containing every collision event, current KPI values, and slider settings. The link button copies the full scenario URL.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Is this related to the YouTube video?</h4>
+      <p>Absolutely. This workstation is engineered around the "Samurai vs Cowboy: Blade & Bullet Ball Maze Physics" video. The embedded stream below shows the same rivalry in 60FPS.</p>
+    </div>
+  </div>
+
+  <!-- YouTube embed -->
+  <div class="embed-container">
+    <iframe src="https://www.youtube.com/embed/n7uOO77hFfQ" title="Samurai vs Cowboy: Blade & Bullet Ball Maze Physics" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <!-- footer -->
+  <div class="footer">
+    <p>KINETICZEN LABS · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/samurai-vs-cowboy-blade-bullet-ball-maze-physics.html" target="_blank">Canonical</a></p>
+  </div>
+</div>
+
+<!-- JSON-LD SoftwareApplication schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Samurai vs Cowboy: Blade & Bullet Ball Maze Physics",
+  "description": "60FPS Matter.js rigid-body physics rivalry simulation.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/samurai-vs-cowboy-blade-bullet-ball-maze-physics.html",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire"
+  }
+}
+</script>
+
+<script>
+  (function() {
+    // ---------- CONFIG ----------
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width = 960;
+    const H = canvas.height = 540;
+
+    // state
+    let state = {
+      bladeForce: 1.2,
+      bulletSpeed: 2.0,
+      gravity: 0.6,
+      restitution: 0.7,
+      samuraiImpact: 0.0,
+      cowboyImpact: 0.0,
+      collisions: 0,
+      speedFactor: 1.0,
+      simTime: 0
+    };
+
+    // telemetry storage
+    let telemetryLog = [];
+
+    // DOM elements
+    const bladeSlider = document.getElementById('bladeForce');
+    const bulletSlider = document.getElementById('bulletSpeed');
+    const gravitySlider = document.getElementById('gravity');
+    const restitutionSlider = document.getElementById('restitution');
+    const bladeVal = document.getElementById('bladeVal');
+    const bulletVal = document.getElementById('bulletVal');
+    const gravityVal = document.getElementById('gravityVal');
+    const restitutionVal = document.getElementById('restitutionVal');
+
+    const kpiSamurai = document.getElementById('kpiSamurai');
+    const kpiCowboy = document.getElementById('kpiCowboy');
+    const kpiSpeed = document.getElementById('kpiSpeed');
+    const kpiCollisions = document.getElementById('kpiCollisions');
+
+    const samuraiEnergy = document.getElementById('samuraiEnergy');
+    const cowboyEnergy = document.getElementById('cowboyEnergy');
+    const samuraiEdge = document.getElementById('samuraiEdge');
+    const cowboyEdge = document.getElementById('cowboyEdge');
+
+    // ---------- PARTICLE / BALL SYSTEM ----------
+    const balls = [];
+
+    // Restart simulation
+    function resetSim() {
+      balls.length = 0;
+      state.samuraiImpact = 0;
+      state.cowboyImpact = 0;
+      state.collisions = 0;
+      state.simTime = 0;
+      telemetryLog = [];
+
+      // Samurai ball (red)
+      balls.push({
+        x: W * 0.25,
+        y: H * 0.5,
+        vx: (Math.random() - 0.5) * 2 + state.bladeForce * 1.5,
+        vy: (Math.random() - 0.5) * 2,
+        radius: 16,
+        color: '#f43f5e',
+        team: 'samurai',
+        mass: 2.0,
+        lastImpact: 0
+      });
+
+      // Cowboy ball (yellow)
+      balls.push({
+        x: W * 0.75,
+        y: H * 0.5,
+        vx: (Math.random() - 0.5) * 2 - state.bulletSpeed * 1.8,
+        vy: (Math.random() - 0.5) * 2,
+        radius: 16,
+        color: '#fbbf24',
+        team: 'cowboy',
+        mass: 1.5,
+        lastImpact: 0
+      });
+
+      // Add extra smaller balls for visual maze
+      for (let i = 0; i < 6; i++) {
+        balls.push({
+          x: W * (0.2 + Math.random() * 0.6),
+          y: H * (0.2 + Math.random() * 0.6),
+          vx: (Math.random() - 0.5) * 3,
+          vy: (Math.random() - 0.5) * 3,
+          radius: 8 + Math.random() * 6,
+          color: i % 2 === 0 ? '#64748b' : '#94a3b8',
+          team: 'neutral',
+          mass: 0.8 + Math.random(),
+          lastImpact: 0
+        });
+      }
+
+      updateKPIs();
+      updateTable();
+    }
+
+    // ---------- PHYSICS LOOP ----------
+    function updatePhysics() {
+      const gravity = state.gravity * 0.25;
+      const restitution = state.restitution;
+      const bladeForce = state.bladeForce;
+      const bulletSpeed = state.bulletSpeed;
+
+      // update velocities based on team
+      for (let b of balls) {
+        if (b.team === 'samurai') {
+          b.vx += (Math.random() - 0.5) * 0.15 * bladeForce;
+          b.vy += (Math.random() - 0.5) * 0.1 * bladeForce;
+        } else if (b.team === 'cowboy') {
+          b.vx += (Math.random() - 0.5) * 0.1 * bulletSpeed;
+          b.vy += (Math.random() - 0.5) * 0.08 * bulletSpeed;
+        }
+        // clamp velocity
+        const maxV = 8;
+        const sp = Math.hypot(b.vx, b.vy);
+        if (sp > maxV) {
+          b.vx = (b.vx / sp) * maxV;
+          b.vy = (b.vy / sp) * maxV;
+        }
+      }
+
+      // integrate
+      for (let b of balls) {
+        b.vy += gravity;
+        b.x += b.vx * 0.6;
+        b.y += b.vy * 0.6;
+      }
+
+      // wall collisions
+      for (let b of balls) {
+        let collided = false;
+        // left
+        if (b.x - b.radius < 0) {
+          b.x = b.radius;
+          b.vx = -b.vx * restitution;
+          collided = true;
+        }
+        // right
+        if (b.x + b.radius > W) {
+          b.x = W - b.radius;
+          b.vx = -b.vx * restitution;
+          collided = true;
+        }
+        // top
+        if (b.y - b.radius < 0) {
+          b.y = b.radius;
+          b.vy = -b.vy * restitution;
+          collided = true;
+        }
+        // bottom
+        if (b.y + b.radius > H) {
+          b.y = H - b.radius;
+          b.vy = -b.vy * restitution;
+          collided = true;
+        }
+        if (collided) {
+          state.collisions++;
+          logCollision(b);
+        }
+      }
+
+      // ball-ball collisions (simple impulse)
+      for (let i = 0; i < balls.length; i++) {
+        for (let j = i + 1; j < balls.length; j++) {
+          const a = balls[i];
+          const b = balls[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dist = Math.hypot(dx, dy);
+          const minDist = a.radius + b.radius;
+          if (dist < minDist && dist > 0.01) {
+            const overlap = (minDist - dist) / 2;
+            const nx = dx / dist;
+            const ny = dy / dist;
+
+            // positional correction
+            a.x -= nx * overlap;
+            a.y -= ny * overlap;
+            b.x += nx * overlap;
+            b.y += ny * overlap;
+
+            // relative velocity
+            const dvx = b.vx - a.vx;
+            const dvy = b.vy - a.vy;
+            const vn = dvx * nx + dvy * ny;
+
+            if (vn < 0) {
+              const e = restitution;
+              const jImp = -(1 + e) * vn / (1 / a.mass + 1 / b.mass);
+              const impulseX = jImp * nx;
+              const impulseY = jImp * ny;
+
+              a.vx -= impulseX / a.mass;
+              a.vy -= impulseY / a.mass;
+              b.vx += impulseX / b.mass;
+              b.vy += impulseY / b.mass;
+
+              state.collisions++;
+              logCollision(a, b);
+            }
+          }
+        }
+      }
+
+      // update KPI impacts (smoothed)
+      let samuraiImp = 0, cowboyImp = 0;
+      for (let b of balls) {
+        if (b.team === 'samurai') samuraiImp += Math.hypot(b.vx, b.vy);
+        if (b.team === 'cowboy') cowboyImp += Math.hypot(b.vx, b.vy);
+      }
+      state.samuraiImpact = samuraiImp * 0.8;
+      state.cowboyImpact = cowboyImp * 0.8;
+
+      // update speed factor (visual)
+      state.speedFactor = 1.0 + Math.sin(state.simTime * 0.1) * 0.2;
+      state.simTime += 0.016;
+    }
+
+    function logCollision(a, b) {
+      if (telemetryLog.length > 500) telemetryLog.shift();
+      telemetryLog.push({
+        time: state.simTime.toFixed(2),
+        teamA: a ? a.team : 'wall',
+        teamB: b ? b.team : 'wall',
+        x: a ? a.x.toFixed(1) : '0',
+        y: a ? a.y.toFixed(1) : '0'
+      });
+    }
+
+    // ---------- RENDERING ----------
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // background grid
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < W; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, H);
+        ctx.stroke();
+      }
+      for (let i = 0; i < H; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(W, i);
+        ctx.stroke();
+      }
+
+      // draw maze walls (decorative)
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.3, 0);
+      ctx.lineTo(W * 0.3, H * 0.3);
+      ctx.lineTo(W * 0.7, H * 0.3);
+      ctx.lineTo(W * 0.7, H * 0.6);
+      ctx.lineTo(W * 0.2, H * 0.6);
+      ctx.lineTo(W * 0.2, H * 0.85);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(W * 0.85, H * 0.15);
+      ctx.lineTo(W * 0.85, H * 0.45);
+      ctx.lineTo(W * 0.5, H * 0.45);
+      ctx.lineTo(W * 0.5, H * 0.75);
+      ctx.stroke();
+
+      // draw balls
+      for (let b of balls) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = b.color;
+        ctx.shadowColor = b.color;
+        ctx.shadowBlur = 18;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        // inner highlight
+        ctx.beginPath();
+        ctx.arc(b.x - b.radius * 0.2, b.y - b.radius * 0.2, b.radius * 0.3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fill();
+      }
+
+      // draw team labels
+      ctx.font = 'bold 14px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#f43f5e';
+      ctx.fillText('SAMURAI', 30, 30);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText('COWBOY', W - 120, 30);
+
+      // draw impact aura
+      if (state.samuraiImpact > 1) {
+        ctx.beginPath();
+        ctx.arc(W * 0.25, H * 0.5, 40 + state.samuraiImpact * 2, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(244, 63, 94, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      if (state.cowboyImpact > 1) {
+        ctx.beginPath();
+        ctx.arc(W * 0.75, H * 0.5, 40 + state.cowboyImpact * 2, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    // ---------- KPI UPDATE ----------
+    function updateKPIs() {
+      kpiSamurai.textContent = state.samuraiImpact.toFixed(1);
+      kpiCowboy.textContent = state.cowboyImpact.toFixed(1);
+      kpiSpeed.innerHTML = state.speedFactor.toFixed(1) + '<small>x</small>';
+      kpiCollisions.textContent = state.collisions;
+    }
+
+    function updateTable() {
+      const samuraiE = (state.bladeForce * 2.0).toFixed(2);
+      const cowboyE = (state.bulletSpeed * 1.6).toFixed(2);
+      samuraiEnergy.textContent = samuraiE;
+      cowboyEnergy.textContent = cowboyE;
+      // edge based on relative comparison
+      if (parseFloat(samuraiE) >= parseFloat(cowboyE)) {
+        samuraiEdge.textContent = '+' + ((parseFloat(samuraiE) / parseFloat(cowboyE) - 1) * 100).toFixed(0) + '%';
+        samuraiEdge.className = 'win-highlight';
+        cowboyEdge.textContent = '—';
+        cowboyEdge.className = '';
+      } else {
+        cowboyEdge.textContent = '+' + ((parseFloat(cowboyE) / parseFloat(samuraiE) - 1) * 100).toFixed(0) + '%';
+        cowboyEdge.className = 'win-highlight';
+        samuraiEdge.textContent = '—';
+        samuraiEdge.className = '';
+      }
+    }
+
+    // ---------- ANIMATION LOOP ----------
+    function animate() {
+      // run multiple physics steps for smoother 60fps feel
+      for (let i = 0; i < 2; i++) {
+        updatePhysics();
+      }
+      draw();
+      updateKPIs();
+      updateTable();
+      requestAnimationFrame(animate);
+    }
+
+    // ---------- EVENT LISTENERS ----------
+    bladeSlider.addEventListener('input', (e) => {
+      state.bladeForce = parseFloat(e.target.value);
+      bladeVal.textContent = state.bladeForce.toFixed(1);
+      updateTable();
+    });
+    bulletSlider.addEventListener('input', (e) => {
+      state.bulletSpeed = parseFloat(e.target.value);
+      bulletVal.textContent = state.bulletSpeed.toFixed(1);
+      updateTable();
+    });
+    gravitySlider.addEventListener('input', (e) => {
+      state.gravity = parseFloat(e.target.value);
+      gravityVal.textContent = state.gravity.toFixed(2);
+    });
+    restitutionSlider.addEventListener('input', (e) => {
+      state.restitution = parseFloat(e.target.value);
+      restitutionVal.textContent = state.restitution.toFixed(2);
+    });
+
+    // presets
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = btn.dataset.preset;
+        if (preset === 'default') {
+          bladeSlider.value = 1.2; state.bladeForce = 1.2; bladeVal.textContent = '1.2';
+          bulletSlider.value = 2.0; state.bulletSpeed = 2.0; bulletVal.textContent = '2.0';
+          gravitySlider.value = 0.6; state.gravity = 0.6; gravityVal.textContent = '0.60';
+          restitutionSlider.value = 0.7; state.restitution = 0.7; restitutionVal.textContent = '0.70';
+        } else if (preset === 'samurai') {
+          bladeSlider.value = 2.5; state.bladeForce = 2.5; bladeVal.textContent = '2.5';
+          bulletSlider.value = 1.2; state.bulletSpeed = 1.2; bulletVal.textContent = '1.2';
+          gravitySlider.value = 0.4; state.gravity = 0.4; gravityVal.textContent = '0.40';
+          restitutionSlider.value = 0.85; state.restitution = 0.85; restitutionVal.textContent = '0.85';
+        } else if (preset === 'cowboy') {
+          bladeSlider.value = 0.8; state.bladeForce = 0.8; bladeVal.textContent = '0.8';
+          bulletSlider.value = 3.8; state.bulletSpeed = 3.8; bulletVal.textContent = '3.8';
+          gravitySlider.value = 0.8; state.gravity = 0.8; gravityVal.textContent = '0.80';
+          restitutionSlider.value = 0.5; state.restitution = 0.5; restitutionVal.textContent = '0.50';
+        } else if (preset === 'chaos') {
+          bladeSlider.value = 2.8; state.bladeForce = 2.8; bladeVal.textContent = '2.8';
+          bulletSlider.value = 3.2; state.bulletSpeed = 3.2; bulletVal.textContent = '3.2';
+          gravitySlider.value = 0.1; state.gravity = 0.1; gravityVal.textContent = '0.10';
+          restitutionSlider.value = 0.95; state.restitution = 0.95; restitutionVal.textContent = '0.95';
+        }
+        resetSim();
+        updateTable();
+      });
+    });
+
+    // reset
+    document.getElementById('resetSim').addEventListener('click', () => {
+      resetSim();
+    });
+
+    // CSV export
+    document.getElementById('exportCSV').addEventListener('click', () => {
+      const rows = [
+        ['metric', 'value'],
+        ['samurai_impact', state.samuraiImpact.toFixed(2)],
+        ['cowboy_impact', state.cowboyImpact.toFixed(2)],
+        ['blade_force', state.bladeForce.toFixed(2)],
+        ['bullet_speed', state.bulletSpeed.toFixed(2)],
+        ['gravity', state.gravity.toFixed(2)],
+        ['restitution', state.restitution.toFixed(2)],
+        ['collisions', state.collisions],
+        ['sim_time', state.simTime.toFixed(2)]
+      ];
+      const header = rows[0];
+      const data = rows.slice(1);
+      let csv = header.join(',') + '\n';
+      data.forEach(r => { csv += r.join(',') + '\n'; });
+      // add telemetry log sample
+      csv += '\n--- collision_log ---\n';
+      csv += 'time,teamA,teamB,x,y\n';
+      telemetryLog.slice(-30).forEach(log => {
+        csv += `${log.time},${log.teamA},${log.teamB},${log.x},${log.y}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kineticzen_telemetry.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // copy scenario link
+    document.getElementById('copyLink').addEventListener('click', () => {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const params = new URLSearchParams({
+        blade: state.bladeForce,
+        bullet: state.bulletSpeed,
+        grav: state.gravity,
+        rest: state.restitution
+      });
+      const link = baseUrl + '?' + params.toString();
+      navigator.clipboard.writeText(link).then(() => {
+        document.getElementById('copyFeedback').textContent = '✓ Link copied to clipboard';
+        setTimeout(() => document.getElementById('copyFeedback').textContent = '', 2500);
+      }).catch(() => {
+        document.getElementById('copyFeedback').textContent = '⚠ Copy failed';
+        setTimeout(() => document.getElementById('copyFeedback').textContent = '', 2000);
+      });
+    });
+
+    // initialize
+    resetSim();
+    animate();
+  })();
+</script>
+</body>
+</html>
