@@ -19,7 +19,8 @@
     "Samurai vs Ninja: Epic Ball Maze Physics Duel",
     "Lightning vs Tornado: Electric Ball Maze Physics",
     "Peregrine vs Sailfish: Fastest Ball Maze Physics Duel",
-    "Samurai vs Cowboy: Blade & Bullet Ball Maze Physics"
+    "Samurai vs Cowboy: Blade & Bullet Ball Maze Physics",
+    "Pikachu vs Agumon: Electric vs Fire Ball Maze Physics Duel"
   ],
   "used_items": [
     "Ronaldo vs Messi",
@@ -91,12 +92,19 @@
     {
       "video_id": "tu1hI3i2qDg",
       "title": "Peregrine vs Sailfish: Fastest Ball Maze Physics Duel #shorts",
-      "published_at": 1795282548
+      "published_at": 1795282548,
+      "ab_tested": true
     },
     {
       "video_id": "n7uOO77hFfQ",
       "title": "Samurai vs Cowboy: Blade & Bullet Ball Maze Physics #shorts",
-      "published_at": 1795311352
+      "published_at": 1795311352,
+      "ab_tested": true
+    },
+    {
+      "video_id": "O_7IGH7yIec",
+      "title": "Pikachu vs Agumon: Electric vs Fire Ball Maze Physics Duel #shorts",
+      "published_at": 1795368969
     }
   ]
 }
