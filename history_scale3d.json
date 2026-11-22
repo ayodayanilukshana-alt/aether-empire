@@ -11,7 +11,8 @@
     "Huge Submarines & Underwater Habitats: 3D Size Shock",
     "Neutron Stars to Hypergiants: 3D Scale Shock",
     "Prehistoric Giants: 5 Extinct Predators by Size",
-    "Stadium Giants: 5 Colossal Arenas Compared in 3D"
+    "Stadium Giants: 5 Colossal Arenas Compared in 3D",
+    "5 Tallest Waterfalls & Cliffs: Earth vs Mars"
   ],
   "used_items": [
     "V-2 Rocket",
@@ -109,12 +110,19 @@
     {
       "video_id": "TUr3u8x7OOg",
       "title": "Prehistoric Giants: 5 Extinct Predators by Size #shorts",
-      "published_at": 1795282717
+      "published_at": 1795282717,
+      "ab_tested": true
     },
     {
       "video_id": "onIIbWq2HRk",
       "title": "Stadium Giants: 5 Colossal Arenas Compared in 3D #shorts",
-      "published_at": 1795311474
+      "published_at": 1795311474,
+      "ab_tested": true
+    },
+    {
+      "video_id": "LsGsmHFqtI8",
+      "title": "5 Tallest Waterfalls & Cliffs: Earth vs Mars #shorts",
+      "published_at": 1795369059
     }
   ]
 }
