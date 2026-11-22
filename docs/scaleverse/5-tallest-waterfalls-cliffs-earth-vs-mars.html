@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Waterfalls & Cliffs · Earth vs Mars</title>
+  <meta name="description" content="Interactive 3D scale workstation comparing the tallest waterfalls and cliffs on Earth and Mars.">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #05070b;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .workstation {
+      max-width: 1440px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* header / brand */
+    .brand-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .badge {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 40px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.8rem;
+      color: #38bdf8;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .portal-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid #1e293b;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .portal-link:hover {
+      background: #0b0f17;
+      border-color: #38bdf8;
+    }
+
+    /* main grid */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 15px 30px -15px rgba(0, 0, 0, 0.7);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .card-header h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .kpi-group {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .kpi {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #64748b;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-size: 1.3rem;
+      font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #38bdf8;
+    }
+
+    /* canvas */
+    .canvas-container {
+      width: 100%;
+      background: #05070b;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem 0 0.5rem;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 12px;
+      cursor: grab;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    /* sliders */
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin: 1.2rem 0;
+    }
+
+    .slider-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .slider-header span:last-child {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+      accent-color: #38bdf8;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 12px #38bdf8;
+      transition: 0.1s;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 12px #38bdf8;
+    }
+
+    /* buttons */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.55rem 1.2rem;
+      border-radius: 60px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: white;
+    }
+
+    .btn-accent {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 700;
+    }
+
+    .btn-accent:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+      color: #05070b;
+    }
+
+    /* table */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.9rem 0.75rem;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 0.75rem 0.75rem;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+
+    .td-highlight {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .planet-tag {
+      font-size: 0.7rem;
+      background: #1e293b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 40px;
+      color: #94a3b8;
+      margin-left: 0.5rem;
+    }
+
+    /* FAQ */
+    .faq-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .faq-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* youtube */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      margin-top: 1rem;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* utility */
+    .text-mono {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .text-xs {
+      font-size: 0.7rem;
+    }
+
+    .text-accent {
+      color: #38bdf8;
+    }
+
+    .mt-1 {
+      margin-top: 0.5rem;
+    }
+
+    .mt-2 {
+      margin-top: 1rem;
+    }
+
+    .mb-1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0b0f17;
+      border: 1px solid #38bdf8;
+      color: #e2e8f0;
+      padding: 0.6rem 1.5rem;
+      border-radius: 60px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      z-index: 999;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+
+  <!-- brand bar -->
+  <div class="brand-bar">
+    <div class="brand">
+      <h1>SCALEVERSE 3D</h1>
+      <span class="badge">EARTH vs MARS</span>
+    </div>
+    <a href="./index.html" class="portal-link">← Portal</a>
+  </div>
+
+  <!-- main simulation + controls -->
+  <div class="grid-2col">
+    <!-- left: canvas + KPIs -->
+    <div class="card">
+      <div class="card-header">
+        <h2>3D SCALE VIEW</h2>
+        <div class="kpi-group">
+          <div class="kpi">
+            <span class="kpi-label">Max Height</span>
+            <span class="kpi-value" id="kpiMax">22,000 m</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi-label">Scale</span>
+            <span class="kpi-value" id="kpiScale">1:1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-container">
+        <canvas id="scaleCanvas" width="900" height="500"></canvas>
+      </div>
+      <p class="text-xs text-mono" style="color: #64748b; margin-top: 0.25rem;">
+        Drag horizontally to orbit · vertical exaggeration locked to scale
+      </p>
+    </div>
+
+    <!-- right: sliders + presets -->
+    <div class="card" style="display: flex; flex-direction: column;">
+      <div class="card-header">
+        <h2>CONTROLS</h2>
+        <span class="badge" id="presetIndicator">EARTH</span>
+      </div>
+
+      <!-- presets -->
+      <div class="btn-row" style="margin-top: 0;">
+        <button class="btn" data-preset="earth">🌍 Earth</button>
+        <button class="btn" data-preset="mars">🔴 Mars</button>
+        <button class="btn" data-preset="all">🪐 All</button>
+        <button class="btn" data-preset="reset">↺ Reset</button>
+      </div>
+
+      <!-- sliders -->
+      <div class="slider-group" id="sliderGroup">
+        <!-- dynamically filled via JS -->
+      </div>
+
+      <!-- export / copy -->
+      <div class="btn-row mt-1">
+        <button class="btn btn-accent" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+        <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+      </div>
+
+      <!-- mini readout -->
+      <div class="flex-between mt-2" style="border-top: 1px solid #1e293b; padding-top: 0.9rem;">
+        <span class="text-xs text-mono" style="color: #64748b;">TOTAL ITEMS</span>
+        <span class="text-mono text-accent" id="visibleCount">5</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- analytical breakdown table -->
+  <div class="card">
+    <div class="card-header">
+      <h2>ANALYTICAL BREAKDOWN</h2>
+      <span class="badge">metric · exact</span>
+    </div>
+    <div class="table-wrapper">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Height (m)</th>
+            <th>Height (ft)</th>
+            <th>Planet</th>
+            <th>Ratio vs Earth Max</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- dynamically inserted -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <div class="card-header">
+      <h2>FREQUENTLY ASKED</h2>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">How does Olympus Mons compare to Verona Rupes?</div>
+        <div class="faq-a">Olympus Mons stands at 22,000 m, while Verona Rupes is 20,000 m. Both are on Mars, but Verona Rupes is a cliff, whereas Olympus Mons is a shield volcano.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the tallest waterfall on Earth in this dataset?</div>
+        <div class="faq-a">Salto del Angel (Angel Falls) at 979 m — the world's highest uninterrupted waterfall.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Why is Valles Marineris included?</div>
+        <div class="faq-a">Its wall reaches 4,000 m — a massive cliff system on Mars, far exceeding any Earth waterfall drop.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I export the current view?</div>
+        <div class="faq-a">Yes — click "Export CSV Telemetry" to download all currently visible features with their exact heights.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- youtube embed -->
+  <div class="card">
+    <div class="card-header">
+      <h2>VIDEO STREAM</h2>
+    </div>
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/LsGsmHFqtI8" title="5 Tallest Waterfalls & Cliffs: Earth vs Mars" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- footer canonical -->
+  <div class="flex-between" style="border-top: 1px solid #1e293b; padding-top: 1rem; color: #475569; font-size: 0.75rem;">
+    <span>SCALEVERSE 3D · earth vs mars</span>
+    <span class="text-mono">https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-tallest-waterfalls-cliffs-earth-vs-mars.html</span>
+  </div>
+</div>
+
+<!-- toast -->
+<div id="toast" class="toast">Copied</div>
+
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D · Waterfalls & Cliffs · Earth vs Mars",
+  "description": "Interactive 3D scale workstation comparing the tallest waterfalls and cliffs on Earth and Mars.",
+  "applicationCategory": "SimulationGame",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "SCALEVERSE 3D"
+  }
+}
+</script>
+
+<script>
+  // ------------------------------------------------------------
+  // DATA PAYLOAD (exact)
+  // ------------------------------------------------------------
+  const ITEMS = [
+    { name: "Lower Yellowstone Falls", meters: 94, metric: "94 m (308 ft)", planet: "Earth" },
+    { name: "Salto del Angel", meters: 979, metric: "979 m (3,212 ft)", planet: "Earth" },
+    { name: "Valles Marineris Wall", meters: 4000, metric: "4,000 m (13,123 ft)", planet: "Mars" },
+    { name: "Verona Rupes", meters: 20000, metric: "20,000 m (65,617 ft)", planet: "Mars" },
+    { name: "Olympus Mons", meters: 22000, metric: "22,000 m (72,178 ft)", planet: "Mars" }
+  ];
+
+  const MAX_HEIGHT = 22000;
+
+  // ------------------------------------------------------------
+  // STATE
+  // ------------------------------------------------------------
+  let state = {
+    visible: ITEMS.map(() => true),      // boolean per item
+    rotation: 0.35,                       // radians for canvas orbit
+    dragging: false,
+    lastX: 0
+  };
+
+  // ------------------------------------------------------------
+  // DOM refs
+  // ------------------------------------------------------------
+  const canvas = document.getElementById('scaleCanvas');
+  const ctx = canvas.getContext('2d');
+  const sliderGroup = document.getElementById('sliderGroup');
+  const tableBody = document.getElementById('tableBody');
+  const visibleCountSpan = document.getElementById('visibleCount');
+  const kpiMax = document.getElementById('kpiMax');
+  const kpiScale = document.getElementById('kpiScale');
+  const presetIndicator = document.getElementById('presetIndicator');
+  const toast = document.getElementById('toast');
+
+  // ------------------------------------------------------------
+  // TOAST helper
+  // ------------------------------------------------------------
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  // ------------------------------------------------------------
+  // BUILD SLIDERS
+  // ------------------------------------------------------------
+  function buildSliders() {
+    sliderGroup.innerHTML = '';
+    ITEMS.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'slider-item';
+      div.innerHTML = `
+        <div class="slider-header">
+          <span>${item.name} <span class="planet-tag">${item.planet}</span></span>
+          <span>${item.meters.toLocaleString()} m</span>
+        </div>
+        <input type="range" min="0" max="1" step="0.01" value="1" data-index="${idx}" class="item-slider">
+      `;
+      sliderGroup.appendChild(div);
+    });
+
+    // attach listeners
+    document.querySelectorAll('.item-slider').forEach(slider => {
+      slider.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.dataset.index);
+        // we use the slider as a binary toggle but allow partial? 
+        // For scale simulation, we'll treat values > 0.5 as visible, else hidden.
+        // Actually to make it "deeply interactive", let's use it as opacity/scale factor.
+        // We'll store a multiplier from 0 to 1 for visual height exaggeration.
+        // But the spec says "sliders" — we'll map to tiny height adjustments? 
+        // Better: slider controls vertical exaggeraton per item? That would distort data.
+        // Instead: use slider to "focus" by dimming others. 
+        // Simpler & more honest: use slider as visibility threshold (on/off)
+        // Let's do: 0 = hidden, >0 = visible.
+        const val = parseFloat(e.target.value);
+        state.visible[idx] = val > 0.1;
+        // update slider background to reflect state
+        redrawAll();
+      });
+    });
+  }
+
+  // ------------------------------------------------------------
+  // DRAW CANVAS (isometric-ish scaled view)
+  // ------------------------------------------------------------
+  function drawCanvas() {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // background subtle grid
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.5;
+    for (let y = 0; y < h; y += 30) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    // ground plane
+    const groundY = h * 0.82;
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, groundY, w, h - groundY);
+
+    // scale factor: max height -> canvas height * 0.7
+    const maxVisualHeight = h * 0.65;
+    const scale = maxVisualHeight / MAX_HEIGHT;
+
+    // spacing between items
+    const n = ITEMS.length;
+    const spacing = w / (n + 1);
+    const baseX = spacing;
+
+    // rotation effect (horizontal shift)
+    const rot = state.rotation;
+
+    ITEMS.forEach((item, i) => {
+      if (!state.visible[i]) return;
+
+      const x = baseX + i * spacing + Math.sin(rot + i * 0.3) * 15;
+      const barHeight = item.meters * scale;
+      const barWidth = 42 + Math.cos(rot + i) * 6;
+
+      // shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.beginPath();
+      ctx.ellipse(x, groundY + 3, barWidth/2 + 5, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // bar
+      const gradient = ctx.createLinearGradient(x, groundY - barHeight, x, groundY);
+      if (item.planet === 'Earth') {
+        gradient.addColorStop(0, '#38bdf8');
+        gradient.addColorStop(1, '#0ea5e9');
+      } else {
+        gradient.addColorStop(0, '#f97316');
+        gradient.addColorStop(1, '#ea580c');
+      }
+      ctx.fillStyle = gradient;
+      ctx.shadowColor = item.planet === 'Earth' ? '#38bdf8' : '#f97316';
+      ctx.shadowBlur = 20;
+      ctx.fillRect(x - barWidth / 2, groundY - barHeight, barWidth, barHeight);
+      ctx.shadowBlur = 0;
+
+      // outline
+      ctx.strokeStyle = item.planet === 'Earth' ? '#7dd3fc' : '#fdba74';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x - barWidth / 2, groundY - barHeight, barWidth, barHeight);
+
+      // text label
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 11px "SF Mono", "Fira Code", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(item.meters.toLocaleString(), x, groundY - barHeight - 8);
+
+      // small name
+      ctx.font = '9px "SF Mono", "Fira Code", monospace';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText(item.name.substring(0, 12), x, groundY - barHeight - 24);
+    });
+
+    // planet labels
+    ctx.font = 'bold 15px "SF Mono", monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('🌍', 40, 40);
+    ctx.fillStyle = '#f97316';
+    ctx.fillText('🔴', w - 80, 40);
+  }
+
+  // ------------------------------------------------------------
+  // REDRAW ALL (canvas + KPIs + table)
+  // ------------------------------------------------------------
+  function redrawAll() {
+    // update canvas
+    drawCanvas();
+
+    // update KPIs
+    const visibleItems = ITEMS.filter((_, i) => state.visible[i]);
+    const maxVisible = visibleItems.length ? Math.max(...visibleItems.map(it => it.meters)) : 0;
+    kpiMax.textContent = maxVisible.toLocaleString() + ' m';
+    kpiScale.textContent = '1:' + Math.round(MAX_HEIGHT / Math.max(maxVisible, 1));
+
+    // update visible count
+    visibleCountSpan.textContent = visibleItems.length;
+
+    // update table rows (we rebuild table for clarity)
+    tableBody.innerHTML = '';
+    ITEMS.forEach((item, i) => {
+      if (!state.visible[i]) return;
+      const tr = document.createElement('tr');
+      const ratio = (item.meters / 979).toFixed(2); // vs Earth max (Angel Falls)
+      tr.innerHTML = `
+        <td>${item.name}</td>
+        <td class="td-highlight">${item.meters.toLocaleString()}</td>
+        <td>${(item.meters * 3.28084).toFixed(0)}</td>
+        <td><span class="planet-tag">${item.planet}</span></td>
+        <td>${ratio}×</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+
+    // update preset indicator
+    updatePresetIndicator();
+  }
+
+  function updatePresetIndicator() {
+    const visibleIndices = ITEMS.map((_, i) => state.visible[i] ? 1 : 0);
+    const earthVisible = ITEMS.filter((it, i) => state.visible[i] && it.planet === 'Earth').length;
+    const marsVisible = ITEMS.filter((it, i) => state.visible[i] && it.planet === 'Mars').length;
+
+    if (earthVisible === 2 && marsVisible === 0) presetIndicator.textContent = 'EARTH';
+    else if (earthVisible === 0 && marsVisible === 3) presetIndicator.textContent = 'MARS';
+    else if (earthVisible === 2 && marsVisible === 3) presetIndicator.textContent = 'ALL';
+    else presetIndicator.textContent = 'CUSTOM';
+  }
+
+  // ------------------------------------------------------------
+  // PRESETS
+  // ------------------------------------------------------------
+  function applyPreset(name) {
+    ITEMS.forEach((item, i) => {
+      if (name === 'earth') state.visible[i] = item.planet === 'Earth';
+      else if (name === 'mars') state.visible[i] = item.planet === 'Mars';
+      else if (name === 'all') state.visible[i] = true;
+      else if (name === 'reset') {
+        state.visible[i] = true;
+        state.rotation = 0.35;
+      }
+    });
+
+    // sync sliders
+    document.querySelectorAll('.item-slider').forEach((slider, idx) => {
+      slider.value = state.visible[idx] ? '1' : '0';
+    });
+
+    redrawAll();
+  }
+
+  // ------------------------------------------------------------
+  // CSV EXPORT
+  // ------------------------------------------------------------
+  function exportCSV() {
+    const visibleItems = ITEMS.filter((_, i) => state.visible[i]);
+    if (visibleItems.length === 0) {
+      showToast('No visible items to export');
+      return;
+    }
+
+    const headers = ['Name', 'Height_m', 'Height_ft', 'Planet', 'Metric'];
+    const rows = visibleItems.map(item => [
+      `"${item.name}"`,
+      item.meters,
+      (item.meters * 3.28084).toFixed(0),
+      item.planet,
+      `"${item.metric}"`
+    ]);
+
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'scaleverse_telemetry.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('CSV exported · ' + visibleItems.length + ' rows');
+  }
+
+  // ------------------------------------------------------------
+  // COPY SCENARIO LINK
+  // ------------------------------------------------------------
+  function copyScenarioLink() {
+    const visibleIndices = ITEMS.map((_, i) => state.visible[i] ? 1 : 0).join('');
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', visibleIndices);
+    url.searchParams.set('rot', state.rotation.toFixed(2));
+    const link = url.toString();
+
+    navigator.clipboard.writeText(link).then(() => {
+      showToast('Scenario link copied');
+    }).catch(() => {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = link;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Scenario link copied');
+    });
+  }
+
+  // ------------------------------------------------------------
+  // CANVAS INTERACTION (orbit)
+  // ------------------------------------------------------------
+  function initCanvasInteraction() {
+    canvas.addEventListener('mousedown', (e) => {
+      state.dragging = true;
+      state.lastX = e.clientX;
+      canvas.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!state.dragging) return;
+      const dx = e.clientX - state.lastX;
+      state.rotation += dx * 0.01;
+      state.lastX = e.clientX;
+      drawCanvas();
+    });
+
+    window.addEventListener('mouseup', () => {
+      state.dragging = false;
+      canvas.style.cursor = 'grab';
+    });
+
+    // touch
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        state.dragging = true;
+        state.lastX = e.touches[0].clientX;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!state.dragging || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - state.lastX;
+      state.rotation += dx * 0.01;
+      state.lastX = e.touches[0].clientX;
+      drawCanvas();
+      e.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+      state.dragging = false;
+    });
+  }
+
+  // ------------------------------------------------------------
+  // RESIZE HANDLER for canvas
+  // ------------------------------------------------------------
+  function resizeCanvas() {
+    const container = canvas.parentElement;
+    const width = container.clientWidth;
+    if (width > 0) {
+      canvas.width = Math.min(width, 1200);
+      canvas.height = Math.round(canvas.width * 0.55);
+      drawCanvas();
+    }
+  }
+
+  // ------------------------------------------------------------
+  // INIT
+  // ------------------------------------------------------------
+  function init() {
+    buildSliders();
+
+    // preset buttons
+    document.querySelectorAll('.btn[data-preset]').forEach(btn => {
+      btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+    });
+
+    document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+    document.getElementById('copyLinkBtn').addEventListener('click', copyScenarioLink);
+
+    initCanvasInteraction();
+
+    // initial draw
+    redrawAll();
+
+    // resize after layout
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 50);
+
+    // check URL params for scenario restore
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('view')) {
+      const viewStr = params.get('view');
+      if (viewStr.length === ITEMS.length) {
+        for (let i = 0; i < ITEMS.length; i++) {
+          state.visible[i] = viewStr[i] === '1';
+        }
+        document.querySelectorAll('.item-slider').forEach((slider, idx) => {
+          slider.value = state.visible[idx] ? '1' : '0';
+        });
+        redrawAll();
+      }
+    }
+    if (params.has('rot')) {
+      const r = parseFloat(params.get('rot'));
+      if (!isNaN(r)) {
+        state.rotation = r;
+        drawCanvas();
+      }
+    }
+  }
+
+  // start
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
