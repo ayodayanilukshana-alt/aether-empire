@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINETICZEN LABS · VANTABLACK vs AEROGEL · Ball Maze</title>
+  <meta name="description" content="Interactive matter.js simulation: darkest vs lightest ball maze. Vantablack vs Aerogel 60FPS rigid-body rivalry.">
+  <!-- JSON-LD SoftwareApplication Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Vantablack vs Aerogel: Darkest vs Lightest Ball Maze",
+    "description": "60FPS Matter.js rigid-body physics rivalry simulation comparing Vantablack and Aerogel balls in a maze.",
+    "applicationCategory": "Simulation",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Organization",
+      "name": "KINETICZEN LABS"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/vantablack-vs-aerogel-darkest-vs-lightest-ball-maze.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+  <!-- Font & minimal styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* === RESET & GLOBAL === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      color: #e2e8f0;
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .app-container {
+      max-width: 1440px;
+      width: 100%;
+    }
+    /* === CARD & BORDER === */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.8);
+    }
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+    /* === BRAND HEADER === */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .brand {
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      border-left: 4px solid #f43f5e;
+      padding-left: 12px;
+    }
+    .brand a {
+      color: #f43f5e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .brand a:hover {
+      text-decoration: underline;
+    }
+    .header-title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .summary-badge {
+      display: inline-block;
+      background: #1e293b;
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+    }
+    /* === GRID LAYOUT === */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1000px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* === CANVAS CONTAINER === */
+    .canvas-wrapper {
+      background: #070b12;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 0 20px #000000;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      background: #0b0f17;
+      box-shadow: 0 0 0 1px #1e293b;
+      cursor: grab;
+    }
+    canvas:active {
+      cursor: grabbing;
+    }
+    /* === CONTROLS & PANELS === */
+    .panel-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #64748b;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .control-group {
+      margin-bottom: 24px;
+    }
+    .slider-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+    .slider-row label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .slider-row span {
+      color: #f43f5e;
+      font-weight: 500;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #f43f5e;
+      border: 2px solid #0b0f17;
+      cursor: pointer;
+      box-shadow: 0 0 10px #f43f5e80;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 8px 0;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: #f43f5e;
+      color: white;
+    }
+    .preset-btn.active {
+      background: #f43f5e20;
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .kpi-item {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .kpi-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .kpi-value {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+    .kpi-unit {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-left: 4px;
+      font-weight: 400;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: #1e293b;
+      border: none;
+      border-radius: 40px;
+      padding: 10px 18px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid #334155;
+      flex: 1 0 auto;
+      justify-content: center;
+    }
+    .btn:hover {
+      background: #334155;
+      border-color: #f43f5e;
+    }
+    .btn-primary {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #e11d48;
+    }
+    /* === TABLE & FAQ === */
+    .analytics-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 24px 0;
+    }
+    @media (max-width: 800px) {
+      .analytics-section {
+        grid-template-columns: 1fr;
+      }
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      text-align: left;
+      padding: 8px 6px;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+    .table-highlight {
+      color: #f43f5e;
+      font-weight: 500;
+    }
+    /* FAQ */
+    details {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+      color: #e2e8f0;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::after {
+      content: "+";
+      color: #f43f5e;
+      font-size: 1.2rem;
+    }
+    details[open] summary::after {
+      content: "−";
+    }
+    details p {
+      margin-top: 12px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    /* EMBED */
+    .embed-container {
+      margin: 24px 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    /* MISC */
+    .footer-note {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #475569;
+      margin-top: 20px;
+      border-top: 1px solid #1e293b;
+      padding-top: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-note a {
+      color: #94a3b8;
+      text-decoration: none;
+    }
+    .footer-note a:hover {
+      color: #f43f5e;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <!-- BRAND HEADER -->
+  <div class="brand-bar">
+    <div class="brand">
+      <a href="./index.html">KINETICZEN LABS</a> · QUANTUM PHYSICS DIVISION
+    </div>
+    <div class="summary-badge">
+      <span class="status-dot"></span> 60FPS MATTER.JS · RIVALRY SIM
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div style="margin-bottom: 20px;">
+    <div class="header-title">VANTABLACK vs AEROGEL</div>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <span style="color: #94a3b8; font-size: 0.9rem;">Darkest vs Lightest Ball Maze</span>
+      <span style="background: #1e293b; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; color: #f43f5e;">#darkmatter</span>
+      <span style="background: #1e293b; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; color: #38bdf8;">#aerogel</span>
+    </div>
+  </div>
+
+  <!-- DASHBOARD: CANVAS + CONTROLS -->
+  <div class="dashboard">
+    <!-- LEFT: CANVAS -->
+    <div class="canvas-wrapper">
+      <canvas id="mazeCanvas" width="800" height="800"></canvas>
+    </div>
+
+    <!-- RIGHT: CONTROLS & KPIs -->
+    <div class="card" style="display: flex; flex-direction: column;">
+      <div class="control-group">
+        <div class="panel-title">PHYSICS PARAMETERS</div>
+        <div class="slider-row">
+          <label>Gravity</label>
+          <span id="gravityVal" class="mono">0.8</span>
+        </div>
+        <input type="range" id="gravitySlider" min="0.1" max="2.0" step="0.05" value="0.8">
+
+        <div class="slider-row">
+          <label>Restitution</label>
+          <span id="restitutionVal" class="mono">0.7</span>
+        </div>
+        <input type="range" id="restitutionSlider" min="0.1" max="0.95" step="0.01" value="0.7">
+
+        <div class="slider-row">
+          <label>Friction</label>
+          <span id="frictionVal" class="mono">0.3</span>
+        </div>
+        <input type="range" id="frictionSlider" min="0.0" max="0.8" step="0.01" value="0.3">
+      </div>
+
+      <div class="control-group">
+        <div class="panel-title">SCENARIO PRESETS</div>
+        <div class="preset-grid">
+          <button class="preset-btn active" data-preset="standard">Standard</button>
+          <button class="preset-btn" data-preset="lowgrav">Low-G</button>
+          <button class="preset-btn" data-preset="bouncy">Bouncy</button>
+        </div>
+        <div class="preset-grid" style="grid-template-columns: 1fr 1fr;">
+          <button class="preset-btn" data-preset="sticky">Sticky</button>
+          <button class="preset-btn" data-preset="chaos">Chaos</button>
+        </div>
+      </div>
+
+      <div class="panel-title" style="margin-top: 8px;">LIVE TELEMETRY</div>
+      <div class="kpi-grid">
+        <div class="kpi-item">
+          <div class="kpi-label">VANTABLACK Y</div>
+          <div class="kpi-value mono" id="vantaY">0<span class="kpi-unit">px</span></div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">AEROGEL Y</div>
+          <div class="kpi-value mono" id="aeroY">0<span class="kpi-unit">px</span></div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">VANTA VEL</div>
+          <div class="kpi-value mono" id="vantaVel">0<span class="kpi-unit">m/s</span></div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">AERO VEL</div>
+          <div class="kpi-value mono" id="aeroVel">0<span class="kpi-unit">m/s</span></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+        <button class="btn btn-primary" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+      </div>
+      <div style="font-size: 0.7rem; color: #475569; margin-top: 10px; text-align: center;">
+        Matter.js rigid bodies · real-time maze traversal
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS & FAQ -->
+  <div class="analytics-section">
+    <!-- ANALYTICAL TABLE -->
+    <div class="card">
+      <div class="panel-title">ANALYTICAL BREAKDOWN · BALL MAZE METRICS</div>
+      <table>
+        <thead>
+          <tr><th>Metric</th><th>VANTABLACK</th><th>AEROGEL</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Material class</td><td class="table-highlight">Carbon nanotube</td><td class="table-highlight">Silica aerogel</td></tr>
+          <tr><td>Density (g/cm³)</td><td class="mono">0.001</td><td class="mono">0.0001</td></tr>
+          <tr><td>Elasticity (est.)</td><td class="mono">0.85</td><td class="mono">0.45</td></tr>
+          <tr><td>Light absorption</td><td class="mono">99.965%</td><td class="mono">0.1%</td></tr>
+          <tr><td>Maze path efficiency</td><td class="mono" id="vantaEfficiency">78%</td><td class="mono" id="aeroEfficiency">64%</td></tr>
+          <tr><td>Collision count (live)</td><td class="mono" id="vantaCollisions">0</td><td class="mono" id="aeroCollisions">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+      <div class="panel-title">FREQUENTLY ASKED QUESTIONS</div>
+      <details>
+        <summary>What is the Vantablack vs Aerogel maze simulation?</summary>
+        <p>It is a 60FPS physics rivalry where a Vantablack sphere (ultra-dark, high restitution) and an Aerogel sphere (ultra-light, low density) compete in a maze. The simulation uses Matter.js rigid-body dynamics with adjustable gravity, friction, and elasticity.</p>
+      </details>
+      <details>
+        <summary>How do I export telemetry?</summary>
+        <p>Click the "Export CSV Telemetry" button to download a CSV containing current slider values, ball positions, velocities, collision counts, and timestamps. The data is captured at the moment of export.</p>
+      </details>
+      <details>
+        <summary>Can I share my scenario?</summary>
+        <p>Yes! The "Copy Scenario Link" button copies a URL with query parameters that encode your current gravity, restitution, and friction settings. Anyone opening the link will see the same physics configuration.</p>
+      </details>
+      <details>
+        <summary>What is the difference between the preset buttons?</summary>
+        <p>Presets adjust the physics sliders: Standard (gravity 0.8, restitution 0.7, friction 0.3), Low-G (gravity 0.2, restitution 0.9, friction 0.1), Bouncy (gravity 1.0, restitution 0.95, friction 0.05), Sticky (gravity 1.2, restitution 0.2, friction 0.75), and Chaos (randomized gravity, restitution, and friction).</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- YOUTUBE EMBED -->
+  <div class="embed-container">
+    <iframe src="https://www.youtube.com/embed/FZbfV0OUzKY" title="Vantablack vs Aerogel: Darkest vs Lightest Ball Maze" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-note">
+    <div>© KINETICZEN LABS · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/vantablack-vs-aerogel-darkest-vs-lightest-ball-maze.html">Canonical</a></div>
+    <div>🔬 Free Interactive Calculators & 3D Sandbox: <a href="https://ayodayanilukshana-alt.github.io/aether-empire" target="_blank">aether-empire</a></div>
+  </div>
+</div>
+
+<!-- MATTER.JS & SIMULATION LOGIC -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script>
+  (function() {
+    // --- Matter.js alias ---
+    const { Engine, Render, Runner, Bodies, Composite, Events, Body, Vector } = Matter;
+
+    // --- DOM elements ---
+    const canvas = document.getElementById('mazeCanvas');
+    const gravitySlider = document.getElementById('gravitySlider');
+    const restitutionSlider = document.getElementById('restitutionSlider');
+    const frictionSlider = document.getElementById('frictionSlider');
+    const gravityVal = document.getElementById('gravityVal');
+    const restitutionVal = document.getElementById('restitutionVal');
+    const frictionVal = document.getElementById('frictionVal');
+    const vantaYEl = document.getElementById('vantaY');
+    const aeroYEl = document.getElementById('aeroY');
+    const vantaVelEl = document.getElementById('vantaVel');
+    const aeroVelEl = document.getElementById('aeroVel');
+    const vantaCollisionsEl = document.getElementById('vantaCollisions');
+    const aeroCollisionsEl = document.getElementById('aeroCollisions');
+    const vantaEfficiencyEl = document.getElementById('vantaEfficiency');
+    const aeroEfficiencyEl = document.getElementById('aeroEfficiency');
+
+    // --- Disable default render (we'll draw custom) ---
+    const engine = Engine.create();
+    engine.gravity.y = 0.8;
+    engine.gravity.x = 0;
+
+    // Create runner
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+
+    // --- Maze dimensions (800x800) ---
+    const W = 800, H = 800;
+    const wallThickness = 20;
+
+    // --- Ball radii ---
+    const vantaRadius = 22;
+    const aeroRadius = 28;
+
+    // --- Create walls (maze) ---
+    const walls = [];
+
+    // Outer boundaries
+    walls.push(Bodies.rectangle(W/2, -wallThickness/2, W, wallThickness, { isStatic: true }));
+    walls.push(Bodies.rectangle(W/2, H + wallThickness/2, W, wallThickness, { isStatic: true }));
+    walls.push(Bodies.rectangle(-wallThickness/2, H/2, wallThickness, H, { isStatic: true }));
+    walls.push(Bodies.rectangle(W + wallThickness/2, H/2, wallThickness, H, { isStatic: true }));
+
+    // Maze inner walls — a designed pattern
+    // Row 1 (top) dividers
+    walls.push(Bodies.rectangle(200, 150, 20, 200, { isStatic: true }));   // vertical left
+    walls.push(Bodies.rectangle(600, 150, 20, 200, { isStatic: true }));  // vertical right
+    walls.push(Bodies.rectangle(400, 250, 200, 20, { isStatic: true }));  // horizontal
+
+    // Row 2
+    walls.push(Bodies.rectangle(100, 400, 20, 200, { isStatic: true }));
+    walls.push(Bodies.rectangle(700, 400, 20, 200, { isStatic: true }));
+    walls.push(Bodies.rectangle(400, 450, 200, 20, { isStatic: true }));
+
+    // Row 3 (lower)
+    walls.push(Bodies.rectangle(250, 600, 20, 200, { isStatic: true }));
+    walls.push(Bodies.rectangle(550, 600, 20, 200, { isStatic: true }));
+    walls.push(Bodies.rectangle(400, 650, 200, 20, { isStatic: true }));
+
+    // Additional zig-zag
+    walls.push(Bodies.rectangle(300, 350, 150, 20, { isStatic: true }));
+    walls.push(Bodies.rectangle(500, 350, 150, 20, { isStatic: true }));
+    walls.push(Bodies.rectangle(400, 550, 100, 20, { isStatic: true }));
+
+    // Add all walls to world
+    Composite.add(engine.world, walls);
+
+    // --- Create balls ---
+    const vantaBall = Bodies.circle(150, 100, vantaRadius, {
+      restitution: 0.7,
+      friction: 0.3,
+      frictionAir: 0.01,
+      density: 0.001,
+      label: 'vantablack',
+      render: { fillStyle: '#000000', strokeStyle: '#f43f5e', lineWidth: 2 }
+    });
+
+    const aeroBall = Bodies.circle(650, 100, aeroRadius, {
+      restitution: 0.7,
+      friction: 0.3,
+      frictionAir: 0.005,
+      density: 0.0001,
+      label: 'aerogel',
+      render: { fillStyle: '#38bdf8', strokeStyle: '#ffffff', lineWidth: 2 }
+    });
+
+    Composite.add(engine.world, [vantaBall, aeroBall]);
+
+    // --- Collision counters ---
+    let vantaCollisions = 0;
+    let aeroCollisions = 0;
+    Events.on(engine, 'collisionStart', (event) => {
+      event.pairs.forEach(pair => {
+        if (pair.bodyA.label === 'vantablack' || pair.bodyB.label === 'vantablack') {
+          vantaCollisions++;
+        }
+        if (pair.bodyA.label === 'aerogel' || pair.bodyB.label === 'aerogel') {
+          aeroCollisions++;
+        }
+      });
+    });
+
+    // --- Custom rendering ---
+    function draw() {
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      // Set canvas internal resolution for crispness
+      canvas.width = W;
+      canvas.height = H;
+
+      // Clear background
+      ctx.fillStyle = '#0b0f17';
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw subtle grid
+      ctx.strokeStyle = '#1a2332';
+      ctx.lineWidth = 0.8;
+      for (let i = 0; i <= W; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, H);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(W, i);
+        ctx.stroke();
+      }
+
+      // Draw walls
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2;
+      walls.forEach(wall => {
+        const { vertices } = wall;
+        ctx.beginPath();
+        ctx.moveTo(vertices[0].x, vertices[0].y);
+        for (let i = 1; i < vertices.length; i++) {
+          ctx.lineTo(vertices[i].x, vertices[i].y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      // Draw Vantablack ball (ultra-dark with rose halo)
+      const vPos = vantaBall.position;
+      const vAngle = vantaBall.angle;
+      ctx.save();
+      ctx.translate(vPos.x, vPos.y);
+      ctx.rotate(vAngle);
+      // Outer glow
+      ctx.shadowColor = '#f43f5e';
+      ctx.shadowBlur = 24;
+      // Main body
+      ctx.beginPath();
+      ctx.arc(0, 0, vantaRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#000000';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      // Inner rim
+      ctx.strokeStyle = '#f43f5e';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      // Specular highlight (small)
+      ctx.beginPath();
+      ctx.arc(-6, -6, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#1e293b';
+      ctx.fill();
+      ctx.restore();
+
+      // Draw Aerogel ball (bright cyan with white highlight, semi-translucent)
+      const aPos = aeroBall.position;
+      const aAngle = aeroBall.angle;
+      ctx.save();
+      ctx.translate(aPos.x, aPos.y);
+      ctx.rotate(aAngle);
+      // Outer glow
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 24;
+      // Main body
+      ctx.beginPath();
+      ctx.arc(0, 0, aeroRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#bae6fd'; // light cyan
+      ctx.globalAlpha = 0.85; // semi-transparent for aerogel
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
+      // Inner rim
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      // Highlight
+      ctx.beginPath();
+      ctx.arc(-8, -8, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.6;
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+      // Aerogel texture dots
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.arc(4, 4, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(-10, 10, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Update KPI readouts
+      vantaYEl.innerHTML = Math.round(vPos.y) + '<span class="kpi-unit">px</span>';
+      aeroYEl.innerHTML = Math.round(aPos.y) + '<span class="kpi-unit">px</span>';
+      const vSpeed = Math.sqrt(vantaBall.velocity.x ** 2 + vantaBall.velocity.y ** 2) * 0.1; // scale for readability
+      const aSpeed = Math.sqrt(aeroBall.velocity.x ** 2 + aeroBall.velocity.y ** 2) * 0.1;
+      vantaVelEl.innerHTML = vSpeed.toFixed(2) + '<span class="kpi-unit">m/s</span>';
+      aeroVelEl.innerHTML = aSpeed.toFixed(2) + '<span class="kpi-unit">m/s</span>';
+      vantaCollisionsEl.textContent = vantaCollisions;
+      aeroCollisionsEl.textContent = aeroCollisions;
+
+      // Efficiency: rough estimate based on vertical progress and collisions
+      const vantaProgress = Math.min(100, Math.max(0, (vPos.y / H) * 100));
+      const aeroProgress = Math.min(100, Math.max(0, (aPos.y / H) * 100));
+      vantaEfficiencyEl.textContent = Math.round(vantaProgress) + '%';
+      aeroEfficiencyEl.textContent = Math.round(aeroProgress) + '%';
+
+      requestAnimationFrame(draw);
+    }
+
+    // Start render loop
+    requestAnimationFrame(draw);
+
+    // --- Slider listeners ---
+    function updatePhysics() {
+      const gravity = parseFloat(gravitySlider.value);
+      const restitution = parseFloat(restitutionSlider.value);
+      const friction = parseFloat(frictionSlider.value);
+
+      engine.gravity.y = gravity;
+      Body.set(vantaBall, { restitution, friction });
+      Body.set(aeroBall, { restitution, friction });
+
+      gravityVal.textContent = gravity.toFixed(2);
+      restitutionVal.textContent = restitution.toFixed(2);
+      frictionVal.textContent = friction.toFixed(2);
+    }
+
+    gravitySlider.addEventListener('input', updatePhysics);
+    restitutionSlider.addEventListener('input', updatePhysics);
+    frictionSlider.addEventListener('input', updatePhysics);
+
+    // --- Preset logic ---
+    const presets = {
+      standard: { gravity: 0.8, restitution: 0.7, friction: 0.3 },
+      lowgrav: { gravity: 0.2, restitution: 0.9, friction: 0.1 },
+      bouncy: { gravity: 1.0, restitution: 0.95, friction: 0.05 },
+      sticky: { gravity: 1.2, restitution: 0.2, friction: 0.75 },
+      chaos: { gravity: 1.4, restitution: 0.5, friction: 0.5 }
+    };
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const preset = btn.dataset.preset;
+        let config = presets[preset];
+        if (preset === 'chaos') {
+          // Randomize a bit
+          config = {
+            gravity: 0.5 + Math.random() * 1.2,
+            restitution: 0.3 + Math.random() * 0.6,
+            friction: 0.1 + Math.random() * 0.6
+          };
+        }
+        gravitySlider.value = config.gravity;
+        restitutionSlider.value = config.restitution;
+        frictionSlider.value = config.friction;
+        updatePhysics();
+      });
+    });
+
+    // --- Reset balls to start positions on double-click / reset ---
+    function resetBalls() {
+      Body.setPosition(vantaBall, { x: 150, y: 100 });
+      Body.setVelocity(vantaBall, { x: 0, y: 0 });
+      Body.setAngularVelocity(vantaBall, 0);
+      Body.setPosition(aeroBall, { x: 650, y: 100 });
+      Body.setVelocity(aeroBall, { x: 0, y: 0 });
+      Body.setAngularVelocity(aeroBall, 0);
+      vantaCollisions = 0;
+      aeroCollisions = 0;
+    }
+
+    // Reset on canvas double-click
+    canvas.addEventListener('dblclick', resetBalls);
+    // Also reset on spacebar (if not focused on input)
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !['INPUT', 'BUTTON', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        resetBalls();
+      }
+    });
+
+    // --- Export CSV ---
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const now = new Date().toISOString();
+      const gravity = parseFloat(gravitySlider.value);
+      const restitution = parseFloat(restitutionSlider.value);
+      const friction = parseFloat(frictionSlider.value);
+
+      const vPos = vantaBall.position;
+      const aPos = aeroBall.position;
+      const vVel = vantaBall.velocity;
+      const aVel = aeroBall.velocity;
+      const vSpeed = Math.sqrt(vVel.x ** 2 + vVel.y ** 2) * 0.1;
+      const aSpeed = Math.sqrt(aVel.x ** 2 + aVel.y ** 2) * 0.1;
+
+      const headers = [
+        'timestamp', 'gravity', 'restitution', 'friction',
+        'vanta_x', 'vanta_y', 'vanta_vel_x', 'vanta_vel_y', 'vanta_speed',
+        'aero_x', 'aero_y', 'aero_vel_x', 'aero_vel_y', 'aero_speed',
+        'vanta_collisions', 'aero_collisions'
+      ];
+
+      const row = [
+        now, gravity, restitution, friction,
+        Math.round(vPos.x), Math.round(vPos.y), vVel.x.toFixed(2), vVel.y.toFixed(2), vSpeed.toFixed(3),
+        Math.round(aPos.x), Math.round(aPos.y), aVel.x.toFixed(2), aVel.y.toFixed(2), aSpeed.toFixed(3),
+        vantaCollisions, aeroCollisions
+      ];
+
+      const csvContent = headers.join(',') + '\n' + row.join(',');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `kineticzen_telemetry_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+
+    // --- Copy Scenario Link ---
+    document.getElementById('copyLinkBtn').addEventListener('click', () => {
+      const gravity = parseFloat(gravitySlider.value).toFixed(2);
+      const restitution = parseFloat(restitutionSlider.value).toFixed(2);
+      const friction = parseFloat(frictionSlider.value).toFixed(2);
+      const baseUrl = window.location.origin + window.location.pathname;
+      const url = new URL(baseUrl);
+      url.searchParams.set('gravity', gravity);
+      url.searchParams.set('restitution', restitution);
+      url.searchParams.set('friction', friction);
+
+      navigator.clipboard.writeText(url.href).then(() => {
+        const btn = document.getElementById('copyLinkBtn');
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = originalText; }, 1800);
+      }).catch(() => {
+        prompt('Copy this scenario link:', url.href);
+      });
+    });
+
+    // --- Load scenario from URL query params (if any) ---
+    (function loadFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('gravity')) gravitySlider.value = params.get('gravity');
+      if (params.has('restitution')) restitutionSlider.value = params.get('restitution');
+      if (params.has('friction')) frictionSlider.value = params.get('friction');
+      updatePhysics();
+      // Set active preset accordingly?
+      // Not necessary; sliders will reflect
+    })();
+
+    // Initialize physics values
+    updatePhysics();
+
+    // Expose some data for debugging / future
+    window.__sim = { engine, vantaBall, aeroBall, resetBalls };
+  })();
+</script>
+</body>
+</html>
