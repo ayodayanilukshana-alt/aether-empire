@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPITALGRID · Gold vs Antimatter: The $62 Trillion Gram</title>
+  <meta name="description" content="Interactive cost explorer: gold, rhodium, diamond, californium-252, and antimatter per gram. Institutional dark UI, log-scale canvas, telemetry export.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/gold-vs-antimatter-the-62-trillion-gram.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #05070b;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .workstation {
+      max-width: 1360px;
+      width: 100%;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.5px;
+      color: #f1f5f9;
+    }
+
+    .brand-accent {
+      color: #10b981;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .brand-sub {
+      font-size: 0.85rem;
+      color: #64748b;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-left: 8px;
+      font-weight: 400;
+    }
+
+    .nav-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid #1e293b;
+      padding: 8px 18px;
+      border-radius: 30px;
+      transition: all 0.2s;
+      background: #0b0f17;
+    }
+
+    .nav-link:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    /* Cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 24px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #64748b;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+    }
+
+    .card-title::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 18px;
+      background: #10b981;
+      border-radius: 4px;
+    }
+
+    /* KPI row */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .kpi {
+      background: #080c14;
+      border-radius: 14px;
+      padding: 16px 14px;
+      border: 1px solid #1e293b;
+    }
+
+    .kpi-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.55rem;
+      font-weight: 700;
+      font-family: 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+
+    .kpi-unit {
+      font-size: 0.8rem;
+      color: #10b981;
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    /* Canvas container */
+    .canvas-wrapper {
+      background: #080c14;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 8px;
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      background: #05070b;
+    }
+
+    /* Controls */
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+
+    .slider-header span:last-child {
+      font-family: monospace;
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #10b981;
+      border-radius: 50%;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 0 1px #10b981;
+      transition: 0.1s;
+      cursor: grab;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #10b981;
+      border-radius: 50%;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 0 1px #10b981;
+      cursor: grab;
+    }
+
+    /* Buttons */
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      border-color: #10b981;
+      color: #10b981;
+      background: #0f172a;
+    }
+
+    .btn-primary {
+      background: #10b981;
+      border-color: #10b981;
+      color: #05070b;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #34d399;
+      border-color: #34d399;
+      color: #05070b;
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 0.8rem;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .preset-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-right: 4px;
+    }
+
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      min-width: 700px;
+    }
+
+    th {
+      background: #080c14;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.8px;
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #0f172a;
+    }
+
+    .mono {
+      font-family: 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .accent {
+      color: #10b981;
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 16px 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      padding-left: 2px;
+    }
+
+    /* Video */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #000;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #475569;
+      font-size: 0.8rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 20px;
+    }
+
+    .footer a {
+      color: #64748b;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: #10b981;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <span class="brand-name">CAPITAL<span class="brand-accent">GRID</span></span>
+      <span class="brand-sub">cost explorer · v2.4</span>
+    </div>
+    <a href="./index.html" class="nav-link">← Portal</a>
+  </header>
+
+  <!-- MAIN CARD -->
+  <div class="card">
+    <div class="card-title">Gold vs Antimatter: The $62 Trillion Gram</div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-grid" id="kpiRow">
+      <div class="kpi">
+        <div class="kpi-label">Reference Unit</div>
+        <div class="kpi-value">1<span class="kpi-unit">gram</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Antimatter Cost</div>
+        <div class="kpi-value" id="kpiAntimatter">$62T</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Gold:Antimatter Ratio</div>
+        <div class="kpi-value" id="kpiRatio">1 : 939M</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Log₁₀ Span</div>
+        <div class="kpi-value" id="kpiSpan">14.0<span class="kpi-unit">decades</span></div>
+      </div>
+    </div>
+
+    <!-- CANVAS -->
+    <div class="canvas-wrapper">
+      <canvas id="costCanvas" width="1200" height="460"></canvas>
+    </div>
+
+    <!-- PRESETS -->
+    <div class="preset-row">
+      <span class="preset-label">Presets</span>
+      <button class="btn btn-sm" data-preset="all">Full Spectrum</button>
+      <button class="btn btn-sm" data-preset="precious">Precious Metals</button>
+      <button class="btn btn-sm" data-preset="exotic">Exotic Isotopes</button>
+      <button class="btn btn-sm" data-preset="antimatter">Antimatter Extreme</button>
+      <button class="btn btn-sm" data-preset="minimal">Minimal Ratio (Gold→Rhodium)</button>
+    </div>
+
+    <!-- SLIDERS -->
+    <div id="slidersContainer">
+      <!-- dynamically filled -->
+    </div>
+
+    <!-- BUTTON ROW -->
+    <div class="button-row">
+      <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+      <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+      <span id="copyFeedback" style="font-size:0.8rem; color:#10b981;"></span>
+    </div>
+  </div>
+
+  <!-- ANALYTICAL BREAKDOWN TABLE -->
+  <div class="card">
+    <div class="card-title">Analytical Breakdown</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Substance</th>
+            <th>Metric (per gram)</th>
+            <th>Numeric (USD)</th>
+            <th>Log₁₀ (USD)</th>
+            <th>vs Gold (×)</th>
+          </tr>
+        </thead>
+        <tbody id="breakdownBody">
+          <!-- populate via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- YOUTUBE EMBED -->
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <div style="padding: 20px 22px 10px;" class="card-title">Video Reference</div>
+    <div class="video-container" style="border-radius: 0 0 18px 18px; border: none;">
+      <iframe src="https://www.youtube.com/embed/iUojVTzFC_Y" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <div class="card-title">Frequently Asked Questions</div>
+    <div class="faq-item">
+      <div class="faq-q">Why is antimatter priced at $62 trillion per gram?</div>
+      <div class="faq-a">Current production costs at facilities like CERN are astronomical because only nanograms have ever been created, requiring massive particle accelerators and years of operation. The $62T figure is an estimated economic cost per gram, not a market price.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What makes rhodium so expensive compared to gold?</div>
+      <div class="faq-a">Rhodium is one of the rarest platinum-group metals, with annual production around 30 tonnes versus ~3,000 tonnes of gold. Its primary use in catalytic converters creates inelastic industrial demand, pushing prices to roughly $400/g.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How is diamond priced per gram?</div>
+      <div class="faq-a">Gem-quality diamonds average around $55,000 per gram (≈$275 per carat), though prices vary wildly by cut, color, and clarity. Industrial diamonds are far cheaper—this metric refers to high-grade gemstones.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What is Californium-252 used for?</div>
+      <div class="faq-a">Cf-252 is a powerful neutron emitter used in portable neutron sources for oil well logging, neutron activation analysis, and cancer therapy. Its $27 million per gram price reflects the extreme difficulty of production in high-flux nuclear reactors.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How does the logarithmic scale help compare costs?</div>
+      <div class="faq-a">Because antimatter is about 939 million times more expensive than gold, a linear chart would squash all other bars into invisibility. A log₁₀ scale compresses the enormous range into a readable, visually meaningful comparison.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>CAPITALGRID · <a href="./index.html">Return to portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/gold-vs-antimatter-the-62-trillion-gram.html">Canonical</a></p>
+    <p style="margin-top:6px;">Data for illustrative analysis. Not investment advice.</p>
+  </div>
+</div>
+
+<!-- JSON-LD SCHEMA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "CAPITALGRID Gold vs Antimatter Cost Explorer",
+  "description": "Interactive workstation comparing the per-gram cost of gold, rhodium, diamond, californium-252, and antimatter with logarithmic canvas and CSV telemetry.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/gold-vs-antimatter-the-62-trillion-gram.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any (web)",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<script>
+  (function() {
+    // ---- 1. DATA (exact items from payload) ----
+    const ITEMS = [
+      { name: "Gold: The Classic Standard", metric: "$66 per gram", numeric: 66, log: Math.log10(66), vsGold: 1 },
+      { name: "Rhodium: The Rarest Metal", metric: "$400 per gram", numeric: 400, log: Math.log10(400), vsGold: 400/66 },
+      { name: "Diamond: The Carbon Crystal", metric: "$55,000 per gram", numeric: 55000, log: Math.log10(55000), vsGold: 55000/66 },
+      { name: "Californium-252: The Neutron Source", metric: "$27 million per gram", numeric: 27000000, log: Math.log10(27000000), vsGold: 27000000/66 },
+      { name: "Antimatter: The Ultimate Price", metric: "$62 trillion per gram", numeric: 62000000000000, log: Math.log10(62000000000000), vsGold: 62000000000000/66 }
+    ];
+
+    // For slider visualization: multiplier relative to gold (range 0.1x to 1e12x)
+    // We'll store a "display factor" for each item that the slider controls: a visibility weight (0..1) and a multiplier
+    // But the requirement: "interactive controls ... directly model the exact items/assets/teams"
+    // We'll create a slider per item that scales its displayed cost (simulating quantity or scenario variation).
+    // Default values are the baseline metrics above.
+
+    let state = ITEMS.map((item, idx) => ({
+      id: idx,
+      name: item.name,
+      baseNumeric: item.numeric,
+      baseLog: item.log,
+      metricText: item.metric,
+      // Slider represents a "scenario multiplier" from 0.1x to 10x (logarithmic feel)
+      // Actually we want to allow users to explore cost scaling. Let's make slider from 0.1 to 10 (multiplier)
+      // So the displayed cost = baseNumeric * multiplier
+      multiplier: 1.0,
+      active: true
+    }));
+
+    // Presets modify multipliers + active status
+    const PRESETS = {
+      all: { multipliers: [1,1,1,1,1], active: [true,true,true,true,true] },
+      precious: { multipliers: [1, 1, 0.02, 0, 0], active: [true,true,true,false,false] }, // diamond scaled down? better keep active only gold, rhodium, diamond
+      exotic: { multipliers: [1, 1, 1, 1, 0], active: [true,true,true,true,false] },
+      antimatter: { multipliers: [0.001, 0.001, 0.1, 0.5, 1], active: [true,true,true,true,true] }, // emphasize antimatter relative? Alternatively keep base
+      minimal: { multipliers: [1, 1, 0, 0, 0], active: [true,true,false,false,false] }
+    };
+    // better: adjust active only, keep multipliers default 1 for active items
+    // We'll redo presets: set active and reset multipliers to 1 for active items
+    const PRESET_CONFIG = {
+      all: { active: [true, true, true, true, true] },
+      precious: { active: [true, true, true, false, false] },
+      exotic: { active: [false, false, true, true, false] },
+      antimatter: { active: [false, false, false, false, true] },
+      minimal: { active: [true, true, false, false, false] }
+    };
+
+    // ---- 2. DOM refs ----
+    const canvas = document.getElementById('costCanvas');
+    const ctx = canvas.getContext('2d');
+    const slidersContainer = document.getElementById('slidersContainer');
+    const kpiAntimatter = document.getElementById('kpiAntimatter');
+    const kpiRatio = document.getElementById('kpiRatio');
+    const kpiSpan = document.getElementById('kpiSpan');
+    const breakdownBody = document.getElementById('breakdownBody');
+    const copyFeedback = document.getElementById('copyFeedback');
+
+    // ---- 3. Helper: format numbers ----
+    function formatUSD(val) {
+      if (val >= 1e12) return '$' + (val / 1e12).toFixed(2) + 'T';
+      if (val >= 1e9) return '$' + (val / 1e9).toFixed(2) + 'B';
+      if (val >= 1e6) return '$' + (val / 1e6).toFixed(2) + 'M';
+      if (val >= 1e3) return '$' + (val / 1e3).toFixed(2) + 'K';
+      return '$' + val.toFixed(2);
+    }
+
+    function formatNumberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // ---- 4. Render sliders ----
+    function renderSliders() {
+      slidersContainer.innerHTML = '';
+      state.forEach((item, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'slider-group';
+        wrapper.innerHTML = `
+          <div class="slider-header">
+            <span>${item.name}</span>
+            <span id="sliderVal_${idx}">${(item.baseNumeric * item.multiplier).toExponential(2)}</span>
+          </div>
+          <input type="range" id="slider_${idx}" min="0.1" max="10" step="0.01" value="${item.multiplier}" data-idx="${idx}">
+        `;
+        slidersContainer.appendChild(wrapper);
+        const slider = wrapper.querySelector(`input[type="range"]`);
+        slider.addEventListener('input', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          state[idx].multiplier = parseFloat(e.target.value);
+          document.getElementById(`sliderVal_${idx}`).textContent = (state[idx].baseNumeric * state[idx].multiplier).toExponential(2);
+          updateAll();
+        });
+      });
+    }
+
+    // ---- 5. Update displayed values, KPIs, canvas, table ----
+    function updateAll() {
+      // KPI: Antimatter cost (last item, idx 4)
+      const antimatter = state[4];
+      const antiCost = antimatter.baseNumeric * antimatter.multiplier;
+      kpiAntimatter.textContent = formatUSD(antiCost);
+
+      // Ratio gold:antimatter
+      const goldCost = state[0].baseNumeric * state[0].multiplier;
+      const ratio = goldCost > 0 ? antiCost / goldCost : 0;
+      kpiRatio.textContent = ratio > 0 ? `1 : ${ratio.toExponential(2)}` : '—';
+
+      // Log span: max log - min log among active items (with multiplier)
+      const activeCosts = state.filter(s => s.active).map(s => s.baseNumeric * s.multiplier).filter(v => v > 0);
+      if (activeCosts.length >= 2) {
+        const logs = activeCosts.map(v => Math.log10(v));
+        const span = Math.max(...logs) - Math.min(...logs);
+        kpiSpan.innerHTML = span.toFixed(1) + '<span class="kpi-unit">decades</span>';
+      } else {
+        kpiSpan.innerHTML = '—';
+      }
+
+      // Update breakdown table
+      updateBreakdownTable();
+      // Update canvas
+      drawCanvas();
+    }
+
+    function updateBreakdownTable() {
+      let html = '';
+      state.forEach((item) => {
+        if (!item.active) return;
+        const currentCost = item.baseNumeric * item.multiplier;
+        const log10 = currentCost > 0 ? Math.log10(currentCost) : 0;
+        const vsGold = (state[0].baseNumeric * state[0].multiplier) > 0 ? currentCost / (state[0].baseNumeric * state[0].multiplier) : 0;
+        html += `<tr>
+          <td>${item.name}</td>
+          <td>${item.metricText}</td>
+          <td class="mono">$${formatNumberWithCommas(currentCost.toFixed(0))}</td>
+          <td class="mono">${log10.toFixed(2)}</td>
+          <td class="mono accent">${vsGold.toExponential(2)}×</td>
+        </tr>`;
+      });
+      if (!html) html = '<tr><td colspan="5" style="text-align:center; color:#64748b;">No active items</td></tr>';
+      breakdownBody.innerHTML = html;
+    }
+
+    // ---- 6. Canvas rendering (log-scale bar chart) ----
+    function drawCanvas() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Background
+      ctx.fillStyle = '#05070b';
+      ctx.fillRect(0, 0, w, h);
+
+      // Grid lines (log scale)
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.font = '12px "SFMono-Regular", monospace';
+      ctx.fillStyle = '#475569';
+
+      // Determine y-range from active items
+      const active = state.filter(s => s.active).map(s => s.baseNumeric * s.multiplier).filter(v => v > 0);
+      if (active.length === 0) {
+        ctx.fillStyle = '#64748b';
+        ctx.font = '16px sans-serif';
+        ctx.fillText('No active substances to display', w/2 - 120, h/2);
+        return;
+      }
+
+      let minLog = Math.min(...active.map(v => Math.log10(v)));
+      let maxLog = Math.max(...active.map(v => Math.log10(v)));
+      // Pad range
+      const pad = (maxLog - minLog) * 0.15 || 1;
+      minLog = Math.floor(minLog - pad);
+      maxLog = Math.ceil(maxLog + pad);
+      if (minLog === maxLog) maxLog = minLog + 1;
+
+      const logRange = maxLog - minLog;
+
+      // Chart area
+      const margin = { top: 40, right: 40, bottom: 60, left: 80 };
+      const chartW = w - margin.left - margin.right;
+      const chartH = h - margin.top - margin.bottom;
+
+      // Draw y-axis grid
+      for (let logVal = Math.ceil(minLog); logVal <= maxLog; logVal++) {
+        const y = margin.top + chartH - ((logVal - minLog) / logRange) * chartH;
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(margin.left + chartW, y);
+        ctx.strokeStyle = '#1e293b';
+        ctx.stroke();
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'right';
+        ctx.fillText(`10^${logVal}`, margin.left - 12, y + 4);
+      }
+
+      // Draw bars
+      const activeItems = state.filter(s => s.active);
+      const barWidth = chartW / (activeItems.length * 1.5);
+      const gap = barWidth * 0.5;
+
+      activeItems.forEach((item, i) => {
+        const val = item.baseNumeric * item.multiplier;
+        const logVal = Math.log10(val);
+        const barH = ((logVal - minLog) / logRange) * chartH;
+        const x = margin.left + i * (barWidth + gap) + gap / 2;
+        const y = margin.top + chartH - barH;
+
+        // Bar gradient
+        const grad = ctx.createLinearGradient(x, y, x, margin.top + chartH);
+        grad.addColorStop(0, '#10b981');
+        grad.addColorStop(1, '#065f46');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, barWidth, barH);
+
+        // Value label
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = 'bold 13px "SFMono-Regular", monospace';
+        ctx.textAlign = 'center';
+        const label = formatUSD(val);
+        ctx.fillText(label, x + barWidth/2, y - 12);
+
+        // Item name (abbreviated)
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px sans-serif';
+        let shortName = item.name.split(':')[0];
+        if (shortName.length > 14) shortName = shortName.substring(0, 12) + '…';
+        ctx.fillText(shortName, x + barWidth/2, margin.top + chartH + 20);
+      });
+
+      // Axis labels
+      ctx.fillStyle = '#475569';
+      ctx.font = '12px "SFMono-Regular", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('LOGARITHMIC SCALE · USD PER GRAM', w/2, h - 12);
+    }
+
+    // ---- 7. Preset logic ----
+    document.querySelectorAll('[data-preset]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const preset = e.target.dataset.preset;
+        const config = PRESET_CONFIG[preset];
+        if (!config) return;
+        state.forEach((item, idx) => {
+          item.active = config.active[idx];
+          if (item.active) item.multiplier = 1.0; // reset multiplier for active items
+        });
+        // Update sliders UI
+        state.forEach((item, idx) => {
+          const slider = document.getElementById(`slider_${idx}`);
+          if (slider) {
+            slider.value = item.multiplier;
+            document.getElementById(`sliderVal_${idx}`).textContent = (item.baseNumeric * item.multiplier).toExponential(2);
+          }
+        });
+        updateAll();
+      });
+    });
+
+    // ---- 8. CSV Export ----
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      let csv = 'Substance,Metric,Numeric USD (base),Scenario Multiplier,Current USD,Log10,Active\n';
+      state.forEach(item => {
+        const current = item.baseNumeric * item.multiplier;
+        const log10 = current > 0 ? Math.log10(current) : 0;
+        csv += `"${item.name}","${item.metricText}",${item.baseNumeric},${item.multiplier},${current},${log10.toFixed(6)},${item.active}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'capitalgrid_telemetry.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    // ---- 9. Copy Scenario Link ----
+    document.getElementById('copyLinkBtn').addEventListener('click', () => {
+      // Build a URL with state as query params (simpler: encode multipliers and active)
+      const params = new URLSearchParams();
+      state.forEach((item, idx) => {
+        params.set(`m${idx}`, item.multiplier.toFixed(2));
+        params.set(`a${idx}`, item.active ? '1' : '0');
+      });
+      const newUrl = window.location.origin + window.location.pathname + '?' + params.toString();
+      navigator.clipboard.writeText(newUrl).then(() => {
+        copyFeedback.textContent = '✓ Link copied';
+        setTimeout(() => copyFeedback.textContent = '', 2500);
+      }).catch(() => {
+        // fallback
+        prompt('Copy this link:', newUrl);
+      });
+    });
+
+    // ---- 10. Parse URL params on load ----
+    function loadFromParams() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('m0')) {
+        state.forEach((item, idx) => {
+          if (params.has(`m${idx}`)) item.multiplier = parseFloat(params.get(`m${idx}`)) || 1;
+          if (params.has(`a${idx}`)) item.active = params.get(`a${idx}`) === '1';
+        });
+        // update slider UI
+        state.forEach((item, idx) => {
+          const slider = document.getElementById(`slider_${idx}`);
+          if (slider) {
+            slider.value = item.multiplier;
+            document.getElementById(`sliderVal_${idx}`).textContent = (item.baseNumeric * item.multiplier).toExponential(2);
+          }
+        });
+        updateAll();
+      }
+    }
+
+    // ---- 11. Init ----
+    renderSliders();
+    updateAll();
+    loadFromParams();
+
+    // handle canvas resize for responsiveness (redraw)
+    window.addEventListener('resize', () => {
+      // keep fixed internal resolution
+      drawCanvas();
+    });
+
+    // also redraw on preset change after updateAll
+    // Already covered.
+
+  })();
+</script>
+</body>
+</html>
