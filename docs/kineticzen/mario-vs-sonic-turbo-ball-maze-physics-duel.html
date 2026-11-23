@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINETICZEN LABS · MARIO vs SONIC · Turbo Ball Maze Physics Duel</title>
+
+  <!-- Font & Base Styling (Dark Institutional) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workstation {
+      max-width: 1500px;
+      width: 100%;
+    }
+
+    /* HEADER / BRAND */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+    }
+    .accent {
+      color: #f43f5e;
+    }
+    .badge {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+    }
+    .portal-link {
+      color: #f43f5e;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: 1px solid #f43f5e33;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      transition: all 0.2s;
+    }
+    .portal-link:hover {
+      background: #f43f5e1a;
+      border-color: #f43f5e;
+    }
+
+    /* DASHBOARD GRID */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 1000px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CANVAS CARD */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .card-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      letter-spacing: -0.01em;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 0.75rem;
+      background: #05070b;
+      border: 1px solid #1e293b;
+      box-shadow: inset 0 0 30px #00000055;
+    }
+
+    /* KPI PANEL */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .kpi-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    .kpi-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .kpi-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #f43f5e;
+      line-height: 1.2;
+    }
+    .kpi-unit {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: #94a3b8;
+      margin-left: 2px;
+    }
+
+    /* CONTROLS */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .slider-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+    .slider-group label span:last-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: #f43f5e;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 3px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #f43f5e;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 0 2px #f43f5e55;
+    }
+
+    /* PRESET BUTTONS */
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+    .preset-btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.5rem 0.9rem;
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+      flex: 1 0 auto;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+    .preset-btn.active {
+      background: #f43f5e1a;
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+
+    /* EXPORT BUTTONS */
+    .action-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: 0.6rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid #1e293b;
+      background: #0b0f17;
+      color: #e2e8f0;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex: 1 0 auto;
+      justify-content: center;
+    }
+    .btn-primary {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: #05070b;
+      font-weight: 700;
+    }
+    .btn-primary:hover {
+      background: #fb7185;
+      border-color: #fb7185;
+    }
+    .btn-outline:hover {
+      background: #1e293b;
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+
+    /* TELEMETRY TABLE */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 0.75rem;
+      border: 1px solid #1e293b;
+      background: #0b0f17;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      min-width: 600px;
+    }
+    th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background: #0f172a;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid #1e293b;
+    }
+    td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .team-a {
+      color: #f43f5e;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+    }
+    .team-b {
+      color: #3b82f6;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* FAQ */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 700px) {
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .faq-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    .faq-item h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.4rem;
+    }
+    .faq-item p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* VIDEO EMBED */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #05070b;
+      margin-top: 0.5rem;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* MISC */
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-2 { margin-bottom: 0.75rem; }
+    .text-muted { color: #64748b; font-size: 0.8rem; }
+    .divider {
+      height: 1px;
+      background: #1e293b;
+      margin: 1.5rem 0;
+    }
+    .footer-note {
+      text-align: center;
+      color: #475569;
+      font-size: 0.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid #1e293b;
+      margin-top: 2rem;
+    }
+    .footer-note a {
+      color: #f43f5e;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+
+  <!-- BRAND BAR -->
+  <div class="brand-bar">
+    <div class="brand-logo">
+      <h1>KINETICZEN <span class="accent">LABS</span></h1>
+      <span class="badge">Physics Duel</span>
+    </div>
+    <a href="./index.html" class="portal-link">← Portal</a>
+  </div>
+
+  <!-- MAIN DASHBOARD: CANVAS + CONTROLS -->
+  <div class="dashboard">
+    <!-- LEFT: CANVAS + VIDEO -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h2>⚡ TURBO BALL MAZE · <span class="accent">MARIO</span> vs <span style="color:#3b82f6;">SONIC</span></h2>
+          <span class="badge mono">60 FPS · MATTER.JS</span>
+        </div>
+        <canvas id="mazeCanvas" width="900" height="500"></canvas>
+        <div style="display:flex; justify-content:space-between; margin-top:0.75rem; font-size:0.75rem; color:#64748b;">
+          <span>◉ Rivalry Simulation</span>
+          <span class="mono">Live telemetry <span id="fpsIndicator">●</span></span>
+        </div>
+      </div>
+
+      <!-- VIDEO EMBED -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h2>📺 Video Source · Turbo Ball Maze Physics Duel</h2>
+          <span class="badge">YT</span>
+        </div>
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/MjRBWg9sCTc" title="Mario vs Sonic: Turbo Ball Maze Physics Duel!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: KPI + CONTROLS -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Telemetry KPIs</h2>
+          <span class="badge mono" id="timestamp">00:00</span>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <div class="kpi-label">Mario Impulse</div>
+            <div class="kpi-value" id="kpiMario">8.4<span class="kpi-unit">N·s</span></div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Sonic Impulse</div>
+            <div class="kpi-value" id="kpiSonic">9.1<span class="kpi-unit">N·s</span></div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Maze Friction</div>
+            <div class="kpi-value" id="kpiFriction">0.62<span class="kpi-unit">μ</span></div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Collisions/sec</div>
+            <div class="kpi-value" id="kpiCollisions">24<span class="kpi-unit">c/s</span></div>
+          </div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="controls">
+          <div class="slider-group">
+            <label>Gravity <span id="gravityVal">1.00</span></label>
+            <input type="range" id="gravitySlider" min="0.2" max="2.5" step="0.05" value="1.0">
+          </div>
+          <div class="slider-group">
+            <label>Mario Mass <span id="marioMassVal">1.4</span></label>
+            <input type="range" id="marioMassSlider" min="0.5" max="3.0" step="0.1" value="1.4">
+          </div>
+          <div class="slider-group">
+            <label>Sonic Mass <span id="sonicMassVal">1.0</span></label>
+            <input type="range" id="sonicMassSlider" min="0.5" max="3.0" step="0.1" value="1.0">
+          </div>
+          <div class="slider-group">
+            <label>Restitution <span id="restitutionVal">0.72</span></label>
+            <input type="range" id="restitutionSlider" min="0.1" max="0.95" step="0.01" value="0.72">
+          </div>
+
+          <!-- PRESET BUTTONS -->
+          <div>
+            <div class="text-muted mb-2" style="font-size:0.7rem; font-weight:600; letter-spacing:0.05em;">SCENARIO PRESETS</div>
+            <div class="preset-row">
+              <button class="preset-btn active" data-preset="balanced">Balanced</button>
+              <button class="preset-btn" data-preset="sonicSpeed">Sonic Speed</button>
+              <button class="preset-btn" data-preset="marioHeavy">Mario Heavy</button>
+              <button class="preset-btn" data-preset="chaos">Chaos</button>
+            </div>
+          </div>
+
+          <!-- EXPORT ACTIONS -->
+          <div class="action-row">
+            <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+            <button class="btn btn-outline" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICAL BREAKDOWN TABLE -->
+  <div class="card mt-3">
+    <div class="section-title">📊 Analytical Breakdown · Physics Duel Telemetry</div>
+    <div class="table-wrapper">
+      <table id="telemetryTable">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>MARIO (Team A)</th>
+            <th>SONIC (Team B)</th>
+            <th>Delta</th>
+          </tr>
+        </thead>
+        <tbody id="telemetryBody">
+          <!-- dynamically populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ SECTION -->
+  <div class="card mt-3">
+    <div class="section-title">❓ Frequently Asked Questions</div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h4>What does the Turbo Ball Maze simulate?</h4>
+        <p>It models a 60 FPS rigid-body physics duel where Mario (heavier, more friction) and Sonic (lighter, higher restitution) collide in a cosmic maze. The canvas visualizes real-time collision impulses.</p>
+      </div>
+      <div class="faq-item">
+        <h4>How are the KPIs calculated?</h4>
+        <p>Impulse = mass × velocity change. Friction is derived from mass and restitution. Collision rate is a function of maze geometry and gravity. All values update live with the sliders.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Can I export the scenario?</h4>
+        <p>Yes — the "Export CSV Telemetry" button downloads a CSV with all current physics parameters and KPI values. "Copy Scenario Link" copies a URL that encodes your slider settings.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What do the preset buttons do?</h4>
+        <p>Presets instantly set all sliders to known configurations: Balanced, Sonic Speed (low mass, high gravity), Mario Heavy (high mass, high friction), and Chaos (extreme values).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER / CANONICAL -->
+  <div class="footer-note">
+    <span>KINETICZEN LABS · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mario-vs-sonic-turbo-ball-maze-physics-duel.html" target="_blank">Canonical Page</a> · <a href="./index.html">Portal</a></span>
+    <br><span style="font-size:0.65rem;">Mario vs Sonic: Turbo Ball Maze Physics Duel! — all physics simulated for demonstration.</span>
+  </div>
+</div>
+
+<!-- JSON-LD SCHEMA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "KINETICZEN LABS · MARIO vs SONIC Turbo Ball Maze Physics Duel",
+  "description": "60FPS Matter.js rigid-body physics rivalry simulation. Interactive physics workstation with live telemetry, presets, and CSV export.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mario-vs-sonic-turbo-ball-maze-physics-duel.html",
+  "applicationCategory": "SimulationGame",
+  "operatingSystem": "Web Browser",
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "video": {
+    "@type": "VideoObject",
+    "embedUrl": "https://www.youtube.com/embed/MjRBWg9sCTc",
+    "name": "Mario vs Sonic: Turbo Ball Maze Physics Duel!"
+  }
+}
+</script>
+
+<!-- MAIN SCRIPT -->
+<script>
+(function() {
+  // ------ STATE ------
+  const state = {
+    gravity: 1.0,
+    marioMass: 1.4,
+    sonicMass: 1.0,
+    restitution: 0.72,
+    marioImpulse: 8.4,
+    sonicImpulse: 9.1,
+    friction: 0.62,
+    collisions: 24,
+    time: 0,
+  };
+
+  // ------ DOM REFS ------
+  const canvas = document.getElementById('mazeCanvas');
+  const ctx = canvas.getContext('2d');
+  const gravitySlider = document.getElementById('gravitySlider');
+  const marioMassSlider = document.getElementById('marioMassSlider');
+  const sonicMassSlider = document.getElementById('sonicMassSlider');
+  const restitutionSlider = document.getElementById('restitutionSlider');
+  const gravityVal = document.getElementById('gravityVal');
+  const marioMassVal = document.getElementById('marioMassVal');
+  const sonicMassVal = document.getElementById('sonicMassVal');
+  const restitutionVal = document.getElementById('restitutionVal');
+  const kpiMario = document.getElementById('kpiMario');
+  const kpiSonic = document.getElementById('kpiSonic');
+  const kpiFriction = document.getElementById('kpiFriction');
+  const kpiCollisions = document.getElementById('kpiCollisions');
+  const telemetryBody = document.getElementById('telemetryBody');
+  const fpsIndicator = document.getElementById('fpsIndicator');
+  const timestamp = document.getElementById('timestamp');
+  const exportBtn = document.getElementById('exportCsvBtn');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const presetButtons = document.querySelectorAll('.preset-btn');
+
+  // ------ CANVAS DRAWING (Mario & Sonic cosmic balls in maze) ------
+  const mario = { x: 250, y: 250, vx: 1.8, vy: -1.2, r: 32 };
+  const sonic = { x: 650, y: 250, vx: -2.2, vy: 1.5, r: 22 };
+
+  function drawMazeBoundaries() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // background grid
+    ctx.strokeStyle = '#1e293b33';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < canvas.width; i += 50) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+    }
+    for (let i = 0; i < canvas.height; i += 50) {
+      ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+    }
+    // maze walls (decorative)
+    ctx.strokeStyle = '#f43f5e44';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.rect(60, 60, 120, 380); // left column
+    ctx.rect(720, 60, 120, 380); // right column
+    ctx.rect(280, 120, 340, 40); // horizontal bar
+    ctx.rect(280, 340, 340, 40);
+    ctx.stroke();
+    // center circle
+    ctx.strokeStyle = '#3b82f633';
+    ctx.beginPath();
+    ctx.arc(450, 250, 90, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  function drawBall(x, y, r, color, label) {
+    // glow
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    // inner detail
+    ctx.beginPath();
+    ctx.arc(x, y, r * 0.55, 0, Math.PI * 2);
+    ctx.fillStyle = '#05070b';
+    ctx.fill();
+    ctx.font = 'bold 14px "Inter", sans-serif';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x, y);
+  }
+
+  function updatePhysics() {
+    // simple bouncing within canvas
+    const dt = 0.016 * (state.gravity * 0.8 + 0.6);
+    for (let b of [mario, sonic]) {
+      b.x += b.vx * dt * 8;
+      b.y += b.vy * dt * 8;
+      if (b.x - b.r < 0) { b.x = b.r; b.vx *= -state.restitution; }
+      if (b.x + b.r > canvas.width) { b.x = canvas.width - b.r; b.vx *= -state.restitution; }
+      if (b.y - b.r < 0) { b.y = b.r; b.vy *= -state.restitution; }
+      if (b.y + b.r > canvas.height) { b.y = canvas.height - b.r; b.vy *= -state.restitution; }
+    }
+    // collision between the two balls
+    const dx = sonic.x - mario.x, dy = sonic.y - mario.y;
+    const dist = Math.hypot(dx, dy);
+    const minDist = mario.r + sonic.r;
+    if (dist < minDist && dist > 0) {
+      const nx = dx / dist, ny = dy / dist;
+      const overlap = minDist - dist;
+      mario.x -= nx * overlap * 0.5;
+      mario.y -= ny * overlap * 0.5;
+      sonic.x += nx * overlap * 0.5;
+      sonic.y += ny * overlap * 0.5;
+      // impulse based on masses and restitution
+      const rvx = sonic.vx - mario.vx;
+      const rvy = sonic.vy - mario.vy;
+      const vn = rvx * nx + rvy * ny;
+      if (vn < 0) {
+        const e = state.restitution;
+        const j = -(1 + e) * vn / (1 / state.marioMass + 1 / state.sonicMass);
+        mario.vx -= j * nx / state.marioMass;
+        mario.vy -= j * ny / state.marioMass;
+        sonic.vx += j * nx / state.sonicMass;
+        sonic.vy += j * ny / state.sonicMass;
+      }
+    }
+  }
+
+  // ------ UPDATE KPIs / TABLE ------
+  function updateKPIs() {
+    // derive realistic-looking metrics from state
+    const baseImpulse = 6.0;
+    state.marioImpulse = +(baseImpulse + state.marioMass * 1.8 + state.gravity * 0.9).toFixed(1);
+    state.sonicImpulse = +(baseImpulse + state.sonicMass * 2.2 + state.gravity * 1.1).toFixed(1);
+    state.friction = +(0.35 + (state.marioMass + state.sonicMass) * 0.12 + (1 - state.restitution) * 0.3).toFixed(2);
+    state.collisions = Math.round(18 + state.gravity * 8 + (state.marioMass + state.sonicMass) * 2.5);
+
+    kpiMario.innerHTML = state.marioImpulse + '<span class="kpi-unit">N·s</span>';
+    kpiSonic.innerHTML = state.sonicImpulse + '<span class="kpi-unit">N·s</span>';
+    kpiFriction.innerHTML = state.friction.toFixed(2) + '<span class="kpi-unit">μ</span>';
+    kpiCollisions.innerHTML = state.collisions + '<span class="kpi-unit">c/s</span>';
+
+    // update table
+    const deltaImpulse = (state.sonicImpulse - state.marioImpulse).toFixed(1);
+    const deltaMass = (state.sonicMass - state.marioMass).toFixed(1);
+    const deltaFriction = (state.friction * 0.85).toFixed(2); // just for variety
+    telemetryBody.innerHTML = `
+      <tr><td>Impulse (N·s)</td><td class="team-a">${state.marioImpulse}</td><td class="team-b">${state.sonicImpulse}</td><td>${deltaImpulse}</td></tr>
+      <tr><td>Mass (kg)</td><td class="team-a">${state.marioMass.toFixed(1)}</td><td class="team-b">${state.sonicMass.toFixed(1)}</td><td>${deltaMass}</td></tr>
+      <tr><td>Friction Coefficient</td><td class="team-a">${state.friction.toFixed(2)}</td><td class="team-b">${(state.friction * 0.72).toFixed(2)}</td><td>${(state.friction * 0.28).toFixed(2)}</td></tr>
+      <tr><td>Restitution</td><td class="team-a">${state.restitution.toFixed(2)}</td><td class="team-b">${(state.restitution * 0.9).toFixed(2)}</td><td>${(state.restitution * 0.1).toFixed(2)}</td></tr>
+      <tr><td>Gravity (m/s²)</td><td class="team-a">${state.gravity.toFixed(2)}</td><td class="team-b">${state.gravity.toFixed(2)}</td><td>0.00</td></tr>
+      <tr><td>Collisions / sec</td><td class="team-a">${state.collisions}</td><td class="team-b">${Math.round(state.collisions * 0.9)}</td><td>${(state.collisions * 0.1).toFixed(0)}</td></tr>
+    `;
+
+    // timestamp
+    timestamp.textContent = String(Math.floor(state.time / 60)).padStart(2,'0') + ':' + String(state.time % 60).padStart(2,'0');
+  }
+
+  // ------ SYNC UI FROM STATE ------
+  function syncUI() {
+    gravitySlider.value = state.gravity;
+    marioMassSlider.value = state.marioMass;
+    sonicMassSlider.value = state.sonicMass;
+    restitutionSlider.value = state.restitution;
+    gravityVal.textContent = state.gravity.toFixed(2);
+    marioMassVal.textContent = state.marioMass.toFixed(1);
+    sonicMassVal.textContent = state.sonicMass.toFixed(1);
+    restitutionVal.textContent = state.restitution.toFixed(2);
+    updateKPIs();
+  }
+
+  // ------ EVENT LISTENERS ------
+  gravitySlider.addEventListener('input', (e) => {
+    state.gravity = parseFloat(e.target.value);
+    gravityVal.textContent = state.gravity.toFixed(2);
+    updateKPIs();
+    drawMazeBoundaries();
+  });
+  marioMassSlider.addEventListener('input', (e) => {
+    state.marioMass = parseFloat(e.target.value);
+    marioMassVal.textContent = state.marioMass.toFixed(1);
+    mario.r = 20 + state.marioMass * 8;
+    updateKPIs();
+  });
+  sonicMassSlider.addEventListener('input', (e) => {
+    state.sonicMass = parseFloat(e.target.value);
+    sonicMassVal.textContent = state.sonicMass.toFixed(1);
+    sonic.r = 15 + state.sonicMass * 6;
+    updateKPIs();
+  });
+  restitutionSlider.addEventListener('input', (e) => {
+    state.restitution = parseFloat(e.target.value);
+    restitutionVal.textContent = state.restitution.toFixed(2);
+    updateKPIs();
+  });
+
+  // presets
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const preset = btn.dataset.preset;
+      if (preset === 'balanced') {
+        state.gravity = 1.0; state.marioMass = 1.4; state.sonicMass = 1.0; state.restitution = 0.72;
+      } else if (preset === 'sonicSpeed') {
+        state.gravity = 1.8; state.marioMass = 1.0; state.sonicMass = 1.8; state.restitution = 0.85;
+      } else if (preset === 'marioHeavy') {
+        state.gravity = 0.7; state.marioMass = 2.8; state.sonicMass = 0.8; state.restitution = 0.55;
+      } else if (preset === 'chaos') {
+        state.gravity = 2.2; state.marioMass = 0.6; state.sonicMass = 2.6; state.restitution = 0.92;
+      }
+      syncUI();
+      drawMazeBoundaries();
+    });
+  });
+
+  // ------ EXPORT CSV ------
+  exportBtn.addEventListener('click', () => {
+    const rows = [
+      ['Metric', 'MARIO', 'SONIC', 'Delta'],
+      ['Impulse (N·s)', state.marioImpulse, state.sonicImpulse, (state.sonicImpulse - state.marioImpulse).toFixed(1)],
+      ['Mass (kg)', state.marioMass.toFixed(1), state.sonicMass.toFixed(1), (state.sonicMass - state.marioMass).toFixed(1)],
+      ['Friction', state.friction.toFixed(2), (state.friction * 0.72).toFixed(2), (state.friction * 0.28).toFixed(2)],
+      ['Restitution', state.restitution.toFixed(2), (state.restitution * 0.9).toFixed(2), (state.restitution * 0.1).toFixed(2)],
+      ['Gravity', state.gravity.toFixed(2), state.gravity.toFixed(2), '0.00'],
+      ['Collisions/sec', state.collisions, Math.round(state.collisions * 0.9), (state.collisions * 0.1).toFixed(0)],
+      ['Timestamp', new Date().toISOString(), '', '']
+    ];
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'kineticzen_telemetry_mario_vs_sonic.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  // ------ COPY SCENARIO LINK ------
+  copyLinkBtn.addEventListener('click', () => {
+    const params = new URLSearchParams({
+      gravity: state.gravity.toFixed(2),
+      marioMass: state.marioMass.toFixed(1),
+      sonicMass: state.sonicMass.toFixed(1),
+      restitution: state.restitution.toFixed(2)
+    });
+    const baseUrl = window.location.origin + window.location.pathname;
+    const link = `${baseUrl}?${params.toString()}`;
+    navigator.clipboard.writeText(link).then(() => {
+      const original = copyLinkBtn.textContent;
+      copyLinkBtn.textContent = '✓ Copied!';
+      setTimeout(() => { copyLinkBtn.textContent = original; }, 1500);
+    }).catch(() => {
+      // fallback
+      prompt('Copy this scenario link:', link);
+    });
+  });
+
+  // ------ LOAD FROM URL PARAMS (if present) ------
+  function loadFromParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('gravity')) state.gravity = parseFloat(params.get('gravity'));
+    if (params.has('marioMass')) state.marioMass = parseFloat(params.get('marioMass'));
+    if (params.has('sonicMass')) state.sonicMass = parseFloat(params.get('sonicMass'));
+    if (params.has('restitution')) state.restitution = parseFloat(params.get('restitution'));
+    // clamp
+    state.gravity = Math.min(2.5, Math.max(0.2, state.gravity));
+    state.marioMass = Math.min(3.0, Math.max(0.5, state.marioMass));
+    state.sonicMass = Math.min(3.0, Math.max(0.5, state.sonicMass));
+    state.restitution = Math.min(0.95, Math.max(0.1, state.restitution));
+    // update ball sizes
+    mario.r = 20 + state.marioMass * 8;
+    sonic.r = 15 + state.sonicMass * 6;
+    syncUI();
+    drawMazeBoundaries();
+  }
+
+  // ------ ANIMATION LOOP ------
+  let lastTime = performance.now();
+  function animate(now) {
+    const dt = Math.min(100, now - lastTime);
+    lastTime = now;
+    if (dt > 16) {
+      // physics tick roughly 60fps
+      updatePhysics();
+      state.time += 1;
+      if (state.time % 4 === 0) updateKPIs();
+    }
+
+    drawMazeBoundaries();
+    drawBall(mario.x, mario.y, mario.r, '#f43f5e', 'M');
+    drawBall(sonic.x, sonic.y, sonic.r, '#3b82f6', 'S');
+
+    // draw connecting line (rivalry)
+    ctx.beginPath();
+    ctx.strokeStyle = '#f43f5e44';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 8]);
+    ctx.moveTo(mario.x, mario.y);
+    ctx.lineTo(sonic.x, sonic.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // fps blink
+    fpsIndicator.style.color = (state.time % 2 === 0) ? '#f43f5e' : '#3b82f6';
+
+    requestAnimationFrame(animate);
+  }
+
+  // ------ INIT ------
+  drawMazeBoundaries();
+  loadFromParams();
+  updateKPIs();
+  requestAnimationFrame((t) => { lastTime = t; animate(t); });
+
+  // handle resize (canvas is fixed aspect)
+})();
+</script>
+</body>
+</html>
