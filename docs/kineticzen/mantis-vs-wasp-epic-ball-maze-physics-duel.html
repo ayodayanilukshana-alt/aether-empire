@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KineticZen Labs · MANTIS vs WASP · Ball Maze Physics Duel</title>
+    <meta name="description" content="Interactive rigid-body physics workstation: MANTIS vs WASP epic ball maze duel. Sliders, presets, telemetry, canvas sim, CSV export.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #05070b;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #e2e8f0;
+            line-height: 1.5;
+            padding: 24px;
+        }
+        .workstation {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        /* header */
+        .brand-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 12px;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            color: #f43f5e;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+        .portal-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            background: #0b0f17;
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 1px solid #1e293b;
+            transition: 0.2s;
+        }
+        .portal-link:hover {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .team-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+        }
+        .mantis-badge { background: #14532d; color: #4ade80; border: 1px solid #166534; }
+        .wasp-badge { background: #7f1d1d; color: #f87171; border: 1px solid #991b1b; }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .kpi-item {
+            background: #05070b;
+            border-radius: 12px;
+            padding: 14px 16px;
+            border-left: 3px solid #f43f5e;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            line-height: 1.2;
+        }
+        .kpi-unit {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            background: #03060a;
+            border-radius: 16px;
+            border: 1px solid #1e293b;
+            margin-bottom: 16px;
+            cursor: crosshair;
+        }
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .slider-label {
+            width: 110px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #94a3b8;
+        }
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 10px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #f43f5e;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 0 1px #f43f5e;
+        }
+        .slider-value {
+            font-family: monospace;
+            width: 48px;
+            text-align: right;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+        .preset-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .preset-btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .preset-btn:hover, .preset-btn.active {
+            border-color: #f43f5e;
+            color: #f43f5e;
+            background: #1a1f2b;
+        }
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.02em;
+        }
+        .btn-primary {
+            background: #f43f5e;
+            border-color: #f43f5e;
+            color: #05070b;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: #e11d48;
+        }
+        .btn:hover {
+            border-color: #f43f5e;
+        }
+        /* table */
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .analytics-table th, .analytics-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+        .analytics-table th {
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.7rem;
+        }
+        .analytics-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: #cbd5e1;
+        }
+        .analytics-table tr:last-child td {
+            border-bottom: none;
+        }
+        .accent {
+            color: #f43f5e;
+        }
+        /* faq & video */
+        .faq-section {
+            margin-top: 32px;
+        }
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 16px 0;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            margin-bottom: 16px;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .small-note {
+            font-size: 0.75rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+        .copy-feedback {
+            color: #4ade80;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .copy-feedback.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+    <!-- HEADER -->
+    <div class="brand-bar">
+        <div class="logo">KINETICZEN <span>LABS</span></div>
+        <a href="./index.html" class="portal-link">← Aether Empire Portal</a>
+    </div>
+
+    <!-- TITLE -->
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; background: linear-gradient(135deg, #f43f5e 0%, #f1f5f9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">MANTIS vs WASP: EPIC BALL MAZE DUEL</h1>
+        <p style="color: #64748b; margin-top: 4px; font-family: monospace; font-size: 0.85rem;">60FPS rigid-body rivalry simulation · Matter.js physics core</p>
+    </div>
+
+    <!-- MAIN GRID: controls + canvas left, KPIs + video right -->
+    <div class="grid-2col">
+        <!-- LEFT: CANVAS + SLIDERS + PRESETS -->
+        <div class="card">
+            <h2><span style="background: #f43f5e; width: 6px; height: 6px; border-radius: 50%; display: inline-block;"></span> Physics Arena</h2>
+            <canvas id="mazeCanvas" width="800" height="400" style="aspect-ratio: 2/1; height: auto;"></canvas>
+            
+            <!-- SLIDERS -->
+            <div class="slider-group">
+                <div class="slider-row">
+                    <div class="slider-label">Gravity</div>
+                    <input type="range" id="gravitySlider" min="0.1" max="3.0" step="0.05" value="1.2">
+                    <div class="slider-value" id="gravityValue">1.2</div>
+                </div>
+                <div class="slider-row">
+                    <div class="slider-label">Friction</div>
+                    <input type="range" id="frictionSlider" min="0.01" max="0.5" step="0.01" value="0.12">
+                    <div class="slider-value" id="frictionValue">0.12</div>
+                </div>
+                <div class="slider-row">
+                    <div class="slider-label">Restitution</div>
+                    <input type="range" id="restitutionSlider" min="0.2" max="0.99" step="0.01" value="0.65">
+                    <div class="slider-value" id="restitutionValue">0.65</div>
+                </div>
+                <div class="slider-row">
+                    <div class="slider-label">Maze Complexity</div>
+                    <input type="range" id="complexitySlider" min="1" max="5" step="1" value="3">
+                    <div class="slider-value" id="complexityValue">3</div>
+                </div>
+            </div>
+
+            <!-- PRESET SCENARIOS -->
+            <div class="preset-bar">
+                <button class="preset-btn active" data-preset="balanced">⚖️ Balanced</button>
+                <button class="preset-btn" data-preset="lowgrav">🌙 Low Gravity</button>
+                <button class="preset-btn" data-preset="bouncy">⚡ High Bounce</button>
+                <button class="preset-btn" data-preset="sticky">🧲 Sticky</button>
+                <button class="preset-btn" data-preset="chaos">🌀 Chaos</button>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-bar">
+                <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+                <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+                <span id="copyFeedback" class="copy-feedback">Copied!</span>
+            </div>
+        </div>
+
+        <!-- RIGHT: KPIs + VIDEO -->
+        <div class="card" style="display: flex; flex-direction: column; gap: 16px;">
+            <h2><span style="background: #f43f5e; width: 6px; height: 6px; border-radius: 50%; display: inline-block;"></span> Live Telemetry</h2>
+            <div class="kpi-grid">
+                <div class="kpi-item" style="border-left-color: #4ade80;">
+                    <div class="kpi-label">MANTIS score</div>
+                    <div class="kpi-value" id="mantisScore">0</div>
+                </div>
+                <div class="kpi-item" style="border-left-color: #f87171;">
+                    <div class="kpi-label">WASP score</div>
+                    <div class="kpi-value" id="waspScore">0</div>
+                </div>
+                <div class="kpi-item" style="border-left-color: #f43f5e;">
+                    <div class="kpi-label">Collisions</div>
+                    <div class="kpi-value" id="collisionCount">0</div>
+                </div>
+                <div class="kpi-item" style="border-left-color: #f43f5e;">
+                    <div class="kpi-label">Kinetic E.</div>
+                    <div class="kpi-value" id="kineticEnergy">0<span class="kpi-unit">J</span></div>
+                </div>
+            </div>
+            <!-- YOUTUBE EMBED -->
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/l-3QrVgHLS4" title="Mantis vs Wasp: Epic Ball Maze Physics Duel" allowfullscreen></iframe>
+            </div>
+            <div class="small-note">Matter.js 60FPS · real-time rigid-body</div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS TABLE -->
+    <div class="card" style="margin-bottom: 24px;">
+        <h2>📊 Analytical Breakdown · MANTIS vs WASP</h2>
+        <table class="analytics-table">
+            <thead>
+                <tr><th>Metric</th><th>MANTIS</th><th>WASP</th><th>Delta</th></tr>
+            </thead>
+            <tbody id="analyticsBody">
+                <tr><td>Avg. ball velocity</td><td id="mantisVel">0.00</td><td id="waspVel">0.00</td><td id="velDelta">0.00</td></tr>
+                <tr><td>Path efficiency</td><td id="mantisEff">100%</td><td id="waspEff">100%</td><td id="effDelta">0%</td></tr>
+                <tr><td>Collision count</td><td id="mantisCollisions">0</td><td id="waspCollisions">0</td><td id="collDelta">0</td></tr>
+                <tr><td>Maze clear time</td><td id="mantisTime">0.0s</td><td id="waspTime">0.0s</td><td id="timeDelta">0.0s</td></tr>
+                <tr><td>Energy transfer</td><td id="mantisEnergy">0.00</td><td id="waspEnergy">0.00</td><td id="energyDelta">0.00</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+        <h2>❓ Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <div class="faq-q">What exactly is the MANTIS vs WASP ball maze simulation?</div>
+            <div class="faq-a">It's a physics-based rivalry model where two autonomous balls (team MANTIS and team WASP) navigate a procedurally generated maze. Sliders let you alter gravity, friction, restitution, and maze complexity — all computed in real time with canvas rendering.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">How is the telemetry generated?</div>
+            <div class="faq-a">We use a custom lightweight physics loop (inspired by Matter.js) that tracks collisions, velocity, energy, and path efficiency for each team. Every simulation step updates the KPIs and the analytical table.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Can I save or share my scenario?</div>
+            <div class="faq-a">Yes — use the "Copy Scenario Link" button to copy a URL that encodes your current slider values. "Export CSV Telemetry" downloads a snapshot of all live KPIs and analytical table data.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Is this the same physics as the video?</div>
+            <div class="faq-a">The video features a Matter.js rigid-body duel. Our simulation is an interactive approximation with the same teams and theme. It runs at 60 FPS and uses similar physics concepts.</div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="margin-top: 40px; border-top: 1px solid #1e293b; padding-top: 20px; display: flex; justify-content: space-between; font-size: 0.75rem; color: #475569;">
+        <div>© KINETICZEN LABS · MANTIS vs WASP</div>
+        <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mantis-vs-wasp-epic-ball-maze-physics-duel.html" style="color: #64748b;">Canonical</a>
+    </div>
+</div>
+
+<!-- JSON-LD SCHEMA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Mantis vs Wasp: Epic Ball Maze Physics Duel",
+  "description": "60FPS Matter.js rigid-body physics rivalry simulation with interactive sliders, KPIs, and telemetry export.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mantis-vs-wasp-epic-ball-maze-physics-duel.html",
+  "applicationCategory": "SimulationGame",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS"
+  }
+}
+</script>
+
+<script>
+    (function() {
+        // Canvas setup
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = 800, height = 400;
+        canvas.width = width; canvas.height = height;
+
+        // Sliders
+        const gravitySlider = document.getElementById('gravitySlider');
+        const frictionSlider = document.getElementById('frictionSlider');
+        const restitutionSlider = document.getElementById('restitutionSlider');
+        const complexitySlider = document.getElementById('complexitySlider');
+        const gravityValue = document.getElementById('gravityValue');
+        const frictionValue = document.getElementById('frictionValue');
+        const restitutionValue = document.getElementById('restitutionValue');
+        const complexityValue = document.getElementById('complexityValue');
+
+        // KPI elements
+        const mantisScoreEl = document.getElementById('mantisScore');
+        const waspScoreEl = document.getElementById('waspScore');
+        const collisionCountEl = document.getElementById('collisionCount');
+        const kineticEnergyEl = document.getElementById('kineticEnergy');
+
+        // Table elements
+        const mantisVel = document.getElementById('mantisVel');
+        const waspVel = document.getElementById('waspVel');
+        const velDelta = document.getElementById('velDelta');
+        const mantisEff = document.getElementById('mantisEff');
+        const waspEff = document.getElementById('waspEff');
+        const effDelta = document.getElementById('effDelta');
+        const mantisCollisions = document.getElementById('mantisCollisions');
+        const waspCollisions = document.getElementById('waspCollisions');
+        const collDelta = document.getElementById('collDelta');
+        const mantisTime = document.getElementById('mantisTime');
+        const waspTime = document.getElementById('waspTime');
+        const timeDelta = document.getElementById('timeDelta');
+        const mantisEnergy = document.getElementById('mantisEnergy');
+        const waspEnergy = document.getElementById('waspEnergy');
+        const energyDelta = document.getElementById('energyDelta');
+
+        // State
+        let gravity = 1.2;
+        let friction = 0.12;
+        let restitution = 0.65;
+        let complexity = 3;
+
+        // Teams
+        const teams = {
+            mantis: { x: 80, y: 200, vx: 0, vy: 0, r: 12, color: '#4ade80', score: 0, collisions: 0, energy: 0, pathLen: 0, time: 0, active: true },
+            wasp: { x: 720, y: 200, vx: 0, vy: 0, r: 12, color: '#f87171', score: 0, collisions: 0, energy: 0, pathLen: 0, time: 0, active: true }
+        };
+
+        // Obstacles (maze walls) — will be regenerated based on complexity
+        let walls = [];
+
+        // Timer for reset
+        let resetTimer = 0;
+        const RESET_INTERVAL = 6.5; // seconds between auto-resets
+
+        // Global counters
+        let globalCollisions = 0;
+        let lastTimestamp = performance.now();
+        let simTime = 0;
+        let simRunning = true;
+
+        // Generate maze walls based on complexity (1-5)
+        function generateMaze(comp) {
+            const newWalls = [];
+            const wallThickness = 10;
+            // border walls
+            newWalls.push({ x: 0, y: height/2 - 5, w: 20, h: height, type: 'border' }); // left
+            newWalls.push({ x: width - 20, y: height/2 - 5, w: 20, h: height, type: 'border' }); // right
+            // top/bottom borders (partial)
+            newWalls.push({ x: width/2, y: 0, w: width, h: 12, type: 'border' });
+            newWalls.push({ x: width/2, y: height, w: width, h: 12, type: 'border' });
+
+            // internal obstacles based on complexity
+            const baseCount = comp * 2;
+            for (let i = 0; i < baseCount; i++) {
+                const w = 40 + Math.random() * 80;
+                const h = 10 + Math.random() * 20;
+                const x = 100 + Math.random() * (width - 200);
+                const y = 50 + Math.random() * (height - 100);
+                newWalls.push({ x, y, w, h, type: 'obstacle' });
+            }
+            // Add some vertical bars for higher complexity
+            if (comp >= 3) {
+                newWalls.push({ x: width/3, y: height/2, w: 12, h: 120, type: 'obstacle' });
+                newWalls.push({ x: 2*width/3, y: height/2, w: 12, h: 120, type: 'obstacle' });
+            }
+            if (comp >= 4) {
+                newWalls.push({ x: width/4, y: height/4, w: 60, h: 10, type: 'obstacle' });
+                newWalls.push({ x: 3*width/4, y: 3*height/4, w: 60, h: 10, type: 'obstacle' });
+                newWalls.push({ x: width/2, y: height/2, w: 80, h: 12, type: 'obstacle' });
+            }
+            // Always add a central divider for comp 5
+            if (comp >= 5) {
+                newWalls.push({ x: width/2, y: height/4, w: 10, h: 200, type: 'obstacle' });
+            }
+            return newWalls;
+        }
+
+        function resetRound() {
+            teams.mantis.x = 80;
+            teams.mantis.y = height/2;
+            teams.mantis.vx = (Math.random() - 0.5) * 3;
+            teams.mantis.vy = (Math.random() - 0.5) * 2;
+            teams.mantis.collisions = 0;
+            teams.mantis.energy = 0;
+            teams.mantis.pathLen = 0;
+            teams.mantis.time = 0;
+            teams.mantis.active = true;
+
+            teams.wasp.x = width - 80;
+            teams.wasp.y = height/2;
+            teams.wasp.vx = (Math.random() - 0.5) * 3;
+            teams.wasp.vy = (Math.random() - 0.5) * 2;
+            teams.wasp.collisions = 0;
+            teams.wasp.energy = 0;
+            teams.wasp.pathLen = 0;
+            teams.wasp.time = 0;
+            teams.wasp.active = true;
+
+            globalCollisions = 0;
+            // regenerate maze based on complexity
+            walls = generateMaze(complexity);
+            updateSlidersFromState();
+        }
+
+        // Physics step (circle vs walls)
+        function physicsStep(dt) {
+            // Gravity applied
+            const g = gravity * 800;
+            const damping = 1 - friction * 0.1;
+
+            ['mantis', 'wasp'].forEach(key => {
+                const t = teams[key];
+                if (!t.active) return;
+                // apply gravity
+                t.vy += g * dt;
+                // apply friction/damping
+                t.vx *= damping;
+                t.vy *= damping;
+                // limit speed
+                const maxSpeed = 120;
+                const sp = Math.hypot(t.vx, t.vy);
+                if (sp > maxSpeed) {
+                    t.vx = t.vx / sp * maxSpeed;
+                    t.vy = t.vy / sp * maxSpeed;
+                }
+                // update position
+                t.x += t.vx * dt;
+                t.y += t.vy * dt;
+
+                // path length
+                t.pathLen += Math.hypot(t.vx * dt, t.vy * dt);
+
+                // wall collisions (circle-rect)
+                walls.forEach(wall => {
+                    const closestX = Math.max(wall.x - wall.w/2, Math.min(t.x, wall.x + wall.w/2));
+                    const closestY = Math.max(wall.y - wall.h/2, Math.min(t.y, wall.y + wall.h/2));
+                    const dx = t.x - closestX;
+                    const dy = t.y - closestY;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < t.r) {
+                        // collision response
+                        const overlap = t.r - dist;
+                        const nx = dx / (dist || 1);
+                        const ny = dy / (dist || 1);
+                        // push out
+                        t.x += nx * overlap;
+                        t.y += ny * overlap;
+                        // reflect velocity
+                        const vn = t.vx * nx + t.vy * ny;
+                        if (vn < 0) {
+                            t.vx -= (1 + restitution) * vn * nx;
+                            t.vy -= (1 + restitution) * vn * ny;
+                            // count collision
+                            t.collisions++;
+                            globalCollisions++;
+                            // energy transfer: kinetic energy loss
+                            const speed = Math.hypot(t.vx, t.vy);
+                            t.energy = 0.5 * speed * speed;
+                        }
+                    }
+                });
+
+                // Border bounce (just in case)
+                if (t.x - t.r < 20) { t.x = 20 + t.r; t.vx = Math.abs(t.vx) * restitution; t.collisions++; globalCollisions++; }
+                if (t.x + t.r > width - 20) { t.x = width - 20 - t.r; t.vx = -Math.abs(t.vx) * restitution; t.collisions++; globalCollisions++; }
+                if (t.y - t.r < 12) { t.y = 12 + t.r; t.vy = Math.abs(t.vy) * restitution; t.collisions++; globalCollisions++; }
+                if (t.y + t.r > height - 12) { t.y = height - 12 - t.r; t.vy = -Math.abs(t.vy) * restitution; t.collisions++; globalCollisions++; }
+
+                // score: based on path and collisions (inverse)
+                t.score = Math.max(0, Math.floor(t.pathLen * 0.5 + t.collisions * 2));
+                t.time += dt;
+            });
+
+            // Update KPI UI
+            updateKPIs();
+        }
+
+        function updateKPIs() {
+            // scores
+            mantisScoreEl.textContent = Math.floor(teams.mantis.pathLen * 0.8 + teams.mantis.collisions * 3);
+            waspScoreEl.textContent = Math.floor(teams.wasp.pathLen * 0.8 + teams.wasp.collisions * 3);
+            collisionCountEl.textContent = globalCollisions;
+            const totalSpeedM = Math.hypot(teams.mantis.vx, teams.mantis.vy);
+            const totalSpeedW = Math.hypot(teams.wasp.vx, teams.wasp.vy);
+            const avgKE = 0.5 * (totalSpeedM*totalSpeedM + totalSpeedW*totalSpeedW);
+            kineticEnergyEl.innerHTML = avgKE.toFixed(1) + '<span class="kpi-unit">J</span>';
+
+            // table
+            const mv = totalSpeedM.toFixed(2);
+            const wv = totalSpeedW.toFixed(2);
+            mantisVel.textContent = mv;
+            waspVel.textContent = wv;
+            velDelta.textContent = (totalSpeedM - totalSpeedW).toFixed(2);
+
+            const mEff = Math.min(100, Math.max(0, 100 - teams.mantis.collisions * 2)).toFixed(0);
+            const wEff = Math.min(100, Math.max(0, 100 - teams.wasp.collisions * 2)).toFixed(0);
+            mantisEff.textContent = mEff + '%';
+            waspEff.textContent = wEff + '%';
+            effDelta.textContent = (mEff - wEff) + '%';
+
+            mantisCollisions.textContent = teams.mantis.collisions;
+            waspCollisions.textContent = teams.wasp.collisions;
+            collDelta.textContent = (teams.mantis.collisions - teams.wasp.collisions);
+
+            mantisTime.textContent = teams.mantis.time.toFixed(1) + 's';
+            waspTime.textContent = teams.wasp.time.toFixed(1) + 's';
+            timeDelta.textContent = (teams.mantis.time - teams.wasp.time).toFixed(1) + 's';
+
+            mantisEnergy.textContent = teams.mantis.energy.toFixed(2);
+            waspEnergy.textContent = teams.wasp.energy.toFixed(2);
+            energyDelta.textContent = (teams.mantis.energy - teams.wasp.energy).toFixed(2);
+        }
+
+        // Draw everything
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // background grid
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < height; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(width, i);
+                ctx.stroke();
+            }
+
+            // walls
+            walls.forEach(w => {
+                ctx.fillStyle = w.type === 'border' ? '#1e293b' : '#334155';
+                ctx.shadowColor = '#f43f5e';
+                ctx.shadowBlur = w.type === 'border' ? 0 : 6;
+                ctx.fillRect(w.x - w.w/2, w.y - w.h/2, w.w, w.h);
+                ctx.shadowBlur = 0;
+                // subtle border
+                ctx.strokeStyle = '#0b0f17';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(w.x - w.w/2, w.y - w.h/2, w.w, w.h);
+            });
+
+            // teams
+            ['mantis', 'wasp'].forEach(key => {
+                const t = teams[key];
+                ctx.beginPath();
+                ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+                ctx.fillStyle = t.color;
+                ctx.shadowColor = t.color;
+                ctx.shadowBlur = 15;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#05070b';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // label
+                ctx.font = 'bold 12px monospace';
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = '#000';
+                ctx.fillText(key === 'mantis' ? 'M' : 'W', t.x, t.y + 4);
+                ctx.shadowBlur = 0;
+            });
+
+            // central text
+            ctx.font = '14px monospace';
+            ctx.fillStyle = '#475569';
+            ctx.textAlign = 'center';
+            ctx.fillText('MANTIS vs WASP · LIVE', width/2, 30);
+        }
+
+        // Main loop
+        let animationId;
+        function loop(now) {
+            const dt = Math.min(0.03, (now - lastTimestamp) / 1000);
+            lastTimestamp = now;
+
+            if (simRunning) {
+                physicsStep(dt);
+                resetTimer += dt;
+                if (resetTimer > RESET_INTERVAL) {
+                    resetRound();
+                    resetTimer = 0;
+                }
+            }
+
+            draw();
+            animationId = requestAnimationFrame(loop);
+        }
+
+        // Slider listeners
+        gravitySlider.addEventListener('input', function() {
+            gravity = parseFloat(this.value);
+            gravityValue.textContent = gravity.toFixed(2);
+        });
+        frictionSlider.addEventListener('input', function() {
+            friction = parseFloat(this.value);
+            frictionValue.textContent = friction.toFixed(2);
+        });
+        restitutionSlider.addEventListener('input', function() {
+            restitution = parseFloat(this.value);
+            restitutionValue.textContent = restitution.toFixed(2);
+        });
+        complexitySlider.addEventListener('input', function() {
+            complexity = parseInt(this.value);
+            complexityValue.textContent = complexity;
+            walls = generateMaze(complexity);
+        });
+
+        function updateSlidersFromState() {
+            gravitySlider.value = gravity;
+            gravityValue.textContent = gravity.toFixed(2);
+            frictionSlider.value = friction;
+            frictionValue.textContent = friction.toFixed(2);
+            restitutionSlider.value = restitution;
+            restitutionValue.textContent = restitution.toFixed(2);
+            complexitySlider.value = complexity;
+            complexityValue.textContent = complexity;
+            walls = generateMaze(complexity);
+        }
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const preset = this.dataset.preset;
+                switch(preset) {
+                    case 'balanced':
+                        gravity = 1.2; friction = 0.12; restitution = 0.65; complexity = 3;
+                        break;
+                    case 'lowgrav':
+                        gravity = 0.3; friction = 0.08; restitution = 0.75; complexity = 4;
+                        break;
+                    case 'bouncy':
+                        gravity = 1.8; friction = 0.05; restitution = 0.95; complexity = 3;
+                        break;
+                    case 'sticky':
+                        gravity = 2.2; friction = 0.45; restitution = 0.25; complexity = 5;
+                        break;
+                    case 'chaos':
+                        gravity = 2.8; friction = 0.02; restitution = 0.99; complexity = 5;
+                        break;
+                }
+                updateSlidersFromState();
+                resetRound();
+            });
+        });
+
+        // Export CSV
+        document.getElementById('exportCsvBtn').addEventListener('click', function() {
+            const headers = ['team', 'score', 'velocity', 'efficiency', 'collisions', 'time', 'energy'];
+            const rows = [
+                ['MANTIS', Math.floor(teams.mantis.pathLen * 0.8 + teams.mantis.collisions * 3), 
+                 Math.hypot(teams.mantis.vx, teams.mantis.vy).toFixed(2),
+                 Math.min(100, Math.max(0, 100 - teams.mantis.collisions * 2)).toFixed(0) + '%',
+                 teams.mantis.collisions, teams.mantis.time.toFixed(1),
+                 teams.mantis.energy.toFixed(2)],
+                ['WASP', Math.floor(teams.wasp.pathLen * 0.8 + teams.wasp.collisions * 3),
+                 Math.hypot(teams.wasp.vx, teams.wasp.vy).toFixed(2),
+                 Math.min(100, Math.max(0, 100 - teams.wasp.collisions * 2)).toFixed(0) + '%',
+                 teams.wasp.collisions, teams.wasp.time.toFixed(1),
+                 teams.wasp.energy.toFixed(2)]
+            ];
+            let csv = headers.join(',') + '\n';
+            rows.forEach(r => csv += r.join(',') + '\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'kineticzen_telemetry.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Copy scenario link (encodes slider values)
+        document.getElementById('copyLinkBtn').addEventListener('click', function() {
+            const params = new URLSearchParams({
+                g: gravity.toFixed(2),
+                f: friction.toFixed(2),
+                r: restitution.toFixed(2),
+                c: complexity.toString()
+            });
+            const url = window.location.origin + window.location.pathname + '?' + params.toString();
+            navigator.clipboard.writeText(url).then(() => {
+                const fb = document.getElementById('copyFeedback');
+                fb.classList.add('show');
+                setTimeout(() => fb.classList.remove('show'), 2000);
+            }).catch(() => {
+                // fallback
+                prompt('Copy this link:', url);
+            });
+        });
+
+        // Parse URL params on load
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('g')) gravity = Math.min(3.0, Math.max(0.1, parseFloat(params.get('g')) || 1.2));
+            if (params.has('f')) friction = Math.min(0.5, Math.max(0.01, parseFloat(params.get('f')) || 0.12));
+            if (params.has('r')) restitution = Math.min(0.99, Math.max(0.2, parseFloat(params.get('r')) || 0.65));
+            if (params.has('c')) complexity = Math.min(5, Math.max(1, parseInt(params.get('c')) || 3));
+            updateSlidersFromState();
+        }
+
+        // Initialize
+        loadFromURL();
+        resetRound();
+        // Set first preset active
+        document.querySelector('.preset-btn[data-preset="balanced"]').classList.add('active');
+        // Start loop
+        requestAnimationFrame(loop);
+
+        // cleanup (not strictly needed but good)
+        window.addEventListener('beforeunload', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+        });
+    })();
+</script>
+</body>
+</html>
