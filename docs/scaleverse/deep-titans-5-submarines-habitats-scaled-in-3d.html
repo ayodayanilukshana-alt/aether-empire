@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Titans: Submarine Scale Workstation · SCALEVERSE 3D</title>
+  <meta name="description" content="Interactive scale simulator for the five deep titans: Alvin, SEALAB II, Komsomolets, Typhoon, and Belgorod. Compare lengths, export telemetry, and explore deep-sea engineering.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/deep-titans-5-submarines-habitats-scaled-in-3d.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem 1rem;
+    }
+    .app {
+      max-width: 1400px;
+      width: 100%;
+    }
+    /* header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.75rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #f0f9ff, #bae6fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand .badge {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 40px;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.75rem;
+      color: #38bdf8;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .nav-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid #1e293b;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      transition: 0.2s;
+    }
+    .nav-link:hover {
+      background: #1e293b;
+      color: #38bdf8;
+    }
+    /* KPI row */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .kpi-value {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #38bdf8;
+      line-height: 1.2;
+      margin-top: 0.25rem;
+    }
+    .kpi-unit {
+      font-size: 0.8rem;
+      color: #475569;
+      font-family: monospace;
+    }
+    /* main layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+    /* canvas area */
+    .canvas-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .canvas-header h2 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #94a3b8;
+      letter-spacing: 0.3px;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      display: block;
+    }
+    /* controls */
+    .controls-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .control-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+    }
+    .control-group label span:first-child {
+      color: #94a3b8;
+    }
+    .control-group label span:last-child {
+      font-family: monospace;
+      color: #38bdf8;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 4px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #38bdf8;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 8px #38bdf8aa;
+    }
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .preset-btn {
+      background: #111827;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      font-size: 0.75rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: monospace;
+      flex: 1 0 auto;
+    }
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    .preset-btn.active {
+      background: #38bdf8;
+      color: #05070b;
+      border-color: #38bdf8;
+      font-weight: 600;
+    }
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .btn {
+      background: #111827;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.7rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background: #38bdf8;
+      color: #05070b;
+      border: none;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #7dd3fc;
+    }
+    .btn-secondary:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+    }
+    /* table */
+    .table-container {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .table-container h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: #94a3b8;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+      background: #111827;
+      color: #94a3b8;
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #1e293b;
+    }
+    td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid #1e293b;
+      font-family: monospace;
+      color: #cbd5e1;
+    }
+    td:first-child {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .bar-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .bar {
+      height: 6px;
+      background: #38bdf8;
+      border-radius: 4px;
+      opacity: 0.8;
+      min-width: 2px;
+    }
+    /* FAQ */
+    .faq-section {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .faq-section h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: #38bdf8;
+    }
+    details {
+      border-bottom: 1px solid #1e293b;
+      padding: 0.8rem 0;
+    }
+    details:last-child {
+      border-bottom: none;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+      color: #e2e8f0;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::after {
+      content: '+';
+      color: #38bdf8;
+      font-size: 1.2rem;
+      font-family: monospace;
+    }
+    details[open] summary::after {
+      content: '−';
+    }
+    details p {
+      margin-top: 0.6rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    /* video */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      margin-bottom: 1.5rem;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    /* footer */
+    .footer {
+      text-align: center;
+      color: #475569;
+      font-size: 0.75rem;
+      padding: 1rem 0;
+      border-top: 1px solid #1e293b;
+      margin-top: 1rem;
+    }
+    .footer a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <h1>SCALEVERSE 3D</h1>
+      <span class="badge">DEEP TITANS</span>
+    </div>
+    <a href="./index.html" class="nav-link">← Portal</a>
+  </header>
+
+  <!-- KPI Row -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <span class="kpi-label">Total Craft</span>
+      <span class="kpi-value" id="kpiCount">5</span>
+      <span class="kpi-unit">vessels</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Longest</span>
+      <span class="kpi-value" id="kpiLongest">184</span>
+      <span class="kpi-unit">m · Belgorod</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Shortest</span>
+      <span class="kpi-value" id="kpiShortest">7.1</span>
+      <span class="kpi-unit">m · Alvin</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Scale Ratio</span>
+      <span class="kpi-value" id="kpiRatio">25.9×</span>
+      <span class="kpi-unit">longest / shortest</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Mean Length</span>
+      <span class="kpi-value" id="kpiMean">100.2</span>
+      <span class="kpi-unit">meters</span>
+    </div>
+  </div>
+
+  <!-- Main Grid: Canvas + Controls -->
+  <div class="main-grid">
+    <!-- Canvas -->
+    <div class="canvas-card">
+      <div class="canvas-header">
+        <h2>◈ SUBMARINE SCALE SIMULATOR</h2>
+        <span style="font-size:0.7rem; color:#475569; font-family:monospace;" id="canvasZoomLabel">1.0× zoom</span>
+      </div>
+      <canvas id="scaleCanvas" width="900" height="400" style="width:100%; height:auto;"></canvas>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-card">
+      <div class="control-group">
+        <label>
+          <span>Scale Zoom</span>
+          <span id="zoomValue">1.00</span>
+        </label>
+        <input type="range" id="zoomSlider" min="0.5" max="3.0" step="0.01" value="1.00">
+      </div>
+      <div class="control-group">
+        <label>
+          <span>Highlight Vessel</span>
+          <span id="highlightLabel">None</span>
+        </label>
+        <input type="range" id="highlightSlider" min="-1" max="4" step="1" value="-1">
+      </div>
+      <div class="preset-buttons">
+        <button class="preset-btn" data-zoom="1.0" data-highlight="-1">Default</button>
+        <button class="preset-btn" data-zoom="2.5" data-highlight="-1">Zoom In</button>
+        <button class="preset-btn" data-zoom="0.6" data-highlight="-1">Fit All</button>
+        <button class="preset-btn" data-zoom="1.8" data-highlight="4">Belgorod</button>
+        <button class="preset-btn" data-zoom="1.8" data-highlight="0">Alvin</button>
+      </div>
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="exportCsvBtn">⤓ Export CSV Telemetry</button>
+        <button class="btn btn-secondary" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytical Table -->
+  <div class="table-container">
+    <h2>◈ ANALYTICAL BREAKDOWN</h2>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Vessel</th>
+          <th>Length (m)</th>
+          <th>Length (ft)</th>
+          <th>Relative Scale</th>
+          <th>Visual Bar</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- filled by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <h2>◈ FREQUENTLY ASKED QUESTIONS</h2>
+    <details>
+      <summary>How is the scale comparison calculated?</summary>
+      <p>Each vessel's length in meters is plotted proportionally on the canvas. The longest vessel (Belgorod, 184m) sets the reference, and all others are scaled relative to it. The zoom slider adjusts the horizontal rendering scale across all vessels equally.</p>
+    </details>
+    <details>
+      <summary>What is the source of the length data?</summary>
+      <p>Lengths are compiled from public naval engineering records and historical specifications: Alvin (DSV-2) 7.1m, SEALAB II 17m, K-278 Komsomolets 118m, Typhoon-class 175m, and Project 210 Belgorod 184m. Conversions to feet use 1m = 3.28084ft.</p>
+    </details>
+    <details>
+      <summary>Can I export the telemetry data?</summary>
+      <p>Yes. Click "Export CSV Telemetry" to download a CSV containing each vessel's name, length in meters, feet, and relative scale factor. The button generates the file dynamically from the current dataset.</p>
+    </details>
+    <details>
+      <summary>What does the "Copy Scenario Link" button do?</summary>
+      <p>It copies a URL to your clipboard that encodes the current zoom and highlight state, allowing you to share a specific visualization configuration. The link includes query parameters for zoom and highlight index.</p>
+    </details>
+    <details>
+      <summary>Is this simulation based on the video?</summary>
+      <p>This workstation directly models the five vessels highlighted in the YouTube video "Deep Titans: 5 Submarines & Habitats Scaled in 3D". The embedded player above provides the source documentary context.</p>
+    </details>
+  </div>
+
+  <!-- Embedded Video -->
+  <div class="video-wrapper">
+    <iframe src="https://www.youtube.com/embed/iVaGaNH8ONs" title="Deep Titans: 5 Submarines & Habitats Scaled in 3D" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>SCALEVERSE 3D · Deep Titans Edition · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/deep-titans-5-submarines-habitats-scaled-in-3d.html">Canonical</a></p>
+  </footer>
+</div>
+
+<!-- JSON-LD Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Deep Titans Submarine Scale Workstation",
+  "description": "Interactive scale simulator comparing five deep-sea vessels: Alvin (DSV-2), SEALAB II, K-278 Komsomolets, Typhoon-class submarine, and Project 210 Belgorod.",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Interactive canvas scale rendering",
+    "Zoom and highlight controls",
+    "CSV telemetry export",
+    "Scenario link sharing",
+    "YouTube video integration",
+    "Analytical breakdown table"
+  ],
+  "author": {
+    "@type": "Organization",
+    "name": "SCALEVERSE 3D"
+  }
+}
+</script>
+
+<script>
+(function() {
+  // DATA PAYLOAD
+  const vessels = [
+    { name: "Alvin (DSV-2)", meters: 7.1, metric: "7.1 m (23 ft) length" },
+    { name: "SEALAB II", meters: 17, metric: "17 m (57 ft) length" },
+    { name: "K-278 Komsomolets", meters: 118, metric: "118 m (387 ft) length" },
+    { name: "Typhoon-class submarine", meters: 175, metric: "175 m (574 ft) length" },
+    { name: "Project 210 (Belgorod)", meters: 184, metric: "184 m (604 ft) length" }
+  ];
+
+  const MAX_METERS = 184;
+  const canvas = document.getElementById('scaleCanvas');
+  const ctx = canvas.getContext('2d');
+  const zoomSlider = document.getElementById('zoomSlider');
+  const zoomValue = document.getElementById('zoomValue');
+  const highlightSlider = document.getElementById('highlightSlider');
+  const highlightLabel = document.getElementById('highlightLabel');
+  const canvasZoomLabel = document.getElementById('canvasZoomLabel');
+  const presetBtns = document.querySelectorAll('.preset-btn');
+
+  // State
+  let currentZoom = 1.0;
+  let highlightIndex = -1;
+
+  // KPI elements
+  const kpiCount = document.getElementById('kpiCount');
+  const kpiLongest = document.getElementById('kpiLongest');
+  const kpiShortest = document.getElementById('kpiShortest');
+  const kpiRatio = document.getElementById('kpiRatio');
+  const kpiMean = document.getElementById('kpiMean');
+
+  // Table body
+  const tableBody = document.getElementById('tableBody');
+
+  // --- Helper: format number ---
+  function fmt(num, decimals = 1) {
+    return Number(num).toFixed(decimals);
+  }
+
+  // --- Draw Canvas ---
+  function drawCanvas() {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Background subtle grid
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < w; i += 50) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, h);
+      ctx.strokeStyle = '#0f172a';
+      ctx.stroke();
+    }
+    for (let i = 0; i < h; i += 50) {
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(w, i);
+      ctx.strokeStyle = '#0f172a';
+      ctx.stroke();
+    }
+
+    // Layout parameters
+    const leftMargin = 140;
+    const rightMargin = 40;
+    const usableWidth = w - leftMargin - rightMargin;
+    const rowHeight = 60;
+    const startY = 50;
+    const baseScale = usableWidth / MAX_METERS; // pixels per meter at zoom 1
+
+    // Draw vessels
+    vessels.forEach((v, i) => {
+      const y = startY + i * rowHeight;
+      const lengthPx = v.meters * baseScale * currentZoom;
+      const clampedLength = Math.min(lengthPx, usableWidth); // prevent overflow
+
+      const isHighlighted = (highlightIndex === i);
+      const alpha = (highlightIndex === -1 || isHighlighted) ? 1 : 0.35;
+
+      // Vessel label
+      ctx.font = '500 12px "Inter", monospace';
+      ctx.fillStyle = isHighlighted ? '#38bdf8' : '#94a3b8';
+      ctx.globalAlpha = alpha;
+      ctx.textAlign = 'right';
+      ctx.fillText(v.name, leftMargin - 12, y + 5);
+      ctx.textAlign = 'left';
+
+      // Draw hull (rounded rectangle approximation)
+      const hullX = leftMargin;
+      const hullY = y - 10;
+      const hullH = 20;
+      const radius = 8;
+
+      ctx.beginPath();
+      ctx.moveTo(hullX + radius, hullY);
+      ctx.lineTo(hullX + clampedLength - radius, hullY);
+      ctx.quadraticCurveTo(hullX + clampedLength, hullY, hullX + clampedLength, hullY + radius);
+      ctx.lineTo(hullX + clampedLength, hullY + hullH - radius);
+      ctx.quadraticCurveTo(hullX + clampedLength, hullY + hullH, hullX + clampedLength - radius, hullY + hullH);
+      ctx.lineTo(hullX + radius, hullY + hullH);
+      ctx.quadraticCurveTo(hullX, hullY + hullH, hullX, hullY + hullH - radius);
+      ctx.lineTo(hullX, hullY + radius);
+      ctx.quadraticCurveTo(hullX, hullY, hullX + radius, hullY);
+      ctx.closePath();
+
+      // Fill
+      if (isHighlighted) {
+        ctx.fillStyle = '#38bdf8';
+      } else {
+        ctx.fillStyle = '#1e3a5f';
+      }
+      ctx.globalAlpha = alpha * 0.9;
+      ctx.fill();
+
+      // Stroke
+      ctx.strokeStyle = isHighlighted ? '#7dd3fc' : '#38bdf8';
+      ctx.lineWidth = isHighlighted ? 2 : 1;
+      ctx.globalAlpha = alpha;
+      ctx.stroke();
+
+      // Length value inside
+      ctx.font = '600 11px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#e2e8f0';
+      ctx.globalAlpha = alpha;
+      ctx.textAlign = 'center';
+      const labelX = hullX + clampedLength / 2;
+      if (clampedLength > 40) {
+        ctx.fillText(fmt(v.meters, 1) + ' m', labelX, hullY + 14);
+      }
+      ctx.textAlign = 'left';
+
+      // Draw tick at end
+      ctx.beginPath();
+      ctx.strokeStyle = '#334155';
+      ctx.globalAlpha = 0.4;
+      ctx.moveTo(hullX + clampedLength, hullY - 6);
+      ctx.lineTo(hullX + clampedLength, hullY + hullH + 6);
+      ctx.stroke();
+    });
+
+    // Reset alpha
+    ctx.globalAlpha = 1.0;
+
+    // Scale reference line at bottom
+    const refY = startY + vessels.length * rowHeight + 10;
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(leftMargin, refY);
+    ctx.lineTo(leftMargin + baseScale * currentZoom * 50, refY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(leftMargin, refY - 4);
+    ctx.lineTo(leftMargin, refY + 4);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(leftMargin + baseScale * currentZoom * 50, refY - 4);
+    ctx.lineTo(leftMargin + baseScale * currentZoom * 50, refY + 4);
+    ctx.stroke();
+    ctx.font = '10px monospace';
+    ctx.fillStyle = '#475569';
+    ctx.fillText('50m', leftMargin + baseScale * currentZoom * 50 / 2 - 10, refY + 16);
+
+    // Update zoom label
+    canvasZoomLabel.textContent = currentZoom.toFixed(2) + '× zoom';
+  }
+
+  // --- Update Table ---
+  function updateTable() {
+    tableBody.innerHTML = '';
+    const maxBarWidth = 120;
+    vessels.forEach((v, i) => {
+      const tr = document.createElement('tr');
+      const barWidth = (v.meters / MAX_METERS) * maxBarWidth;
+      tr.innerHTML = `
+        <td>${v.name}</td>
+        <td>${fmt(v.meters, 1)}</td>
+        <td>${fmt(v.meters * 3.28084, 1)}</td>
+        <td>${(v.meters / vessels[0].meters).toFixed(1)}×</td>
+        <td><div class="bar-cell"><div class="bar" style="width:${barWidth}px;"></div><span style="font-size:0.7rem;color:#64748b;">${fmt(v.meters, 1)} m</span></div></td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  // --- Update KPIs ---
+  function updateKPIs() {
+    const lengths = vessels.map(v => v.meters);
+    const longest = Math.max(...lengths);
+    const shortest = Math.min(...lengths);
+    const mean = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+    const ratio = longest / shortest;
+
+    kpiCount.textContent = vessels.length;
+    kpiLongest.textContent = fmt(longest, 0);
+    kpiShortest.textContent = fmt(shortest, 1);
+    kpiRatio.textContent = ratio.toFixed(1) + '×';
+    kpiMean.textContent = fmt(mean, 1);
+  }
+
+  // --- Update highlight label ---
+  function updateHighlightLabel() {
+    if (highlightIndex === -1) {
+      highlightLabel.textContent = 'None';
+    } else {
+      highlightLabel.textContent = vessels[highlightIndex].name;
+    }
+  }
+
+  // --- Sync controls ---
+  function syncControls() {
+    zoomSlider.value = currentZoom;
+    zoomValue.textContent = currentZoom.toFixed(2);
+    highlightSlider.value = highlightIndex;
+    updateHighlightLabel();
+    canvasZoomLabel.textContent = currentZoom.toFixed(2) + '× zoom';
+  }
+
+  // --- Update all ---
+  function renderAll() {
+    drawCanvas();
+    syncControls();
+  }
+
+  // --- Event Listeners ---
+  zoomSlider.addEventListener('input', function() {
+    currentZoom = parseFloat(this.value);
+    zoomValue.textContent = currentZoom.toFixed(2);
+    canvasZoomLabel.textContent = currentZoom.toFixed(2) + '× zoom';
+    drawCanvas();
+    // Deactivate preset active states
+    presetBtns.forEach(btn => btn.classList.remove('active'));
+  });
+
+  highlightSlider.addEventListener('input', function() {
+    highlightIndex = parseInt(this.value, 10);
+    updateHighlightLabel();
+    drawCanvas();
+    presetBtns.forEach(btn => btn.classList.remove('active'));
+  });
+
+  presetBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const zoom = parseFloat(this.dataset.zoom);
+      const hl = parseInt(this.dataset.highlight, 10);
+      currentZoom = zoom;
+      highlightIndex = hl;
+      syncControls();
+      drawCanvas();
+      presetBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // --- CSV Export ---
+  document.getElementById('exportCsvBtn').addEventListener('click', function() {
+    let csv = 'Vessel,Length_m,Length_ft,Relative_Scale\n';
+    vessels.forEach(v => {
+      const relScale = (v.meters / vessels[0].meters).toFixed(2);
+      csv += `"${v.name}",${v.meters},${(v.meters * 3.28084).toFixed(2)},${relScale}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'deep_titans_telemetry.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  });
+
+  // --- Copy Scenario Link ---
+  document.getElementById('copyLinkBtn').addEventListener('click', function() {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams({
+      zoom: currentZoom.toFixed(2),
+      highlight: highlightIndex
+    });
+    const url = baseUrl + '?' + params.toString();
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = this;
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Link Copied!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 1500);
+    }).catch(() => {
+      // Fallback
+      prompt('Copy this link:', url);
+    });
+  });
+
+  // --- Init ---
+  function init() {
+    // Read URL params if present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('zoom')) {
+      const z = parseFloat(urlParams.get('zoom'));
+      if (!isNaN(z) && z >= 0.5 && z <= 3.0) {
+        currentZoom = z;
+      }
+    }
+    if (urlParams.has('highlight')) {
+      const h = parseInt(urlParams.get('highlight'), 10);
+      if (!isNaN(h) && h >= -1 && h <= 4) {
+        highlightIndex = h;
+      }
+    }
+    syncControls();
+    updateTable();
+    updateKPIs();
+    drawCanvas();
+  }
+
+  init();
+
+  // Handle canvas resize (for responsiveness)
+  function fitCanvas() {
+    const containerWidth = canvas.parentElement.clientWidth;
+    if (containerWidth) {
+      const aspect = canvas.height / canvas.width;
+      canvas.style.height = (containerWidth * aspect) + 'px';
+    }
+  }
+  window.addEventListener('resize', () => {
+    fitCanvas();
+    drawCanvas();
+  });
+  // Initial fit
+  setTimeout(fitCanvas, 50);
+})();
+</script>
+</body>
+</html>
