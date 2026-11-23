@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPITALGRID · Deep Space Human Body Telemetry</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
+    }
+
+    .mono {
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* header / brand */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #10b981;
+      border-left: 3px solid #10b981;
+      padding-left: 0.85rem;
+    }
+
+    .brand small {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: #64748b;
+      letter-spacing: 0.1em;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .portal-link {
+      color: #10b981;
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: 1px solid #1e293b;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      background: #0b0f17;
+      transition: all 0.2s;
+    }
+
+    .portal-link:hover {
+      border-color: #10b981;
+      background: #0f172a;
+    }
+
+    /* cards & grids */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 1.75rem 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 1px;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1rem 0.9rem;
+      text-align: center;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 0.4rem;
+    }
+
+    .kpi-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #10b981;
+      font-family: 'SF Mono', monospace;
+      line-height: 1.2;
+    }
+
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: #475569;
+      margin-top: 0.25rem;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #94a3b8;
+      padding: 0.55rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'SF Mono', monospace;
+    }
+
+    .preset-btn:hover {
+      border-color: #10b981;
+      color: #e2e8f0;
+      background: #1e293b;
+    }
+
+    .preset-btn.active {
+      border-color: #10b981;
+      background: #064e3b;
+      color: #d1fae5;
+    }
+
+    .slider-block {
+      margin-bottom: 1.5rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      margin-bottom: 0.4rem;
+    }
+
+    .slider-value {
+      color: #10b981;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #05070b;
+      cursor: pointer;
+      box-shadow: 0 0 10px #10b98150;
+    }
+
+    .btn {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.65rem 1.6rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #10b981;
+      border-color: #10b981;
+      color: #05070b;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #34d399;
+      border-color: #34d399;
+    }
+
+    .btn:hover {
+      border-color: #10b981;
+      background: #1e293b;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+      margin-top: 1.5rem;
+    }
+
+    .canvas-container {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 0.75rem;
+      margin: 1.5rem 0 1rem 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: #05070b;
+    }
+
+    .telemetry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+    }
+
+    .telemetry-table th {
+      text-align: left;
+      padding: 0.65rem 0.5rem;
+      color: #94a3b8;
+      font-weight: 500;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .telemetry-table td {
+      padding: 0.7rem 0.5rem;
+      border-bottom: 1px solid #1e293b30;
+      color: #cbd5e1;
+    }
+
+    .telemetry-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      background: #1e293b;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-family: monospace;
+      color: #10b981;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 0;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      padding-right: 1.5rem;
+      display: block;
+    }
+
+    .youtube-wrapper {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 0.5rem;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .youtube-wrapper iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: none;
+      border-radius: 14px;
+    }
+
+    .footnote {
+      font-size: 0.7rem;
+      color: #475569;
+      text-align: center;
+      margin-top: 2.5rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+    }
+
+    .link {
+      color: #10b981;
+      text-decoration: none;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- header -->
+  <div class="brand-bar">
+    <div class="brand">CAPITALGRID <small>DEEP SPACE TELEMETRY</small></div>
+    <a href="./index.html" class="portal-link">← Portal</a>
+  </div>
+
+  <!-- MAIN TITLE + YOUTUBE EMBED -->
+  <div class="card" style="padding: 1.5rem 1.75rem;">
+    <h2 style="margin-bottom: 1rem;">Your Body in Deep Space: 1 Minute to 30 Days</h2>
+    <div class="youtube-wrapper">
+      <iframe src="https://www.youtube.com/embed/v728UJmyMi0" title="Your Body in Deep Space" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- CONTROL & KPI + CANVAS -->
+  <div class="grid-2">
+    <!-- LEFT: Controls, KPIs, presets, buttons -->
+    <div>
+      <div class="card" style="margin-bottom: 0;">
+        <h2>Mission Timeline Control</h2>
+
+        <!-- KPI ROW -->
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Elapsed</div><div class="kpi-value" id="kpiT">0</div><div class="kpi-sub">seconds</div></div>
+          <div class="kpi"><div class="kpi-label">Phase</div><div class="kpi-value" id="kpiPhase" style="font-size:1rem;">—</div><div class="kpi-sub">current</div></div>
+          <div class="kpi"><div class="kpi-label">Survival</div><div class="kpi-value" id="kpiSurv" style="font-size:1rem;">—</div><div class="kpi-sub">probability</div></div>
+          <div class="kpi"><div class="kpi-label">Core Temp</div><div class="kpi-value" id="kpiTemp">37.0</div><div class="kpi-sub">°C</div></div>
+        </div>
+
+        <!-- PRESET BUTTONS -->
+        <div class="preset-row">
+          <button class="preset-btn" data-sec="15">15 sec</button>
+          <button class="preset-btn" data-sec="60">1 min</button>
+          <button class="preset-btn" data-sec="86400">24 h</button>
+          <button class="preset-btn" data-sec="604800">7 d</button>
+          <button class="preset-btn" data-sec="2592000">30 d</button>
+        </div>
+
+        <!-- SLIDER -->
+        <div class="slider-block">
+          <div class="slider-header">
+            <span>Exposure duration (log scale)</span>
+            <span class="slider-value" id="sliderVal">0 s</span>
+          </div>
+          <input type="range" id="timeSlider" min="0" max="7.1" step="0.01" value="0">
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="btn-group">
+          <button class="btn btn-primary" id="exportCsvBtn">Export CSV Telemetry</button>
+          <button class="btn" id="copyLinkBtn">Copy Scenario Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CANVAS VISUALIZATION -->
+    <div>
+      <div class="card" style="margin-bottom: 0;">
+        <h2>Physiological Degradation Model</h2>
+        <div class="canvas-container">
+          <canvas id="bodyCanvas" width="600" height="340"></canvas>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #475569; padding: 0 0.25rem;">
+          <span>0s</span>
+          <span>15s</span>
+          <span>1m</span>
+          <span>24h</span>
+          <span>7d</span>
+          <span>30d</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICAL BREAKDOWN TABLE -->
+  <div class="card">
+    <h2>Analytical Breakdown</h2>
+    <table class="telemetry-table" id="breakdownTable">
+      <thead>
+        <tr><th>STAGE</th><th>TIME</th><th>PHENOMENON</th><th>BIOMETRIC</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>15 seconds</td><td>Vacuum Onslaught</td><td><span class="badge">rapid decompression</span></td></tr>
+        <tr><td>2</td><td>1 minute</td><td>Boiling Blood</td><td><span class="badge">ebullism</span></td></tr>
+        <tr><td>3</td><td>24 hours</td><td>Frozen Desiccation</td><td><span class="badge">sublimation</span></td></tr>
+        <tr><td>4</td><td>7 days</td><td>Orbital Decay</td><td><span class="badge">thermal cycling</span></td></tr>
+        <tr><td>5</td><td>30 days</td><td>Fiery Re-Entry</td><td><span class="badge">ablation</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ SECTION -->
+  <div class="card">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-q">What happens to the human body in the first 15 seconds of vacuum exposure?</div>
+      <div class="faq-a">Depressurization causes rapid swelling, ebullism (boiling of bodily fluids), and hypoxia. Consciousness is lost within ~15 seconds.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Why is "boiling blood" used to describe the 1‑minute mark?</div>
+      <div class="faq-a">At near‑zero pressure, the boiling point of water drops below body temperature. Blood and saliva literally vaporize, causing massive tissue expansion.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What does "frozen desiccation" at 24 hours mean?</div>
+      <div class="faq-a">In deep space, the body loses heat via radiation and water sublimates directly from ice to vapor, leaving a desiccated, mummified remains.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How does orbital decay lead to re‑entry after 7 days?</div>
+      <div class="faq-a">Without propulsion, a body in low Earth orbit experiences drag and its altitude decreases until it re‑enters the atmosphere.</div>
+    </div>
+  </div>
+
+  <!-- JSON-LD SCHEMA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "CAPITALGRID Deep Space Human Body Telemetry",
+    "description": "An interactive simulation of the physiological degradation of the human body in the vacuum of deep space, from 15 seconds to 30 days.",
+    "applicationCategory": "Simulation",
+    "operatingSystem": "Web",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/your-body-in-deep-space-1-minute-to-30-days.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- footer -->
+  <div class="footnote">
+    <span>CAPITALGRID · DEEP SPACE TELEMETRY · <a href="./index.html" class="link">Portal</a></span>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ----- DATA (exact items from payload) -----
+    const stages = [
+      { name: "15 Seconds: The Vacuum Onslaught", seconds: 15, phenomenon: "Rapid decompression", biometric: "ebullism onset" },
+      { name: "1 Minute: Boiling Blood", seconds: 60, phenomenon: "Ebullism / vaporization", biometric: "hypoxia" },
+      { name: "24 Hours: Frozen Desiccation", seconds: 86400, phenomenon: "Sublimation / cooling", biometric: "desiccation" },
+      { name: "7 Days: Orbital Decay", seconds: 604800, phenomenon: "Thermal cycling / decay", biometric: "structural stress" },
+      { name: "30 Days: Fiery Re-Entry", seconds: 2592000, phenomenon: "Ablation / re-entry", biometric: "total loss" }
+    ];
+
+    // ----- DOM refs -----
+    const canvas = document.getElementById('bodyCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('timeSlider');
+    const sliderVal = document.getElementById('sliderVal');
+    const kpiT = document.getElementById('kpiT');
+    const kpiPhase = document.getElementById('kpiPhase');
+    const kpiSurv = document.getElementById('kpiSurv');
+    const kpiTemp = document.getElementById('kpiTemp');
+    const exportBtn = document.getElementById('exportCsvBtn');
+    const copyBtn = document.getElementById('copyLinkBtn');
+
+    // ----- state -----
+    let currentSeconds = 0; // real seconds
+
+    // ----- helper: map slider (log10) to seconds -----
+    function sliderToSeconds(val) {
+      // slider range 0 to 7.1 => 1 to ~12.5 million seconds
+      const log = parseFloat(val);
+      return Math.pow(10, log);
+    }
+
+    // ----- helper: seconds to human readable -----
+    function formatSeconds(sec) {
+      if (sec < 1) return sec.toFixed(2) + ' s';
+      if (sec < 60) return sec.toFixed(1) + ' s';
+      if (sec < 3600) return (sec / 60).toFixed(1) + ' min';
+      if (sec < 86400) return (sec / 3600).toFixed(1) + ' h';
+      return (sec / 86400).toFixed(1) + ' d';
+    }
+
+    // ----- determine phase from seconds -----
+    function getPhase(sec) {
+      if (sec <= 15) return { label: 'Vacuum Onslaught', surv: '>90%', temp: 37.0 };
+      if (sec <= 60) return { label: 'Boiling Blood', surv: '~40%', temp: 36.4 };
+      if (sec <= 86400) return { label: 'Frozen Desiccation', surv: '0%', temp: -120 };
+      if (sec <= 604800) return { label: 'Orbital Decay', surv: '0%', temp: -180 };
+      return { label: 'Fiery Re-Entry', surv: '0%', temp: 1200 };
+    }
+
+    // ----- update UI from currentSeconds -----
+    function updateUI() {
+      // slider value must reflect log10 of seconds (clamped)
+      let logVal = Math.log10(Math.max(currentSeconds, 0.01));
+      slider.value = Math.min(7.1, Math.max(0, logVal));
+      sliderVal.textContent = formatSeconds(currentSeconds);
+
+      kpiT.textContent = currentSeconds < 10 ? currentSeconds.toFixed(1) : Math.round(currentSeconds);
+      const phase = getPhase(currentSeconds);
+      kpiPhase.textContent = phase.label;
+      kpiSurv.textContent = phase.surv;
+      kpiTemp.textContent = phase.temp.toFixed(1);
+
+      // highlight preset buttons
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        const sec = parseFloat(btn.dataset.sec);
+        btn.classList.toggle('active', Math.abs(currentSeconds - sec) / Math.max(sec, 1) < 0.05);
+      });
+
+      drawCanvas();
+    }
+
+    // ----- canvas rendering (sleek dark institutional) -----
+    function drawCanvas() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      // background is already dark but we set it
+      ctx.fillStyle = '#05070b';
+      ctx.fillRect(0, 0, w, h);
+
+      // grid lines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 6; i++) {
+        const x = (i / 6) * w;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+      for (let i = 0; i <= 4; i++) {
+        const y = (i / 4) * h;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Draw degradation curve (simulated)
+      const points = [];
+      const minLog = 0; // 1 sec
+      const maxLog = 7.1; // ~12.5M sec
+      const steps = 80;
+      for (let i = 0; i <= steps; i++) {
+        const logSec = minLog + (i / steps) * (maxLog - minLog);
+        const sec = Math.pow(10, logSec);
+        // degradation metric: 1.0 at 0s, 0.0 at 30days
+        let deg = 0;
+        if (sec <= 15) deg = 1 - (sec / 15) * 0.25;
+        else if (sec <= 60) deg = 0.75 - ((sec - 15) / 45) * 0.35;
+        else if (sec <= 86400) deg = 0.4 - ((sec - 60) / (86400 - 60)) * 0.3;
+        else if (sec <= 604800) deg = 0.1 - ((sec - 86400) / (604800 - 86400)) * 0.08;
+        else deg = 0.02 - ((sec - 604800) / (2592000 - 604800)) * 0.02;
+        deg = Math.max(0, Math.min(1, deg));
+
+        const x = ((logSec - minLog) / (maxLog - minLog)) * w;
+        const y = h - (deg * (h - 40)) - 20;
+        points.push({ x, y });
+      }
+
+      // fill under curve
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, h);
+      points.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.lineTo(points[points.length - 1].x, h);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+      ctx.fill();
+
+      // draw curve
+      ctx.beginPath();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2.5;
+      points.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.stroke();
+
+      // draw current marker
+      let logCurrent = Math.log10(Math.max(currentSeconds, 0.1));
+      logCurrent = Math.min(maxLog, Math.max(minLog, logCurrent));
+      const xCur = ((logCurrent - minLog) / (maxLog - minLog)) * w;
+      // find y from interpolation (simplified use deg function)
+      let degCur = 0;
+      if (currentSeconds <= 15) degCur = 1 - (currentSeconds / 15) * 0.25;
+      else if (currentSeconds <= 60) degCur = 0.75 - ((currentSeconds - 15) / 45) * 0.35;
+      else if (currentSeconds <= 86400) degCur = 0.4 - ((currentSeconds - 60) / (86400 - 60)) * 0.3;
+      else if (currentSeconds <= 604800) degCur = 0.1 - ((currentSeconds - 86400) / (604800 - 86400)) * 0.08;
+      else degCur = 0.02 - ((currentSeconds - 604800) / (2592000 - 604800)) * 0.02;
+      degCur = Math.max(0, Math.min(1, degCur));
+      const yCur = h - (degCur * (h - 40)) - 20;
+
+      ctx.beginPath();
+      ctx.arc(xCur, yCur, 6, 0, 2 * Math.PI);
+      ctx.fillStyle = '#10b981';
+      ctx.shadowColor = '#10b981';
+      ctx.shadowBlur = 15;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // labels
+      ctx.fillStyle = '#64748b';
+      ctx.font = '11px "SF Mono", monospace';
+      ctx.fillText('DEGRADATION', 10, 20);
+      ctx.fillStyle = '#10b981';
+      ctx.fillText((degCur * 100).toFixed(0) + '%', 10, 38);
+    }
+
+    // ----- event: slider input -----
+    slider.addEventListener('input', (e) => {
+      const logVal = parseFloat(e.target.value);
+      const sec = Math.pow(10, logVal);
+      currentSeconds = sec;
+      updateUI();
+    });
+
+    // ----- event: preset buttons -----
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sec = parseFloat(btn.dataset.sec);
+        currentSeconds = sec;
+        updateUI();
+      });
+    });
+
+    // ----- Export CSV Telemetry -----
+    exportBtn.addEventListener('click', () => {
+      const headers = ['Stage', 'Nominal time (s)', 'Phenomenon', 'Biometric'];
+      const rows = stages.map(s => [s.name, s.seconds, s.phenomenon, s.biometric]);
+      // add current telemetry as extra row
+      const phase = getPhase(currentSeconds);
+      rows.push(['CURRENT', currentSeconds, phase.label, 'survival ' + phase.surv]);
+
+      let csv = headers.join(',') + '\n';
+      rows.forEach(row => {
+        csv += row.map(cell => {
+          const str = String(cell);
+          return str.includes(',') ? `"${str}"` : str;
+        }).join(',') + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'capitalgrid_deep_space_telemetry.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // ----- Copy Scenario Link -----
+    copyBtn.addEventListener('click', () => {
+      const baseUrl = window.location.href.split('?')[0];
+      const scenarioUrl = baseUrl + '?t=' + currentSeconds;
+      navigator.clipboard.writeText(scenarioUrl).then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = originalText; }, 1800);
+      }).catch(() => {
+        prompt('Copy this link:', scenarioUrl);
+      });
+    });
+
+    // ----- init from URL param -----
+    function initFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const t = params.get('t');
+      if (t && !isNaN(parseFloat(t)) && parseFloat(t) > 0) {
+        currentSeconds = parseFloat(t);
+      } else {
+        currentSeconds = 15; // default to 15 seconds
+      }
+      updateUI();
+    }
+
+    // ----- resize canvas for crispness (optional but retain dimensions) -----
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const width = container.clientWidth - 24; // account for padding
+      if (width > 0) {
+        canvas.width = Math.min(700, Math.floor(width));
+        canvas.height = 340;
+        drawCanvas();
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+    });
+
+    // ----- start -----
+    initFromURL();
+    resizeCanvas();
+
+    // draw a first time
+    drawCanvas();
+
+  })();
+</script>
+</body>
+</html>
