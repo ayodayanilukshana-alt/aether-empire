@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Deepest Holes · Depth Workstation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background-color: #05070b;
+            color: #e5e9f0;
+            min-height: 100vh;
+            padding: 24px 32px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-wrapper {
+            max-width: 1480px;
+            width: 100%;
+        }
+
+        /* Typography & Colors */
+        h1, h2, h3 {
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .accent {
+            color: #38bdf8;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+            letter-spacing: -0.01em;
+        }
+        .small-mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #9aa7b9;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        a:hover {
+            opacity: 0.8;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .brand .portal {
+            font-size: 0.9rem;
+            color: #9aa7b9;
+            border-left: 1px solid #1e293b;
+            padding-left: 12px;
+            margin-left: 8px;
+        }
+        .brand .portal a {
+            font-weight: 500;
+        }
+
+        /* Cards & Layout */
+        .card {
+            background-color: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 22px 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .stat-item {
+            background-color: #070b11;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 1.9rem;
+            font-weight: 500;
+            color: #f1f5f9;
+            line-height: 1.2;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .stat-unit {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+
+        /* Slider & Controls */
+        .slider-container {
+            margin: 26px 0 18px;
+        }
+        .slider-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .slider-label-row span:first-child {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .slider-label-row span:last-child {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 10px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+        }
+
+        /* Buttons */
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 16px 0 20px;
+        }
+        .btn {
+            background-color: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 40px;
+            padding: 10px 18px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+            background-color: #111827;
+        }
+        .btn-primary {
+            background-color: #38bdf8;
+            color: #05070b;
+            border: 1px solid #38bdf8;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #7dd3fc;
+            border-color: #7dd3fc;
+            color: #05070b;
+        }
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-top: 12px;
+        }
+        .btn-icon {
+            background: transparent;
+            border: 1px solid #1e293b;
+            padding: 8px 14px;
+            border-radius: 30px;
+        }
+
+        /* Canvas */
+        .canvas-wrapper {
+            background-color: #070b11;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: transparent;
+            border-radius: 12px;
+            cursor: crosshair;
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 12px 10px;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid #1e293b;
+        }
+        td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #1a1f2b;
+            color: #cbd5e1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        td:first-child {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+        .highlight-row {
+            background-color: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid #38bdf8;
+        }
+
+        /* FAQ */
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 12px;
+        }
+        .faq-q {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #e2e8f0;
+        }
+        .faq-a {
+            font-size: 0.9rem;
+            color: #9aa7b9;
+            line-height: 1.5;
+        }
+
+        /* Video & misc */
+        .video-embed {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .video-embed iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .footer-note {
+            margin-top: 32px;
+            font-size: 0.8rem;
+            color: #475569;
+            text-align: center;
+            border-top: 1px solid #1e293b;
+            padding-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            body { padding: 16px; }
+            h1 { font-size: 1.6rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .btn { font-size: 0.75rem; padding: 8px 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Header -->
+        <div class="header">
+            <div class="brand">
+                <h1>SCALEVERSE <span class="accent">3D</span></h1>
+                <div class="portal">Portal <a href="./index.html">← index</a></div>
+            </div>
+            <div class="small-mono" style="color: #64748b;">deepest-holes · 5-stage scale shock</div>
+        </div>
+
+        <!-- Main content: canvas + controls -->
+        <div class="grid-2col">
+            <!-- Left: Canvas + Slider -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h2 style="font-size: 1.2rem; font-weight: 500; color: #e2e8f0;">Depth Profile Visualizer</h2>
+                    <span class="small-mono" style="color: #38bdf8;">SCALE: 1:12,262 m</span>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="depthCanvas" width="800" height="420" style="width:100%; height:auto;"></canvas>
+                </div>
+
+                <!-- Slider -->
+                <div class="slider-container">
+                    <div class="slider-label-row">
+                        <span>Depth probe (meters)</span>
+                        <span id="depthValueDisplay">0 m</span>
+                    </div>
+                    <input type="range" id="depthSlider" min="0" max="12262" value="0" step="10">
+                </div>
+
+                <!-- Preset buttons -->
+                <div class="preset-buttons">
+                    <button class="btn" data-depth="390">Woodingdean Well · 390 m</button>
+                    <button class="btn" data-depth="3000">Kidd Mine · 3.0 km</button>
+                    <button class="btn" data-depth="3600">Mponeng Mine · 3.6 km</button>
+                    <button class="btn" data-depth="3900">TauTona Mine · 3.9 km</button>
+                    <button class="btn" data-depth="12262">Kola Superdeep · 12.26 km</button>
+                </div>
+
+                <!-- Buttons row -->
+                <div class="btn-row">
+                    <button id="exportCsvBtn" class="btn btn-primary">⬇ Export CSV Telemetry</button>
+                    <button id="copyLinkBtn" class="btn btn-icon">🔗 Copy Scenario Link</button>
+                </div>
+            </div>
+
+            <!-- Right: KPI and telemetry -->
+            <div class="card">
+                <h2 style="font-size: 1.2rem; font-weight: 500; color: #e2e8f0; margin-bottom: 12px;">Telemetry · Live</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Current Depth</div>
+                        <div class="stat-value mono" id="kpiDepth">0<span class="stat-unit">m</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Relative to Kola</div>
+                        <div class="stat-value mono" id="kpiRelative">0<span class="stat-unit">%</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Deepest Match</div>
+                        <div class="stat-value mono" id="kpiMatch" style="font-size: 1.2rem;">—</div>
+                    </div>
+                </div>
+
+                <!-- Video embed -->
+                <div style="margin-top: 24px;">
+                    <div class="small-mono" style="margin-bottom: 8px; color:#64748b;">reference · 5-stage scale shock</div>
+                    <div class="video-embed">
+                        <iframe src="https://www.youtube.com/embed/PAr9qCSsmoY" title="Deepest Holes Ever Dug: 5-Stage 3D Scale Shock" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytical Breakdown Table -->
+        <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 1.2rem; font-weight: 500;">Analytical Breakdown · Human-Made Depths</h2>
+                <span class="small-mono" style="color: #38bdf8;">meters · km</span>
+            </div>
+            <div class="table-responsive">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Structure</th>
+                            <th>Depth (m)</th>
+                            <th>Depth (km)</th>
+                            <th>Ratio vs Kola</th>
+                            <th>Stage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- JS populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h2 style="font-size: 1.2rem; font-weight: 500; margin-bottom: 8px;">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-q">How deep is the Kola Superdeep Borehole?</div>
+                    <div class="faq-a">The Kola Superdeep Borehole reaches 12,262 meters (12.26 km) — the deepest human-made hole on Earth.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">What is the Woodingdean Well?</div>
+                    <div class="faq-a">A hand-dug well in Brighton, UK, reaching 390 meters (1,280 ft). It is the deepest hand-dug well in the world.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Which is deeper: Mponeng or TauTona?</div>
+                    <div class="faq-a">TauTona Mine is slightly deeper at 3.9 km (3,900 m) compared to Mponeng's 3.6 km (3,600 m).</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">What is the Kidd Mine depth?</div>
+                    <div class="faq-a">The Kidd Mine in Canada reaches approximately 3,000 meters (3.0 km) below the surface.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-note">
+            SCALEVERSE 3D · Depth Workstation · Data from video "Deepest Holes Ever Dug: 5-Stage 3D Scale Shock"<br>
+            <span class="mono">canonical: https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/deepest-holes-ever-dug-5-stage-3d-scale-shock.html</span>
+        </div>
+    </div>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SCALEVERSE 3D - Deepest Holes Depth Workstation",
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/deepest-holes-ever-dug-5-stage-3d-scale-shock.html",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "description": "Interactive depth comparison of the deepest human-made holes, including Kola Superdeep Borehole, with canvas visualization and telemetry.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "creator": { "@type": "Organization", "name": "SCALEVERSE 3D" }
+    }
+    </script>
+
+    <script>
+        (function(){
+            // ---------- DATA ----------
+            const DATA = [
+                { name: "Woodingdean Well", meters: 390, metric: "390 m deep", stage: "1" },
+                { name: "Kidd Mine", meters: 3000, metric: "3.0 km deep", stage: "2" },
+                { name: "Mponeng Mine", meters: 3600, metric: "3.6 km deep", stage: "3" },
+                { name: "TauTona Mine", meters: 3900, metric: "3.9 km deep", stage: "4" },
+                { name: "Kola Superdeep Borehole", meters: 12262, metric: "12.26 km deep", stage: "5" }
+            ];
+            const MAX_DEPTH = 12262;
+
+            // ---------- DOM refs ----------
+            const canvas = document.getElementById('depthCanvas');
+            const ctx = canvas.getContext('2d');
+            const slider = document.getElementById('depthSlider');
+            const depthDisplay = document.getElementById('depthValueDisplay');
+            const kpiDepth = document.getElementById('kpiDepth');
+            const kpiRelative = document.getElementById('kpiRelative');
+            const kpiMatch = document.getElementById('kpiMatch');
+            const tableBody = document.getElementById('tableBody');
+
+            // ---------- State ----------
+            let currentDepth = 0;
+
+            // ---------- Render table ----------
+            function renderTable() {
+                let html = '';
+                DATA.forEach((item, idx) => {
+                    const ratio = (item.meters / MAX_DEPTH * 100).toFixed(1);
+                    const isHighlighted = Math.abs(currentDepth - item.meters) < 50;
+                    html += `<tr class="${isHighlighted ? 'highlight-row' : ''}">
+                        <td>${item.name}</td>
+                        <td>${item.meters.toLocaleString()}</td>
+                        <td>${(item.meters / 1000).toFixed(2)}</td>
+                        <td>${ratio}%</td>
+                        <td>${item.stage}</td>
+                    </tr>`;
+                });
+                tableBody.innerHTML = html;
+            }
+
+            // ---------- Update KPIs and UI ----------
+            function updateUI(depth) {
+                currentDepth = depth;
+                // Slider display
+                depthDisplay.textContent = depth.toLocaleString() + ' m';
+                // KPI
+                kpiDepth.innerHTML = depth.toLocaleString() + '<span class="stat-unit">m</span>';
+                const rel = (depth / MAX_DEPTH * 100).toFixed(1);
+                kpiRelative.innerHTML = rel + '<span class="stat-unit">%</span>';
+
+                // Find closest match
+                let closest = null;
+                let minDiff = Infinity;
+                DATA.forEach(item => {
+                    const diff = Math.abs(depth - item.meters);
+                    if (diff < minDiff) { minDiff = diff; closest = item; }
+                });
+                kpiMatch.textContent = closest ? closest.name : '—';
+                if (closest && minDiff > 200) {
+                    kpiMatch.textContent = closest.name + ' (near)';
+                } else if (closest) {
+                    kpiMatch.textContent = closest.name;
+                }
+
+                // Sync slider (if not already)
+                if (slider.value != depth) slider.value = depth;
+
+                // Redraw canvas
+                drawCanvas(depth);
+                // Update table highlights
+                renderTable();
+            }
+
+            // ---------- Canvas drawing ----------
+            function drawCanvas(probeDepth) {
+                const w = canvas.width, h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+
+                // Margins
+                const leftMargin = 110;
+                const rightMargin = 180;
+                const topMargin = 30;
+                const bottomMargin = 50;
+                const plotW = w - leftMargin - rightMargin;
+                const plotH = h - topMargin - bottomMargin;
+                const maxDepth = MAX_DEPTH;
+
+                // Background grid lines (vertical)
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 0.8;
+                for (let i = 0; i <= 5; i++) {
+                    const x = leftMargin + (i / 5) * plotW;
+                    ctx.beginPath();
+                    ctx.moveTo(x, topMargin);
+                    ctx.lineTo(x, h - bottomMargin);
+                    ctx.strokeStyle = '#1a1f2b';
+                    ctx.stroke();
+                }
+
+                // Depth axis (horizontal lines) in km
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px "JetBrains Mono", monospace';
+                ctx.textAlign = 'right';
+                for (let km = 0; km <= 12; km += 2) {
+                    const y = topMargin + (km * 1000 / maxDepth) * plotH;
+                    ctx.beginPath();
+                    ctx.moveTo(leftMargin - 5, y);
+                    ctx.lineTo(w - rightMargin, y);
+                    ctx.strokeStyle = '#1e293b';
+                    ctx.stroke();
+                    ctx.fillText(km + ' km', leftMargin - 10, y + 3);
+                }
+
+                // Draw each item as a horizontal bar
+                DATA.forEach((item, idx) => {
+                    const y = topMargin + (item.meters / maxDepth) * plotH;
+                    const barLength = (item.meters / maxDepth) * plotW;
+
+                    // bar background
+                    ctx.fillStyle = 'rgba(56, 189, 248, 0.07)';
+                    ctx.fillRect(leftMargin, y - 6, barLength, 12);
+
+                    // Bar itself
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.beginPath();
+                    ctx.roundRect(leftMargin, y - 6, barLength, 12, 6);
+                    ctx.fill();
+
+                    // label (right side)
+                    ctx.fillStyle = '#cbd5e1';
+                    ctx.font = '11px "Inter", sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(item.name, leftMargin + barLength + 12, y + 4);
+
+                    // value
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '10px "JetBrains Mono", monospace';
+                    ctx.fillText(item.meters.toLocaleString() + ' m', leftMargin + barLength + 12, y + 20);
+                });
+
+                // Probe indicator (vertical line)
+                const probeX = leftMargin + (probeDepth / maxDepth) * plotW;
+                ctx.beginPath();
+                ctx.moveTo(probeX, topMargin);
+                ctx.lineTo(probeX, h - bottomMargin);
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Probe label
+                ctx.fillStyle = '#facc15';
+                ctx.font = 'bold 10px "JetBrains Mono", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(probeDepth.toLocaleString() + ' m', probeX, topMargin - 8);
+
+                // Axis labels
+                ctx.fillStyle = '#475569';
+                ctx.font = '9px "JetBrains Mono", monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText('0 m', leftMargin, h - bottomMargin + 18);
+                ctx.textAlign = 'right';
+                ctx.fillText('12,262 m', w - rightMargin, h - bottomMargin + 18);
+            }
+
+            // Canvas roundRect helper
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.moveTo(x + r, y);
+                this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r);
+                this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r);
+                this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y);
+                return this;
+            };
+
+            // ---------- Event listeners ----------
+            slider.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value, 10);
+                updateUI(val);
+            });
+
+            document.querySelectorAll('[data-depth]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const depth = parseInt(e.currentTarget.dataset.depth, 10);
+                    updateUI(depth);
+                });
+            });
+
+            // Export CSV
+            document.getElementById('exportCsvBtn').addEventListener('click', () => {
+                const rows = [
+                    ['Structure', 'Depth (m)', 'Depth (km)', 'Ratio vs Kola (%)', 'Stage', 'Probe Depth (m)'],
+                ];
+                DATA.forEach(item => {
+                    rows.push([
+                        item.name,
+                        item.meters,
+                        (item.meters / 1000).toFixed(2),
+                        ((item.meters / MAX_DEPTH) * 100).toFixed(1),
+                        item.stage,
+                        currentDepth
+                    ]);
+                });
+                // Add probe row
+                rows.push(['PROBE', currentDepth, (currentDepth/1000).toFixed(2), ((currentDepth/MAX_DEPTH)*100).toFixed(1), '—', currentDepth]);
+                const csv = rows.map(r => r.join(',')).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'scaleverse_depth_telemetry.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // Copy Scenario Link
+            document.getElementById('copyLinkBtn').addEventListener('click', () => {
+                const base = 'https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/deepest-holes-ever-dug-5-stage-3d-scale-shock.html';
+                const link = base + '?depth=' + currentDepth;
+                navigator.clipboard.writeText(link).then(() => {
+                    const btn = document.getElementById('copyLinkBtn');
+                    const originalText = btn.textContent;
+                    btn.textContent = '✓ Copied!';
+                    setTimeout(() => { btn.textContent = originalText; }, 1500);
+                }).catch(() => {
+                    prompt('Copy scenario link:', link);
+                });
+            });
+
+            // Parse URL param for initial depth
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialDepth = urlParams.get('depth');
+            if (initialDepth && !isNaN(parseInt(initialDepth))) {
+                const val = Math.min(MAX_DEPTH, Math.max(0, parseInt(initialDepth)));
+                updateUI(val);
+            } else {
+                updateUI(0);
+            }
+
+            // initial table render
+            renderTable();
+
+            // Handle canvas resize / high DPI (not strictly necessary, but keep crisp)
+            // We'll just ensure it's drawn correctly
+            window.addEventListener('resize', () => { drawCanvas(currentDepth); });
+
+            // Draw one more time to be safe
+            drawCanvas(currentDepth);
+        })();
+    </script>
+</body>
+</html>
