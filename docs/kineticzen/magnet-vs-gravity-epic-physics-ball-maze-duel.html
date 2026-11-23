@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINETICZEN LABS · Magnet vs Gravity · Physics Ball Maze</title>
+    <meta name="description" content="Interactive rigid-body rivalry simulation: MAGNET vs GRAVITY. 60FPS matter.js physics workstation with telemetry, presets, and CSV export.">
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/magnet-vs-gravity-epic-physics-ball-maze-duel.html">
+    
+    <!-- JSON-LD SoftwareApplication Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "KINETICZEN LABS · Magnet vs Gravity Duel",
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/magnet-vs-gravity-epic-physics-ball-maze-duel.html",
+      "description": "A 60FPS rigid-body physics rivalry simulation between MAGNET and GRAVITY teams. Interactive maze duel with real-time telemetry.",
+      "applicationCategory": "SimulationGame",
+      "operatingSystem": "Any",
+      "author": {
+        "@type": "Organization",
+        "name": "KINETICZEN LABS",
+        "url": "./index.html"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #1e293b;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-mark {
+            width: 12px;
+            height: 12px;
+            background: #f43f5e;
+            border-radius: 2px;
+            box-shadow: 0 0 12px #f43f5e88;
+        }
+
+        .brand h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #f1f5f9;
+        }
+
+        .brand span {
+            color: #f43f5e;
+            font-weight: 800;
+        }
+
+        .portal-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid #1e293b;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            transition: all 0.2s;
+        }
+
+        .portal-link:hover {
+            border-color: #f43f5e;
+            color: #f1f5f9;
+        }
+
+        /* Grid Layout */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Canvas Area */
+        .canvas-panel {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #64748b;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            background: #05070b;
+            border-radius: 10px;
+            border: 1px solid #1e293b;
+            display: block;
+            aspect-ratio: 4 / 3;
+        }
+
+        /* Control Panel */
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1.25rem;
+        }
+
+        .card-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #64748b;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .slider-group {
+            margin-bottom: 1rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 0.4rem;
+        }
+
+        .slider-label span:last-child {
+            color: #f43f5e;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1e293b;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #f43f5e;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 8px #f43f5e66;
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* KPI Readouts */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .kpi {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 0.6rem 0.75rem;
+        }
+
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #64748b;
+            margin-bottom: 0.2rem;
+        }
+
+        .kpi-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: #f1f5f9;
+        }
+
+        .kpi-value.accent {
+            color: #f43f5e;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid #2d3a4f;
+            color: #e2e8f0;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #2d3a4f;
+            border-color: #f43f5e;
+        }
+
+        .btn.primary {
+            background: #f43f5e;
+            border-color: #f43f5e;
+            color: #fff;
+        }
+
+        .btn.primary:hover {
+            background: #e11d48;
+        }
+
+        .btn.preset {
+            background: transparent;
+            border: 1px solid #1e293b;
+        }
+
+        .btn.preset:hover,
+        .btn.preset.active {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+
+        .preset-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-row .btn {
+            flex: 1 1 0;
+            font-size: 0.65rem;
+            padding: 0.5rem 0.4rem;
+        }
+
+        /* Table */
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .breakdown-table th {
+            text-align: left;
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid #1e293b;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+        }
+
+        .breakdown-table td {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid #111827;
+            color: #cbd5e1;
+        }
+
+        .breakdown-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .breakdown-table .num {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: #f1f5f9;
+        }
+
+        .breakdown-table .accent {
+            color: #f43f5e;
+            font-weight: 600;
+        }
+
+        /* FAQ */
+        .faq-section {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-q {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 0.4rem;
+        }
+
+        .faq-a {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* YouTube Embed */
+        .video-wrapper {
+            margin-top: 1.5rem;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: none;
+            border-radius: 10px;
+            display: block;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #475569;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .footer a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #f43f5e;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #0b0f17;
+            border: 1px solid #f43f5e;
+            color: #f1f5f9;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 100;
+            box-shadow: 0 4px 24px #00000088;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-magnet {
+            background: #f43f5e22;
+            color: #f43f5e;
+            border: 1px solid #f43f5e44;
+        }
+
+        .badge-gravity {
+            background: #3b82f622;
+            color: #60a5fa;
+            border: 1px solid #3b82f644;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-mark"></div>
+                <h1>KINETICZEN<span> LABS</span> · MAGNET vs GRAVITY</h1>
+            </div>
+            <a href="./index.html" class="portal-link">← Portal</a>
+        </header>
+
+        <!-- MAIN GRID -->
+        <div class="grid-main">
+            <!-- CANVAS -->
+            <div class="canvas-panel">
+                <div class="canvas-header">
+                    <span>RIGID-BODY DUEL · 60 FPS</span>
+                    <span id="fpsCounter">60 FPS</span>
+                </div>
+                <canvas id="simCanvas" width="800" height="600"></canvas>
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#475569;">
+                    <span>Team <span class="badge badge-magnet">MAGNET</span></span>
+                    <span>Team <span class="badge badge-gravity">GRAVITY</span></span>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div class="controls-panel">
+                <!-- Presets -->
+                <div class="card">
+                    <div class="card-title">Scenario Presets</div>
+                    <div class="preset-row">
+                        <button class="btn preset active" data-preset="default">DEFAULT</button>
+                        <button class="btn preset" data-preset="magnet">MAGNET</button>
+                        <button class="btn preset" data-preset="gravity">GRAVITY</button>
+                        <button class="btn preset" data-preset="chaos">CHAOS</button>
+                    </div>
+                </div>
+
+                <!-- Sliders -->
+                <div class="card">
+                    <div class="card-title">Physics Parameters</div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Magnetic Strength</span>
+                            <span id="magnetVal">0.85</span>
+                        </div>
+                        <input type="range" id="magnetSlider" min="0" max="2" step="0.01" value="0.85">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Gravity Force</span>
+                            <span id="gravityVal">1.20</span>
+                        </div>
+                        <input type="range" id="gravitySlider" min="0" max="3" step="0.01" value="1.20">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Restitution</span>
+                            <span id="restitutionVal">0.65</span>
+                        </div>
+                        <input type="range" id="restitutionSlider" min="0" max="1" step="0.01" value="0.65">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Ball Count</span>
+                            <span id="ballCountVal">12</span>
+                        </div>
+                        <input type="range" id="ballCountSlider" min="4" max="24" step="1" value="12">
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="card">
+                    <div class="card-title">Live Telemetry</div>
+                    <div class="kpi-grid">
+                        <div class="kpi">
+                            <div class="kpi-label">MAGNET Score</div>
+                            <div class="kpi-value accent" id="magnetScore">0</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">GRAVITY Score</div>
+                            <div class="kpi-value" id="gravityScore" style="color:#60a5fa;">0</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">Total Kinetic</div>
+                            <div class="kpi-value" id="kineticEnergy">0.0 J</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-label">Collisions</div>
+                            <div class="kpi-value" id="collisionCount">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="card">
+                    <div class="card-title">Telemetry & Sharing</div>
+                    <div class="btn-group" style="flex-direction:column;">
+                        <button class="btn primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+                        <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICAL TABLE -->
+        <div class="card" style="margin-top:1.5rem;">
+            <div class="card-title">Analytical Breakdown</div>
+            <table class="breakdown-table" id="breakdownTable">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>MAGNET</th>
+                        <th>GRAVITY</th>
+                        <th>Δ Delta</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Field Strength</td>
+                        <td class="num" id="tblMagnetField">0.85</td>
+                        <td class="num" id="tblGravityField">1.20</td>
+                        <td class="num accent" id="tblDeltaField">-0.35</td>
+                        <td>T</td>
+                    </tr>
+                    <tr>
+                        <td>Active Balls</td>
+                        <td class="num" id="tblMagnetBalls">6</td>
+                        <td class="num" id="tblGravityBalls">6</td>
+                        <td class="num accent" id="tblDeltaBalls">0</td>
+                        <td>count</td>
+                    </tr>
+                    <tr>
+                        <td>Avg. Velocity</td>
+                        <td class="num" id="tblMagnetVel">0.0</td>
+                        <td class="num" id="tblGravityVel">0.0</td>
+                        <td class="num accent" id="tblDeltaVel">0.0</td>
+                        <td>m/s</td>
+                    </tr>
+                    <tr>
+                        <td>Collision Count</td>
+                        <td class="num" id="tblMagnetColl">0</td>
+                        <td class="num" id="tblGravityColl">0</td>
+                        <td class="num accent" id="tblDeltaColl">0</td>
+                        <td>hits</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card faq-section" style="margin-top:1.5rem;">
+            <div class="card-title">FAQ · Magnet vs Gravity</div>
+            <div class="faq-item">
+                <div class="faq-q">What exactly is being simulated?</div>
+                <div class="faq-a">A 60 FPS rigid-body ball maze duel where two teams compete for dominance. The MAGNET team uses an attractive force field, while the GRAVITY team relies on a downward acceleration vector. Score is determined by which team's balls occupy the opposing zone longer.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">How are the teams color-coded?</div>
+                <div class="faq-a">MAGNET balls are rendered in the KINETICZEN accent (#f43f5e), and GRAVITY balls in institutional blue (#60a5fa).</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Can I export the telemetry data?</div>
+                <div class="faq-a">Yes. The "Export CSV Telemetry" button generates a real-time CSV snapshot containing all physics parameters, scores, and collision data.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">What do the sliders control?</div>
+                <div class="faq-a">Magnetic Strength scales the attractive force toward the magnet's center. Gravity Force scales the downward acceleration. Restitution controls bounciness, and Ball Count sets the total entities in the maze.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">How do I share a scenario?</div>
+                <div class="faq-a">Click "Copy Scenario Link" to copy a URL with current slider states encoded as query parameters. Opening that URL restores your exact configuration.</div>
+            </div>
+        </div>
+
+        <!-- YOUTUBE EMBED -->
+        <div class="video-wrapper">
+            <div class="card-title" style="margin-bottom:0.75rem;">Original Stream · Epic Physics Ball Maze Duel</div>
+            <iframe src="https://www.youtube.com/embed/Jv7IJ5njpgI" title="Magnet vs Gravity: Epic Physics Ball Maze Duel" allowfullscreen></iframe>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <span>KINETICZEN LABS · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/magnet-vs-gravity-epic-physics-ball-maze-duel.html">Canonical</a></span>
+            <span>MAGNET vs GRAVITY · RIGID-BODY DUEL</span>
+        </footer>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---------- CONFIG ----------
+            const canvas = document.getElementById('simCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const W = canvas.width;
+            const H = canvas.height;
+
+            // Physics state
+            let balls = [];
+            let magnetStrength = 0.85;
+            let gravityForce = 1.20;
+            let restitution = 0.65;
+            let ballCount = 12;
+
+            let magnetScore = 0;
+            let gravityScore = 0;
+            let collisionCount = 0;
+            let kineticEnergy = 0.0;
+            let magnetCollisions = 0;
+            let gravityCollisions = 0;
+
+            // Maze obstacles (static rectangles)
+            const obstacles = [
+                { x: 160, y: 80, w: 22, h: 160 },
+                { x: 340, y: 200, w: 22, h: 160 },
+                { x: 540, y: 80, w: 22, h: 160 },
+                { x: 240, y: 380, w: 160, h: 22 },
+                { x: 480, y: 380, w: 160, h: 22 },
+                { x: 60, y: 480, w: 160, h: 22 },
+                { x: 580, y: 480, w: 160, h: 22 },
+            ];
+
+            // Magnet zone (left / top area) and gravity zone (right / bottom area)
+            const magnetZone = { x: 0, y: 0, w: W/2, h: H };
+            const gravityZone = { x: W/2, y: 0, w: W/2, h: H };
+
+            // ---------- BALL CLASS ----------
+            class Ball {
+                constructor(x, y, vx, vy, team) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = vx;
+                    this.vy = vy;
+                    this.team = team; // 'magnet' or 'gravity'
+                    this.radius = 7;
+                    this.mass = 1.0;
+                    this.color = team === 'magnet' ? '#f43f5e' : '#60a5fa';
+                }
+
+                update(dt) {
+                    // Gravity applies to all balls (global field)
+                    this.vy += gravityForce * 120 * dt;
+
+                    // Magnet team balls are attracted toward a magnet center
+                    if (this.team === 'magnet') {
+                        const magnetCenterX = W * 0.25;
+                        const magnetCenterY = H * 0.3;
+                        const dx = magnetCenterX - this.x;
+                        const dy = magnetCenterY - this.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy) + 0.1;
+                        const force = magnetStrength * 200 / (dist * dist + 100);
+                        this.vx += (dx / dist) * force * dt * 60;
+                        this.vy += (dy / dist) * force * dt * 60;
+                    }
+
+                    // Gravity team balls get an extra downward pull
+                    if (this.team === 'gravity') {
+                        this.vy += gravityForce * 40 * dt;
+                    }
+
+                    // Move
+                    this.x += this.vx * dt;
+                    this.y += this.vy * dt;
+
+                    // Wall collisions with restitution
+                    if (this.x - this.radius < 0) {
+                        this.x = this.radius;
+                        this.vx = -this.vx * restitution;
+                        collisionCount++;
+                        if (this.team === 'magnet') magnetCollisions++; else gravityCollisions++;
+                    }
+                    if (this.x + this.radius > W) {
+                        this.x = W - this.radius;
+                        this.vx = -this.vx * restitution;
+                        collisionCount++;
+                        if (this.team === 'magnet') magnetCollisions++; else gravityCollisions++;
+                    }
+                    if (this.y - this.radius < 0) {
+                        this.y = this.radius;
+                        this.vy = -this.vy * restitution;
+                        collisionCount++;
+                        if (this.team === 'magnet') magnetCollisions++; else gravityCollisions++;
+                    }
+                    if (this.y + this.radius > H) {
+                        this.y = H - this.radius;
+                        this.vy = -this.vy * restitution;
+                        collisionCount++;
+                        if (this.team === 'magnet') magnetCollisions++; else gravityCollisions++;
+                    }
+
+                    // Obstacle collisions (AABB vs circle)
+                    for (let ob of obstacles) {
+                        const nearestX = Math.max(ob.x, Math.min(this.x, ob.x + ob.w));
+                        const nearestY = Math.max(ob.y, Math.min(this.y, ob.y + ob.h));
+                        const dx = this.x - nearestX;
+                        const dy = this.y - nearestY;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+
+                        if (dist < this.radius) {
+                            const overlap = this.radius - dist;
+                            const nx = dx / (dist || 0.01);
+                            const ny = dy / (dist || 0.01);
+                            this.x += nx * overlap;
+                            this.y += ny * overlap;
+
+                            const dot = this.vx * nx + this.vy * ny;
+                            this.vx -= (1 + restitution) * dot * nx;
+                            this.vy -= (1 + restitution) * dot * ny;
+                            collisionCount++;
+                            if (this.team === 'magnet') magnetCollisions++; else gravityCollisions++;
+                        }
+                    }
+
+                    // Ball-ball collisions
+                    for (let other of balls) {
+                        if (other === this) continue;
+                        const dx = other.x - this.x;
+                        const dy = other.y - this.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        const minDist = this.radius + other.radius;
+
+                        if (dist < minDist && dist > 0.001) {
+                            const overlap = minDist - dist;
+                            const nx = dx / dist;
+                            const ny = dy / dist;
+
+                            this.x -= nx * overlap * 0.5;
+                            this.y -= ny * overlap * 0.5;
+                            other.x += nx * overlap * 0.5;
+                            other.y += ny * overlap * 0.5;
+
+                            const dvx = other.vx - this.vx;
+                            const dvy = other.vy - this.vy;
+                            const dot = dvx * nx + dvy * ny;
+
+                            if (dot < 0) {
+                                const impulse = -(1 + restitution) * dot / 2;
+                                this.vx -= impulse * nx;
+                                this.vy -= impulse * ny;
+                                other.vx += impulse * nx;
+                                other.vy += impulse * ny;
+                                collisionCount++;
+                                if (this.team === 'magnet') magnetCollisions++; else if (this.team === 'gravity') gravityCollisions++;
+                            }
+                        }
+                    }
+
+                    // Scoring: balls in opposing zone
+                    const inMagnetZone = (this.x >= magnetZone.x && this.x <= magnetZone.x + magnetZone.w &&
+                                          this.y >= magnetZone.y && this.y <= magnetZone.y + magnetZone.h);
+                    const inGravityZone = (this.x >= gravityZone.x && this.x <= gravityZone.x + gravityZone.w &&
+                                           this.y >= gravityZone.y && this.y <= gravityZone.y + gravityZone.h);
+
+                    if (this.team === 'magnet' && inGravityZone) magnetScore += 0.01;
+                    if (this.team === 'gravity' && inMagnetZone) gravityScore += 0.01;
+                }
+
+                draw(ctx) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = '#ffffff33';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            // ---------- INIT BALLS ----------
+            function initBalls() {
+                balls = [];
+                magnetScore = 0;
+                gravityScore = 0;
+                collisionCount = 0;
+                magnetCollisions = 0;
+                gravityCollisions = 0;
+
+                const halfCount = Math.floor(ballCount / 2);
+                const magnetCount = halfCount;
+                const gravityCount = ballCount - halfCount;
+
+                // Magnet balls (left side)
+                for (let i = 0; i < magnetCount; i++) {
+                    const x = 40 + Math.random() * (W * 0.35);
+                    const y = 40 + Math.random() * (H - 80);
+                    const vx = (Math.random() - 0.5) * 80;
+                    const vy = (Math.random() - 0.5) * 80;
+                    balls.push(new Ball(x, y, vx, vy, 'magnet'));
+                }
+
+                // Gravity balls (right side)
+                for (let i = 0; i < gravityCount; i++) {
+                    const x = W * 0.6 + Math.random() * (W * 0.35);
+                    const y = 40 + Math.random() * (H - 80);
+                    const vx = (Math.random() - 0.5) * 80;
+                    const vy = (Math.random() - 0.5) * 80;
+                    balls.push(new Ball(x, y, vx, vy, 'gravity'));
+                }
+            }
+
+            // ---------- RENDER ----------
+            function drawScene() {
+                ctx.clearRect(0, 0, W, H);
+
+                // Draw zones with subtle tint
+                ctx.fillStyle = '#f43f5e08';
+                ctx.fillRect(magnetZone.x, magnetZone.y, magnetZone.w, magnetZone.h);
+                ctx.fillStyle = '#3b82f608';
+                ctx.fillRect(gravityZone.x, gravityZone.y, gravityZone.w, gravityZone.h);
+
+                // Draw dividing line
+                ctx.beginPath();
+                ctx.moveTo(W/2, 0);
+                ctx.lineTo(W/2, H);
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([8, 8]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw obstacles
+                for (let ob of obstacles) {
+                    ctx.fillStyle = '#0b0f17';
+                    ctx.strokeStyle = '#1e293b';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.roundRect(ob.x, ob.y, ob.w, ob.h, 4);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                // Draw balls
+                for (let ball of balls) {
+                    ball.draw(ctx);
+                }
+
+                // Draw magnet center indicator
+                const mcX = W * 0.25;
+                const mcY = H * 0.3;
+                ctx.beginPath();
+                ctx.arc(mcX, mcY, 16, 0, Math.PI * 2);
+                ctx.strokeStyle = '#f43f5e44';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(mcX, mcY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#f43f5e66';
+                ctx.fill();
+
+                // Draw gravity field indicator (downward arrows)
+                ctx.fillStyle = '#60a5fa44';
+                for (let i = 0; i < 5; i++) {
+                    const ax = W * 0.6 + i * 40;
+                    const ay = H * 0.85;
+                    ctx.beginPath();
+                    ctx.moveTo(ax, ay);
+                    ctx.lineTo(ax, ay + 12);
+                    ctx.lineTo(ax - 4, ay + 6);
+                    ctx.lineTo(ax + 4, ay + 6);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            // ---------- PHYSICS STEP ----------
+            let lastTime = performance.now();
+            let frames = 0;
+            let fpsTime = 0;
+            let currentFPS = 60;
+
+            function physicsStep(now) {
+                const dt = Math.min((now - lastTime) / 1000, 0.05);
+                lastTime = now;
+
+                // Update balls
+                for (let ball of balls) {
+                    ball.update(dt);
+                }
+
+                // Calculate kinetic energy
+                kineticEnergy = 0;
+                for (let ball of balls) {
+                    const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+                    kineticEnergy += 0.5 * ball.mass * speed * speed;
+                }
+
+                drawScene();
+
+                // Update UI
+                updateUI();
+
+                // FPS counter
+                frames++;
+                if (now - fpsTime > 500) {
+                    currentFPS = Math.round((frames * 1000) / (now - fpsTime));
+                    document.getElementById('fpsCounter').textContent = currentFPS + ' FPS';
+                    frames = 0;
+                    fpsTime = now;
+                }
+
+                requestAnimationFrame(physicsStep);
+            }
+
+            // ---------- UI UPDATE ----------
+            function updateUI() {
+                // KPIs
+                document.getElementById('magnetScore').textContent = Math.floor(magnetScore);
+                document.getElementById('gravityScore').textContent = Math.floor(gravityScore);
+                document.getElementById('kineticEnergy').textContent = kineticEnergy.toFixed(1) + ' J';
+                document.getElementById('collisionCount').textContent = collisionCount;
+
+                // Table
+                document.getElementById('tblMagnetField').textContent = magnetStrength.toFixed(2);
+                document.getElementById('tblGravityField').textContent = gravityForce.toFixed(2);
+                document.getElementById('tblDeltaField').textContent = (magnetStrength - gravityForce).toFixed(2);
+
+                const half = Math.floor(ballCount / 2);
+                document.getElementById('tblMagnetBalls').textContent = half;
+                document.getElementById('tblGravityBalls').textContent = ballCount - half;
+                document.getElementById('tblDeltaBalls').textContent = half - (ballCount - half);
+
+                const magnetVel = balls.filter(b => b.team === 'magnet').reduce((s, b) => s + Math.sqrt(b.vx*b.vx + b.vy*b.vy), 0) / (half || 1);
+                const gravityVel = balls.filter(b => b.team === 'gravity').reduce((s, b) => s + Math.sqrt(b.vx*b.vx + b.vy*b.vy), 0) / ((ballCount - half) || 1);
+                document.getElementById('tblMagnetVel').textContent = magnetVel.toFixed(2);
+                document.getElementById('tblGravityVel').textContent = gravityVel.toFixed(2);
+                document.getElementById('tblDeltaVel').textContent = (magnetVel - gravityVel).toFixed(2);
+
+                document.getElementById('tblMagnetColl').textContent = magnetCollisions;
+                document.getElementById('tblGravityColl').textContent = gravityCollisions;
+                document.getElementById('tblDeltaColl').textContent = magnetCollisions - gravityCollisions;
+            }
+
+            // ---------- PRESETS ----------
+            function applyPreset(name) {
+                const presets = {
+                    default: { magnet: 0.85, gravity: 1.20, restitution: 0.65, balls: 12 },
+                    magnet: { magnet: 1.80, gravity: 0.40, restitution: 0.75, balls: 16 },
+                    gravity: { magnet: 0.30, gravity: 2.50, restitution: 0.55, balls: 16 },
+                    chaos: { magnet: 1.50, gravity: 2.00, restitution: 0.95, balls: 20 }
+                };
+
+                const p = presets[name] || presets.default;
+                magnetStrength = p.magnet;
+                gravityForce = p.gravity;
+                restitution = p.restitution;
+                ballCount = p.balls;
+
+                // Update sliders
+                document.getElementById('magnetSlider').value = magnetStrength;
+                document.getElementById('magnetVal').textContent = magnetStrength.toFixed(2);
+                document.getElementById('gravitySlider').value = gravityForce;
+                document.getElementById('gravityVal').textContent = gravityForce.toFixed(2);
+                document.getElementById('restitutionSlider').value = restitution;
+                document.getElementById('restitutionVal').textContent = restitution.toFixed(2);
+                document.getElementById('ballCountSlider').value = ballCount;
+                document.getElementById('ballCountVal').textContent = ballCount;
+
+                // Update preset button states
+                document.querySelectorAll('.preset').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.preset === name);
+                });
+
+                initBalls();
+            }
+
+            // ---------- SLIDER EVENTS ----------
+            document.getElementById('magnetSlider').addEventListener('input', function() {
+                magnetStrength = parseFloat(this.value);
+                document.getElementById('magnetVal').textContent = magnetStrength.toFixed(2);
+            });
+
+            document.getElementById('gravitySlider').addEventListener('input', function() {
+                gravityForce = parseFloat(this.value);
+                document.getElementById('gravityVal').textContent = gravityForce.toFixed(2);
+            });
+
+            document.getElementById('restitutionSlider').addEventListener('input', function() {
+                restitution = parseFloat(this.value);
+                document.getElementById('restitutionVal').textContent = restitution.toFixed(2);
+            });
+
+            document.getElementById('ballCountSlider').addEventListener('input', function() {
+                ballCount = parseInt(this.value);
+                document.getElementById('ballCountVal').textContent = ballCount;
+                initBalls();
+            });
+
+            // ---------- PRESET BUTTONS ----------
+            document.querySelectorAll('.preset').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    applyPreset(this.dataset.preset);
+                });
+            });
+
+            // ---------- CSV EXPORT ----------
+            document.getElementById('exportCsvBtn').addEventListener('click', function() {
+                const rows = [
+                    ['KINETICZEN LABS · MAGNET vs GRAVITY Telemetry'],
+                    ['Parameter', 'MAGNET', 'GRAVITY', 'Delta'],
+                    ['Magnetic Strength', magnetStrength.toFixed(3), gravityForce.toFixed(3), (magnetStrength - gravityForce).toFixed(3)],
+                    ['Ball Count', Math.floor(ballCount/2), ballCount - Math.floor(ballCount/2), 0],
+                    ['Restitution', restitution.toFixed(3), restitution.toFixed(3), '0.000'],
+                    ['Score', Math.floor(magnetScore), Math.floor(gravityScore), Math.floor(magnetScore - gravityScore)],
+                    ['Collisions', magnetCollisions, gravityCollisions, magnetCollisions - gravityCollisions],
+                    ['Kinetic Energy', kineticEnergy.toFixed(2) + ' J', '', ''],
+                    ['Total Collisions', collisionCount, '', ''],
+                    ['Timestamp', new Date().toISOString(), '', '']
+                ];
+
+                const csvContent = rows.map(r => r.join(',')).join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'kineticzen_magnet_vs_gravity_telemetry.csv');
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showToast('CSV telemetry exported.');
+            });
+
+            // ---------- COPY LINK ----------
+            document.getElementById('copyLinkBtn').addEventListener('click', function() {
+                const baseUrl = window.location.origin + window.location.pathname;
+                const params = new URLSearchParams({
+                    magnet: magnetStrength.toFixed(2),
+                    gravity: gravityForce.toFixed(2),
+                    restitution: restitution.toFixed(2),
+                    balls: ballCount
+                });
+                const url = baseUrl + '?' + params.toString();
+
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('Scenario link copied to clipboard.');
+                }).catch(() => {
+                    // Fallback
+                    const temp = document.createElement('textarea');
+                    temp.value = url;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(temp);
+                    showToast('Scenario link copied.');
+                });
+            });
+
+            // ---------- TOAST ----------
+            function showToast(msg) {
+                const toast = document.getElementById('toast');
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }
+
+            // ---------- URL PARAMS ----------
+            function loadFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('magnet')) {
+                    magnetStrength = parseFloat(params.get('magnet')) || 0.85;
+                    document.getElementById('magnetSlider').value = magnetStrength;
+                    document.getElementById('magnetVal').textContent = magnetStrength.toFixed(2);
+                }
+                if (params.has('gravity')) {
+                    gravityForce = parseFloat(params.get('gravity')) || 1.20;
+                    document.getElementById('gravitySlider').value = gravityForce;
+                    document.getElementById('gravityVal').textContent = gravityForce.toFixed(2);
+                }
+                if (params.has('restitution')) {
+                    restitution = parseFloat(params.get('restitution')) || 0.65;
+                    document.getElementById('restitutionSlider').value = restitution;
+                    document.getElementById('restitutionVal').textContent = restitution.toFixed(2);
+                }
+                if (params.has('balls')) {
+                    ballCount = parseInt(params.get('balls')) || 12;
+                    document.getElementById('ballCountSlider').value = ballCount;
+                    document.getElementById('ballCountVal').textContent = ballCount;
+                }
+                // Reset preset active states since we loaded custom
+                document.querySelectorAll('.preset').forEach(btn => btn.classList.remove('active'));
+            }
+
+            // ---------- INIT ----------
+            function init() {
+                loadFromURL();
+                initBalls();
+                requestAnimationFrame(physicsStep);
+            }
+
+            // Polyfill for roundRect
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                    if (w < 2 * r) r = w / 2;
+                    if (h < 2 * r) r = h / 2;
+                    this.beginPath();
+                    this.moveTo(x + r, y);
+                    this.arcTo(x + w, y, x + w, y + h, r);
+                    this.arcTo(x + w, y + h, x, y + h, r);
+                    this.arcTo(x, y + h, x, y, r);
+                    this.arcTo(x, y, x + w, y, r);
+                    this.closePath();
+                    return this;
+                };
+            }
+
+            init();
+
+        })();
+    </script>
+</body>
+</html>
