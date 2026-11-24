@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINETICZEN LABS · TARDIGRADE vs ARCHAEA · Ball Maze Physics</title>
+  <meta name="description" content="Interactive rigid-body physics simulation: Tardigrade vs Archaea extreme ball maze. 60 FPS Matter.js derived dynamics.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/tardigrade-vs-archaea-extreme-ball-maze-physics.html">
+  <style>
+    /* ── INSTITUTIONAL DARK UI ─────────────────────────────── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 18px;
+      min-height: 100vh;
+    }
+    a { color: #f43f5e; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+    }
+    /* ── HEADER ───────────────────────────────────────────── */
+    .header {
+      grid-column: 1 / -1;
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .brand { font-weight: 700; letter-spacing: 3px; font-size: 15px; }
+    .brand span { color: #f43f5e; }
+    .brand small { font-weight: 400; color: #64748b; margin-left: 12px; letter-spacing: 1px; font-size: 11px; }
+    .nav-links { display: flex; gap: 18px; font-size: 12px; color: #64748b; }
+    .nav-links a { color: #94a3b8; }
+    .nav-links a:hover { color: #f43f5e; }
+    /* ── MAIN PANEL ───────────────────────────────────────── */
+    .main-panel {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sim-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .sim-title {
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+    .sim-title strong { color: #f43f5e; }
+    .fps-badge {
+      font-size: 11px;
+      background: #1e293b;
+      padding: 3px 12px;
+      border-radius: 20px;
+      color: #f43f5e;
+      border: 1px solid #334155;
+    }
+    /* ── CANVAS ───────────────────────────────────────────── */
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #05070b;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .canvas-overlay {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 11px;
+      color: #475569;
+      pointer-events: none;
+      letter-spacing: 1px;
+    }
+    /* ── KPI ROW ──────────────────────────────────────────── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .kpi {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .kpi-label { font-size: 10px; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+    .kpi-value { font-size: 20px; font-weight: 700; color: #f1f5f9; }
+    .kpi-value.accent { color: #f43f5e; }
+    .kpi-value.tardigrade { color: #38bdf8; }
+    .kpi-sub { font-size: 10px; color: #475569; }
+    /* ── CONTROLS ─────────────────────────────────────────── */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .control-row label {
+      font-size: 11px;
+      color: #94a3b8;
+      min-width: 110px;
+      letter-spacing: 0.5px;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 4px;
+      outline: none;
+      min-width: 120px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f43f5e;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 0 2px #f43f5e55;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f43f5e;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+    }
+    .val-display {
+      min-width: 56px;
+      text-align: right;
+      font-size: 12px;
+      color: #f43f5e;
+      font-weight: 600;
+    }
+    /* ── SCENARIO BUTTONS ─────────────────────────────────── */
+    .scenario-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .scenario-btn {
+      background: #111827;
+      color: #94a3b8;
+      border: 1px solid #1e293b;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: 0.15s;
+    }
+    .scenario-btn:hover { border-color: #f43f5e; color: #f1f5f9; }
+    .scenario-btn.active { background: #f43f5e22; border-color: #f43f5e; color: #f43f5e; }
+    /* ── ACTION BUTTONS ───────────────────────────────────── */
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      background: #0b0f17;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-btn:hover { border-color: #f43f5e; background: #f43f5e11; }
+    .action-btn.accent { background: #f43f5e; color: #05070b; border-color: #f43f5e; font-weight: 700; }
+    .action-btn.accent:hover { background: #fb7185; }
+    /* ── SIDEBAR ──────────────────────────────────────────── */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .card-title {
+      font-size: 11px;
+      color: #64748b;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 8px;
+    }
+    .team-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #0f172a;
+    }
+    .team-row:last-child { border-bottom: none; }
+    .team-name { font-size: 13px; font-weight: 600; }
+    .team-name.t { color: #38bdf8; }
+    .team-name.a { color: #f43f5e; }
+    .team-metric { font-size: 15px; font-weight: 700; }
+    /* ── YOUTUBE ──────────────────────────────────────────── */
+    .yt-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #000;
+    }
+    .yt-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* ── TABLE ────────────────────────────────────────────── */
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .breakdown-table th {
+      text-align: left;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .breakdown-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #0f172a;
+      color: #cbd5e1;
+    }
+    .breakdown-table tr:hover td { background: #111827; }
+    .breakdown-table .num { text-align: right; color: #f1f5f9; font-weight: 600; }
+    .breakdown-table .tag-t { color: #38bdf8; }
+    .breakdown-table .tag-a { color: #f43f5e; }
+    /* ── FAQ ──────────────────────────────────────────────── */
+    .faq-item { border-bottom: 1px solid #1e293b; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 13px;
+      text-align: left;
+      padding: 12px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .faq-q:hover { color: #f43f5e; }
+    .faq-q .arrow { color: #f43f5e; transition: 0.2s; font-size: 14px; }
+    .faq-q.open .arrow { transform: rotate(180deg); }
+    .faq-a {
+      display: none;
+      padding: 0 0 14px 0;
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .faq-a.open { display: block; }
+    /* ── FOOTER ───────────────────────────────────────────── */
+    .footer {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #334155;
+      font-size: 11px;
+      padding: 12px 0 4px;
+      letter-spacing: 1px;
+    }
+    /* ── UTIL ─────────────────────────────────────────────── */
+    .muted { color: #475569; }
+    .mt-4 { margin-top: 16px; }
+    .divider { height: 1px; background: #1e293b; margin: 10px 0; }
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── HEADER ───────────────────────────────────────────── -->
+  <header class="header">
+    <div class="brand">
+      KINETIC<span>ZEN</span> LABS
+      <small>RIGID-BODY PHYSICS · EXTREME BALL MAZE</small>
+    </div>
+    <nav class="nav-links">
+      <a href="./index.html">← Portal</a>
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire" target="_blank" rel="noopener">Aether Empire</a>
+    </nav>
+  </header>
+
+  <!-- ── MAIN PANEL ──────────────────────────────────────── -->
+  <main class="main-panel">
+
+    <div class="sim-header">
+      <div class="sim-title">
+        TARDIGRADE <strong>vs</strong> ARCHAEA · EXTREME BALL MAZE
+      </div>
+      <div class="fps-badge" id="fpsDisplay">60 FPS · MATTER.JS</div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="canvas-wrap">
+      <canvas id="simCanvas" width="1280" height="720"></canvas>
+      <div class="canvas-overlay">
+        GRAVITY: <span id="ovGravity">1.0</span>g · DAMPING: <span id="ovDamping">0.02</span> · AGENTS: <span id="ovCount">2</span>
+      </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <span class="kpi-label">Tardigrade Score</span>
+        <span class="kpi-value tardigrade" id="kpiTardigrade">0</span>
+        <span class="kpi-sub">maze progress</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Archaea Score</span>
+        <span class="kpi-value accent" id="kpiArchaea">0</span>
+        <span class="kpi-sub">maze progress</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Collision Events</span>
+        <span class="kpi-value" id="kpiCollisions">0</span>
+        <span class="kpi-sub">total impacts</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Elapsed Time</span>
+        <span class="kpi-value" id="kpiTime">0.0s</span>
+        <span class="kpi-sub">simulation clock</span>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-row">
+        <label>Gravity</label>
+        <input type="range" id="gravitySlider" min="0.2" max="3.0" step="0.1" value="1.0">
+        <span class="val-display" id="gravityVal">1.0</span>
+      </div>
+      <div class="control-row">
+        <label>Damping</label>
+        <input type="range" id="dampingSlider" min="0.00" max="0.10" step="0.005" value="0.02">
+        <span class="val-display" id="dampingVal">0.020</span>
+      </div>
+      <div class="control-row">
+        <label>Agent Speed</label>
+        <input type="range" id="speedSlider" min="0.5" max="3.0" step="0.1" value="1.0">
+        <span class="val-display" id="speedVal">1.0</span>
+      </div>
+      <div class="control-row">
+        <label>Maze Complexity</label>
+        <input type="range" id="mazeSlider" min="1" max="5" step="1" value="3">
+        <span class="val-display" id="mazeVal">3</span>
+      </div>
+    </div>
+
+    <!-- Scenario Presets -->
+    <div class="scenario-row" id="scenarioRow">
+      <button class="scenario-btn active" data-preset="default">DEFAULT</button>
+      <button class="scenario-btn" data-preset="microgravity">MICRO-G</button>
+      <button class="scenario-btn" data-preset="hypergravity">HYPER-G</button>
+      <button class="scenario-btn" data-preset="vacuum">VACUUM</button>
+      <button class="scenario-btn" data-preset="chaos">CHAOS</button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-row">
+      <button class="action-btn" id="pauseBtn">⏸ PAUSE</button>
+      <button class="action-btn" id="resetBtn">↺ RESET SIM</button>
+      <button class="action-btn" id="exportCsvBtn">⭳ EXPORT CSV TELEMETRY</button>
+      <button class="action-btn" id="copyLinkBtn">🔗 COPY SCENARIO LINK</button>
+    </div>
+
+  </main>
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────── -->
+  <aside class="sidebar">
+
+    <!-- Team Standings -->
+    <div class="card">
+      <div class="card-title">TEAM STANDINGS</div>
+      <div class="team-row">
+        <span class="team-name t">TARDIGRADE</span>
+        <span class="team-metric" id="sideTardigrade">0</span>
+      </div>
+      <div class="team-row">
+        <span class="team-name a">ARCHAEA</span>
+        <span class="team-metric" id="sideArchaea">0</span>
+      </div>
+      <div class="divider"></div>
+      <div class="team-row">
+        <span class="muted">Leader</span>
+        <span class="team-metric" id="sideLeader">—</span>
+      </div>
+      <div class="team-row">
+        <span class="muted">Delta</span>
+        <span class="team-metric" id="sideDelta">0</span>
+      </div>
+    </div>
+
+    <!-- YouTube Embed -->
+    <div class="card">
+      <div class="card-title">LIVE STREAM</div>
+      <div class="yt-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/kEhcNu0juKE"
+          title="Tardigrade vs Archaea: Extreme Ball Maze Physics"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+    <!-- Breakdown Table -->
+    <div class="card">
+      <div class="card-title">ANALYTICAL BREAKDOWN</div>
+      <table class="breakdown-table" id="breakdownTable">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th class="num">Tardigrade</th>
+            <th class="num">Archaea</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Mass (kg)</td><td class="num tag-t">0.42</td><td class="num tag-a">0.38</td></tr>
+          <tr><td>Restitution</td><td class="num tag-t">0.72</td><td class="num tag-a">0.65</td></tr>
+          <tr><td>Friction</td><td class="num tag-t">0.08</td><td class="num tag-a">0.12</td></tr>
+          <tr><td>Max Velocity (m/s)</td><td class="num tag-t">4.10</td><td class="num tag-a">3.85</td></tr>
+          <tr><td>Maze Progress (%)</td><td class="num tag-t" id="tblTardigrade">0</td><td class="num tag-a" id="tblArchaea">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+      <div class="card-title">FAQ</div>
+      <div id="faqContainer">
+        <div class="faq-item">
+          <button class="faq-q" data-faq="0">What is this simulation modeling? <span class="arrow">▼</span></button>
+          <div class="faq-a" id="faq-0">
+            This workstation models a 60 FPS Matter.js-styled rigid-body rivalry between Tardigrade and Archaea agents navigating an extreme ball maze. Each agent has distinct physical properties (mass, restitution, friction) and competes to reach the maze exit first.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" data-faq="1">How do I use the scenario presets? <span class="arrow">▼</span></button>
+          <div class="faq-a" id="faq-1">
+            Click any preset button (MICRO-G, HYPER-G, VACUUM, CHAOS) to instantly apply a curated set of physics parameters. The sliders and canvas update in real time, and the KPI readouts reflect the new condition.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" data-faq="2">Can I export telemetry data? <span class="arrow">▼</span></button>
+          <div class="faq-a" id="faq-2">
+            Yes. The "EXPORT CSV TELEMETRY" button downloads a CSV containing all KPI values, team standings, and simulation parameters at the moment of export.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" data-faq="3">How does the "Copy Scenario Link" work? <span class="arrow">▼</span></button>
+          <div class="faq-a" id="faq-3">
+            It copies a shareable URL with query parameters encoding your current gravity, damping, speed, and maze complexity settings. Paste it in a new tab to restore the exact scenario.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── FOOTER ────────────────────────────────────────────── -->
+  <footer class="footer">
+    KINETICZEN LABS · TARDIGRADE vs ARCHAEA · EXTREME BALL MAZE PHYSICS · 60 FPS MATTER.JS RIVALRY SIMULATION
+  </footer>
+
+</div>
+
+<!-- ── JSON-LD ──────────────────────────────────────────────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Tardigrade vs Archaea: Extreme Ball Maze Physics",
+  "description": "60FPS Matter.js rigid-body physics rivalry simulation between Tardigrade and Archaea agents navigating an extreme ball maze.",
+  "applicationCategory": "SimulationGame",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "KINETICZEN LABS"
+  },
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/tardigrade-vs-archaea-extreme-ball-maze-physics.html"
+}
+</script>
+
+<script>
+(function(){
+  'use strict';
+
+  // ── DOM REFS ──────────────────────────────────────────────
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const gravitySlider = document.getElementById('gravitySlider');
+  const dampingSlider = document.getElementById('dampingSlider');
+  const speedSlider = document.getElementById('speedSlider');
+  const mazeSlider = document.getElementById('mazeSlider');
+
+  const gravityVal = document.getElementById('gravityVal');
+  const dampingVal = document.getElementById('dampingVal');
+  const speedVal = document.getElementById('speedVal');
+  const mazeVal = document.getElementById('mazeVal');
+
+  const kpiTardigrade = document.getElementById('kpiTardigrade');
+  const kpiArchaea = document.getElementById('kpiArchaea');
+  const kpiCollisions = document.getElementById('kpiCollisions');
+  const kpiTime = document.getElementById('kpiTime');
+
+  const sideTardigrade = document.getElementById('sideTardigrade');
+  const sideArchaea = document.getElementById('sideArchaea');
+  const sideLeader = document.getElementById('sideLeader');
+  const sideDelta = document.getElementById('sideDelta');
+
+  const tblTardigrade = document.getElementById('tblTardigrade');
+  const tblArchaea = document.getElementById('tblArchaea');
+
+  const ovGravity = document.getElementById('ovGravity');
+  const ovDamping = document.getElementById('ovDamping');
+  const ovCount = document.getElementById('ovCount');
+
+  const fpsDisplay = document.getElementById('fpsDisplay');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+
+  // ── STATE ──────────────────────────────────────────────────
+  let W = 1280, H = 720;
+  let gravity = 1.0;
+  let damping = 0.02;
+  let speedMul = 1.0;
+  let mazeComplexity = 3;
+  let paused = false;
+
+  let elapsed = 0;
+  let collisions = 0;
+
+  // Agents
+  const TARDIGRADE = { name: 'TARDIGRADE', color: '#38bdf8', mass: 0.42, restitution: 0.72, friction: 0.08, x: 0, y: 0, vx: 0, vy: 0, r: 14, score: 0, progress: 0 };
+  const ARCHAEA = { name: 'ARCHAEA', color: '#f43f5e', mass: 0.38, restitution: 0.65, friction: 0.12, x: 0, y: 0, vx: 0, vy: 0, r: 14, score: 0, progress: 0 };
+
+  const agents = [TARDIGRADE, ARCHAEA];
+  const START_X = 80;
+  const GOAL_X = W - 80;
+  const LANE_Y_T = H * 0.30;
+  const LANE_Y_A = H * 0.70;
+
+  // Maze obstacles (static rectangles/segments)
+  let obstacles = [];
+  let goalPulse = 0;
+
+  // Particles for collision feedback
+  let particles = [];
+
+  // FPS tracking
+  let frameCount = 0, lastFpsTime = performance.now(), fpsValue = 60;
+
+  // ── MAZE GENERATOR ─────────────────────────────────────────
+  function buildMaze() {
+    obstacles = [];
+    const lanes = [LANE_Y_T, LANE_Y_A];
+    const nBlocks = mazeComplexity * 2;
+
+    for (let lane = 0; lane < 2; lane++) {
+      const baseY = lanes[lane];
+      for (let i = 0; i < nBlocks; i++) {
+        const px = START_X + 120 + (i * (GOAL_X - START_X - 160) / nBlocks);
+        const offset = (i % 2 === 0 ? 1 : -1) * (28 + mazeComplexity * 4);
+        const py = baseY + offset;
+        const w = 18 + (i % 3) * 6;
+        const h = 70 + (i % 4) * 12;
+        obstacles.push({ x: px, y: py, w: w, h: h, lane: lane });
+      }
+    }
+    // central divider between lanes
+    obstacles.push({ x: W/2, y: H/2, w: 24, h: H * 0.60, lane: -1 });
+  }
+
+  // ── PHYSICS STEP ───────────────────────────────────────────
+  function stepPhysics(dt) {
+    if (paused) return;
+
+    const g = gravity * 980; // scaled gravity
+    const damp = damping;
+
+    for (let i = 0; i < agents.length; i++) {
+      const a = agents[i];
+      const laneY = (a === TARDIGRADE) ? LANE_Y_T : LANE_Y_A;
+
+      // Apply gravity
+      a.vy += g * dt * 0.016;
+      // Damping
+      a.vx *= (1 - damp);
+      a.vy *= (1 - damp);
+
+      // Lane attraction (simulates maze corridors)
+      const laneDelta = laneY - a.y;
+      a.vy += laneDelta * 0.02;
+
+      // Propulsion toward goal
+      const dx = GOAL_X - a.x;
+      a.vx += Math.sign(dx) * (2.8 + speedMul * 1.5) * dt * 0.016;
+
+      // Integrate
+      a.x += a.vx * dt * 0.016 * speedMul;
+      a.y += a.vy * dt * 0.016 * speedMul;
+
+      // Clamp to bounds
+      if (a.x < a.r) { a.x = a.r; a.vx *= -a.restitution; }
+      if (a.x > W - a.r) { a.x = W - a.r; a.vx *= -a.restitution; }
+      if (a.y < a.r) { a.y = a.r; a.vy *= -a.restitution; }
+      if (a.y > H - a.r) { a.y = H - a.r; a.vy *= -a.restitution; }
+
+      // Obstacle collision
+      for (const ob of obstacles) {
+        const ox = ob.x, oy = ob.y, ow = ob.w, oh = ob.h;
+        const closestX = Math.max(ox - ow/2, Math.min(a.x, ox + ow/2));
+        const closestY = Math.max(oy - oh/2, Math.min(a.y, oy + oh/2));
+        const ddx = a.x - closestX;
+        const ddy = a.y - closestY;
+        const dist = Math.sqrt(ddx*ddx + ddy*ddy);
+        if (dist < a.r) {
+          const nx = ddx / (dist || 1);
+          const ny = ddy / (dist || 1);
+          const overlap = a.r - dist;
+          a.x += nx * overlap;
+          a.y += ny * overlap;
+          const dot = a.vx * nx + a.vy * ny;
+          a.vx -= (1 + a.restitution) * dot * nx;
+          a.vy -= (1 + a.restitution) * dot * ny;
+          collisions++;
+          spawnParticles(a.x, a.y, a.color, 3);
+        }
+      }
+
+      // Agent vs agent collision (rare, but possible)
+      const other = agents[1 - i];
+      const ddx = a.x - other.x;
+      const ddy = a.y - other.y;
+      const dist = Math.sqrt(ddx*ddx + ddy*ddy);
+      const minDist = a.r + other.r;
+      if (dist < minDist && dist > 0.01) {
+        const nx = ddx / dist, ny = ddy / dist;
+        const overlap = minDist - dist;
+        a.x += nx * overlap * 0.5;
+        a.y += ny * overlap * 0.5;
+        other.x -= nx * overlap * 0.5;
+        other.y -= ny * overlap * 0.5;
+        const rvx = a.vx - other.vx;
+        const rvy = a.vy - other.vy;
+        const vn = rvx * nx + rvy * ny;
+        if (vn < 0) {
+          const e = Math.min(a.restitution, other.restitution);
+          const j = -(1 + e) * vn / (1/a.mass + 1/other.mass);
+          a.vx += (j / a.mass) * nx;
+          a.vy += (j / a.mass) * ny;
+          other.vx -= (j / other.mass) * nx;
+          other.vy -= (j / other.mass) * ny;
+          collisions++;
+          spawnParticles((a.x + other.x)/2, (a.y + other.y)/2, '#94a3b8', 5);
+        }
+      }
+
+      // Progress metric (0 to 100 based on x position)
+      a.progress = Math.max(0, Math.min(100, ((a.x - START_X) / (GOAL_X - START_X)) * 100));
+      a.score = Math.round(a.progress);
+    }
+  }
+
+  // ── PARTICLE SYSTEM ────────────────────────────────────────
+  function spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const sp = 40 + Math.random() * 120;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * sp,
+        vy: Math.sin(angle) * sp,
+        life: 1.0,
+        color: color
+      });
+    }
+    if (particles.length > 200) particles.splice(0, particles.length - 200);
+  }
+
+  function updateParticles(dt) {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vx *= 0.96;
+      p.vy *= 0.96;
+      p.life -= dt * 2.2;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  // ── RENDER ─────────────────────────────────────────────────
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#05070b';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid lines
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 80) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += 80) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    // Maze obstacles
+    for (const ob of obstacles) {
+      ctx.fillStyle = ob.lane === -1 ? '#1e293b' : '#1e293b';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(ob.x - ob.w/2, ob.y - ob.h/2, ob.w, ob.h, 4);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Start / Goal markers
+    ctx.fillStyle = '#10b98133';
+    ctx.fillRect(START_X - 30, 0, 30, H);
+    ctx.fillStyle = '#f43f5e22';
+    ctx.fillRect(GOAL_X, 0, 30, H);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '12px monospace';
+    ctx.fillText('START', 10, 30);
+    ctx.fillText('GOAL', W - 60, 30);
+
+    // Goal pulse
+    goalPulse = (goalPulse + 0.02) % (Math.PI * 2);
+    ctx.strokeStyle = `rgba(244, 63, 94, ${0.3 + 0.2 * Math.sin(goalPulse)})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(GOAL_X, 0);
+    ctx.lineTo(GOAL_X, H);
+    ctx.stroke();
+
+    // Particles
+    for (const p of particles) {
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5 * p.life, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Agents
+    for (const a of agents) {
+      // Trail
+      ctx.strokeStyle = a.color + '44';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(START_X, a === TARDIGRADE ? LANE_Y_T : LANE_Y_A);
+      ctx.lineTo(a.x, a.y);
+      ctx.stroke();
+
+      // Agent body
+      ctx.save();
+      ctx.shadowColor = a.color;
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = a.color;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Inner ring
+      ctx.strokeStyle = '#05070b';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r * 0.55, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = '#05070b';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(a.name === 'TARDIGRADE' ? 'T' : 'A', a.x, a.y);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+    }
+
+    // Progress bars at top
+    const barW = 240, barH = 14, barY = H - 40;
+    // Tardigrade bar
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(40, barY, barW, barH);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(40, barY, barW * (TARDIGRADE.progress / 100), barH);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(40, barY, barW, barH);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '11px monospace';
+    ctx.fillText('TARDIGRADE', 40, barY - 6);
+
+    // Archaea bar
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(W - 40 - barW, barY, barW, barH);
+    ctx.fillStyle = '#f43f5e';
+    ctx.fillRect(W - 40 - barW, barY, barW * (ARCHAEA.progress / 100), barH);
+    ctx.strokeStyle = '#f43f5e';
+    ctx.strokeRect(W - 40 - barW, barY, barW, barH);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('ARCHAEA', W - 40 - barW, barY - 6);
+  }
+
+  // ── UI UPDATE ──────────────────────────────────────────────
+  function updateUI() {
+    const tScore = Math.round(TARDIGRADE.progress);
+    const aScore = Math.round(ARCHAEA.progress);
+    kpiTardigrade.textContent = tScore;
+    kpiArchaea.textContent = aScore;
+    kpiCollisions.textContent = collisions;
+    kpiTime.textContent = elapsed.toFixed(1) + 's';
+
+    sideTardigrade.textContent = tScore;
+    sideArchaea.textContent = aScore;
+    sideDelta.textContent = Math.abs(tScore - aScore);
+
+    if (tScore > aScore) sideLeader.textContent = 'TARDIGRADE';
+    else if (aScore > tScore) sideLeader.textContent = 'ARCHAEA';
+    else sideLeader.textContent = 'TIE';
+
+    tblTardigrade.textContent = tScore;
+    tblArchaea.textContent = aScore;
+
+    ovGravity.textContent = gravity.toFixed(1);
+    ovDamping.textContent = damping.toFixed(3);
+    ovCount.textContent = agents.length;
+  }
+
+  // ── MAIN LOOP ──────────────────────────────────────────────
+  let lastTimestamp = performance.now();
+
+  function loop(timestamp) {
+    const rawDt = (timestamp - lastTimestamp) / 1000;
+    const dt = Math.min(rawDt, 0.05);
+    lastTimestamp = timestamp;
+
+    if (!paused) {
+      elapsed += dt;
+      stepPhysics(dt);
+      updateParticles(dt);
+    }
+
+    render();
+    updateUI();
+
+    // FPS
+    frameCount++;
+    const now = performance.now();
+    if (now - lastFpsTime >= 500) {
+      fpsValue = Math.round(frameCount / ((now - lastFpsTime) / 1000));
+      fpsDisplay.textContent = fpsValue + ' FPS · MATTER.JS';
+      frameCount = 0;
+      lastFpsTime = now;
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  // ── RESET ──────────────────────────────────────────────────
+  function resetSim() {
+    elapsed = 0;
+    collisions = 0;
+    particles = [];
+
+    TARDIGRADE.x = START_X; TARDIGRADE.y = LANE_Y_T;
+    TARDIGRADE.vx = 0; TARDIGRADE.vy = 0; TARDIGRADE.progress = 0; TARDIGRADE.score = 0;
+    ARCHAEA.x = START_X; ARCHAEA.y = LANE_Y_A;
+    ARCHAEA.vx = 0; ARCHAEA.vy = 0; ARCHAEA.progress = 0; ARCHAEA.score = 0;
+
+    buildMaze();
+    updateUI();
+  }
+
+  // ── PRESETS ────────────────────────────────────────────────
+  function applyPreset(name) {
+    switch (name) {
+      case 'default':
+        gravity = 1.0; damping = 0.02; speedMul = 1.0; mazeComplexity = 3;
+        break;
+      case 'microgravity':
+        gravity = 0.3; damping = 0.01; speedMul = 1.2; mazeComplexity = 2;
+        break;
+      case 'hypergravity':
+        gravity = 2.4; damping = 0.04; speedMul = 1.0; mazeComplexity = 4;
+        break;
+      case 'vacuum':
+        gravity = 1.0; damping = 0.0; speedMul = 1.6; mazeComplexity = 3;
+        break;
+      case 'chaos':
+        gravity = 1.8; damping = 0.05; speedMul = 2.4; mazeComplexity = 5;
+        break;
+    }
+    syncSliders();
+    resetSim();
+    document.querySelectorAll('.scenario-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.preset === name);
+    });
+  }
+
+  function syncSliders() {
+    gravitySlider.value = gravity;
+    dampingSlider.value = damping;
+    speedSlider.value = speedMul;
+    mazeSlider.value = mazeComplexity;
+    gravityVal.textContent = gravity.toFixed(1);
+    dampingVal.textContent = damping.toFixed(3);
+    speedVal.textContent = speedMul.toFixed(1);
+    mazeVal.textContent = mazeComplexity;
+  }
+
+  // ── EVENT LISTENERS ────────────────────────────────────────
+  gravitySlider.addEventListener('input', (e) => {
+    gravity = parseFloat(e.target.value);
+    gravityVal.textContent = gravity.toFixed(1);
+  });
+  dampingSlider.addEventListener('input', (e) => {
+    damping = parseFloat(e.target.value);
+    dampingVal.textContent = damping.toFixed(3);
+  });
+  speedSlider.addEventListener('input', (e) => {
+    speedMul = parseFloat(e.target.value);
+    speedVal.textContent = speedMul.toFixed(1);
+  });
+  mazeSlider.addEventListener('input', (e) => {
+    mazeComplexity = parseInt(e.target.value, 10);
+    mazeVal.textContent = mazeComplexity;
+    buildMaze();
+    resetSim();
+  });
+
+  document.querySelectorAll('.scenario-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+  });
+
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? '▶ RESUME' : '⏸ PAUSE';
+  });
+
+  resetBtn.addEventListener('click', resetSim);
+
+  // ── EXPORT CSV ─────────────────────────────────────────────
+  exportCsvBtn.addEventListener('click', () => {
+    const now = new Date().toISOString();
+    const rows = [
+      ['# KINETICZEN LABS TELEMETRY EXPORT'],
+      ['# Timestamp', now],
+      ['# Simulation', 'Tardigrade vs Archaea: Extreme Ball Maze Physics'],
+      ['#'],
+      ['Metric', 'Tardigrade', 'Archaea', 'Combined'],
+      ['Score (progress %)', TARDIGRADE.progress.toFixed(2), ARCHAEA.progress.toFixed(2), ''],
+      ['Mass (kg)', '0.42', '0.38', ''],
+      ['Restitution', '0.72', '0.65', ''],
+      ['Friction', '0.08', '0.12', ''],
+      ['Collision Events', collisions, '', ''],
+      ['Elapsed Time (s)', elapsed.toFixed(2), '', ''],
+      ['Gravity (g)', gravity.toFixed(2), '', ''],
+      ['Damping', damping.toFixed(3), '', ''],
+      ['Speed Multiplier', speedMul.toFixed(2), '', ''],
+      ['Maze Complexity', mazeComplexity, '', ''],
+      ['Leader', (TARDIGRADE.progress > ARCHAEA.progress ? 'TARDIGRADE' : (ARCHAEA.progress > TARDIGRADE.progress ? 'ARCHAEA' : 'TIE')), '', '']
+    ];
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kineticzen_tardigrade_vs_archaea_telemetry.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // ── COPY SCENARIO LINK ─────────────────────────────────────
+  copyLinkBtn.addEventListener('click', () => {
+    const base = 'https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/tardigrade-vs-archaea-extreme-ball-maze-physics.html';
+    const params = new URLSearchParams({
+      g: gravity.toFixed(1),
+      d: damping.toFixed(3),
+      s: speedMul.toFixed(1),
+      m: String(mazeComplexity)
+    });
+    const url = base + '?' + params.toString();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        copyLinkBtn.textContent = '✓ COPIED';
+        setTimeout(() => { copyLinkBtn.textContent = '🔗 COPY SCENARIO LINK'; }, 1800);
+      }).catch(() => {
+        fallbackCopy(url);
+      });
+    } else {
+      fallbackCopy(url);
+    }
+  });
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      copyLinkBtn.textContent = '✓ COPIED';
+    } catch (e) {
+      copyLinkBtn.textContent = '⚠ COPY FAILED';
+    }
+    document.body.removeChild(ta);
+    setTimeout(() => { copyLinkBtn.textContent = '🔗 COPY SCENARIO LINK'; }, 1800);
+  }
+
+  // ── FAQ TOGGLE ─────────────────────────────────────────────
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.dataset.faq;
+      const answer = document.getElementById('faq-' + idx);
+      btn.classList.toggle('open');
+      answer.classList.toggle('open');
+    });
+  });
+
+  // ── LOAD FROM URL PARAMS ───────────────────────────────────
+  function loadFromParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('g')) gravity = Math.min(3.0, Math.max(0.2, parseFloat(params.get('g')) || 1.0));
+    if (params.has('d')) damping = Math.min(0.10, Math.max(0.0, parseFloat(params.get('d')) || 0.02));
+    if (params.has('s')) speedMul = Math.min(3.0, Math.max(0.5, parseFloat(params.get('s')) || 1.0));
+    if (params.has('m')) mazeComplexity = Math.min(5, Math.max(1, parseInt(params.get('m'), 10) || 3));
+    syncSliders();
+  }
+
+  // ── INIT ───────────────────────────────────────────────────
+  loadFromParams();
+  buildMaze();
+  resetSim();
+  requestAnimationFrame(loop);
+
+  // Resize observer to keep canvas crisp
+  const resizeObserver = new ResizeObserver(() => {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+  });
+  resizeObserver.observe(canvas.parentElement);
+
+  // Polyfill roundRect if needed
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      this.moveTo(x + r, y);
+      this.arcTo(x + w, y, x + w, y + h, r);
+      this.arcTo(x + w, y + h, x, y + h, r);
+      this.arcTo(x, y + h, x, y, r);
+      this.arcTo(x, y, x + w, y, r);
+      this.closePath();
+      return this;
+    };
+  }
+
+})();
+</script>
+</body>
+</html>
