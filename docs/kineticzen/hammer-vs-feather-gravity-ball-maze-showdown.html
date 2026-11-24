@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hammer vs Feather · Gravity Ball Maze · KINETICZEN LABS</title>
+  <meta name="description" content="Interactive rigid-body gravity maze showdown: hammer vs feather. Real-time telemetry, presets, and CSV export.">
+  <style>
+    /* ---- RESET / DARK INSTITUTIONAL THEME ---- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .workstation {
+      max-width: 1440px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ---- HEADER / BRAND ---- */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 16px;
+    }
+
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+    }
+
+    .brand h1 span.accent {
+      color: #f43f5e;
+    }
+
+    .brand .sub {
+      font-size: 0.8rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    .portal-link {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: border-color 0.2s, color 0.2s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .portal-link:hover {
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+
+    /* ---- MAIN GRID: CANVAS + CONTROLS ---- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ---- CANVAS CARD ---- */
+    .canvas-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .canvas-header h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-strip {
+      display: flex;
+      gap: 24px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    .kpi-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kpi-label {
+      font-size: 0.65rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .kpi-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+
+    .kpi-value.accent-a { color: #f43f5e; }
+    .kpi-value.accent-b { color: #38bdf8; }
+
+    #simCanvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      display: block;
+      cursor: default;
+    }
+
+    /* ---- CONTROLS PANEL ---- */
+    .controls-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      background: transparent;
+      height: 6px;
+      border-radius: 3px;
+      background: #1e293b;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f43f5e;
+      border: 2px solid #0b0f17;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .slider-row input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .slider-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      min-width: 48px;
+      text-align: right;
+    }
+
+    .preset-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #94a3b8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+
+    .preset-btn.active {
+      border-color: #f43f5e;
+      background: rgba(244, 63, 94, 0.1);
+      color: #f43f5e;
+    }
+
+    .action-btn {
+      background: #f43f5e;
+      border: none;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-align: center;
+      width: 100%;
+    }
+
+    .action-btn:hover {
+      background: #e11d48;
+    }
+
+    .action-btn.secondary {
+      background: transparent;
+      border: 1px solid #1e293b;
+      color: #94a3b8;
+    }
+
+    .action-btn.secondary:hover {
+      border-color: #f43f5e;
+      color: #f43f5e;
+      background: rgba(244, 63, 94, 0.05);
+    }
+
+    .divider {
+      height: 1px;
+      background: #1e293b;
+      width: 100%;
+    }
+
+    /* ---- TABLE CARD ---- */
+    .table-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .table-card h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .telemetry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .telemetry-table th {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid #1e293b;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.7rem;
+    }
+
+    .telemetry-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      color: #cbd5e1;
+    }
+
+    .telemetry-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .telemetry-table td:first-child {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .tag-a {
+      color: #f43f5e;
+      background: rgba(244, 63, 94, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    .tag-b {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    /* ---- FAQ + VIDEO GRID ---- */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .faq-card,
+    .video-card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .faq-card h2,
+    .video-card h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .faq-item {
+      margin-bottom: 16px;
+    }
+
+    .faq-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #05070b;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ---- FOOTER ---- */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #1e293b;
+      padding-top: 16px;
+      font-size: 0.75rem;
+      color: #475569;
+    }
+
+    .footer a {
+      color: #64748b;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .footer a:hover {
+      color: #f43f5e;
+    }
+  </style>
+</head>
+<body>
+  <div class="workstation">
+    <!-- BRAND BAR -->
+    <header class="brand-bar">
+      <div class="brand">
+        <h1><span class="accent">KINETICZEN</span> LABS</h1>
+        <div class="sub">Hammer vs Feather · Gravity Ball Maze Showdown</div>
+      </div>
+      <a class="portal-link" href="./index.html">← Return to Portal</a>
+    </header>
+
+    <!-- MAIN GRID: CANVAS + CONTROLS -->
+    <div class="main-grid">
+      <!-- LEFT: CANVAS + KPI -->
+      <div class="canvas-card">
+        <div class="canvas-header">
+          <h2>Rigid-Body Telemetry · 60 FPS</h2>
+          <div class="kpi-strip">
+            <div class="kpi-item">
+              <span class="kpi-label">HAMMER (A)</span>
+              <span class="kpi-value accent-a" id="kpiHammer">0.00</span>
+            </div>
+            <div class="kpi-item">
+              <span class="kpi-label">FEATHER (B)</span>
+              <span class="kpi-value accent-b" id="kpiFeather">0.00</span>
+            </div>
+            <div class="kpi-item">
+              <span class="kpi-label">Δ TIME</span>
+              <span class="kpi-value" id="kpiDelta">0.00</span>
+            </div>
+          </div>
+        </div>
+        <canvas id="simCanvas" width="1280" height="720"></canvas>
+      </div>
+
+      <!-- RIGHT: CONTROLS -->
+      <div class="controls-card">
+        <div class="control-group">
+          <label>Gravity (m/s²)</label>
+          <div class="slider-row">
+            <input type="range" id="gravitySlider" min="0" max="20" step="0.1" value="9.8">
+            <span class="slider-value" id="gravityValue">9.8</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Air Resistance (κ)</label>
+          <div class="slider-row">
+            <input type="range" id="dragSlider" min="0" max="1" step="0.01" value="0.0">
+            <span class="slider-value" id="dragValue">0.00</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Maze Complexity</label>
+          <div class="slider-row">
+            <input type="range" id="mazeSlider" min="1" max="5" step="1" value="3">
+            <span class="slider-value" id="mazeValue">3</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="control-group">
+          <label>Scenario Presets</label>
+          <div class="preset-row">
+            <button class="preset-btn active" data-preset="earth">Earth</button>
+            <button class="preset-btn" data-preset="moon">Moon</button>
+            <button class="preset-btn" data-preset="jupiter">Jupiter</button>
+            <button class="preset-btn" data-preset="vacuum">Vacuum</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="action-btn" id="runBtn">▶ RUN SIMULATION</button>
+        <button class="action-btn secondary" id="resetBtn">↺ Reset to Start</button>
+        <button class="action-btn secondary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+        <button class="action-btn secondary" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+      </div>
+    </div>
+
+    <!-- TELEMETRY TABLE -->
+    <div class="table-card">
+      <h2>Analytical Breakdown · Hammer vs Feather</h2>
+      <table class="telemetry-table" id="telemetryTable">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>HAMMER (A)</th>
+            <th>FEATHER (B)</th>
+            <th>Delta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Mass (kg)</td><td>5.00</td><td>0.05</td><td>4.95</td></tr>
+          <tr><td>Drag Coefficient</td><td id="tdHammerDrag">0.00</td><td id="tdFeatherDrag">0.00</td><td id="tdDeltaDrag">0.00</td></tr>
+          <tr><td>Terminal Velocity (m/s)</td><td id="tdHammerTerm">—</td><td id="tdFeatherTerm">—</td><td id="tdDeltaTerm">—</td></tr>
+          <tr><td>Maze Completion (s)</td><td id="tdHammerTime">—</td><td id="tdFeatherTime">—</td><td id="tdDeltaTime">—</td></tr>
+          <tr><td>Collisions (approx)</td><td id="tdHammerColl">—</td><td id="tdFeatherColl">—</td><td id="tdDeltaColl">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- BOTTOM: FAQ + VIDEO -->
+    <div class="bottom-grid">
+      <div class="faq-card">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+          <div class="faq-q">Why does the hammer fall faster than the feather?</div>
+          <div class="faq-a">In a vacuum, both fall identically. With air resistance, the feather's high surface-area-to-mass ratio creates significant drag, while the hammer's dense mass overwhelms it. This simulation lets you adjust gravity and drag to see the crossover point.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What does the 'Maze Complexity' slider do?</div>
+          <div class="faq-a">It procedurally modifies the internal maze geometry, adding or removing obstacle rows and switchbacks. Higher complexity increases path length and collision count, exaggerating the time delta between hammer and feather.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is the CSV telemetry generated?</div>
+          <div class="faq-a">On each completed run, the simulation captures per-frame position, velocity, and collision events. The export button serializes these into a standard CSV file with timestamped rows for both bodies.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I reproduce the exact video conditions?</div>
+          <div class="faq-a">Yes. Click the "Vacuum" preset to remove air resistance, then set gravity to 9.8 m/s². Both bodies will complete the maze in nearly identical times, showcasing the equivalence principle.</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <h2>Embedded Stream · Hammer vs Feather</h2>
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/lRPDW6CZ8MM" title="Hammer vs Feather: Gravity Ball Maze Showdown" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <span>KINETICZEN LABS · Rigid-Body Physics Workstation · v2.1.0</span>
+      <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/hammer-vs-feather-gravity-ball-maze-showdown.html" target="_blank">Canonical</a>
+    </footer>
+  </div>
+
+  <!-- JSON-LD SCHEMA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Hammer vs Feather · Gravity Ball Maze Showdown",
+    "applicationCategory": "Physics Simulation",
+    "operatingSystem": "Web Browser",
+    "author": {
+      "@type": "Organization",
+      "name": "KINETICZEN LABS"
+    },
+    "description": "Interactive rigid-body gravity maze rivalry simulation comparing hammer and feather with real-time telemetry, presets, and CSV export.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/hammer-vs-feather-gravity-ball-maze-showdown.html"
+  }
+  </script>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ---- DOM REFS ----
+      const canvas = document.getElementById('simCanvas');
+      const ctx = canvas.getContext('2d');
+      const gravitySlider = document.getElementById('gravitySlider');
+      const gravityValue = document.getElementById('gravityValue');
+      const dragSlider = document.getElementById('dragSlider');
+      const dragValue = document.getElementById('dragValue');
+      const mazeSlider = document.getElementById('mazeSlider');
+      const mazeValue = document.getElementById('mazeValue');
+      const runBtn = document.getElementById('runBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
+      const kpiHammer = document.getElementById('kpiHammer');
+      const kpiFeather = document.getElementById('kpiFeather');
+      const kpiDelta = document.getElementById('kpiDelta');
+
+      // Table cells
+      const tdHammerDrag = document.getElementById('tdHammerDrag');
+      const tdFeatherDrag = document.getElementById('tdFeatherDrag');
+      const tdDeltaDrag = document.getElementById('tdDeltaDrag');
+      const tdHammerTerm = document.getElementById('tdHammerTerm');
+      const tdFeatherTerm = document.getElementById('tdFeatherTerm');
+      const tdDeltaTerm = document.getElementById('tdDeltaTerm');
+      const tdHammerTime = document.getElementById('tdHammerTime');
+      const tdFeatherTime = document.getElementById('tdFeatherTime');
+      const tdDeltaTime = document.getElementById('tdDeltaTime');
+      const tdHammerColl = document.getElementById('tdHammerColl');
+      const tdFeatherColl = document.getElementById('tdFeatherColl');
+      const tdDeltaColl = document.getElementById('tdDeltaColl');
+
+      // ---- SIMULATION STATE ----
+      const W = canvas.width;   // 1280
+      const H = canvas.height;  // 720
+      const FPS = 60;
+      const DT = 1 / FPS;
+
+      // Physical constants
+      const MASS_HAMMER = 5.0;
+      const MASS_FEATHER = 0.05;
+      const BASE_DRAG = 0.002;
+
+      // Maze geometry (procedural based on complexity)
+      let mazeWalls = [];
+
+      // Body state
+      const bodies = {
+        hammer: {
+          x: 80, y: 80, vx: 0, vy: 0,
+          r: 16, mass: MASS_HAMMER, dragCoef: BASE_DRAG,
+          color: '#f43f5e', label: 'HAMMER', name: 'A',
+          finished: false, finishTime: 0, collisions: 0,
+          trail: []
+        },
+        feather: {
+          x: 80, y: 160, vx: 0, vy: 0,
+          r: 12, mass: MASS_FEATHER, dragCoef: BASE_DRAG * 4,
+          color: '#38bdf8', label: 'FEATHER', name: 'B',
+          finished: false, finishTime: 0, collisions: 0,
+          trail: []
+        }
+      };
+
+      let gravity = 9.8;
+      let globalDrag = 0.0;
+      let mazeComplexity = 3;
+      let simTime = 0;
+      let running = false;
+      let animId = null;
+
+      // Telemetry frame buffer
+      let frameBuffer = [];
+
+      // ---- PRESETS ----
+      const presets = {
+        earth:   { gravity: 9.8,  drag: 0.0 },
+        moon:    { gravity: 1.62, drag: 0.0 },
+        jupiter: { gravity: 24.8, drag: 0.0 },
+        vacuum:  { gravity: 9.8,  drag: 0.0 }
+      };
+
+      // ---- MAZE GENERATOR ----
+      function generateMaze(complexity) {
+        const walls = [];
+        const margin = 60;
+        const rows = 2 + complexity; // 3..7 rows
+        const rowH = (H - margin * 2) / (rows + 1);
+
+        // Outer boundary (thick border) - we draw as walls
+        const b = 20;
+        walls.push({ x: 0, y: 0, w: b, h: H });           // left
+        walls.push({ x: W - b, y: 0, w: b, h: H });       // right
+        walls.push({ x: 0, y: 0, w: W, h: b });           // top
+        walls.push({ x: 0, y: H - b, w: W, h: b });       // bottom
+
+        // Internal horizontal dividers with alternating gaps
+        for (let i = 1; i <= rows; i++) {
+          const y = margin + i * rowH - rowH / 2;
+          const gapW = 80 + (complexity * 10);
+          // Alternate gap position
+          const gapSide = (i % 2 === 0);
+          const gapX = gapSide ? (W * 0.25 + Math.random() * 100) : (W * 0.6 + Math.random() * 100);
+          // Left segment
+          walls.push({ x: b, y: y, w: Math.max(40, gapX - b - gapW/2), h: 14 });
+          // Right segment
+          const rightStart = gapX + gapW/2;
+          if (rightStart < W - b - 40) {
+            walls.push({ x: rightStart, y: y, w: W - b - rightStart, h: 14 });
+          }
+        }
+
+        // Vertical baffles for complexity
+        for (let i = 0; i < complexity * 2; i++) {
+          const vx = margin + 80 + (i * (W - margin*2 - 160) / (complexity * 2 + 1));
+          const vy = margin + rowH * (0.3 + Math.random() * (rows - 0.6));
+          walls.push({ x: vx, y: vy, w: 12, h: rowH * 0.7 });
+        }
+
+        // Finish zone at bottom right
+        // (we'll detect when body enters this zone)
+        return walls;
+      }
+
+      // ---- PHYSICS HELPERS ----
+      function resetBodies() {
+        bodies.hammer.x = 80; bodies.hammer.y = 80;
+        bodies.hammer.vx = 0; bodies.hammer.vy = 0;
+        bodies.hammer.finished = false; bodies.hammer.finishTime = 0;
+        bodies.hammer.collisions = 0; bodies.hammer.trail = [];
+
+        bodies.feather.x = 80; bodies.feather.y = 160;
+        bodies.feather.vx = 0; bodies.feather.vy = 0;
+        bodies.feather.finished = false; bodies.feather.finishTime = 0;
+        bodies.feather.collisions = 0; bodies.feather.trail = [];
+
+        simTime = 0;
+        frameBuffer = [];
+      }
+
+      function computeTerminalVelocity(mass, dragCoef) {
+        if (dragCoef <= 0.0001) return Infinity;
+        return Math.sqrt((mass * gravity) / dragCoef);
+      }
+
+      // ---- RENDER ----
+      function render() {
+        // Clear
+        ctx.fillStyle = '#05070b';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 64) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 64) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+
+        // Maze walls
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        mazeWalls.forEach(w => {
+          ctx.fillRect(w.x, w.y, w.w, w.h);
+          ctx.strokeRect(w.x, w.y, w.w, w.h);
+        });
+
+        // Finish zone
+        ctx.fillStyle = 'rgba(244, 63, 94, 0.12)';
+        ctx.fillRect(W - 140, H - 140, 120, 120);
+        ctx.strokeStyle = '#f43f5e';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(W - 140, H - 140, 120, 120);
+        ctx.fillStyle = '#f43f5e';
+        ctx.font = '600 14px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('FINISH', W - 80, H - 65);
+        ctx.textAlign = 'left';
+
+        // Draw trails
+        ['hammer', 'feather'].forEach(key => {
+          const b = bodies[key];
+          if (b.trail.length > 1) {
+            ctx.beginPath();
+            ctx.strokeStyle = b.color;
+            ctx.globalAlpha = 0.25;
+            ctx.lineWidth = 2;
+            ctx.moveTo(b.trail[0].x, b.trail[0].y);
+            for (let i = 1; i < b.trail.length; i++) {
+              ctx.lineTo(b.trail[i].x, b.trail[i].y);
+            }
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+          }
+        });
+
+        // Draw bodies
+        ['hammer', 'feather'].forEach(key => {
+          const b = bodies[key];
+          // Glow
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r + 6, 0, Math.PI * 2);
+          ctx.fillStyle = b.color + '20';
+          ctx.fill();
+
+          // Body
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+          ctx.fillStyle = b.color;
+          ctx.fill();
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Label
+          ctx.fillStyle = '#fff';
+          ctx.font = '600 10px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(b.name, b.x, b.y + 3);
+          ctx.textAlign = 'left';
+        });
+
+        // Info overlay
+        ctx.fillStyle = 'rgba(5, 7, 11, 0.85)';
+        ctx.fillRect(20, H - 50, 300, 32);
+        ctx.strokeStyle = '#1e293b';
+        ctx.strokeRect(20, H - 50, 300, 32);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '500 12px JetBrains Mono, monospace';
+        ctx.fillText(`t=${simTime.toFixed(2)}s · g=${gravity.toFixed(1)} · κ=${globalDrag.toFixed(2)}`, 32, H - 30);
+      }
+
+      // ---- UPDATE PHYSICS ----
+      function updatePhysics() {
+        const g = gravity;
+        const pairs = ['hammer', 'feather'];
+
+        pairs.forEach(key => {
+          const b = bodies[key];
+          if (b.finished) return;
+
+          // Drag force: F_d = -dragCoef * v * |v|
+          const speed = Math.hypot(b.vx, b.vy);
+          let dragFx = 0, dragFy = 0;
+          if (speed > 0.001 && globalDrag > 0.0001) {
+            const effectiveDrag = b.dragCoef * (globalDrag * 10 + 0.5);
+            dragFx = -effectiveDrag * b.vx * speed;
+            dragFy = -effectiveDrag * b.vy * speed;
+          }
+
+          // Apply forces
+          const fx = dragFx;
+          const fy = b.mass * g + dragFy;
+          const ax = fx / b.mass;
+          const ay = fy / b.mass;
+
+          // Integrate
+          b.vx += ax * DT;
+          b.vy += ay * DT;
+          b.x += b.vx * DT * 60;
+          b.y += b.vy * DT * 60;
+
+          // Trail
+          b.trail.push({ x: b.x, y: b.y });
+          if (b.trail.length > 80) b.trail.shift();
+
+          // Collision with walls (circle vs AABB)
+          mazeWalls.forEach(w => {
+            const closestX = Math.max(w.x, Math.min(b.x, w.x + w.w));
+            const closestY = Math.max(w.y, Math.min(b.y, w.y + w.h));
+            const dx = b.x - closestX;
+            const dy = b.y - closestY;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < b.r && dist > 0.001) {
+              // Push out
+              const overlap = b.r - dist;
+              const nx = dx / dist;
+              const ny = dy / dist;
+              b.x += nx * overlap;
+              b.y += ny * overlap;
+
+              // Reflect velocity
+              const dot = b.vx * nx + b.vy * ny;
+              if (dot < 0) {
+                b.vx -= 1.6 * dot * nx;
+                b.vy -= 1.6 * dot * ny;
+                b.collisions++;
+              }
+            }
+          });
+
+          // Boundary fallback
+          if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx) * 0.5; b.collisions++; }
+          if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx) * 0.5; b.collisions++; }
+          if (b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy) * 0.5; b.collisions++; }
+          if (b.y > H - b.r) { b.y = H - b.r; b.vy = -Math.abs(b.vy) * 0.5; b.collisions++; }
+
+          // Finish detection
+          if (b.x > W - 140 && b.y > H - 140 && !b.finished) {
+            b.finished = true;
+            b.finishTime = simTime;
+          }
+        });
+
+        simTime += DT;
+
+        // Record telemetry frame
+        frameBuffer.push({
+          time: simTime,
+          hammerX: bodies.hammer.x, hammerY: bodies.hammer.y,
+          hammerVx: bodies.hammer.vx, hammerVy: bodies.hammer.vy,
+          featherX: bodies.feather.x, featherY: bodies.feather.y,
+          featherVx: bodies.feather.vx, featherVy: bodies.feather.vy
+        });
+
+        // Stop if both finished
+        if (bodies.hammer.finished && bodies.feather.finished) {
+          running = false;
+          updateKPIAndTable();
+          return;
+        }
+
+        // Auto-stop after 20s
+        if (simTime > 20) {
+          running = false;
+          updateKPIAndTable();
+          return;
+        }
+
+        updateKPIAndTable();
+      }
+
+      // ---- UI UPDATES ----
+      function updateKPIAndTable() {
+        kpiHammer.textContent = bodies.hammer.finished ? bodies.hammer.finishTime.toFixed(2) : simTime.toFixed(2);
+        kpiFeather.textContent = bodies.feather.finished ? bodies.feather.finishTime.toFixed(2) : simTime.toFixed(2);
+        const d = Math.abs((bodies.hammer.finished ? bodies.hammer.finishTime : simTime) -
+                           (bodies.feather.finished ? bodies.feather.finishTime : simTime));
+        kpiDelta.textContent = d.toFixed(2);
+
+        // Drag coeffs (display)
+        tdHammerDrag.textContent = bodies.hammer.dragCoef.toFixed(3);
+        tdFeatherDrag.textContent = bodies.feather.dragCoef.toFixed(3);
+        tdDeltaDrag.textContent = Math.abs(bodies.hammer.dragCoef - bodies.feather.dragCoef).toFixed(3);
+
+        // Terminal velocity
+        const hv = computeTerminalVelocity(MASS_HAMMER, bodies.hammer.dragCoef);
+        const fv = computeTerminalVelocity(MASS_FEATHER, bodies.feather.dragCoef);
+        tdHammerTerm.textContent = isFinite(hv) ? hv.toFixed(2) : '∞';
+        tdFeatherTerm.textContent = isFinite(fv) ? fv.toFixed(2) : '∞';
+        tdDeltaTerm.textContent = (isFinite(hv) && isFinite(fv)) ? Math.abs(hv - fv).toFixed(2) : '—';
+
+        // Maze completion
+        tdHammerTime.textContent = bodies.hammer.finished ? bodies.hammer.finishTime.toFixed(2) : '—';
+        tdFeatherTime.textContent = bodies.feather.finished ? bodies.feather.finishTime.toFixed(2) : '—';
+        const dt = (bodies.hammer.finished && bodies.feather.finished) ?
+          Math.abs(bodies.hammer.finishTime - bodies.feather.finishTime).toFixed(2) : '—';
+        tdDeltaTime.textContent = dt;
+
+        // Collisions
+        tdHammerColl.textContent = bodies.hammer.collisions;
+        tdFeatherColl.textContent = bodies.feather.collisions;
+        tdDeltaColl.textContent = Math.abs(bodies.hammer.collisions - bodies.feather.collisions);
+      }
+
+      // ---- LOOP ----
+      function loop() {
+        if (running) {
+          updatePhysics();
+          render();
+          if (running) {
+            animId = requestAnimationFrame(loop);
+          }
+        } else {
+          render();
+        }
+      }
+
+      // ---- CONTROLS ----
+      gravitySlider.addEventListener('input', () => {
+        gravity = parseFloat(gravitySlider.value);
+        gravityValue.textContent = gravity.toFixed(1);
+        if (!running) updateKPIAndTable();
+      });
+
+      dragSlider.addEventListener('input', () => {
+        globalDrag = parseFloat(dragSlider.value);
+        dragValue.textContent = globalDrag.toFixed(2);
+        // Update drag coefficients proportionally
+        bodies.hammer.dragCoef = BASE_DRAG + globalDrag * 0.5;
+        bodies.feather.dragCoef = BASE_DRAG * 4 + globalDrag * 2.0;
+        if (!running) updateKPIAndTable();
+      });
+
+      mazeSlider.addEventListener('input', () => {
+        mazeComplexity = parseInt(mazeSlider.value);
+        mazeValue.textContent = mazeComplexity;
+        mazeWalls = generateMaze(mazeComplexity);
+        if (!running) render();
+      });
+
+      // ---- PRESET BUTTONS ----
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const key = btn.dataset.preset;
+          const p = presets[key];
+          gravity = p.gravity;
+          globalDrag = p.drag;
+          gravitySlider.value = gravity;
+          gravityValue.textContent = gravity.toFixed(1);
+          dragSlider.value = globalDrag;
+          dragValue.textContent = globalDrag.toFixed(2);
+          bodies.hammer.dragCoef = BASE_DRAG + globalDrag * 0.5;
+          bodies.feather.dragCoef = BASE_DRAG * 4 + globalDrag * 2.0;
+          resetBodies();
+          running = false;
+          if (animId) cancelAnimationFrame(animId);
+          render();
+          updateKPIAndTable();
+        });
+      });
+
+      // ---- RUN / RESET ----
+      runBtn.addEventListener('click', () => {
+        if (running) return;
+        resetBodies();
+        running = true;
+        render();
+        loop();
+      });
+
+      resetBtn.addEventListener('click', () => {
+        running = false;
+        if (animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+        resetBodies();
+        render();
+        updateKPIAndTable();
+      });
+
+      // ---- EXPORT CSV ----
+      exportCsvBtn.addEventListener('click', () => {
+        if (frameBuffer.length === 0) {
+          alert('No telemetry data. Run the simulation first.');
+          return;
+        }
+        const headers = ['time',
+          'hammer_x','hammer_y','hammer_vx','hammer_vy',
+          'feather_x','feather_y','feather_vx','feather_vy'];
+        const rows = frameBuffer.map(f => [
+          f.time.toFixed(4),
+          f.hammerX.toFixed(2), f.hammerY.toFixed(2),
+          f.hammerVx.toFixed(2), f.hammerVy.toFixed(2),
+          f.featherX.toFixed(2), f.featherY.toFixed(2),
+          f.featherVx.toFixed(2), f.featherVy.toFixed(2)
+        ].join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `kineticzen_hammer_vs_feather_telemetry_${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // ---- COPY SCENARIO LINK ----
+      copyLinkBtn.addEventListener('click', () => {
+        const params = new URLSearchParams({
+          g: gravity.toFixed(1),
+          d: globalDrag.toFixed(2),
+          m: mazeComplexity
+        });
+        const link = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+        navigator.clipboard.writeText(link).then(() => {
+          const original = copyLinkBtn.textContent;
+          copyLinkBtn.textContent = '✓ Copied!';
+          setTimeout(() => { copyLinkBtn.textContent = original; }, 1500);
+        }).catch(() => {
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = link;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          copyLinkBtn.textContent = '✓ Copied!';
+          setTimeout(() => { copyLinkBtn.textContent = '🔗 Copy Scenario Link'; }, 1500);
+        });
+      });
+
+      // ---- URL PARAMS RESTORE ----
+      function restoreFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('g')) {
+          gravity = parseFloat(params.get('g')) || 9.8;
+          gravitySlider.value = gravity;
+          gravityValue.textContent = gravity.toFixed(1);
+        }
+        if (params.has('d')) {
+          globalDrag = parseFloat(params.get('d')) || 0;
+          dragSlider.value = globalDrag;
+          dragValue.textContent = globalDrag.toFixed(2);
+        }
+        if (params.has('m')) {
+          mazeComplexity = parseInt(params.get('m')) || 3;
+          mazeSlider.value = mazeComplexity;
+          mazeValue.textContent = mazeComplexity;
+        }
+        bodies.hammer.dragCoef = BASE_DRAG + globalDrag * 0.5;
+        bodies.feather.dragCoef = BASE_DRAG * 4 + globalDrag * 2.0;
+      }
+
+      // ---- INIT ----
+      function init() {
+        restoreFromURL();
+        mazeWalls = generateMaze(mazeComplexity);
+        resetBodies();
+        render();
+        updateKPIAndTable();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
