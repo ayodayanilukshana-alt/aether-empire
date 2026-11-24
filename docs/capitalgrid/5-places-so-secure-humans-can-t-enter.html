@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPITALGRID · Secure Fortress Telemetry</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .workstation {
+      max-width: 1600px;
+      width: 100%;
+    }
+    /* header / brand */
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo span {
+      color: #f1f5f9;
+      font-weight: 400;
+    }
+    .portal-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid #1e293b;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      transition: 0.2s;
+    }
+    .portal-link:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+    /* main grid: left panel + right viz */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+    @media (max-width: 1000px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 1.5rem 1.25rem;
+    }
+    .card-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-title .accent-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    /* sliders */
+    .slider-group {
+      margin-bottom: 1.35rem;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+    .slider-header .label {
+      color: #cbd5e1;
+    }
+    .slider-header .value {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: #10b981;
+      background: #1e293b30;
+      padding: 0.1rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #10b981;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #05070b;
+      box-shadow: 0 0 8px #10b98180;
+    }
+    /* preset buttons */
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .preset-btn {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid #2d3a4e;
+    }
+    .preset-btn:hover {
+      background: #2d3a4e;
+      border-color: #10b981;
+      color: #10b981;
+    }
+    /* KPI grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+    .kpi-item {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 0.9rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.04em;
+    }
+    .kpi-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #10b981;
+      line-height: 1.3;
+    }
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+    /* buttons */
+    .action-group {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      background: #10b981;
+      color: #05070b;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      flex: 1 1 auto;
+      border: 1px solid #10b981;
+    }
+    .btn-secondary {
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid #1e293b;
+    }
+    .btn-secondary:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .btn:hover {
+      background: #34d399;
+      border-color: #34d399;
+    }
+    /* canvas */
+    .canvas-wrapper {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 1rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      flex: 1;
+    }
+    .canvas-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 0.8rem;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-right: 6px;
+    }
+    /* table */
+    .table-responsive {
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      padding: 1rem 0.8rem;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 1rem 0.8rem;
+      border-bottom: 1px solid #1e293b40;
+      color: #cbd5e1;
+    }
+    td.mono {
+      font-family: 'JetBrains Mono', monospace;
+      color: #10b981;
+    }
+    /* faq */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.4rem;
+    }
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    /* video */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      background: #000;
+      margin-bottom: 1.5rem;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    /* misc */
+    .note {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1e293b;
+      margin: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="workstation">
+    <!-- BRAND HEADER -->
+    <div class="brand-bar">
+      <div class="logo">CAPITALGRID<span> / SECURE FORTRESS TELEMETRY</span></div>
+      <a class="portal-link" href="./index.html">← Portal</a>
+    </div>
+
+    <!-- MAIN GRID: CONTROLS + VISUALIZATION -->
+    <div class="grid-2col">
+      <!-- LEFT: CONTROLS & KPIs -->
+      <div class="card">
+        <div class="card-title"><span class="accent-dot"></span> THREAT / ACCESS DIALS</div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="label">Svalbard · Cryo Integrity</span>
+            <span class="value" id="svalbardVal">-18°C</span>
+          </div>
+          <input type="range" id="svalbardSlider" min="-40" max="0" value="-18" step="1">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="label">Fort Knox · Bullion Guards</span>
+            <span class="value" id="knoxVal">4,580 tons</span>
+          </div>
+          <input type="range" id="knoxSlider" min="0" max="10000" value="4580" step="100">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="label">Cheyenne · Depth (ft)</span>
+            <span class="value" id="cheyenneVal">1,000 ft</span>
+          </div>
+          <input type="range" id="cheyenneSlider" min="100" max="2000" value="1000" step="50">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="label">Area 51 · Secrecy Level</span>
+            <span class="value" id="area51Val">TOP SECRET</span>
+          </div>
+          <input type="range" id="area51Slider" min="1" max="10" value="10" step="1">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="label">BoE Vault · Gold Bars</span>
+            <span class="value" id="boeVal">400,000</span>
+          </div>
+          <input type="range" id="boeSlider" min="50000" max="800000" value="400000" step="5000">
+        </div>
+
+        <!-- PRESETS -->
+        <div class="card-title" style="margin-top: 1.5rem;"><span class="accent-dot"></span> SCENARIO PRESETS</div>
+        <div class="preset-row">
+          <button class="preset-btn" data-preset="default">Default</button>
+          <button class="preset-btn" data-preset="lockdown">Lockdown</button>
+          <button class="preset-btn" data-preset="reset">Reset</button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <span class="kpi-label">Fortress Index</span>
+            <span class="kpi-value" id="fortressIndex">97</span>
+            <span class="kpi-sub">aggregate security</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-label">Cryo Stability</span>
+            <span class="kpi-value" id="cryoStability">100%</span>
+            <span class="kpi-sub">Svalbard condition</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-label">Gold Value (est.)</span>
+            <span class="kpi-value" id="goldValue">$26.4B</span>
+            <span class="kpi-sub">BoE + Knox</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-label">Access Denial</span>
+            <span class="kpi-value" id="accessDenial">99.9%</span>
+            <span class="kpi-sub">Area 51 effect</span>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="action-group">
+          <button class="btn" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+          <button class="btn btn-secondary" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+        </div>
+        <div class="note" id="copyFeedback" style="height: 1.2rem;"></div>
+      </div>
+
+      <!-- RIGHT: CANVAS -->
+      <div class="canvas-wrapper">
+        <canvas id="fortressCanvas" width="800" height="500"></canvas>
+        <div class="canvas-legend">
+          <span><span class="legend-dot" style="background:#10b981;"></span>Active Security</span>
+          <span><span class="legend-dot" style="background:#f59e0b;"></span>Vault Contents</span>
+          <span><span class="legend-dot" style="background:#3b82f6;"></span>Depth / Secrecy</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICAL TABLE -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title"><span class="accent-dot"></span> ANALYTICAL BREAKDOWN · LIVE TELEMETRY</div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr><th>Facility</th><th>Metric</th><th>Current value</th><th>Security rating (0–100)</th></tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- dynamically filled by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- YOUTUBE EMBED -->
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/avkDD-Zbo94" title="5 Places So Secure Humans Can't Enter" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title"><span class="accent-dot"></span> FREQUENTLY ASKED QUESTIONS</div>
+      <div class="faq-item">
+        <div class="faq-q">What does the "Fortress Index" represent?</div>
+        <div class="faq-a">A weighted aggregate of all five facilities' security parameters—cryo stability, bullion tonnage, depth, secrecy, and gold bar count—normalized to a 0–100 scale.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How are the slider values interpreted?</div>
+        <div class="faq-a">Each slider directly maps to the metric of the corresponding facility. For example, moving the Svalbard slider changes the cryo temperature (from -40°C to 0°C), which alters the visual and KPI readouts.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is the CSV export dynamic?</div>
+        <div class="faq-a">Yes. The export button generates a CSV file containing the current slider values and calculated security ratings for all five items, timestamped for telemetry.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Why is Area 51 labeled "TOP SECRET"?</div>
+        <div class="faq-a">The slider (1–10) represents secrecy level; values 8–10 map to "TOP SECRET", while lower values unlock different classification labels.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSON-LD SCHEMA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "CAPITALGRID · Secure Fortress Telemetry",
+    "applicationCategory": "Simulation",
+    "operatingSystem": "Any",
+    "description": "Interactive workstation modelling the world's most secure facilities: Svalbard Seed Vault, Fort Knox, Cheyenne Mountain, Area 51, and Bank of England Gold Vault.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/5-places-so-secure-humans-can-t-enter.html"
+  }
+  </script>
+
+  <script>
+    (function() {
+      // --- DATA & STATE ---
+      const FACILITIES = [
+        { name: "Svalbard Global Seed Vault", metric: "-18°C", baseMetric: "-18°C", sliderId: "svalbardSlider", valueId: "svalbardVal" },
+        { name: "Fort Knox Bullion Depository", metric: "4,580 tons", baseMetric: "4,580 tons", sliderId: "knoxSlider", valueId: "knoxVal" },
+        { name: "Cheyenne Mountain Complex", metric: "1,000 feet", baseMetric: "1,000 feet", sliderId: "cheyenneSlider", valueId: "cheyenneVal" },
+        { name: "Area 51", metric: "Top Secret", baseMetric: "Top Secret", sliderId: "area51Slider", valueId: "area51Val" },
+        { name: "Bank of England Gold Vault", metric: "400,000 bars", baseMetric: "400,000 bars", sliderId: "boeSlider", valueId: "boeVal" }
+      ];
+
+      // DOM elements
+      const svalbardSlider = document.getElementById('svalbardSlider');
+      const knoxSlider = document.getElementById('knoxSlider');
+      const cheyenneSlider = document.getElementById('cheyenneSlider');
+      const area51Slider = document.getElementById('area51Slider');
+      const boeSlider = document.getElementById('boeSlider');
+
+      const svalbardVal = document.getElementById('svalbardVal');
+      const knoxVal = document.getElementById('knoxVal');
+      const cheyenneVal = document.getElementById('cheyenneVal');
+      const area51Val = document.getElementById('area51Val');
+      const boeVal = document.getElementById('boeVal');
+
+      const fortressIndexEl = document.getElementById('fortressIndex');
+      const cryoStabilityEl = document.getElementById('cryoStability');
+      const goldValueEl = document.getElementById('goldValue');
+      const accessDenialEl = document.getElementById('accessDenial');
+      const tableBody = document.getElementById('tableBody');
+      const canvas = document.getElementById('fortressCanvas');
+      const ctx = canvas.getContext('2d');
+      const copyFeedback = document.getElementById('copyFeedback');
+
+      // Helper: format number with commas
+      function formatNumber(n) {
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+
+      // Get current slider values
+      function getValues() {
+        return {
+          svalbardTemp: parseFloat(svalbardSlider.value),
+          knoxTons: parseFloat(knoxSlider.value),
+          cheyenneFeet: parseFloat(cheyenneSlider.value),
+          area51Secrecy: parseFloat(area51Slider.value),
+          boeBars: parseFloat(boeSlider.value)
+        };
+      }
+
+      // Update UI labels & KPIs
+      function updateUI() {
+        const v = getValues();
+        // update labels
+        svalbardVal.textContent = v.svalbardTemp + '°C';
+        knoxVal.textContent = formatNumber(v.knoxTons) + ' tons';
+        cheyenneVal.textContent = formatNumber(v.cheyenneFeet) + ' ft';
+        const secrecyLabel = v.area51Secrecy >= 9 ? 'TOP SECRET' : v.area51Secrecy >= 6 ? 'CLASSIFIED' : 'RESTRICTED';
+        area51Val.textContent = secrecyLabel;
+        boeVal.textContent = formatNumber(v.boeBars);
+
+        // Compute derived metrics (0-100)
+        const cryoStability = Math.min(100, Math.max(0, ((v.svalbardTemp + 40) / 40) * 100)); // -40..0 -> 0..100
+        const knoxRating = Math.min(100, (v.knoxTons / 10000) * 100);
+        const cheyenneRating = Math.min(100, (v.cheyenneFeet / 2000) * 100);
+        const area51Rating = (v.area51Secrecy / 10) * 100;
+        const boeRating = Math.min(100, (v.boeBars / 800000) * 100);
+
+        const fortressIdx = Math.round((cryoStability + knoxRating + cheyenneRating + area51Rating + boeRating) / 5);
+        fortressIndexEl.textContent = fortressIdx;
+        cryoStabilityEl.textContent = Math.round(cryoStability) + '%';
+        // gold value estimate: BoE bars * 400 oz * $2000 + Knox tons * 32150 oz/t * $2000
+        const goldValueB = (v.boeBars * 400 * 2000 + v.knoxTons * 32150 * 2000) / 1e9;
+        goldValueEl.textContent = '$' + goldValueB.toFixed(1) + 'B';
+        accessDenialEl.textContent = (area51Rating * 0.999).toFixed(1) + '%';
+
+        // Update table
+        const rows = [
+          { name: FACILITIES[0].name, metric: 'Cryo integrity', current: v.svalbardTemp + '°C', rating: Math.round(cryoStability) },
+          { name: FACILITIES[1].name, metric: 'Bullion tonnage', current: formatNumber(v.knoxTons) + ' tons', rating: Math.round(knoxRating) },
+          { name: FACILITIES[2].name, metric: 'Depth', current: formatNumber(v.cheyenneFeet) + ' ft', rating: Math.round(cheyenneRating) },
+          { name: FACILITIES[3].name, metric: 'Secrecy', current: secrecyLabel, rating: Math.round(area51Rating) },
+          { name: FACILITIES[4].name, metric: 'Gold bars', current: formatNumber(v.boeBars), rating: Math.round(boeRating) }
+        ];
+        tableBody.innerHTML = rows.map(r => `
+          <tr>
+            <td>${r.name}</td>
+            <td>${r.metric}</td>
+            <td class="mono">${r.current}</td>
+            <td><span style="color:#10b981;font-weight:600;">${r.rating}</span> / 100</td>
+          </tr>
+        `).join('');
+
+        drawCanvas();
+      }
+
+      // --- Canvas drawing ---
+      function drawCanvas() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        // background
+        ctx.fillStyle = '#05070b';
+        ctx.fillRect(0, 0, w, h);
+
+        const v = getValues();
+        const facilities = [
+          { label: 'SVALBARD', color: '#10b981', val: Math.min(1, (v.svalbardTemp + 40) / 40) },
+          { label: 'FORT KNOX', color: '#f59e0b', val: v.knoxTons / 10000 },
+          { label: 'CHEYENNE', color: '#3b82f6', val: v.cheyenneFeet / 2000 },
+          { label: 'AREA 51', color: '#8b5cf6', val: v.area51Secrecy / 10 },
+          { label: 'BoE VAULT', color: '#ef4444', val: v.boeBars / 800000 }
+        ];
+
+        const barWidth = 100;
+        const gap = 40;
+        const startX = (w - (facilities.length * barWidth + (facilities.length - 1) * gap)) / 2;
+        const baseY = h - 80;
+        const maxBarHeight = 350;
+
+        facilities.forEach((f, i) => {
+          const x = startX + i * (barWidth + gap);
+          const barH = f.val * maxBarHeight;
+          const y = baseY - barH;
+
+          // bar background
+          ctx.fillStyle = '#1e293b';
+          ctx.beginPath();
+          ctx.roundRect(x, baseY - maxBarHeight, barWidth, maxBarHeight, 8);
+          ctx.fill();
+
+          // filled bar
+          ctx.fillStyle = f.color;
+          ctx.globalAlpha = 0.9;
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, barH, 8);
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+
+          // label
+          ctx.font = 'bold 11px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#94a3b8';
+          ctx.textAlign = 'center';
+          ctx.fillText(f.label, x + barWidth / 2, baseY + 25);
+
+          // value
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = 'bold 13px "JetBrains Mono", monospace';
+          ctx.fillText(Math.round(f.val * 100) + '%', x + barWidth / 2, y - 10);
+        });
+
+        // draw axis line
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(startX - 20, baseY + 5);
+        ctx.lineTo(w - startX + 20, baseY + 5);
+        ctx.stroke();
+
+        // title
+        ctx.font = 'bold 14px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'left';
+        ctx.fillText('SECURITY INDEX / NORMALIZED', 20, 30);
+      }
+
+      // roundRect polyfill
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.moveTo(x + r, y);
+        this.lineTo(x + w - r, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r);
+        this.lineTo(x + w, y + h - r);
+        this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        this.lineTo(x + r, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r);
+        this.lineTo(x, y + r);
+        this.quadraticCurveTo(x, y, x + r, y);
+        return this;
+      };
+
+      // --- PRESET LOGIC ---
+      function applyPreset(preset) {
+        if (preset === 'default' || preset === 'reset') {
+          svalbardSlider.value = -18;
+          knoxSlider.value = 4580;
+          cheyenneSlider.value = 1000;
+          area51Slider.value = 10;
+          boeSlider.value = 400000;
+        } else if (preset === 'lockdown') {
+          svalbardSlider.value = -35;
+          knoxSlider.value = 7500;
+          cheyenneSlider.value = 1800;
+          area51Slider.value = 10;
+          boeSlider.value = 650000;
+        }
+        updateUI();
+      }
+
+      // --- CSV EXPORT ---
+      function exportCSV() {
+        const v = getValues();
+        const cryo = ((v.svalbardTemp + 40) / 40 * 100).toFixed(1);
+        const knox = (v.knoxTons / 10000 * 100).toFixed(1);
+        const chey = (v.cheyenneFeet / 2000 * 100).toFixed(1);
+        const area = (v.area51Secrecy / 10 * 100).toFixed(1);
+        const boe = (v.boeBars / 800000 * 100).toFixed(1);
+
+        const rows = [
+          ['Facility', 'Metric', 'Current Value', 'Security Rating (0-100)'],
+          ['Svalbard Global Seed Vault', '-18°C', v.svalbardTemp + '°C', cryo],
+          ['Fort Knox Bullion Depository', '4,580 tons', v.knoxTons + ' tons', knox],
+          ['Cheyenne Mountain Complex', '1,000 feet', v.cheyenneFeet + ' ft', chey],
+          ['Area 51', 'Top Secret', v.area51Secrecy >= 9 ? 'TOP SECRET' : v.area51Secrecy >= 6 ? 'CLASSIFIED' : 'RESTRICTED', area],
+          ['Bank of England Gold Vault', '400,000 bars', v.boeBars + ' bars', boe]
+        ];
+
+        let csvContent = '';
+        rows.forEach(row => {
+          csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `capitalgrid_telemetry_${new Date().toISOString().slice(0,19)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      // --- COPY SCENARIO LINK ---
+      function copyScenarioLink() {
+        const v = getValues();
+        const params = new URLSearchParams();
+        params.set('svalbard', v.svalbardTemp);
+        params.set('knox', v.knoxTons);
+        params.set('cheyenne', v.cheyenneFeet);
+        params.set('area51', v.area51Secrecy);
+        params.set('boe', v.boeBars);
+        const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+        navigator.clipboard.writeText(url).then(() => {
+          copyFeedback.textContent = 'Scenario link copied to clipboard!';
+          setTimeout(() => { copyFeedback.textContent = ''; }, 2500);
+        }).catch(() => {
+          copyFeedback.textContent = 'Unable to copy. Please copy manually: ' + url;
+        });
+      }
+
+      // --- INIT & EVENT LISTENERS ---
+      function init() {
+        // slider events
+        [svalbardSlider, knoxSlider, cheyenneSlider, area51Slider, boeSlider].forEach(s => {
+          s.addEventListener('input', updateUI);
+        });
+
+        // preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const preset = e.target.dataset.preset;
+            applyPreset(preset);
+          });
+        });
+
+        // export & copy
+        document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+        document.getElementById('copyLinkBtn').addEventListener('click', copyScenarioLink);
+
+        // check URL params for scenario
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('svalbard')) {
+          svalbardSlider.value = params.get('svalbard');
+          knoxSlider.value = params.get('knox');
+          cheyenneSlider.value = params.get('cheyenne');
+          area51Slider.value = params.get('area51');
+          boeSlider.value = params.get('boe');
+        }
+
+        updateUI();
+      }
+
+      // resize canvas for better resolution
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        const rect = container.getBoundingClientRect();
+        canvas.width = rect.width - 30;
+        canvas.height = 500;
+        updateUI();
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      init();
+      setTimeout(resizeCanvas, 50);
+    })();
+  </script>
+</body>
+</html>
