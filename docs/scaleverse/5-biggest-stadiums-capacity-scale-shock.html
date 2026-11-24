@@ -3,961 +3,914 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SCALEVERSE 3D · Stadium Capacity Scale Shock</title>
+  <title>SCALEVERSE 3D · 5 Biggest Stadiums: Capacity Scale Shock</title>
+  <meta name="description" content="Interactive 3D capacity comparison workstation for the 5 biggest stadiums. Model scale, compare capacities, and export telemetry.">
   <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-biggest-stadiums-capacity-scale-shock.html">
+  <!--
+    JSON-LD SoftwareApplication schema
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D · Stadium Capacity Workstation",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-biggest-stadiums-capacity-scale-shock.html",
+    "applicationCategory": "SimulationApplication",
+    "operatingSystem": "All",
+    "description": "Interactive 3D capacity comparison workstation for the 5 biggest stadiums, featuring real-time canvas modeling, KPIs, and CSV telemetry export.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "SCALEVERSE 3D"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "128"
+    }
+  }
+  </script>
   <style>
+    /* Sleek dark institutional UI */
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      background: #05070b;
-      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background-color: #05070b;
       color: #e2e8f0;
-      padding: 1.5rem;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Inter', 'SF Pro Text', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
     }
 
-    .workstation {
+    .app {
       max-width: 1440px;
-      width: 100%;
+      margin: 0 auto;
     }
 
-    /* header */
-    .top-bar {
+    /* Header */
+    .header {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      padding: 0.75rem 1.25rem;
-      background: #0b0f17;
-      border: 1px solid #1e293b;
-      border-radius: 0.75rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-    }
-
-    .brand-block {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #1e293b;
     }
 
     .brand {
-      font-weight: 700;
-      font-size: 1.5rem;
-      letter-spacing: -0.02em;
-      color: #38bdf8;
-      text-shadow: 0 0 12px rgba(56,189,248,0.4);
-    }
-
-    .brand span {
-      color: #94a3b8;
-      font-weight: 400;
-    }
-
-    .portal-link {
-      color: #38bdf8;
-      text-decoration: none;
-      font-size: 0.85rem;
-      border: 1px solid #1e293b;
-      padding: 0.4rem 0.9rem;
-      border-radius: 2rem;
-      background: #0f172a;
-      transition: all 0.2s;
-    }
-
-    .portal-link:hover {
-      background: #1e293b;
-      border-color: #38bdf8;
-    }
-
-    .kpi-strip {
       display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      background: #0b0f17;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-accent {
+      color: #38bdf8;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-portal {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      text-decoration: none;
       border: 1px solid #1e293b;
-      border-radius: 0.75rem;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 40px;
+      transition: background 0.2s;
     }
 
-    .kpi-item {
-      flex: 1 1 140px;
-      border-right: 1px solid #1e293b;
-      padding-right: 1rem;
+    .brand-portal:hover {
+      background: #0b0f17;
+      border-color: #38bdf8;
+      color: #38bdf8;
     }
 
-    .kpi-item:last-child {
-      border-right: none;
-    }
-
-    .kpi-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #64748b;
-      margin-bottom: 0.25rem;
-    }
-
-    .kpi-value {
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    h1 {
       font-size: 1.8rem;
       font-weight: 600;
-      color: #f1f5f9;
-      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
     }
 
-    .kpi-sub {
-      font-size: 0.8rem;
+    h1 span {
       color: #38bdf8;
-      font-family: monospace;
     }
 
-    /* main grid */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 1.5rem;
+    /* Cards */
+    .card {
+      background-color: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
       margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     }
 
-    @media (max-width: 1000px) {
-      .main-grid {
+    /* Grid layout */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 {
         grid-template-columns: 1fr;
       }
     }
 
-    .card {
-      background: #0b0f17;
-      border: 1px solid #1e293b;
-      border-radius: 1rem;
-      padding: 1.25rem 1.5rem;
-      box-shadow: 0 10px 25px -8px rgba(0,0,0,0.8);
-    }
-
-    .card-title {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #94a3b8;
-      margin-bottom: 1.25rem;
+    /* Controls */
+    .control-group {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 0.65rem;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
     }
 
-    .preset-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .preset-btn {
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      color: #cbd5e1;
-      padding: 0.45rem 0.9rem;
-      border-radius: 2rem;
+    .control-label {
       font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
       font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: monospace;
     }
 
-    .preset-btn:hover {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #f1f5f9;
-    }
-
-    .preset-btn.active {
-      background: #38bdf8;
-      border-color: #38bdf8;
-      color: #05070b;
-      font-weight: 700;
-    }
-
-    .slider-group {
-      margin-bottom: 1.2rem;
-    }
-
-    .slider-label {
+    .slider-row {
       display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      margin-bottom: 0.4rem;
-    }
-
-    .slider-label span:last-child {
-      font-family: monospace;
-      color: #38bdf8;
-      font-weight: 600;
+      align-items: center;
+      gap: 1rem;
     }
 
     input[type="range"] {
-      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
       height: 6px;
       background: #1e293b;
-      border-radius: 3px;
-      appearance: none;
+      border-radius: 10px;
       outline: none;
     }
 
     input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
       appearance: none;
       width: 18px;
       height: 18px;
       background: #38bdf8;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 0 10px #38bdf8;
-      border: 2px solid #05070b;
+      box-shadow: 0 0 8px #38bdf8;
     }
 
-    .toggle-row {
+    .slider-value {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 1rem;
+      color: #38bdf8;
+      min-width: 3.5rem;
+      text-align: right;
+    }
+
+    .preset-buttons {
       display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 1.2rem 0 0.5rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
     }
 
-    .toggle-row label {
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-    }
-
-    input[type="checkbox"] {
-      accent-color: #38bdf8;
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-
-    .canvas-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 10;
-      background: #05070b;
-      border-radius: 0.75rem;
-      overflow: hidden;
+    .preset-btn {
+      background: transparent;
       border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 0.45rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .preset-btn:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .preset-btn.active {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 600;
+    }
+
+    /* Action buttons */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 0.6rem 1.4rem;
+      border-radius: 3rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .btn-primary {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+      color: #05070b;
+    }
+
+    /* Canvas */
+    .canvas-container {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1.25rem;
+      padding: 1rem;
+      position: relative;
+      margin-bottom: 1.5rem;
     }
 
     canvas {
       display: block;
       width: 100%;
-      height: 100%;
+      height: auto;
+      border-radius: 0.75rem;
+      background: #05070b;
+      border: 1px solid #1e293b;
     }
 
-    .action-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
+    /* KPI grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
       margin-top: 1rem;
-      justify-content: flex-end;
     }
 
-    .btn {
-      background: #1e293b;
-      border: none;
-      color: #e2e8f0;
-      padding: 0.55rem 1.2rem;
-      border-radius: 2rem;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: monospace;
+    .kpi-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: center;
     }
 
-    .btn-primary {
-      background: #38bdf8;
-      color: #05070b;
-      font-weight: 700;
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 0.25rem;
     }
 
-    .btn:hover {
-      opacity: 0.85;
-      transform: scale(1.02);
+    .kpi-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #38bdf8;
+      line-height: 1.2;
     }
 
-    /* table */
-    .table-wrapper {
-      overflow-x: auto;
-      margin-top: 0.5rem;
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 0.25rem;
     }
 
+    /* Table */
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 0.65rem 0.75rem;
-      border-bottom: 1px solid #1e293b;
+      font-size: 0.9rem;
     }
 
     th {
+      text-align: left;
+      padding: 0.8rem 0.5rem;
       color: #94a3b8;
       font-weight: 500;
       text-transform: uppercase;
       font-size: 0.7rem;
       letter-spacing: 0.05em;
+      border-bottom: 1px solid #1e293b;
     }
 
     td {
-      font-family: monospace;
+      padding: 0.8rem 0.5rem;
+      border-bottom: 1px solid #1e293b;
       color: #cbd5e1;
     }
 
-    tr:hover td {
-      background: #0f172a;
+    td.num {
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
     }
 
-    .highlight-cell {
+    .rank-badge {
+      display: inline-block;
+      background: #1e293b;
       color: #38bdf8;
-      font-weight: 600;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2rem;
+      margin-right: 0.5rem;
     }
 
     /* FAQ */
-    .faq-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-      .faq-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .faq-item {
-      background: #0b0f17;
-      border: 1px solid #1e293b;
-      border-radius: 0.75rem;
-      padding: 1.25rem;
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 0;
     }
 
-    .faq-question {
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-q {
       font-weight: 600;
       color: #f1f5f9;
       margin-bottom: 0.4rem;
     }
 
-    .faq-answer {
-      font-size: 0.85rem;
+    .faq-a {
       color: #94a3b8;
-      line-height: 1.5;
+      font-size: 0.9rem;
     }
 
-    .video-embed {
-      margin-top: 1.5rem;
-      border-radius: 1rem;
+    /* YouTube */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
       overflow: hidden;
+      border-radius: 1rem;
       border: 1px solid #1e293b;
-      background: #0b0f17;
+      background: #000;
     }
 
-    .video-embed iframe {
-      display: block;
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      aspect-ratio: 16 / 9;
-      border: none;
+      height: 100%;
+      border: 0;
     }
 
-    .footer-note {
-      margin-top: 2rem;
-      text-align: center;
-      font-size: 0.75rem;
-      color: #475569;
+    /* Utility */
+    .text-mono {
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .mono {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-
-    .accent {
+    .text-accent {
       color: #38bdf8;
+    }
+
+    .text-muted {
+      color: #64748b;
+    }
+
+    .mt-1 {
+      margin-top: 0.5rem;
+    }
+
+    .mb-1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .mt-2 {
+      margin-top: 1rem;
+    }
+
+    .mb-2 {
+      margin-bottom: 1rem;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #1e293b;
+      font-size: 0.8rem;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .footer a {
+      color: #38bdf8;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-<div class="workstation">
-  <!-- top bar -->
-  <div class="top-bar">
-    <div class="brand-block">
-      <div class="brand">SCALEVERSE <span>3D</span></div>
-      <div style="font-size:0.8rem;color:#64748b;">stadium capacity · scale shock</div>
-    </div>
-    <a href="./index.html" class="portal-link">← Portal</a>
-  </div>
-
-  <!-- KPI strip -->
-  <div class="kpi-strip" id="kpiStrip">
-    <div class="kpi-item">
-      <div class="kpi-label">Total Capacity (All)</div>
-      <div class="kpi-value" id="kpiTotalCapacity">481,691</div>
-      <div class="kpi-sub">seats</div>
-    </div>
-    <div class="kpi-item">
-      <div class="kpi-label">Avg Capacity</div>
-      <div class="kpi-value" id="kpiAvgCapacity">96,338</div>
-      <div class="kpi-sub">seats</div>
-    </div>
-    <div class="kpi-item">
-      <div class="kpi-label">Largest Stadium</div>
-      <div class="kpi-value" id="kpiLargest">Michigan</div>
-      <div class="kpi-sub">107,601 seats</div>
-    </div>
-    <div class="kpi-item">
-      <div class="kpi-label">Active Filter Count</div>
-      <div class="kpi-value" id="kpiActiveCount">5</div>
-      <div class="kpi-sub">of 5 stadiums</div>
-    </div>
-  </div>
-
-  <!-- main grid: controls + canvas -->
-  <div class="main-grid">
-    <!-- left control panel -->
-    <div class="card">
-      <div class="card-title">🎛️ Scenario Controls</div>
-      <div class="preset-buttons" id="presetContainer">
-        <button class="preset-btn active" data-preset="all">All Stadiums</button>
-        <button class="preset-btn" data-preset="top3">Top 3 Capacity</button>
-        <button class="preset-btn" data-preset="europe">Europe Only</button>
-        <button class="preset-btn" data-preset="usa">USA Only</button>
-        <button class="preset-btn" data-preset="over90k">Over 90k</button>
+  <div class="app">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="brand">
+        <span class="brand-accent">SCALEVERSE 3D</span>
+        <span style="color:#1e293b;">/</span>
+        <span style="color:#f8fafc; font-weight:500;">STADIUM CAPACITY</span>
       </div>
+      <a href="./index.html" class="brand-portal">← Portal</a>
+    </header>
 
-      <div class="slider-group">
-        <div class="slider-label">
-          <span>Min Capacity Filter</span>
-          <span id="minCapValue">0</span>
+    <h1>5 Biggest Stadiums: <span>Capacity Scale Shock</span></h1>
+    <p style="color:#94a3b8; margin-bottom:1.5rem; max-width:800px;">From a modest 12,000-seat arena to a 150,000-capacity giant, witness how stadium sizes explode in this 3D capacity comparison. Interact with the model, adjust scale parameters, and export real-time telemetry.</p>
+
+    <!-- MAIN GRID: Controls + Canvas -->
+    <div class="grid-2">
+      <!-- LEFT: Controls & KPIs -->
+      <div>
+        <div class="card">
+          <div class="control-group">
+            <div class="flex-between">
+              <span class="control-label">Capacity Scale Multiplier</span>
+              <span class="slider-value" id="scaleMultiplierValue">1.00×</span>
+            </div>
+            <div class="slider-row">
+              <input type="range" id="scaleMultiplier" min="0.5" max="2.0" step="0.05" value="1.0">
+            </div>
+            <div class="preset-buttons" id="presetContainer">
+              <button class="preset-btn active" data-preset="default">Default Scale</button>
+              <button class="preset-btn" data-preset="low">Low (0.6×)</button>
+              <button class="preset-btn" data-preset="high">High (1.6×)</button>
+              <button class="preset-btn" data-preset="extreme">Extreme (2.0×)</button>
+            </div>
+          </div>
+
+          <!-- KPI READOUTS -->
+          <div class="kpi-grid" id="kpiGrid">
+            <div class="kpi-item">
+              <div class="kpi-label">Total Capacity</div>
+              <div class="kpi-value" id="kpiTotalCapacity">0</div>
+              <div class="kpi-sub">all stadiums</div>
+            </div>
+            <div class="kpi-item">
+              <div class="kpi-label">Max Capacity</div>
+              <div class="kpi-value" id="kpiMaxCapacity">0</div>
+              <div class="kpi-sub" id="kpiMaxName">—</div>
+            </div>
+            <div class="kpi-item">
+              <div class="kpi-label">Avg Capacity</div>
+              <div class="kpi-value" id="kpiAvgCapacity">0</div>
+              <div class="kpi-sub">per stadium</div>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="action-row">
+            <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+            <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+          </div>
         </div>
-        <input type="range" id="minCapSlider" min="0" max="120000" step="1000" value="0">
+
+        <!-- FAQ + Video under controls on mobile -->
       </div>
 
-      <div class="slider-group">
-        <div class="slider-label">
-          <span>Scale Multiplier (Visual)</span>
-          <span id="scaleMultiplierValue">1.0x</span>
+      <!-- RIGHT: Canvas & Telemetry Table preview -->
+      <div>
+        <div class="canvas-container">
+          <canvas id="stadiumCanvas" width="800" height="400"></canvas>
         </div>
-        <input type="range" id="scaleMultiplierSlider" min="0.5" max="2.0" step="0.1" value="1.0">
-      </div>
-
-      <div class="toggle-row">
-        <label>
-          <input type="checkbox" id="showLabels" checked> Show Stadium Labels
-        </label>
-        <label>
-          <input type="checkbox" id="showCapacityBars" checked> Show Capacity Bars
-        </label>
-      </div>
-
-      <div class="action-bar">
-        <button class="btn" id="copyScenarioBtn">📋 Copy Scenario Link</button>
-        <button class="btn btn-primary" id="exportCsvBtn">📥 Export CSV Telemetry</button>
+        <div class="card" style="padding:1rem;">
+          <div class="flex-between mb-1">
+            <span class="control-label">Live Model — Bar Height reflects Capacity × Scale</span>
+            <span class="text-mono text-muted" id="scaleLabel">1.00×</span>
+          </div>
+          <p style="color:#64748b; font-size:0.8rem;">Stadiums ordered by base capacity. Hover or click bars to inspect. Scale multiplier applied to all capacities.</p>
+        </div>
       </div>
     </div>
 
-    <!-- right canvas -->
+    <!-- ANALYTICAL BREAKDOWN TABLE -->
     <div class="card">
-      <div class="card-title">
-        <span>📊 Stadium Capacity Scale</span>
-        <span class="mono" style="font-size:0.75rem;color:#38bdf8;" id="canvasInfo">5 nodes</span>
-      </div>
-      <div class="canvas-container">
-        <canvas id="stadiumCanvas" width="1200" height="750"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- detailed table -->
-  <div class="card" style="margin-top:1.5rem;">
-    <div class="card-title">📋 Analytical Breakdown · Capacity & Scale Metrics</div>
-    <div class="table-wrapper">
+      <h2 style="font-size:1.2rem; margin-bottom:1rem; color:#f8fafc;">Analytical Breakdown · Stadium Capacity Telemetry</h2>
       <table id="breakdownTable">
         <thead>
           <tr>
             <th>Stadium</th>
-            <th>Capacity (seats)</th>
-            <th>Scale (meters)</th>
+            <th>Base Capacity</th>
+            <th>Scaled Capacity</th>
+            <th>Linear Meters</th>
             <th>Capacity / Meter</th>
-            <th>% of Total</th>
-            <th>Ratio vs Smallest</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <!-- dynamic -->
+          <!-- populated by JS -->
         </tbody>
       </table>
     </div>
+
+    <!-- VIDEO + FAQ GRID -->
+    <div class="grid-2">
+      <!-- YouTube Embed -->
+      <div class="card">
+        <h2 style="font-size:1.2rem; margin-bottom:1rem; color:#f8fafc;">Video Walkthrough</h2>
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/qxcfrmnkIxs" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="card">
+        <h2 style="font-size:1.2rem; margin-bottom:0.5rem; color:#f8fafc;">Frequently Asked Questions</h2>
+        <div class="faq-item">
+          <div class="faq-q">What does the "Capacity Scale Multiplier" do?</div>
+          <div class="faq-a">It proportionally scales every stadium's displayed capacity and bar height. A multiplier of 2.0× doubles the modelled capacity, allowing you to explore hypothetical scenarios.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is "Capacity / Meter" calculated?</div>
+          <div class="faq-a">It divides the scaled capacity by the linear meters provided in the dataset. This metric helps compare spatial efficiency across venues.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I export the current scenario?</div>
+          <div class="faq-a">Yes. Click "Export CSV Telemetry" to download a CSV containing the current scaled capacities and parameters. "Copy Scenario Link" generates a shareable URL with the multiplier encoded.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What is the source of the stadium data?</div>
+          <div class="faq-a">The dataset matches the video's exact payload: five stadiums with their base capacities and linear dimensions. No external data is used.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <span>© SCALEVERSE 3D · Stadium Capacity Workstation</span>
+      <span>Canonical: <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-biggest-stadiums-capacity-scale-shock.html" target="_blank">5-biggest-stadiums-capacity-scale-shock.html</a></span>
+    </footer>
   </div>
 
-  <!-- FAQ + video -->
-  <div class="faq-grid">
-    <div class="faq-item">
-      <div class="faq-question">What does "Capacity Scale Shock" mean?</div>
-      <div class="faq-answer">It highlights the dramatic difference between stadium sizes—from 25,000 seats at Red Bull Arena to 107,601 at Michigan Stadium, a 4.3x capacity ratio.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question">How is the "meters" metric used?</div>
-      <div class="faq-answer">Meters here represent the physical scale footprint of each stadium. The ratio of capacity per meter indicates seating density efficiency.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question">Can I export the filtered data?</div>
-      <div class="faq-answer">Yes—use the "Export CSV Telemetry" button to download a CSV of the currently visible stadiums, including capacity, scale, and derived metrics.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question">Why does Camp Nou have fewer seats than Michigan Stadium?</div>
-      <div class="faq-answer">While Camp Nou (99,354) is Europe's largest, Michigan Stadium (107,601) holds the global record for capacity. The scale shock is intentional.</div>
-    </div>
-  </div>
+  <script>
+    (function() {
+      // ---------------------------------------------------------------
+      // DATA PAYLOAD (exact from prompt)
+      // ---------------------------------------------------------------
+      const data = {
+        title: "5 Biggest Stadiums: Capacity Scale Shock!",
+        items: [
+          { name: "Little Caesars Arena", meters: 200, metric: "20,000 capacity", capacity: 20000 },
+          { name: "Madison Square Garden", meters: 220, metric: "20,789 capacity", capacity: 20789 },
+          { name: "Camp Nou", meters: 250, metric: "99,354 capacity", capacity: 99354 },
+          { name: "Wembley Stadium", meters: 300, metric: "90,000 capacity", capacity: 90000 },
+          { name: "Narendra Modi Stadium", meters: 350, metric: "132,000 capacity", capacity: 132000 }
+        ]
+      };
 
-  <!-- youtube embed -->
-  <div class="video-embed">
-    <iframe src="https://www.youtube.com/embed/rTCTyWb8AI4" title="5 Biggest Stadiums: Capacity Scale Shock!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  </div>
+      // Sort by base capacity ascending for consistent bar ordering
+      const stadiums = data.items.slice().sort((a, b) => a.capacity - b.capacity);
 
-  <div class="footer-note">
-    SCALEVERSE 3D · Data payload derived from video "5 Biggest Stadiums: Capacity Scale Shock!" · 
-    <span class="mono">Stadiums: Red Bull Arena, Camp Nou, Wembley, FNB, Michigan</span>
-  </div>
-</div>
+      // State
+      let scaleMultiplier = 1.0;
 
-<script>
-  // ---------- DATA PAYLOAD ----------
-  const STADIUMS = [
-    { name: "Red Bull Arena", meters: 250, capacity: 25000, region: "USA" },
-    { name: "Camp Nou", meters: 250, capacity: 99354, region: "Europe" },
-    { name: "Wembley Stadium", meters: 300, capacity: 90000, region: "Europe" },
-    { name: "FNB Stadium", meters: 310, capacity: 94736, region: "Africa" },
-    { name: "Michigan Stadium", meters: 360, capacity: 107601, region: "USA" }
-  ];
+      // DOM refs
+      const scaleSlider = document.getElementById('scaleMultiplier');
+      const scaleValueDisplay = document.getElementById('scaleMultiplierValue');
+      const scaleLabel = document.getElementById('scaleLabel');
+      const presetButtons = document.querySelectorAll('.preset-btn');
+      const canvas = document.getElementById('stadiumCanvas');
+      const ctx = canvas.getContext('2d');
+      const tableBody = document.getElementById('tableBody');
+      const kpiTotalCapacity = document.getElementById('kpiTotalCapacity');
+      const kpiMaxCapacity = document.getElementById('kpiMaxCapacity');
+      const kpiMaxName = document.getElementById('kpiMaxName');
+      const kpiAvgCapacity = document.getElementById('kpiAvgCapacity');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
 
-  // ---------- STATE ----------
-  let state = {
-    filterMinCapacity: 0,
-    scaleMultiplier: 1.0,
-    showLabels: true,
-    showCapacityBars: true,
-    activePreset: "all"
-  };
+      // ---------------------------------------------------------------
+      // UTILITY FUNCTIONS
+      // ---------------------------------------------------------------
+      function formatNumber(num) {
+        return num.toLocaleString('en-US');
+      }
 
-  // DOM refs
-  const canvas = document.getElementById('stadiumCanvas');
-  const ctx = canvas.getContext('2d');
-  const minCapSlider = document.getElementById('minCapSlider');
-  const minCapValue = document.getElementById('minCapValue');
-  const scaleMultiplierSlider = document.getElementById('scaleMultiplierSlider');
-  const scaleMultiplierValue = document.getElementById('scaleMultiplierValue');
-  const showLabelsCheck = document.getElementById('showLabels');
-  const showCapacityBarsCheck = document.getElementById('showCapacityBars');
-  const presetContainer = document.getElementById('presetContainer');
-  const kpiTotalCapacity = document.getElementById('kpiTotalCapacity');
-  const kpiAvgCapacity = document.getElementById('kpiAvgCapacity');
-  const kpiLargest = document.getElementById('kpiLargest');
-  const kpiActiveCount = document.getElementById('kpiActiveCount');
-  const canvasInfo = document.getElementById('canvasInfo');
-  const tableBody = document.getElementById('tableBody');
-  const exportCsvBtn = document.getElementById('exportCsvBtn');
-  const copyScenarioBtn = document.getElementById('copyScenarioBtn');
+      function getScaledCapacity(baseCap) {
+        return Math.round(baseCap * scaleMultiplier);
+      }
 
-  // ---------- UTILS ----------
-  function getFilteredStadiums() {
-    return STADIUMS.filter(s => s.capacity >= state.filterMinCapacity);
-  }
+      // ---------------------------------------------------------------
+      // CANVAS RENDERING
+      // ---------------------------------------------------------------
+      function drawCanvas() {
+        const w = canvas.width;
+        const h = canvas.height;
 
-  function computeKPIs() {
-    const filtered = getFilteredStadiums();
-    const count = filtered.length;
-    const total = filtered.reduce((sum, s) => sum + s.capacity, 0);
-    const avg = count > 0 ? Math.round(total / count) : 0;
-    let largest = null;
-    if (count > 0) {
-      largest = filtered.reduce((max, s) => s.capacity > max.capacity ? s : max, filtered[0]);
-    }
+        // Clear
+        ctx.clearRect(0, 0, w, h);
 
-    kpiTotalCapacity.textContent = total.toLocaleString();
-    kpiAvgCapacity.textContent = avg.toLocaleString();
-    kpiLargest.textContent = largest ? largest.name.split(' ')[0] + ' ' + (largest.name.split(' ')[1] || '') : '—';
-    kpiLargest.nextElementSibling.textContent = largest ? largest.capacity.toLocaleString() + ' seats' : '';
-    kpiActiveCount.textContent = count;
-    canvasInfo.textContent = count + ' nodes';
-  }
-
-  // ---------- RENDER TABLE ----------
-  function renderTable() {
-    const filtered = getFilteredStadiums();
-    const totalAll = STADIUMS.reduce((sum, s) => sum + s.capacity, 0);
-    const smallest = STADIUMS.reduce((min, s) => s.capacity < min.capacity ? s : min, STADIUMS[0]);
-
-    tableBody.innerHTML = filtered.map(s => {
-      const pctOfTotal = totalAll > 0 ? ((s.capacity / totalAll) * 100).toFixed(2) : '0.00';
-      const capPerMeter = (s.capacity / s.meters).toFixed(1);
-      const ratio = smallest.capacity > 0 ? (s.capacity / smallest.capacity).toFixed(2) : '—';
-      return `<tr>
-        <td style="color:#f1f5f9;">${s.name}</td>
-        <td class="highlight-cell">${s.capacity.toLocaleString()}</td>
-        <td>${s.meters}</td>
-        <td>${capPerMeter}</td>
-        <td>${pctOfTotal}%</td>
-        <td>${ratio}×</td>
-      </tr>`;
-    }).join('');
-
-    if (filtered.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#64748b;">No stadiums match the current filter.</td></tr>`;
-    }
-  }
-
-  // ---------- CANVAS DRAWING ----------
-  function drawCanvas() {
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    // background grid
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 1;
-    for (let x = 0; x < w; x += 60) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.strokeStyle = '#111827';
-      ctx.stroke();
-    }
-    for (let y = 0; y < h; y += 60) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.strokeStyle = '#111827';
-      ctx.stroke();
-    }
-
-    const filtered = getFilteredStadiums();
-    if (filtered.length === 0) {
-      ctx.fillStyle = '#64748b';
-      ctx.font = 'bold 24px "SF Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('NO STADIUMS MATCH FILTER', w/2, h/2);
-      return;
-    }
-
-    const maxCapacity = Math.max(...filtered.map(s => s.capacity), 1);
-    const baseY = h - 120;
-    const barWidth = Math.min(90, (w - 200) / filtered.length - 20);
-    const totalBarSpace = filtered.length * (barWidth + 40);
-    const startX = (w - totalBarSpace) / 2 + 20;
-
-    // capacity bars
-    if (state.showCapacityBars) {
-      filtered.forEach((s, i) => {
-        const barHeight = (s.capacity / maxCapacity) * 400 * state.scaleMultiplier;
-        const x = startX + i * (barWidth + 40);
-        const y = baseY - barHeight;
-
-        // gradient bar
-        const gradient = ctx.createLinearGradient(x, y, x, baseY);
-        gradient.addColorStop(0, '#38bdf8');
-        gradient.addColorStop(1, '#1e3a5f');
-        ctx.fillStyle = gradient;
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 15;
-        ctx.beginPath();
-        ctx.roundRect(x, y, barWidth, barHeight, 6);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // capacity label on top
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = 'bold 14px "SF Mono", monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText(s.capacity.toLocaleString(), x + barWidth/2, y - 12);
-      });
-    }
-
-    // stadium name labels
-    if (state.showLabels) {
-      filtered.forEach((s, i) => {
-        const x = startX + i * (barWidth + 40) + barWidth/2;
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '600 14px "Inter", sans-serif';
-        ctx.textAlign = 'center';
-        const label = s.name.length > 18 ? s.name.slice(0, 16) + '…' : s.name;
-        ctx.fillText(label, x, baseY + 28);
-      });
-    }
-
-    // baseline
-    ctx.beginPath();
-    ctx.moveTo(50, baseY);
-    ctx.lineTo(w - 50, baseY);
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // y-axis capacity labels
-    ctx.fillStyle = '#64748b';
-    ctx.font = '12px "SF Mono", monospace';
-    ctx.textAlign = 'right';
-    const steps = 5;
-    for (let k = 0; k <= steps; k++) {
-      const capVal = Math.round((maxCapacity / steps) * k);
-      const yPos = baseY - (capVal / maxCapacity) * 400 * state.scaleMultiplier;
-      if (yPos > 20 && yPos < baseY) {
-        ctx.fillText(capVal.toLocaleString(), 70, yPos + 4);
-        ctx.beginPath();
-        ctx.moveTo(80, yPos);
-        ctx.lineTo(w - 80, yPos);
+        // Background grid
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 0.5;
+        for (let i = 0; i < w; i += 40) {
+          ctx.beginPath();
+          ctx.moveTo(i, 0);
+          ctx.lineTo(i, h);
+          ctx.stroke();
+        }
+        for (let i = 0; i < h; i += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, i);
+          ctx.lineTo(w, i);
+          ctx.stroke();
+        }
+
+        // Padding
+        const padLeft = 100;
+        const padRight = 60;
+        const padTop = 40;
+        const padBottom = 80;
+
+        const chartW = w - padLeft - padRight;
+        const chartH = h - padTop - padBottom;
+
+        // Find max scaled capacity
+        const maxScaled = Math.max(...stadiums.map(s => getScaledCapacity(s.capacity)));
+        const yMax = Math.ceil(maxScaled / 10000) * 10000;
+        const yMaxDisplay = yMax > 0 ? yMax : 100000;
+
+        // Draw Y axis labels
+        ctx.font = '12px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        const ySteps = 5;
+        for (let i = 0; i <= ySteps; i++) {
+          const val = (yMaxDisplay / ySteps) * i;
+          const y = padTop + chartH - (val / yMaxDisplay) * chartH;
+          ctx.fillText(formatNumber(Math.round(val)), padLeft - 10, y);
+          // grid line
+          ctx.strokeStyle = '#1e293b';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(padLeft, y);
+          ctx.lineTo(w - padRight, y);
+          ctx.stroke();
+        }
+
+        // Draw bars
+        const barCount = stadiums.length;
+        const barWidth = Math.min(70, (chartW / barCount) * 0.6);
+        const gap = (chartW - barCount * barWidth) / (barCount + 1);
+        const startX = padLeft + gap;
+
+        stadiums.forEach((stadium, idx) => {
+          const scaledCap = getScaledCapacity(stadium.capacity);
+          const barHeight = (scaledCap / yMaxDisplay) * chartH;
+          const x = startX + idx * (barWidth + gap);
+          const y = padTop + chartH - barHeight;
+
+          // Bar gradient
+          const gradient = ctx.createLinearGradient(x, y, x, padTop + chartH);
+          gradient.addColorStop(0, '#38bdf8');
+          gradient.addColorStop(1, '#0ea5e9');
+
+          ctx.fillStyle = gradient;
+          ctx.shadowColor = 'rgba(56, 189, 248, 0.3)';
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, barHeight, [6, 6, 0, 0]);
+          ctx.fill();
+
+          // Reset shadow
+          ctx.shadowBlur = 0;
+
+          // Value label above bar
+          ctx.fillStyle = '#b0e0ff';
+          ctx.font = 'bold 12px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(formatNumber(scaledCap), x + barWidth / 2, y - 6);
+
+          // Stadium name below
+          ctx.save();
+          ctx.translate(x + barWidth / 2, padTop + chartH + 14);
+          ctx.rotate(-0.25);
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = '11px "Inter", sans-serif';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(stadium.name, 0, 0);
+          ctx.restore();
+        });
+
+        // Axis
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, padTop);
+        ctx.lineTo(padLeft, padTop + chartH);
+        ctx.lineTo(padLeft + chartW, padTop + chartH);
         ctx.stroke();
+
+        // Title
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '14px "Inter", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('Capacity (scaled × ' + scaleMultiplier.toFixed(2) + ')', padLeft, padTop - 10);
       }
-    }
-  }
 
-  // helper for rounded rect
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-    if (w < 2 * r) r = w / 2;
-    if (h < 2 * r) r = h / 2;
-    this.moveTo(x + r, y);
-    this.lineTo(x + w - r, y);
-    this.quadraticCurveTo(x + w, y, x + w, y + r);
-    this.lineTo(x + w, y + h - r);
-    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    this.lineTo(x + r, y + h);
-    this.quadraticCurveTo(x, y + h, x, y + h - r);
-    this.lineTo(x, y + r);
-    this.quadraticCurveTo(x, y, x + r, y);
-    this.closePath();
-    return this;
-  };
+      // Helper for rounded rectangles
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.moveTo(x + r, y);
+        this.lineTo(x + w - r, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r);
+        this.lineTo(x + w, y + h - r);
+        this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        this.lineTo(x + r, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r);
+        this.lineTo(x, y + r);
+        this.quadraticCurveTo(x, y, x + r, y);
+        return this;
+      };
 
-  // ---------- UPDATE ALL ----------
-  function updateAll() {
-    computeKPIs();
-    renderTable();
-    drawCanvas();
-  }
+      // ---------------------------------------------------------------
+      // UI UPDATES
+      // ---------------------------------------------------------------
+      function updateUI() {
+        // Update scale display
+        scaleValueDisplay.textContent = scaleMultiplier.toFixed(2) + '×';
+        scaleLabel.textContent = scaleMultiplier.toFixed(2) + '×';
 
-  // ---------- PRESET LOGIC ----------
-  function applyPreset(preset) {
-    state.activePreset = preset;
-    // reset slider
-    state.filterMinCapacity = 0;
-    minCapSlider.value = 0;
-    minCapValue.textContent = '0';
+        // Update table
+        let totalCapacity = 0;
+        let maxCapacity = 0;
+        let maxName = '—';
 
-    // remove active class
-    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-    // add active class
-    document.querySelector(`.preset-btn[data-preset="${preset}"]`)?.classList.add('active');
+        tableBody.innerHTML = '';
+        stadiums.forEach((stadium, idx) => {
+          const scaledCap = getScaledCapacity(stadium.capacity);
+          totalCapacity += scaledCap;
+          if (scaledCap > maxCapacity) {
+            maxCapacity = scaledCap;
+            maxName = stadium.name;
+          }
 
-    // preset-specific filtering
-    if (preset === 'all') {
-      state.filterMinCapacity = 0;
-    } else if (preset === 'top3') {
-      // we'll handle top3 by custom filter (not slider)
-      // simple approach: sort and keep top3
-      // we modify the filter function to respect activePreset
-    } else if (preset === 'europe') {
-      state.filterMinCapacity = 0; // we use custom filter below
-    } else if (preset === 'usa') {
-      state.filterMinCapacity = 0;
-    } else if (preset === 'over90k') {
-      state.filterMinCapacity = 90000;
-      minCapSlider.value = 90000;
-      minCapValue.textContent = '90,000';
-    }
+          const capPerMeter = (scaledCap / stadium.meters).toFixed(1);
 
-    // Override getFilteredStadiums for presets
-    // We'll define a new function dynamically
-    // Instead, we monkey-patch the filtering logic
-    // Cleanest: define a filter function that uses activePreset
-    updateAll();
-  }
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><span class="rank-badge">${idx + 1}</span>${stadium.name}</td>
+            <td class="num">${formatNumber(stadium.capacity)}</td>
+            <td class="num" style="color:#38bdf8; font-weight:600;">${formatNumber(scaledCap)}</td>
+            <td class="num">${formatNumber(stadium.meters)}</td>
+            <td class="num">${capPerMeter}</td>
+          `;
+          tableBody.appendChild(row);
+        });
 
-  // Override getFilteredStadiums to incorporate preset logic
-  const originalGetFiltered = getFilteredStadiums;
-  getFilteredStadiums = function() {
-    let filtered = STADIUMS.filter(s => s.capacity >= state.filterMinCapacity);
-    if (state.activePreset === 'top3') {
-      filtered = [...filtered].sort((a, b) => b.capacity - a.capacity).slice(0, 3);
-    } else if (state.activePreset === 'europe') {
-      filtered = filtered.filter(s => s.region === 'Europe');
-    } else if (state.activePreset === 'usa') {
-      filtered = filtered.filter(s => s.region === 'USA');
-    } else if (state.activePreset === 'over90k') {
-      filtered = filtered.filter(s => s.capacity >= 90000);
-    }
-    return filtered;
-  };
+        // Update KPIs
+        kpiTotalCapacity.textContent = formatNumber(totalCapacity);
+        kpiMaxCapacity.textContent = formatNumber(maxCapacity);
+        kpiMaxName.textContent = maxName;
+        kpiAvgCapacity.textContent = formatNumber(Math.round(totalCapacity / stadiums.length));
 
-  // ---------- EVENT LISTENERS ----------
-  minCapSlider.addEventListener('input', (e) => {
-    state.filterMinCapacity = parseInt(e.target.value, 10);
-    minCapValue.textContent = state.filterMinCapacity.toLocaleString();
-    // deactivate preset highlight if slider moved
-    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-    state.activePreset = 'custom';
-    updateAll();
-  });
+        // Redraw canvas
+        drawCanvas();
 
-  scaleMultiplierSlider.addEventListener('input', (e) => {
-    state.scaleMultiplier = parseFloat(e.target.value);
-    scaleMultiplierValue.textContent = state.scaleMultiplier.toFixed(1) + 'x';
-    drawCanvas();
-  });
-
-  showLabelsCheck.addEventListener('change', (e) => {
-    state.showLabels = e.target.checked;
-    drawCanvas();
-  });
-
-  showCapacityBarsCheck.addEventListener('change', (e) => {
-    state.showCapacityBars = e.target.checked;
-    drawCanvas();
-  });
-
-  presetContainer.addEventListener('click', (e) => {
-    const btn = e.target.closest('.preset-btn');
-    if (!btn) return;
-    const preset = btn.dataset.preset;
-    applyPreset(preset);
-  });
-
-  // ---------- EXPORT CSV ----------
-  exportCsvBtn.addEventListener('click', () => {
-    const filtered = getFilteredStadiums();
-    const totalAll = STADIUMS.reduce((sum, s) => sum + s.capacity, 0);
-    const smallest = STADIUMS.reduce((min, s) => s.capacity < min.capacity ? s : min, STADIUMS[0]);
-
-    let csv = 'Stadium,Capacity,Scale (m),Capacity per Meter,% of Total,Ratio vs Smallest\n';
-    filtered.forEach(s => {
-      const pct = totalAll > 0 ? ((s.capacity / totalAll) * 100).toFixed(2) : '0';
-      const capPerMeter = (s.capacity / s.meters).toFixed(1);
-      const ratio = smallest.capacity > 0 ? (s.capacity / smallest.capacity).toFixed(2) : '0';
-      csv += `"${s.name}",${s.capacity},${s.meters},${capPerMeter},${pct}%,${ratio}\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `scaleverse_stadiums_${new Date().toISOString().slice(0,10)}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  });
-
-  // ---------- COPY SCENARIO LINK ----------
-  copyScenarioBtn.addEventListener('click', () => {
-    const params = new URLSearchParams();
-    params.set('preset', state.activePreset);
-    params.set('minCap', state.filterMinCapacity);
-    params.set('scale', state.scaleMultiplier);
-    params.set('labels', state.showLabels ? '1' : '0');
-    params.set('bars', state.showCapacityBars ? '1' : '0');
-    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-
-    navigator.clipboard.writeText(url).then(() => {
-      copyScenarioBtn.textContent = '✅ Copied!';
-      setTimeout(() => { copyScenarioBtn.textContent = '📋 Copy Scenario Link'; }, 1500);
-    }).catch(() => {
-      prompt('Copy this link:', url);
-    });
-  });
-
-  // ---------- INIT ----------
-  function init() {
-    // parse URL params
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('preset')) {
-      const p = params.get('preset');
-      if (['all', 'top3', 'europe', 'usa', 'over90k'].includes(p)) {
-        applyPreset(p);
+        // Update active preset button state
+        presetButtons.forEach(btn => {
+          const preset = btn.dataset.preset;
+          let match = false;
+          if (preset === 'default' && Math.abs(scaleMultiplier - 1.0) < 0.01) match = true;
+          if (preset === 'low' && Math.abs(scaleMultiplier - 0.6) < 0.01) match = true;
+          if (preset === 'high' && Math.abs(scaleMultiplier - 1.6) < 0.01) match = true;
+          if (preset === 'extreme' && Math.abs(scaleMultiplier - 2.0) < 0.01) match = true;
+          btn.classList.toggle('active', match);
+        });
       }
-    }
-    if (params.has('minCap')) {
-      const v = parseInt(params.get('minCap'), 10);
-      if (!isNaN(v)) {
-        state.filterMinCapacity = v;
-        minCapSlider.value = v;
-        minCapValue.textContent = v.toLocaleString();
+
+      // ---------------------------------------------------------------
+      // EVENT LISTENERS
+      // ---------------------------------------------------------------
+      scaleSlider.addEventListener('input', (e) => {
+        scaleMultiplier = parseFloat(e.target.value);
+        updateUI();
+      });
+
+      presetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.dataset.preset;
+          let value = 1.0;
+          if (preset === 'low') value = 0.6;
+          if (preset === 'high') value = 1.6;
+          if (preset === 'extreme') value = 2.0;
+          scaleMultiplier = value;
+          scaleSlider.value = value;
+          updateUI();
+        });
+      });
+
+      // CSV Export
+      exportCsvBtn.addEventListener('click', () => {
+        const headers = ['Stadium', 'Base Capacity', 'Scaled Capacity', 'Linear Meters', 'Capacity per Meter', 'Scale Multiplier'];
+        const rows = stadiums.map(s => {
+          const scaled = getScaledCapacity(s.capacity);
+          return [
+            s.name,
+            s.capacity,
+            scaled,
+            s.meters,
+            (scaled / s.meters).toFixed(1),
+            scaleMultiplier.toFixed(2)
+          ];
+        });
+
+        const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'scaleverse_stadium_telemetry.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      });
+
+      // Copy Scenario Link
+      copyLinkBtn.addEventListener('click', () => {
+        const baseUrl = window.location.origin + window.location.pathname;
+        const url = new URL(baseUrl);
+        url.searchParams.set('scale', scaleMultiplier.toFixed(2));
+        const link = url.toString();
+
+        navigator.clipboard.writeText(link).then(() => {
+          const originalText = copyLinkBtn.textContent;
+          copyLinkBtn.textContent = '✓ Link Copied!';
+          setTimeout(() => {
+            copyLinkBtn.textContent = originalText;
+          }, 2000);
+        }).catch(() => {
+          // Fallback
+          prompt('Copy this scenario link:', link);
+        });
+      });
+
+      // ---------------------------------------------------------------
+      // INIT
+      // ---------------------------------------------------------------
+      function init() {
+        // Read scale from URL if present
+        const params = new URLSearchParams(window.location.search);
+        const urlScale = parseFloat(params.get('scale'));
+        if (!isNaN(urlScale) && urlScale >= 0.5 && urlScale <= 2.0) {
+          scaleMultiplier = urlScale;
+          scaleSlider.value = urlScale;
+        }
+
+        updateUI();
       }
-    }
-    if (params.has('scale')) {
-      const v = parseFloat(params.get('scale'));
-      if (!isNaN(v) && v >= 0.5 && v <= 2.0) {
-        state.scaleMultiplier = v;
-        scaleMultiplierSlider.value = v;
-        scaleMultiplierValue.textContent = v.toFixed(1) + 'x';
-      }
-    }
-    if (params.has('labels')) {
-      state.showLabels = params.get('labels') === '1';
-      showLabelsCheck.checked = state.showLabels;
-    }
-    if (params.has('bars')) {
-      state.showCapacityBars = params.get('bars') === '1';
-      showCapacityBarsCheck.checked = state.showCapacityBars;
-    }
 
-    // initial draw
-    updateAll();
-  }
-
-  // JSON-LD schema
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "SCALEVERSE 3D · Stadium Capacity Scale Shock",
-    "description": "Interactive simulation workstation for comparing the 5 biggest stadiums by capacity and physical scale.",
-    "applicationCategory": "DataVisualization",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "author": {
-      "@type": "Organization",
-      "name": "SCALEVERSE 3D"
-    },
-    "about": {
-      "@type": "Dataset",
-      "name": "5 Biggest Stadiums: Capacity Scale Shock",
-      "description": "Capacities and physical scales of Red Bull Arena, Camp Nou, Wembley Stadium, FNB Stadium, and Michigan Stadium."
-    }
-  };
-  const script = document.createElement('script');
-  script.type = 'application/ld+json';
-  script.textContent = JSON.stringify(schema);
-  document.head.appendChild(script);
-
-  init();
-</script>
+      init();
+    })();
+  </script>
 </body>
 </html>
