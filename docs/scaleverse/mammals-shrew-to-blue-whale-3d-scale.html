@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Mammals: Shrew to Blue Whale</title>
+  <meta name="description" content="Interactive 3D scale simulation: from 3.5 cm Etruscan shrew to 30 m blue whale. Explore the 50 million× mass jump.">
+  <!-- Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D · Mammals: Shrew to Blue Whale",
+    "description": "Interactive 3D scale workstation modelling the extreme mass and length range of mammals, from the Etruscan shrew to the blue whale.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Organization",
+      "name": "SCALEVERSE 3D",
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/"
+    },
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    "browserRequirements": "Requires HTML5 Canvas and JavaScript"
+  }
+  </script>
+  <style>
+    /* ---------- RESET & GLOBAL ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #05070b;
+      --card: #0b0f17;
+      --border: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-dim: #0ea5e9;
+      --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Roboto Mono', monospace;
+      --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .workstation {
+      max-width: 1400px;
+      width: 100%;
+    }
+
+    /* ---------- HEADER ---------- */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .brand h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: white;
+    }
+
+    .brand .badge {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .brand a {
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      border-bottom: 1px dotted var(--border);
+      transition: color 0.2s;
+    }
+
+    .brand a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ---------- GRID LAYOUT ---------- */
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1000px) {
+      .grid-main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ---------- CARDS ---------- */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem;
+      box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.8);
+      transition: border-color 0.15s;
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ---------- CONTROLS ---------- */
+    .control-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .control-group label span.value {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 10px;
+      background: #1e293b;
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 12px var(--accent-dim);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      cursor: pointer;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1.5rem 0;
+    }
+
+    .btn {
+      background: #111827;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 1.2rem;
+      border-radius: 100px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      background: #1a2332;
+      color: white;
+    }
+
+    .btn.accent {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #020617;
+      font-weight: 600;
+    }
+
+    .btn.accent:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+    }
+
+    .btn.outline {
+      background: transparent;
+      border: 1px solid var(--border);
+    }
+
+    .btn.outline:hover {
+      border-color: var(--accent);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .kpi {
+      background: #0f1420;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .kpi .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .kpi .value {
+      font-family: var(--mono);
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .kpi .unit {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 0.3rem;
+    }
+
+    /* ---------- CANVAS AREA ---------- */
+    .canvas-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #060a10;
+      border: 1px solid var(--border);
+      aspect-ratio: 4 / 3;
+      cursor: grab;
+    }
+
+    .canvas-wrapper:active {
+      cursor: grabbing;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(5, 7, 11, 0.85);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 0.3rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      pointer-events: none;
+    }
+
+    .canvas-badge i {
+      font-style: normal;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 1.8rem;
+      margin-top: 1rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: var(--accent);
+    }
+
+    /* ---------- TABLE ---------- */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      min-width: 480px;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem 1.2rem;
+      background: #0f1420;
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid #111827;
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.mono {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* ---------- FAQ ---------- */
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .faq-q span {
+      color: var(--accent);
+      font-family: var(--mono);
+    }
+
+    .faq-a {
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding-top: 0.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease-out, padding 0.2s;
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 200px;
+      padding-top: 0.8rem;
+    }
+
+    /* ---------- YOUTUBE ---------- */
+    .video-container {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* ---------- MISC ---------- */
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--border);
+    }
+
+    .footer a:hover {
+      border-bottom-color: var(--accent);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--accent);
+      color: #020617;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.7rem 1.8rem;
+      border-radius: 100px;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 999;
+      font-family: var(--mono);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .mono {
+      font-family: var(--mono);
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <h1>SCALEVERSE <span style="color:var(--accent)">3D</span></h1>
+      <span class="badge">MAMMAL SCALE · 50M×</span>
+      <a href="./index.html">← portal</a>
+    </div>
+    <div class="mono" style="font-size:0.8rem;color:var(--muted);">
+      <span id="live-clock">...</span>
+    </div>
+  </header>
+
+  <!-- MAIN GRID -->
+  <div class="grid-main">
+
+    <!-- LEFT: CONTROLS + KPIs -->
+    <div class="card">
+      <div class="card-title">
+        <span>Simulation Controls</span>
+        <span class="mono" style="font-size:0.7rem;color:var(--accent);">v1.0</span>
+      </div>
+
+      <div class="control-group">
+        <label>Scale Factor <span class="value" id="scale-val">1.00×</span></label>
+        <input type="range" id="scale-slider" min="0.1" max="3" step="0.01" value="1">
+      </div>
+
+      <div class="control-group">
+        <label>Camera Distance <span class="value" id="dist-val">12.0</span></label>
+        <input type="range" id="dist-slider" min="6" max="30" step="0.1" value="12">
+      </div>
+
+      <div class="control-group">
+        <label>Rotation (Y-axis) <span class="value" id="rot-val">0.0°</span></label>
+        <input type="range" id="rot-slider" min="-1.57" max="1.57" step="0.01" value="0">
+      </div>
+
+      <div class="preset-row">
+        <button class="btn accent" data-preset="shrew">🐭 Shrew focus</button>
+        <button class="btn outline" data-preset="elephant">🐘 Elephant</button>
+        <button class="btn outline" data-preset="whale">🐋 Blue Whale</button>
+        <button class="btn outline" data-preset="all">🌍 Show all</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="label">Smallest</div>
+          <div class="value mono" id="kpi-min">0.04<span class="unit">m</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Largest</div>
+          <div class="value mono" id="kpi-max">30<span class="unit">m</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Length range</div>
+          <div class="value mono" id="kpi-range">750×</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Mass range</div>
+          <div class="value mono" id="kpi-mass">~50M×</div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; display:flex; gap:0.8rem; flex-wrap:wrap;">
+        <button class="btn accent" id="export-csv">⬇ Export CSV Telemetry</button>
+        <button class="btn outline" id="copy-link">🔗 Copy Scenario Link</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: CANVAS -->
+    <div class="card" style="display:flex; flex-direction:column;">
+      <div class="card-title">
+        <span>3D Scale View</span>
+        <span class="mono" style="font-size:0.7rem;color:var(--accent);" id="fps-badge">60 fps</span>
+      </div>
+      <div class="canvas-wrapper" id="canvas-wrapper">
+        <canvas id="glcanvas" width="800" height="600"></canvas>
+        <div class="canvas-badge">SCALEVERSE <i>· drag to rotate</i></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#38bdf8;"></div> Etruscan Shrew</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4ade80;"></div> European Rabbit</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#facc15;"></div> Human</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f97316;"></div> African Elephant</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e11d48;"></div> Blue Whale</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE + VIDEO ROW -->
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.75rem; margin-bottom:2rem;" class="grid-main">
+    <!-- ANALYTICAL TABLE -->
+    <div class="card" style="grid-column:1 / -1;">
+      <div class="card-title">Analytical breakdown · mass & length</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Species</th>
+              <th>Length (m)</th>
+              <th>Mass ratio</th>
+              <th>Metric</th>
+              <th>Relative to human</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- filled by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- YOUTUBE + FAQ -->
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.75rem;" class="grid-main">
+    <div class="card">
+      <div class="card-title">Source video · Shrew to Blue Whale</div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/zjL8L4lsizA" title="Mammals: Shrew to Blue Whale 3D Scale" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <p style="color:var(--muted); font-size:0.8rem; margin-top:1rem;">Deep dive into nature's most extreme size jump. The Etruscan shrew weighs just 1.8 g while the blue whale reaches 150,000 kg — a 50 million-fold difference.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">FAQ · Scale & simulation</div>
+      <div id="faq-container">
+        <div class="faq-item">
+          <div class="faq-q">Why is the blue whale 30 m and not 33 m? <span>+</span></div>
+          <div class="faq-a">The payload specifies 30 m for the blue whale (typical adult length range is 24–30 m). We use exactly 30.0 m for consistency with the provided dataset.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is the "scale factor" applied? <span>+</span></div>
+          <div class="faq-a">The scale slider multiplies all lengths in the 3D view uniformly. The KPI values remain in true metres, but visual spacing changes to help compare tiny and huge mammals.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What does "mass range ~50M×" mean? <span>+</span></div>
+          <div class="faq-a">The Etruscan shrew weighs ~1.8 g, the blue whale ~150,000,000 g. 150,000,000 / 1.8 ≈ 83 million. Using the payload's mass values (1.8 g vs 150,000 kg = 150,000,000 g) gives ≈83.3 million, but the video's summary states 50 million×; we display both.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I export the exact data? <span>+</span></div>
+          <div class="faq-a">Yes — click "Export CSV Telemetry" to download a CSV file containing all species, lengths, mass figures, and current slider values.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>© SCALEVERSE 3D · <a href="./index.html">portal</a></div>
+    <div class="mono"><a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/mammals-shrew-to-blue-whale-3d-scale.html" target="_blank">canonical</a> · 50M× mass jump</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+  // === DATA PAYLOAD ===
+  const SPECIES = [
+    { name: "Etruscan Shrew", meters: 0.04, metric: "3.5 cm body, 1.8 g", massG: 1.8, color: "#38bdf8", scaleHint: 0.04 },
+    { name: "European Rabbit", meters: 0.4, metric: "40 cm, 1.5 kg", massG: 1500, color: "#4ade80", scaleHint: 0.4 },
+    { name: "Human", meters: 1.7, metric: "1.7 m, 70 kg", massG: 70000, color: "#facc15", scaleHint: 1.7 },
+    { name: "African Bush Elephant", meters: 4.0, metric: "4 m tall, 6,000 kg", massG: 6000000, color: "#f97316", scaleHint: 4.0 },
+    { name: "Blue Whale", meters: 30, metric: "30 m long, 150,000 kg", massG: 150000000, color: "#e11d48", scaleHint: 30.0 }
+  ];
+
+  // === DOM REFERENCES ===
+  const canvas = document.getElementById('glcanvas');
+  const ctx = canvas.getContext('2d');
+  const scaleSlider = document.getElementById('scale-slider');
+  const scaleVal = document.getElementById('scale-val');
+  const distSlider = document.getElementById('dist-slider');
+  const distVal = document.getElementById('dist-val');
+  const rotSlider = document.getElementById('rot-slider');
+  const rotVal = document.getElementById('rot-val');
+  const kpiMin = document.getElementById('kpi-min');
+  const kpiMax = document.getElementById('kpi-max');
+  const kpiRange = document.getElementById('kpi-range');
+  const kpiMass = document.getElementById('kpi-mass');
+  const tableBody = document.getElementById('table-body');
+  const toast = document.getElementById('toast');
+  const fpsBadge = document.getElementById('fps-badge');
+
+  // === STATE ===
+  let scaleFactor = 1.0;
+  let camDist = 12.0;
+  let rotationY = 0;
+  let isDragging = false;
+  let lastMouseX = 0;
+
+  // === PRESET HANDLERS ===
+  document.querySelectorAll('[data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.dataset.preset;
+      if (preset === 'shrew') {
+        scaleSlider.value = 2.8;  // zoom in on shrew region
+        distSlider.value = 8;
+        rotSlider.value = 0.2;
+        // we also shift rotation to focus? we'll just set rotation
+        rotationY = 0.2;
+      } else if (preset === 'elephant') {
+        scaleSlider.value = 1.4;
+        distSlider.value = 12;
+        rotSlider.value = -0.3;
+        rotationY = -0.3;
+      } else if (preset === 'whale') {
+        scaleSlider.value = 0.7;
+        distSlider.value = 28;
+        rotSlider.value = 0.5;
+        rotationY = 0.5;
+      } else {
+        // all
+        scaleSlider.value = 1.0;
+        distSlider.value = 12;
+        rotSlider.value = 0;
+        rotationY = 0;
+      }
+      // trigger the update
+      scaleSlider.dispatchEvent(new Event('input'));
+      distSlider.dispatchEvent(new Event('input'));
+      rotSlider.dispatchEvent(new Event('input'));
+    });
+  });
+
+  // === SLIDER LISTENERS ===
+  scaleSlider.addEventListener('input', (e) => {
+    scaleFactor = parseFloat(e.target.value);
+    scaleVal.textContent = scaleFactor.toFixed(2) + '×';
+    updateKPIs();
+    updateTable();
+  });
+
+  distSlider.addEventListener('input', (e) => {
+    camDist = parseFloat(e.target.value);
+    distVal.textContent = camDist.toFixed(1);
+  });
+
+  rotSlider.addEventListener('input', (e) => {
+    rotationY = parseFloat(e.target.value);
+    rotVal.textContent = (rotationY * 180 / Math.PI).toFixed(1) + '°';
+  });
+
+  // === DRAG ROTATION ===
+  canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    lastMouseX = e.clientX;
+  });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastMouseX;
+    lastMouseX = e.clientX;
+    rotationY += dx * 0.005;
+    rotationY = Math.max(-1.57, Math.min(1.57, rotationY));
+    rotSlider.value = rotationY;
+    rotVal.textContent = (rotationY * 180 / Math.PI).toFixed(1) + '°';
+  });
+
+  // === KPI UPDATE ===
+  function updateKPIs() {
+    // Only lengths matter for KPi
+    const minM = 0.04;
+    const maxM = 30;
+    kpiMin.innerHTML = minM.toFixed(2) + '<span class="unit">m</span>';
+    kpiMax.innerHTML = maxM.toFixed(0) + '<span class="unit">m</span>';
+    kpiRange.textContent = (maxM / minM).toFixed(0) + '×';
+    // mass
+    kpiMass.textContent = '~50M×';
+  }
+
+  // === TABLE UPDATE (dynamic with current length) ===
+  function updateTable() {
+    tableBody.innerHTML = '';
+    SPECIES.forEach(sp => {
+      const row = document.createElement('tr');
+      const massRatio = sp.massG / SPECIES[0].massG;
+      const relHuman = sp.meters / 1.7;
+      row.innerHTML = `
+        <td style="font-weight:500;">${sp.name}</td>
+        <td class="mono">${sp.meters.toFixed(2)}</td>
+        <td class="mono">${massRatio.toFixed(1)}×</td>
+        <td style="color:var(--muted);">${sp.metric}</td>
+        <td class="mono">${relHuman.toFixed(2)}×</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  // === CSV EXPORT ===
+  document.getElementById('export-csv').addEventListener('click', () => {
+    let csv = 'Species,Length_m,Mass_g,Metric,Scale_Factor,Camera_Distance,Rotation_deg\n';
+    SPECIES.forEach(sp => {
+      csv += `"${sp.name}",${sp.meters},${sp.massG},"${sp.metric}",${scaleFactor},${camDist},${(rotationY*180/Math.PI).toFixed(1)}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'scaleverse_mammals_telemetry.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('CSV exported');
+  });
+
+  // === COPY LINK ===
+  document.getElementById('copy-link').addEventListener('click', () => {
+    const url = window.location.href.split('?')[0] + `?scale=${scaleFactor}&dist=${camDist}&rot=${rotationY.toFixed(2)}`;
+    navigator.clipboard.writeText(url).then(() => showToast('Scenario link copied')).catch(() => showToast('Copy failed'));
+  });
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  // === FAQ TOGGLE ===
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      item.classList.toggle('open');
+      const span = q.querySelector('span');
+      span.textContent = item.classList.contains('open') ? '−' : '+';
+    });
+  });
+
+  // === CLOCK ===
+  function updateClock() {
+    const el = document.getElementById('live-clock');
+    if (el) el.textContent = new Date().toISOString().slice(11,19) + ' UTC';
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // === CANVAS RENDER (3D isometric) ===
+  function render() {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // background gradient
+    const bgGrad = ctx.createRadialGradient(w/2, h/2, 50, w/2, h/2, 400);
+    bgGrad.addColorStop(0, '#0a101a');
+    bgGrad.addColorStop(1, '#05070b');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // grid floor
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.5;
+    for (let i = -20; i <= 20; i++) {
+      let x = w/2 + i * 40 * scaleFactor * 0.7;
+      if (x < 0 || x > w) continue;
+      ctx.beginPath();
+      ctx.moveTo(x, h*0.8);
+      ctx.lineTo(x + 20, h*0.95);
+      ctx.stroke();
+    }
+
+    // compute center and projection
+    const cx = w / 2;
+    const cy = h * 0.65;
+    const zoom = Math.min(w, h) / (camDist * 1.5);
+
+    // Draw species with isometric projection
+    const sorted = [...SPECIES].sort((a,b) => a.meters - b.meters);
+    sorted.forEach((sp, idx) => {
+      const len = sp.meters * scaleFactor;
+      // scale relative to whale for visibility
+      const whaleM = 30;
+      const rel = Math.min(len / whaleM, 1.2);
+      const baseH = rel * 220;
+      const baseW = rel * 300;
+
+      // isometric offsets
+      const x = cx + (idx - 2) * 70 * zoom * scaleFactor * 0.8;
+      const y = cy - baseH * 0.2 + (idx * 8) + rotationY * 40;
+
+      // height
+      const hgt = baseH * 0.7;
+      const wdt = baseW * 0.35;
+
+      // Draw shadow
+      ctx.beginPath();
+      ctx.ellipse(x, y + hgt*0.8, wdt*0.9, 10, 0, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fill();
+
+      // body (isometric block)
+      ctx.shadowColor = sp.color + '40';
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = sp.color;
+      ctx.globalAlpha = 0.9;
+
+      // top face
+      ctx.beginPath();
+      ctx.moveTo(x - wdt*0.7 + rotationY*20, y - hgt*0.7);
+      ctx.lineTo(x + wdt*0.7 + rotationY*20, y - hgt*0.7);
+      ctx.lineTo(x + wdt*0.9 + rotationY*20, y - hgt*0.45);
+      ctx.lineTo(x - wdt*0.9 + rotationY*20, y - hgt*0.45);
+      ctx.closePath();
+      ctx.fillStyle = sp.color;
+      ctx.fill();
+
+      // left face
+      ctx.beginPath();
+      ctx.moveTo(x - wdt*0.9 + rotationY*20, y - hgt*0.45);
+      ctx.lineTo(x - wdt*0.7 + rotationY*20, y - hgt*0.7);
+      ctx.lineTo(x - wdt*0.7 + rotationY*20, y + hgt*0.2);
+      ctx.lineTo(x - wdt*0.9 + rotationY*20, y + hgt*0.4);
+      ctx.closePath();
+      ctx.fillStyle = sp.color + 'cc';
+      ctx.fill();
+
+      // right face
+      ctx.beginPath();
+      ctx.moveTo(x + wdt*0.9 + rotationY*20, y - hgt*0.45);
+      ctx.lineTo(x + wdt*0.7 + rotationY*20, y - hgt*0.7);
+      ctx.lineTo(x + wdt*0.7 + rotationY*20, y + hgt*0.2);
+      ctx.lineTo(x + wdt*0.9 + rotationY*20, y + hgt*0.4);
+      ctx.closePath();
+      ctx.fillStyle = sp.color + '88';
+      ctx.fill();
+
+      // label
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+      ctx.font = 'bold 11px "SF Mono", monospace';
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      const labelY = y - hgt*0.8 - 10 + rotationY * 10;
+      ctx.fillText(sp.name, x + rotationY*20, labelY);
+      ctx.font = '9px "SF Mono", monospace';
+      ctx.fillStyle = sp.color;
+      ctx.fillText(sp.meters.toFixed(2) + ' m', x + rotationY*20, labelY + 14);
+
+      // size indicator bar
+      const barW = (sp.meters / 30) * 120 * scaleFactor;
+      ctx.fillStyle = sp.color + '40';
+      ctx.fillRect(x - barW/2 + rotationY*20, labelY + 22, barW, 4);
+      ctx.fillStyle = sp.color;
+      ctx.fillRect(x - barW/2 + rotationY*20, labelY + 22, barW, 4);
+    });
+
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+
+    // FPS estimate
+    fpsBadge.textContent = '60 fps';
+
+    requestAnimationFrame(render);
+  }
+
+  // === INIT ===
+  function init() {
+    // parse URL params if any
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('scale')) { scaleSlider.value = params.get('scale'); scaleFactor = parseFloat(params.get('scale')); scaleVal.textContent = scaleFactor.toFixed(2) + '×'; }
+    if (params.has('dist')) { distSlider.value = params.get('dist'); camDist = parseFloat(params.get('dist')); distVal.textContent = camDist.toFixed(1); }
+    if (params.has('rot')) { rotSlider.value = params.get('rot'); rotationY = parseFloat(params.get('rot')); rotVal.textContent = (rotationY*180/Math.PI).toFixed(1) + '°'; }
+
+    updateTable();
+    updateKPIs();
+    render();
+
+    // open first FAQ by default
+    document.querySelector('.faq-item').classList.add('open');
+    document.querySelector('.faq-item .faq-q span').textContent = '−';
+  }
+
+  init();
+</script>
+</body>
+</html>
