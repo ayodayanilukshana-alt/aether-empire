@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Superyachts to Supertankers</title>
+    <meta name="description" content="Interactive 3D size comparison of the world's largest vessels: Azzam, Icon of the Seas, Batillus, Seawise Giant, Prelude FLNG.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #05070b;
+            color: #e0e7f1;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .workstation {
+            max-width: 1440px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* header / brand */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            font-size: 1.2rem;
+            border: 1px solid #1e293b;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            background: #0b0f17;
+            transition: all 0.15s;
+        }
+
+        .brand a:hover {
+            background: #1e293b;
+            color: #7dd3fc;
+        }
+
+        .canonical {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.7rem;
+            color: #64748b;
+            word-break: break-all;
+            max-width: 500px;
+            text-align: right;
+        }
+
+        .canonical a {
+            color: #94a3b8;
+            text-decoration: none;
+        }
+
+        /* title */
+        .title-section h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: #f1f5f9;
+            background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-section p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* layout grid */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* cards */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #38bdf8;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* canvas container */
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            background: #05070b;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #05070b;
+        }
+
+        /* controls row */
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+            border-color: #38bdf8;
+            color: #f1f5f9;
+        }
+
+        .btn-primary {
+            background: #0b0f17;
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .btn-primary:hover {
+            background: #0f1a2b;
+            border-color: #7dd3fc;
+            color: #7dd3fc;
+        }
+
+        .btn-active {
+            border-color: #38bdf8;
+            background: #0f1a2b;
+            color: #7dd3fc;
+        }
+
+        /* slider */
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 4px;
+            outline: none;
+            width: 180px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px #38bdf880;
+        }
+
+        /* KPI grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+        }
+
+        .kpi-item {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 0.8rem;
+        }
+
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #38bdf8;
+            line-height: 1.3;
+        }
+
+        .kpi-sub {
+            font-size: 0.65rem;
+            color: #475569;
+            font-family: monospace;
+        }
+
+        /* table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        th {
+            background: #0b0f17;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+            padding: 0.7rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        td {
+            padding: 0.7rem 0.8rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #0f172a;
+        }
+
+        .highlight-row td {
+            background: #0f1a2b;
+            color: #7dd3fc;
+            font-weight: 600;
+        }
+
+        /* video */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.8rem 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-q {
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            line-height: 1.6;
+        }
+
+        /* utility */
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .text-accent { color: #38bdf8; }
+        .mono { font-family: 'SF Mono', 'Fira Code', monospace; }
+        .small { font-size: 0.75rem; }
+
+        /* footer */
+        .footer {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.7rem;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+    <!-- Header / Brand -->
+    <div class="header">
+        <div class="brand">
+            <a href="./index.html">← SCALEVERSE 3D</a>
+            <span style="color:#1e293b;">|</span>
+            <span style="color:#38bdf8; font-weight:600; letter-spacing:0.5px;">SIZE SHOCK</span>
+        </div>
+        <div class="canonical">
+            <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/superyachts-to-supertankers-3d-size-shock.html" target="_blank">
+                https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/superyachts-to-supertankers-3d-size-shock.html
+            </a>
+        </div>
+    </div>
+
+    <!-- Title -->
+    <div class="title-section">
+        <h1>Superyachts to Supertankers: 3D Size Shock</h1>
+        <p>Interactive comparison of the five largest ocean vessels — from the 142 m Azzam to the 488 m Prelude FLNG.</p>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid-main">
+        <!-- LEFT: Visualization + KPIs + Controls -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Canvas Card -->
+            <div class="card" style="padding:0.8rem;">
+                <div class="card-title" style="margin-bottom:0.6rem;">
+                    <span>3D VESSEL SCALE · LIVE CANVAS</span>
+                    <span class="mono small" style="color:#475569;">REF: 1 m = <span id="pxPerMeterLabel">1.2</span> px</span>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="vesselCanvas" width="1200" height="675" style="width:100%; height:100%;"></canvas>
+                </div>
+                <!-- Controls -->
+                <div class="controls-row">
+                    <div class="slider-group">
+                        <span>Zoom</span>
+                        <input type="range" id="zoomSlider" min="0.5" max="2.5" step="0.05" value="1.0">
+                        <span class="mono small" id="zoomValue">1.00x</span>
+                    </div>
+                    <div class="slider-group">
+                        <span>Y-Offset</span>
+                        <input type="range" id="offsetSlider" min="-40" max="40" step="1" value="0">
+                        <span class="mono small" id="offsetValue">0</span>
+                    </div>
+                    <button class="btn btn-primary" id="presetAll">PRESET: ALL</button>
+                    <button class="btn" id="presetYachts">PRESET: YACHTS</button>
+                    <button class="btn" id="presetTankers">PRESET: TANKERS</button>
+                </div>
+            </div>
+
+            <!-- KPI & Table Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <!-- KPI Card -->
+                <div class="card">
+                    <div class="card-title">KEY METRICS <span style="color:#475569; font-weight:400; font-size:0.65rem;">LIVE</span></div>
+                    <div class="kpi-grid" id="kpiGrid">
+                        <!-- dynamically populated by JS -->
+                    </div>
+                </div>
+                <!-- Telemetry Actions -->
+                <div class="card" style="display: flex; flex-direction: column; justify-content: center; gap: 0.8rem;">
+                    <div class="card-title" style="margin-bottom:0;">TELEMETRY & ACTIONS</div>
+                    <button class="btn btn-primary" id="exportCsvBtn" style="justify-content:center;">⬇ EXPORT CSV TELEMETRY</button>
+                    <button class="btn" id="copyScenarioBtn" style="justify-content:center;">🔗 COPY SCENARIO LINK</button>
+                    <div class="mono small" style="color:#475569; text-align:center; margin-top:0.2rem;" id="copyFeedback"></div>
+                    <div class="mono small" style="color:#475569; border-top:1px solid #1e293b; padding-top:0.6rem;">
+                        Scene: <span id="sceneLabel" class="text-accent">ALL VESSELS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytical Breakdown Table -->
+            <div class="card">
+                <div class="card-title">ANALYTICAL BREAKDOWN · VESSEL LENGTHS</div>
+                <div class="table-wrapper">
+                    <table id="vesselTable">
+                        <thead>
+                            <tr>
+                                <th>VESSEL</th>
+                                <th>METERS</th>
+                                <th>FEET</th>
+                                <th>RATIO vs AZZAM</th>
+                                <th>VISIBILITY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- YouTube Stream -->
+            <div class="card" style="padding:0.8rem;">
+                <div class="card-title" style="margin-bottom:0.6rem;">STREAM · SIZE SHOCK</div>
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/8H16rC85z5c" title="Superyachts to Supertankers: 3D Size Shock!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="card">
+                <div class="card-title">FAQ · SCALE INSIGHTS</div>
+                <div class="faq-item">
+                    <div class="faq-q">Why is Prelude FLNG the largest?</div>
+                    <div class="faq-a">Prelude FLNG measures 488 m (1,601 ft) in length and is the largest floating facility ever built, designed for offshore gas extraction. It is 30 m longer than the Seawise Giant.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">How does Azzam compare to a supertanker?</div>
+                    <div class="faq-a">Azzam at 142 m is roughly 3.4× shorter than Prelude FLNG. The Batillus supertanker (414 m) is nearly three times the length of Azzam.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">What does the "Ratio vs Azzam" column show?</div>
+                    <div class="faq-a">It displays how many times longer each vessel is compared to the baseline superyacht Azzam (142 m). A value of 3.44 means the vessel is 3.44 times longer.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Can I export the data?</div>
+                    <div class="faq-a">Yes — click "Export CSV Telemetry" to download a CSV with vessel names, meters, feet, and ratio. The "Copy Scenario Link" button copies a shareable URL with your current visualization state.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <span>SCALEVERSE 3D · SUPER-YACHTS TO SUPERTANKERS · DATA PAYLOAD v1.0</span>
+        <span>5 VESSELS · 142 m → 488 m · 3.44× SCALE RANGE</span>
+    </div>
+</div>
+
+<!-- JSON-LD SoftwareApplication Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D · Superyachts to Supertankers Size Shock",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "Web",
+  "description": "Interactive 3D size comparison workstation for the world's largest vessels: Azzam, Icon of the Seas, Batillus, Seawise Giant, Prelude FLNG.",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/superyachts-to-supertankers-3d-size-shock.html",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Organization", "name": "SCALEVERSE 3D" },
+  "about": {
+    "@type": "ItemList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "item": { "@type": "Thing", "name": "Azzam", "description": "142 m (466 ft) long" } },
+      { "@type": "ListItem", "position": 2, "item": { "@type": "Thing", "name": "Icon of the Seas", "description": "365 m (1,198 ft) long" } },
+      { "@type": "ListItem", "position": 3, "item": { "@type": "Thing", "name": "Batillus", "description": "414 m (1,359 ft) long" } },
+      { "@type": "ListItem", "position": 4, "item": { "@type": "Thing", "name": "Seawise Giant", "description": "458 m (1,504 ft) long" } },
+      { "@type": "ListItem", "position": 5, "item": { "@type": "Thing", "name": "Prelude FLNG", "description": "488 m (1,601 ft) long" } }
+    ]
+  }
+}
+</script>
+
+<script>
+    // ======================= DATA =======================
+    const VESSELS = [
+        { name: "Azzam", meters: 142, feet: 466, color: "#38bdf8" },
+        { name: "Icon of the Seas", meters: 365, feet: 1198, color: "#818cf8" },
+        { name: "Batillus", meters: 414, feet: 1359, color: "#c084fc" },
+        { name: "Seawise Giant", meters: 458, feet: 1504, color: "#f472b6" },
+        { name: "Prelude FLNG", meters: 488, feet: 1601, color: "#fb923c" }
+    ];
+
+    const BASELINE_METERS = 142; // Azzam
+
+    // ======================= STATE =======================
+    let state = {
+        zoom: 1.0,
+        yOffset: 0,
+        visible: [true, true, true, true, true],
+        selectedPreset: "all"
+    };
+
+    // DOM Elements
+    const canvas = document.getElementById('vesselCanvas');
+    const ctx = canvas.getContext('2d');
+    const zoomSlider = document.getElementById('zoomSlider');
+    const offsetSlider = document.getElementById('offsetSlider');
+    const zoomValue = document.getElementById('zoomValue');
+    const offsetValue = document.getElementById('offsetValue');
+    const pxPerMeterLabel = document.getElementById('pxPerMeterLabel');
+    const kpiGrid = document.getElementById('kpiGrid');
+    const tableBody = document.getElementById('tableBody');
+    const copyFeedback = document.getElementById('copyFeedback');
+    const sceneLabel = document.getElementById('sceneLabel');
+
+    // ======================= CANVAS RENDERING =======================
+    function drawScene() {
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // clear
+        ctx.clearRect(0, 0, w, h);
+
+        // background grid (subtle)
+        ctx.strokeStyle = "#1e293b";
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < w; x += 40) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+            ctx.stroke();
+        }
+        for (let y = 0; y < h; y += 40) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
+        }
+
+        // scale factor: base pixels per meter
+        const basePxPerMeter = 1.2;
+        const effectivePxPerMeter = basePxPerMeter * state.zoom;
+        pxPerMeterLabel.textContent = effectivePxPerMeter.toFixed(2);
+
+        // y position baseline
+        const baselineY = h * 0.5 + state.yOffset;
+
+        // Draw water line
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, baselineY);
+        ctx.lineTo(w, baselineY);
+        ctx.stroke();
+
+        // Draw each vessel
+        let visibleIndex = 0;
+        VESSELS.forEach((v, i) => {
+            if (!state.visible[i]) return;
+
+            const lengthPx = v.meters * effectivePxPerMeter;
+            const xStart = 80 + (visibleIndex * 18); // slight stagger
+            const yPos = baselineY - 35 - (visibleIndex * 12);
+
+            // Vessel body (rounded rect with gradient)
+            const bodyHeight = 14 + (visibleIndex * 2);
+
+            // shadow
+            ctx.shadowColor = v.color + '40';
+            ctx.shadowBlur = 20;
+
+            // hull
+            ctx.fillStyle = v.color + 'cc';
+            ctx.beginPath();
+            ctx.roundRect(xStart, yPos, lengthPx, bodyHeight, 6);
+            ctx.fill();
+
+            // top deck accent
+            ctx.fillStyle = v.color;
+            ctx.beginPath();
+            ctx.roundRect(xStart + 4, yPos + 2, lengthPx - 8, 4, 3);
+            ctx.fill();
+
+            // glow line
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = v.color;
+            ctx.strokeStyle = v.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(xStart, yPos, lengthPx, bodyHeight, 6);
+            ctx.stroke();
+
+            // reset shadow
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+
+            // Label
+            ctx.font = "600 12px 'SF Mono', 'Fira Code', monospace";
+            ctx.fillStyle = "#f1f5f9";
+            ctx.textAlign = "left";
+            ctx.fillText(v.name.toUpperCase(), xStart, yPos - 8);
+            ctx.fillStyle = v.color;
+            ctx.font = "500 11px monospace";
+            ctx.fillText(v.meters + " m", xStart, yPos + bodyHeight + 14);
+
+            visibleIndex++;
+        });
+
+        // If nothing visible, show message
+        if (visibleIndex === 0) {
+            ctx.font = "500 16px monospace";
+            ctx.fillStyle = "#64748b";
+            ctx.textAlign = "center";
+            ctx.fillText("NO VESSELS SELECTED", w/2, h/2 - 20);
+        }
+
+        // Draw scale ruler at bottom
+        const rulerY = h - 40;
+        ctx.strokeStyle = "#475569";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(60, rulerY);
+        ctx.lineTo(w - 60, rulerY);
+        ctx.stroke();
+
+        // tick marks every 50 meters
+        const step = 50;
+        for (let m = 0; m <= 500; m += step) {
+            const px = 60 + m * effectivePxPerMeter;
+            if (px > w - 60) break;
+            ctx.beginPath();
+            ctx.moveTo(px, rulerY - 6);
+            ctx.lineTo(px, rulerY + 6);
+            ctx.stroke();
+            ctx.fillStyle = "#64748b";
+            ctx.font = "10px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText(m + "m", px, rulerY + 22);
+        }
+
+        ctx.fillStyle = "#475569";
+        ctx.font = "10px monospace";
+        ctx.textAlign = "left";
+        ctx.fillText("SCALE RULER", 60, rulerY + 38);
+    }
+
+    // roundRect polyfill
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+        return this;
+    };
+
+    // ======================= UPDATE UI =======================
+    function updateKPIs() {
+        const visibleVessels = VESSELS.filter((_, i) => state.visible[i]);
+        const count = visibleVessels.length;
+
+        let longest = null, shortest = null;
+        if (count > 0) {
+            longest = visibleVessels.reduce((a, b) => a.meters > b.meters ? a : b);
+            shortest = visibleVessels.reduce((a, b) => a.meters < b.meters ? a : b);
+        }
+
+        const totalMeters = visibleVessels.reduce((s, v) => s + v.meters, 0);
+        const avgMeters = count ? (totalMeters / count).toFixed(1) : "0";
+        const range = count ? (longest.meters - shortest.meters) : 0;
+        const longestRatio = count ? (longest.meters / BASELINE_METERS).toFixed(2) : "—";
+
+        kpiGrid.innerHTML = `
+            <div class="kpi-item">
+                <div class="kpi-label">VISIBLE VESSELS</div>
+                <div class="kpi-value">${count}</div>
+                <div class="kpi-sub">of ${VESSELS.length} total</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">LONGEST</div>
+                <div class="kpi-value" style="font-size:1rem;">${count ? longest.name : '—'}</div>
+                <div class="kpi-sub">${count ? longest.meters + ' m' : 'no data'}</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">AVG LENGTH</div>
+                <div class="kpi-value">${avgMeters}<span style="font-size:0.8rem;color:#475569;"> m</span></div>
+                <div class="kpi-sub">visible set</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-label">SCALE RANGE</div>
+                <div class="kpi-value" style="font-size:1.1rem;">${longestRatio}×</div>
+                <div class="kpi-sub">vs Azzam (142 m)</div>
+            </div>
+        `;
+    }
+
+    function updateTable() {
+        tableBody.innerHTML = '';
+        VESSELS.forEach((v, i) => {
+            const ratio = (v.meters / BASELINE_METERS).toFixed(2);
+            const visible = state.visible[i];
+            const row = document.createElement('tr');
+            if (!visible) {
+                row.style.opacity = '0.4';
+            }
+            row.innerHTML = `
+                <td style="color:${v.color}; font-weight:600;">${v.name}</td>
+                <td>${v.meters} m</td>
+                <td>${v.feet} ft</td>
+                <td>${ratio}×</td>
+                <td><span style="color:${visible ? '#4ade80' : '#64748b'}">${visible ? '● VISIBLE' : '○ HIDDEN'}</span></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function updateSceneLabel() {
+        const active = state.visible.filter(Boolean).length;
+        if (active === 0) sceneLabel.textContent = "NONE";
+        else if (active === VESSELS.length) sceneLabel.textContent = "ALL VESSELS";
+        else if (active === 2 && state.visible[0] && state.visible[1]) sceneLabel.textContent = "YACHTS";
+        else if (active === 3 && state.visible[2] && state.visible[3] && state.visible[4]) sceneLabel.textContent = "TANKERS";
+        else sceneLabel.textContent = active + " VESSELS";
+    }
+
+    // ======================= PRESETS =======================
+    function applyPreset(preset) {
+        state.selectedPreset = preset;
+        if (preset === "all") {
+            state.visible = [true, true, true, true, true];
+        } else if (preset === "yachts") {
+            state.visible = [true, true, false, false, false];
+        } else if (preset === "tankers") {
+            state.visible = [false, false, true, true, true];
+        }
+        state.zoom = 1.0;
+        state.yOffset = 0;
+        zoomSlider.value = 1.0;
+        offsetSlider.value = 0;
+        zoomValue.textContent = "1.00x";
+        offsetValue.textContent = "0";
+        redrawAll();
+    }
+
+    // ======================= EVENTS =======================
+    zoomSlider.addEventListener('input', (e) => {
+        state.zoom = parseFloat(e.target.value);
+        zoomValue.textContent = state.zoom.toFixed(2) + 'x';
+        redrawAll();
+    });
+
+    offsetSlider.addEventListener('input', (e) => {
+        state.yOffset = parseInt(e.target.value);
+        offsetValue.textContent = state.yOffset;
+        redrawAll();
+    });
+
+    document.getElementById('presetAll').addEventListener('click', () => applyPreset('all'));
+    document.getElementById('presetYachts').addEventListener('click', () => applyPreset('yachts'));
+    document.getElementById('presetTankers').addEventListener('click', () => applyPreset('tankers'));
+
+    // CSV Export
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+        let csv = "Vessel,Meters,Feet,Ratio_vs_Azzam,Visible\n";
+        VESSELS.forEach((v, i) => {
+            const ratio = (v.meters / BASELINE_METERS).toFixed(4);
+            const visible = state.visible[i] ? "TRUE" : "FALSE";
+            csv += `${v.name},${v.meters},${v.feet},${ratio},${visible}\n`;
+        });
+        csv += `\nScenario,Zoom,Y_Offset\n`;
+        csv += `Current,${state.zoom},${state.yOffset}\n`;
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scaleverse_telemetry.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Copy Scenario Link
+    document.getElementById('copyScenarioBtn').addEventListener('click', () => {
+        const baseUrl = "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/superyachts-to-supertankers-3d-size-shock.html";
+        const params = new URLSearchParams();
+        params.set('zoom', state.zoom.toFixed(2));
+        params.set('offset', state.yOffset);
+        params.set('visible', state.visible.map(v => v ? '1' : '0').join(''));
+        const url = baseUrl + '?' + params.toString();
+
+        navigator.clipboard.writeText(url).then(() => {
+            copyFeedback.textContent = '✓ LINK COPIED';
+            setTimeout(() => copyFeedback.textContent = '', 2000);
+        }).catch(() => {
+            copyFeedback.textContent = '⚠ UNABLE TO COPY';
+            setTimeout(() => copyFeedback.textContent = '', 2000);
+        });
+    });
+
+    // ======================= INIT =======================
+    function redrawAll() {
+        drawScene();
+        updateKPIs();
+        updateTable();
+        updateSceneLabel();
+    }
+
+    // Check URL params
+    function initFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('zoom')) {
+            const z = parseFloat(params.get('zoom'));
+            if (z >= 0.5 && z <= 2.5) {
+                state.zoom = z;
+                zoomSlider.value = z;
+                zoomValue.textContent = z.toFixed(2) + 'x';
+            }
+        }
+        if (params.has('offset')) {
+            const o = parseInt(params.get('offset'));
+            if (o >= -40 && o <= 40) {
+                state.yOffset = o;
+                offsetSlider.value = o;
+                offsetValue.textContent = o;
+            }
+        }
+        if (params.has('visible') && params.get('visible').length === 5) {
+            const vis = params.get('visible').split('').map(c => c === '1');
+            state.visible = vis;
+        }
+    }
+
+    // Initialize
+    initFromURL();
+    redrawAll();
+
+    // Redraw on resize (just in case)
+    window.addEventListener('resize', () => {
+        // keep canvas resolution fixed, no action needed for now
+    });
+</script>
+</body>
+</html>
