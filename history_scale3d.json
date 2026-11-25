@@ -17,7 +17,8 @@
     "Deepest Holes Ever Dug: 5-Stage 3D Scale Shock",
     "5 Biggest Stadiums: Capacity Scale Shock!",
     "Superyachts to Supertankers: 3D Size Shock!",
-    "Caves, Mines & Boreholes: Human Depth Shock"
+    "Caves, Mines & Boreholes: Human Depth Shock",
+    "Submarines & Habitats: 5-Stage 3D Size Shock!"
   ],
   "used_items": [
     "V-2 Rocket",
@@ -151,12 +152,19 @@
     {
       "video_id": "8H16rC85z5c",
       "title": "Superyachts to Supertankers: 3D Size Shock! #shorts",
-      "published_at": 1795541858
+      "published_at": 1795541858,
+      "ab_tested": true
     },
     {
       "video_id": "Y3UngdUmEwY",
       "title": "Caves, Mines & Boreholes: Human Depth Shock #shorts",
-      "published_at": 1795570733
+      "published_at": 1795570733,
+      "ab_tested": true
+    },
+    {
+      "video_id": "RPave_9CY50",
+      "title": "Submarines & Habitats: 5-Stage 3D Size Shock! #shorts",
+      "published_at": 1795628354
     }
   ]
 }
