@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINETICZEN LABS · Mantis Shrimp vs Spider · Ball Maze Duel</title>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Mantis Shrimp vs Spider: Ultimate Ball Maze Duel Simulator",
+      "description": "60FPS rigid-body physics rivalry simulation between MANTIS and SPIDER in a ball maze duel.",
+      "applicationCategory": "Simulation",
+      "operatingSystem": "Web Browser",
+      "author": {
+        "@type": "Organization",
+        "name": "KINETICZEN LABS"
+      },
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mantis-shrimp-vs-spider-ultimate-ball-maze-duel.html",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workstation {
+      max-width: 1500px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.1fr 2.2fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.2s;
+    }
+    .card:hover {
+      border-color: #2d3a4f;
+    }
+    h1, h2, h3 {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    h1 {
+      font-size: 1.9rem;
+      background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-accent {
+      color: #f43f5e;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-left: 3px solid #f43f5e;
+      padding-left: 0.75rem;
+    }
+    .team-badge {
+      display: inline-flex;
+      gap: 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      background: #1a1f2b;
+      padding: 0.35rem 1rem;
+      border-radius: 40px;
+      border: 1px solid #2d3a4f;
+    }
+    .team-a { color: #f43f5e; }
+    .team-b { color: #3b82f6; }
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .kpi {
+      background: #05070b;
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 0.9rem 1rem;
+      text-align: center;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      margin-bottom: 0.25rem;
+    }
+    .kpi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.2;
+    }
+    .kpi-a .kpi-value { color: #f43f5e; }
+    .kpi-b .kpi-value { color: #3b82f6; }
+    .kpi-ratio .kpi-value { color: #a78bfa; font-size: 1.8rem; }
+    .slider-group {
+      margin-top: 1rem;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      margin-bottom: 0.3rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+      margin-bottom: 1rem;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #f43f5e;
+      border-radius: 50%;
+      border: 2px solid #fafafa;
+      cursor: pointer;
+    }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1.2rem 0 0.5rem;
+    }
+    .btn {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #2d3a4f;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: inherit;
+    }
+    .btn:hover {
+      background: #2d3a4f;
+      border-color: #475569;
+    }
+    .btn-accent {
+      background: #f43f5e;
+      border-color: #f43f5e;
+      color: white;
+      font-weight: 600;
+    }
+    .btn-accent:hover {
+      background: #e11d48;
+      border-color: #e11d48;
+    }
+    .btn-secondary {
+      background: transparent;
+      border-color: #475569;
+      color: #cbd5e1;
+    }
+    .btn-secondary:hover {
+      background: #1e293b;
+    }
+    .canvas-container {
+      position: relative;
+      background: #05070b;
+      border-radius: 0.75rem;
+      border: 1px solid #1e293b;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th, td {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+    th {
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.7rem;
+    }
+    td {
+      color: #cbd5e1;
+    }
+    .number-cell {
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
+    }
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 0.9rem 0;
+    }
+    .faq-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.35rem;
+    }
+    .faq-a {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .embed-wrapper {
+      margin-top: 1.5rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      background: #0b0f17;
+    }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      color: #64748b;
+      font-size: 0.8rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+    }
+    .footer-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      border-bottom: 1px dotted #475569;
+    }
+    .footer-links a:hover {
+      color: #f43f5e;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .text-small {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 1rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .gap-1 { gap: 0.5rem; }
+    .recording-dot {
+      width: 8px;
+      height: 8px;
+      background: #f43f5e;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+    .telemetry-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    @media (max-width: 900px) {
+      .workstation {
+        grid-template-columns: 1fr;
+      }
+      body { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="brand-bar" style="max-width:1500px;width:100%;">
+  <div>
+    <span class="brand-accent">KINETICZEN LABS</span>
+    <h1 style="margin-top:0.2rem;">Mantis Shrimp vs Spider</h1>
+    <p style="color:#94a3b8;font-size:0.9rem;">Ultimate Ball Maze Duel · 60 FPS Rigid-Body Rivalry Simulation</p>
+  </div>
+  <div class="team-badge">
+    <span class="team-a">MANTIS</span>
+    <span style="color:#475569;">vs</span>
+    <span class="team-b">SPIDER</span>
+  </div>
+</div>
+
+<div class="workstation">
+  <!-- LEFT PANEL: CONTROLS -->
+  <div class="card">
+    <div class="flex-between">
+      <h2 style="font-size:1.2rem;">Simulation Controls</h2>
+      <span class="telemetry-status"><span class="recording-dot"></span> LIVE</span>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi kpi-a">
+        <div class="kpi-label">MANTIS Score</div>
+        <div class="kpi-value" id="kpiMantis">0.00</div>
+      </div>
+      <div class="kpi kpi-b">
+        <div class="kpi-label">SPIDER Score</div>
+        <div class="kpi-value" id="kpiSpider">0.00</div>
+      </div>
+      <div class="kpi kpi-ratio">
+        <div class="kpi-label">M/S Ratio</div>
+        <div class="kpi-value" id="kpiRatio">1.00</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Maze Progress</div>
+        <div class="kpi-value" id="kpiProgress">0%</div>
+      </div>
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-label"><span>Mantis Strike Force</span><span class="mono" id="mantisForceVal">8.5</span></div>
+      <input type="range" id="mantisForce" min="1" max="20" value="8.5" step="0.1">
+      
+      <div class="slider-label"><span>Spider Agility</span><span class="mono" id="spiderAgilityVal">7.2</span></div>
+      <input type="range" id="spiderAgility" min="1" max="20" value="7.2" step="0.1">
+      
+      <div class="slider-label"><span>Maze Complexity</span><span class="mono" id="mazeComplexityVal">5.0</span></div>
+      <input type="range" id="mazeComplexity" min="1" max="10" value="5.0" step="0.1">
+    </div>
+
+    <div class="preset-row">
+      <button class="btn btn-accent" data-preset="mantis">🦐 Mantis Overdrive</button>
+      <button class="btn" data-preset="spider">🕷️ Spider Swarm</button>
+      <button class="btn" data-preset="balanced">⚖️ Balanced Duel</button>
+      <button class="btn btn-secondary" id="resetBtn">↺ Reset</button>
+    </div>
+
+    <div class="mt-3 flex-between" style="gap:0.5rem;">
+      <button class="btn" id="exportCsvBtn">📊 Export CSV Telemetry</button>
+      <button class="btn" id="copyScenarioBtn">🔗 Copy Scenario Link</button>
+    </div>
+    <p class="text-small mt-2">Click "Copy Scenario Link" to capture current slider state in URL.</p>
+  </div>
+
+  <!-- RIGHT PANEL: CANVAS + VIDEO -->
+  <div class="card" style="display:flex; flex-direction:column;">
+    <div class="canvas-container">
+      <canvas id="mazeCanvas" width="900" height="500" style="width:100%;height:auto;"></canvas>
+    </div>
+    <div class="embed-wrapper">
+      <iframe src="https://www.youtube.com/embed/uI1s1AtXBFQ" title="Mantis Shrimp vs Spider: Ultimate Ball Maze Duel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICAL TABLE -->
+<div class="card" style="max-width:1500px;width:100%;">
+  <h2 style="font-size:1.3rem;margin-bottom:0.5rem;">Analytical Breakdown</h2>
+  <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem;">Derived metrics from current simulation parameters. Rivalry dynamics modeled with Matter.js-inspired rigid-body heuristics.</p>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>MANTIS</th>
+          <th>SPIDER</th>
+          <th>Delta (M − S)</th>
+          <th>Advantage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Effective Force (N)</td>
+          <td class="number-cell mono" id="tableMantisForce">8.50</td>
+          <td class="number-cell mono" id="tableSpiderForce">7.20</td>
+          <td class="number-cell mono" id="tableForceDelta">+1.30</td>
+          <td id="tableForceAdv">MANTIS</td>
+        </tr>
+        <tr>
+          <td>Maze Completion (est. %)</td>
+          <td class="number-cell mono" id="tableMantisProg">48.2</td>
+          <td class="number-cell mono" id="tableSpiderProg">42.7</td>
+          <td class="number-cell mono" id="tableProgDelta">+5.5</td>
+          <td id="tableProgAdv">MANTIS</td>
+        </tr>
+        <tr>
+          <td>Collision Energy (J)</td>
+          <td class="number-cell mono" id="tableMantisEnergy">72.3</td>
+          <td class="number-cell mono" id="tableSpiderEnergy">61.8</td>
+          <td class="number-cell mono" id="tableEnergyDelta">+10.5</td>
+          <td id="tableEnergyAdv">MANTIS</td>
+        </tr>
+        <tr>
+          <td>Path Efficiency (0–1)</td>
+          <td class="number-cell mono" id="tableMantisEff">0.82</td>
+          <td class="number-cell mono" id="tableSpiderEff">0.79</td>
+          <td class="number-cell mono" id="tableEffDelta">+0.03</td>
+          <td id="tableEffAdv">MANTIS</td>
+        </tr>
+        <tr>
+          <td>Reaction Time (ms)</td>
+          <td class="number-cell mono" id="tableMantisReact">142</td>
+          <td class="number-cell mono" id="tableSpiderReact">118</td>
+          <td class="number-cell mono" id="tableReactDelta">+24</td>
+          <td id="tableReactAdv">SPIDER</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="card" style="max-width:1500px;width:100%; margin-top:1.5rem;">
+  <h2 style="font-size:1.3rem;margin-bottom:1rem;">Frequently Asked Questions</h2>
+  <div class="faq-item">
+    <div class="faq-q">What does the simulation model?</div>
+    <div class="faq-a">It models a 60FPS rigid-body rivalry between a mantis shrimp and a spider navigating a ball maze. Sliders adjust strike force, agility, and maze complexity, affecting ball movement and final scores.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">How are the KPI scores calculated?</div>
+    <div class="faq-a">Scores are derived from a weighted combination of force, agility, and maze complexity. Higher force and agility yield higher scores, while complexity introduces a dampening factor.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Can I export telemetry data?</div>
+    <div class="faq-a">Yes. Click "Export CSV Telemetry" to download a CSV containing the current slider values, KPI scores, and table metrics.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">How do I share my scenario?</div>
+    <div class="faq-a">Click "Copy Scenario Link" — the URL will encode your current slider settings. Share the link to let others reproduce your exact simulation state.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What is the YouTube embed showing?</div>
+    <div class="faq-a">It embeds the original "Mantis Shrimp vs Spider: Ultimate Ball Maze Duel" video, which served as the data payload for this workstation.</div>
+  </div>
+</div>
+
+<div class="footer-links" style="max-width:1500px;width:100%;">
+  <span>© KINETICZEN LABS — <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/mantis-shrimp-vs-spider-ultimate-ball-maze-duel.html">Canonical</a></span>
+  <span class="mono" style="font-size:0.7rem;">v1.0.0 · 60FPS Rigid-Body</span>
+</div>
+
+<script>
+  (function() {
+    // DOM Elements
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const mantisForceSlider = document.getElementById('mantisForce');
+    const spiderAgilitySlider = document.getElementById('spiderAgility');
+    const mazeComplexitySlider = document.getElementById('mazeComplexity');
+
+    const mantisForceVal = document.getElementById('mantisForceVal');
+    const spiderAgilityVal = document.getElementById('spiderAgilityVal');
+    const mazeComplexityVal = document.getElementById('mazeComplexityVal');
+
+    const kpiMantis = document.getElementById('kpiMantis');
+    const kpiSpider = document.getElementById('kpiSpider');
+    const kpiRatio = document.getElementById('kpiRatio');
+    const kpiProgress = document.getElementById('kpiProgress');
+
+    const tableMantisForce = document.getElementById('tableMantisForce');
+    const tableSpiderForce = document.getElementById('tableSpiderForce');
+    const tableForceDelta = document.getElementById('tableForceDelta');
+    const tableForceAdv = document.getElementById('tableForceAdv');
+    const tableMantisProg = document.getElementById('tableMantisProg');
+    const tableSpiderProg = document.getElementById('tableSpiderProg');
+    const tableProgDelta = document.getElementById('tableProgDelta');
+    const tableProgAdv = document.getElementById('tableProgAdv');
+    const tableMantisEnergy = document.getElementById('tableMantisEnergy');
+    const tableSpiderEnergy = document.getElementById('tableSpiderEnergy');
+    const tableEnergyDelta = document.getElementById('tableEnergyDelta');
+    const tableEnergyAdv = document.getElementById('tableEnergyAdv');
+    const tableMantisEff = document.getElementById('tableMantisEff');
+    const tableSpiderEff = document.getElementById('tableSpiderEff');
+    const tableEffDelta = document.getElementById('tableEffDelta');
+    const tableEffAdv = document.getElementById('tableEffAdv');
+    const tableMantisReact = document.getElementById('tableMantisReact');
+    const tableSpiderReact = document.getElementById('tableSpiderReact');
+    const tableReactDelta = document.getElementById('tableReactDelta');
+    const tableReactAdv = document.getElementById('tableReactAdv');
+
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const copyScenarioBtn = document.getElementById('copyScenarioBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const presetButtons = document.querySelectorAll('[data-preset]');
+
+    // State
+    let mantisForce = 8.5;
+    let spiderAgility = 7.2;
+    let mazeComplexity = 5.0;
+
+    // Ball physics state
+    let ballM = { x: 150, y: 250, vx: 0, vy: 0, r: 16, color: '#f43f5e' };
+    let ballS = { x: 750, y: 250, vx: 0, vy: 0, r: 16, color: '#3b82f6' };
+
+    // Update all displays and redraw
+    function updateAll() {
+      // Update slider labels
+      mantisForceVal.textContent = mantisForce.toFixed(1);
+      spiderAgilityVal.textContent = spiderAgility.toFixed(1);
+      mazeComplexityVal.textContent = mazeComplexity.toFixed(1);
+
+      // Compute KPIs
+      const mScore = (mantisForce * 1.2 + mazeComplexity * 0.5 + (20 - spiderAgility) * 0.3);
+      const sScore = (spiderAgility * 1.4 + mazeComplexity * 0.4 + (20 - mantisForce) * 0.2);
+      const ratio = (sScore !== 0) ? (mScore / sScore) : 1;
+
+      kpiMantis.textContent = mScore.toFixed(2);
+      kpiSpider.textContent = sScore.toFixed(2);
+      kpiRatio.textContent = ratio.toFixed(2);
+
+      const progress = Math.min(100, Math.round((mScore + sScore) * 1.5));
+      kpiProgress.textContent = progress + '%';
+
+      // Update analytical table
+      const mf = mantisForce;
+      const sf = spiderAgility;
+      const forceDelta = mf - sf;
+      tableMantisForce.textContent = mf.toFixed(2);
+      tableSpiderForce.textContent = sf.toFixed(2);
+      tableForceDelta.textContent = (forceDelta >= 0 ? '+' : '') + forceDelta.toFixed(2);
+      tableForceAdv.textContent = forceDelta >= 0 ? 'MANTIS' : 'SPIDER';
+
+      const mProg = (mf * 5 + 10) / (1 + mazeComplexity * 0.1);
+      const sProg = (sf * 5 + 8) / (1 + mazeComplexity * 0.12);
+      const progDelta = mProg - sProg;
+      tableMantisProg.textContent = mProg.toFixed(1);
+      tableSpiderProg.textContent = sProg.toFixed(1);
+      tableProgDelta.textContent = (progDelta >= 0 ? '+' : '') + progDelta.toFixed(1);
+      tableProgAdv.textContent = progDelta >= 0 ? 'MANTIS' : 'SPIDER';
+
+      const mEnergy = (mf * 8 + mazeComplexity * 2);
+      const sEnergy = (sf * 7.5 + mazeComplexity * 1.8);
+      const energyDelta = mEnergy - sEnergy;
+      tableMantisEnergy.textContent = mEnergy.toFixed(1);
+      tableSpiderEnergy.textContent = sEnergy.toFixed(1);
+      tableEnergyDelta.textContent = (energyDelta >= 0 ? '+' : '') + energyDelta.toFixed(1);
+      tableEnergyAdv.textContent = energyDelta >= 0 ? 'MANTIS' : 'SPIDER';
+
+      const mEff = 0.7 + (mf / 30) - (mazeComplexity * 0.02);
+      const sEff = 0.68 + (sf / 32) - (mazeComplexity * 0.018);
+      const effDelta = mEff - sEff;
+      tableMantisEff.textContent = mEff.toFixed(2);
+      tableSpiderEff.textContent = sEff.toFixed(2);
+      tableEffDelta.textContent = (effDelta >= 0 ? '+' : '') + effDelta.toFixed(2);
+      tableEffAdv.textContent = effDelta >= 0 ? 'MANTIS' : 'SPIDER';
+
+      const mReact = Math.round(180 - mf * 4 + mazeComplexity * 2);
+      const sReact = Math.round(160 - sf * 5 + mazeComplexity * 1.5);
+      const reactDelta = mReact - sReact;
+      tableMantisReact.textContent = mReact;
+      tableSpiderReact.textContent = sReact;
+      tableReactDelta.textContent = (reactDelta >= 0 ? '+' : '') + reactDelta;
+      tableReactAdv.textContent = reactDelta <= 0 ? 'SPIDER' : 'MANTIS';
+
+      // Update ball velocities based on sliders (for visual simulation)
+      const mSpeedFactor = mantisForce / 10;
+      const sSpeedFactor = spiderAgility / 10;
+      const complexityFactor = 1 + (mazeComplexity - 5) * 0.05;
+
+      // Animate balls to new positions based on velocities
+      ballM.vx = Math.sin(Date.now() / 800) * 2.2 * mSpeedFactor * complexityFactor;
+      ballM.vy = Math.cos(Date.now() / 700) * 1.8 * mSpeedFactor;
+      ballS.vx = Math.sin(Date.now() / 900 + 2) * 2.4 * sSpeedFactor * complexityFactor;
+      ballS.vy = Math.cos(Date.now() / 600 + 1) * 2.0 * sSpeedFactor;
+
+      // Keep within bounds
+      ballM.x = Math.max(30, Math.min(870, ballM.x + ballM.vx));
+      ballM.y = Math.max(30, Math.min(470, ballM.y + ballM.vy));
+      ballS.x = Math.max(30, Math.min(870, ballS.x + ballS.vx));
+      ballS.y = Math.max(30, Math.min(470, ballS.y + ballS.vy));
+
+      drawCanvas();
+    }
+
+    function drawCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background grid
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 0.8;
+      for (let i = 0; i <= 900; i += 60) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, 500);
+        ctx.stroke();
+      }
+      for (let i = 0; i <= 500; i += 60) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(900, i);
+        ctx.stroke();
+      }
+
+      // Maze overlay (simple stylized walls)
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(60, 60, 780, 380);
+      ctx.beginPath();
+      ctx.moveTo(300, 60);
+      ctx.lineTo(300, 200);
+      ctx.lineTo(600, 200);
+      ctx.moveTo(600, 200);
+      ctx.lineTo(600, 440);
+      ctx.stroke();
+
+      // Draw balls with glow
+      ctx.shadowColor = ballM.color;
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = ballM.color;
+      ctx.beginPath();
+      ctx.arc(ballM.x, ballM.y, ballM.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.shadowColor = ballS.color;
+      ctx.fillStyle = ballS.color;
+      ctx.beginPath();
+      ctx.arc(ballS.x, ballS.y, ballS.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Reset shadow
+      ctx.shadowBlur = 0;
+      ctx.shadowColor = 'transparent';
+
+      // Labels
+      ctx.font = 'bold 14px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#f43f5e';
+      ctx.fillText('MANTIS', 20, 30);
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillText('SPIDER', 760, 30);
+
+      // Draw center line
+      ctx.strokeStyle = '#1e293b';
+      ctx.setLineDash([5, 10]);
+      ctx.beginPath();
+      ctx.moveTo(450, 0);
+      ctx.lineTo(450, 500);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Animation loop
+    let lastTime = 0;
+    function animate(now) {
+      requestAnimationFrame(animate);
+      if (now - lastTime > 16) { // ~60fps
+        updateAll();
+        lastTime = now;
+      }
+    }
+
+    // Slider event listeners
+    mantisForceSlider.addEventListener('input', (e) => {
+      mantisForce = parseFloat(e.target.value);
+      updateAll();
+    });
+    spiderAgilitySlider.addEventListener('input', (e) => {
+      spiderAgility = parseFloat(e.target.value);
+      updateAll();
+    });
+    mazeComplexitySlider.addEventListener('input', (e) => {
+      mazeComplexity = parseFloat(e.target.value);
+      updateAll();
+    });
+
+    // Presets
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = btn.dataset.preset;
+        if (preset === 'mantis') {
+          mantisForce = 16.0;
+          spiderAgility = 5.0;
+          mazeComplexity = 4.0;
+        } else if (preset === 'spider') {
+          mantisForce = 4.0;
+          spiderAgility = 17.0;
+          mazeComplexity = 6.0;
+        } else if (preset === 'balanced') {
+          mantisForce = 9.0;
+          spiderAgility = 9.0;
+          mazeComplexity = 5.0;
+        }
+        // Update slider DOM values
+        mantisForceSlider.value = mantisForce;
+        spiderAgilitySlider.value = spiderAgility;
+        mazeComplexitySlider.value = mazeComplexity;
+        updateAll();
+      });
+    });
+
+    // Reset
+    resetBtn.addEventListener('click', () => {
+      mantisForce = 8.5;
+      spiderAgility = 7.2;
+      mazeComplexity = 5.0;
+      mantisForceSlider.value = mantisForce;
+      spiderAgilitySlider.value = spiderAgility;
+      mazeComplexitySlider.value = mazeComplexity;
+      // Reset ball positions
+      ballM.x = 150; ballM.y = 250;
+      ballS.x = 750; ballS.y = 250;
+      updateAll();
+    });
+
+    // Export CSV
+    exportCsvBtn.addEventListener('click', () => {
+      const rows = [
+        ['Metric', 'MANTIS', 'SPIDER', 'Delta', 'Advantage'],
+        ['Force', mantisForce.toFixed(2), spiderAgility.toFixed(2), (mantisForce - spiderAgility).toFixed(2), mantisForce >= spiderAgility ? 'MANTIS' : 'SPIDER'],
+        ['Maze Progress', tableMantisProg.textContent, tableSpiderProg.textContent, tableProgDelta.textContent, tableProgAdv.textContent],
+        ['Collision Energy', tableMantisEnergy.textContent, tableSpiderEnergy.textContent, tableEnergyDelta.textContent, tableEnergyAdv.textContent],
+        ['Path Efficiency', tableMantisEff.textContent, tableSpiderEff.textContent, tableEffDelta.textContent, tableEffAdv.textContent],
+        ['Reaction Time', tableMantisReact.textContent, tableSpiderReact.textContent, tableReactDelta.textContent, tableReactAdv.textContent],
+        [],
+        ['KPI', 'Value'],
+        ['Mantis Score', kpiMantis.textContent],
+        ['Spider Score', kpiSpider.textContent],
+        ['Ratio', kpiRatio.textContent],
+        ['Maze Progress', kpiProgress.textContent],
+        [],
+        ['Parameter', 'Value'],
+        ['Mantis Strike Force', mantisForce.toFixed(2)],
+        ['Spider Agility', spiderAgility.toFixed(2)],
+        ['Maze Complexity', mazeComplexity.toFixed(2)],
+        ['Timestamp', new Date().toISOString()]
+      ];
+      const csvContent = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `kineticzen_mantis_vs_spider_telemetry_${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Copy Scenario Link
+    copyScenarioBtn.addEventListener('click', () => {
+      const params = new URLSearchParams();
+      params.set('mf', mantisForce.toFixed(1));
+      params.set('sa', spiderAgility.toFixed(1));
+      params.set('mc', mazeComplexity.toFixed(1));
+      const newUrl = window.location.origin + window.location.pathname + '?' + params.toString();
+      
+      navigator.clipboard.writeText(newUrl).then(() => {
+        copyScenarioBtn.textContent = '✅ Copied!';
+        setTimeout(() => { copyScenarioBtn.textContent = '🔗 Copy Scenario Link'; }, 2000);
+      }).catch(() => {
+        // Fallback
+        prompt('Copy this scenario link:', newUrl);
+      });
+    });
+
+    // Load from URL on page load
+    function loadFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const mf = params.get('mf');
+      const sa = params.get('sa');
+      const mc = params.get('mc');
+      if (mf !== null && !isNaN(parseFloat(mf))) {
+        mantisForce = Math.min(20, Math.max(1, parseFloat(mf)));
+        mantisForceSlider.value = mantisForce;
+      }
+      if (sa !== null && !isNaN(parseFloat(sa))) {
+        spiderAgility = Math.min(20, Math.max(1, parseFloat(sa)));
+        spiderAgilitySlider.value = spiderAgility;
+      }
+      if (mc !== null && !isNaN(parseFloat(mc))) {
+        mazeComplexity = Math.min(10, Math.max(1, parseFloat(mc)));
+        mazeComplexitySlider.value = mazeComplexity;
+      }
+    }
+
+    // Initialize
+    loadFromUrl();
+    updateAll();
+    requestAnimationFrame(animate);
+
+    // Also update on resize (canvas stays fixed internal resolution)
+  })();
+</script>
+</body>
+</html>
