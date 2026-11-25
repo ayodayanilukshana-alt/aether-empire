@@ -14,7 +14,10 @@
     "1,000-Ton Stones Moved By Ancient Hands?",
     "5 Places So Secure Humans Can't Enter",
     "Your Body vs the Universe's Deadliest Forces",
-    "5 Impossible Mega-Projects Built Right Now"
+    "5 Impossible Mega-Projects Built Right Now",
+    "What If You Stood on a Neutron Star vs a Black Hole?",
+    "17,468 Tubes to a Quantum Brain",
+    "What If Earth's Magnetic Shield Vanished for 60 Seconds?"
   ],
   "used_items": [],
   "used_domains": [],
@@ -53,7 +56,13 @@
     {
       "video_id": "avkDD-Zbo94",
       "title": "5 Places So Secure Humans Can't Enter",
-      "published_at": 1795524252
+      "published_at": 1795524252,
+      "ab_tested": true
+    },
+    {
+      "video_id": "949RLmoPoIE",
+      "title": "What If You Stood on a Neutron Star vs a Black Hole?",
+      "published_at": 1795610647
     }
   ]
 }
