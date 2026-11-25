@@ -25,7 +25,8 @@
     "Mario vs Sonic: Turbo Ball Maze Physics Duel!",
     "Hammer vs Feather: Gravity Ball Maze Showdown",
     "Tardigrade vs Archaea: Extreme Ball Maze Physics",
-    "Cobra vs Mongoose: Venom Ball Maze Physics"
+    "Cobra vs Mongoose: Venom Ball Maze Physics",
+    "Mantis Shrimp vs Spider: Ultimate Ball Maze Duel"
   ],
   "used_items": [
     "Ronaldo vs Messi",
@@ -133,12 +134,19 @@
     {
       "video_id": "kEhcNu0juKE",
       "title": "Tardigrade vs Archaea: Extreme Ball Maze Physics #shorts",
-      "published_at": 1795541676
+      "published_at": 1795541676,
+      "ab_tested": true
     },
     {
       "video_id": "1xPZGmfSoao",
       "title": "Cobra vs Mongoose: Venom Ball Maze Physics #shorts",
-      "published_at": 1795570567
+      "published_at": 1795570567,
+      "ab_tested": true
+    },
+    {
+      "video_id": "uI1s1AtXBFQ",
+      "title": "Mantis Shrimp vs Spider: Ultimate Ball Maze Duel #shorts",
+      "published_at": 1795628164
     }
   ]
 }
