@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Submarines & Habitats: 5-Stage Size Shock</title>
+    <meta name="description" content="Deeply interactive 3D size comparison workstation for DSV Limiting Factor, SEALAB II, USS Nautilus, Typhoon-class submarine, and SEALAB III.">
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/submarines-habitats-5-stage-3d-size-shock.html">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #05070b;
+            font-family: 'Courier New', Courier, 'SF Mono', 'Fira Code', monospace;
+            color: #e2e8f0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 15px;
+        }
+        .brand {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #38bdf8;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+        .brand a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        .brand span { color: #94a3b8; font-weight: 300; font-size: 1rem; margin-left: 8px; }
+        .nav-link {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 8px 14px;
+            border-radius: 6px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .nav-link:hover { background: #1e293b; }
+        /* Cards */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .card-title {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 8px;
+        }
+        /* Grid */
+        .workstation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .left-panel { display: flex; flex-direction: column; gap: 20px; }
+        .right-panel { display: flex; flex-direction: column; gap: 20px; }
+        /* Canvas */
+        .canvas-container {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        #simCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16/9;
+            background: #05070b;
+            cursor: crosshair;
+        }
+        /* Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .slider-label {
+            width: 180px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .slider-label strong { color: #e2e8f0; }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            transition: 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px; height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        .value-badge {
+            background: #1e293b;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            min-width: 70px;
+            text-align: center;
+            color: #38bdf8;
+        }
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button, .btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        button:hover { background: #334155; border-color: #38bdf8; color: #38bdf8; }
+        button.primary {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 700;
+        }
+        button.primary:hover { background: #7dd3fc; }
+        button.accent-outline {
+            background: transparent;
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+        button.accent-outline:hover { background: #38bdf8; color: #05070b; }
+        /* KPI */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        .kpi-item {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .kpi-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #38bdf8;
+            font-family: 'Courier New', monospace;
+        }
+        .kpi-value.small { font-size: 1rem; }
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid #1e293b;
+        }
+        th {
+            color: #64748b;
+            font-weight: 400;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+        td { color: #cbd5e1; }
+        .highlight { color: #38bdf8; font-weight: 600; }
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 10px 0;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-q:hover { color: #38bdf8; }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.82rem;
+            padding-top: 6px;
+            line-height: 1.6;
+            display: none;
+        }
+        .faq-a.open { display: block; }
+        .faq-icon { color: #38bdf8; font-weight: 700; }
+        /* Video */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #0f172a;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #38bdf8;
+            color: #05070b;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            z-index: 9999;
+        }
+        #toast.show { opacity: 1; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0f17; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+        /* Responsive */
+        @media (max-width: 900px) {
+            .workstation { grid-template-columns: 1fr; }
+            .slider-label { width: 130px; }
+        }
+        .badge {
+            background: rgba(56,189,248,0.12);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .unit-note { color: #475569; font-size: 0.65rem; margin-left: 4px; }
+    </style>
+</head>
+<body>
+    <div id="toast"></div>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <a href="./index.html">SCALEVERSE 3D</a>
+                <span>Size Shock Workstation</span>
+            </div>
+            <a class="nav-link" href="./index.html">&larr; Back to Portal</a>
+        </header>
+
+        <!-- Title -->
+        <div class="card" style="padding: 14px 20px;">
+            <h1 style="font-size: 1.2rem; color: #e2e8f0; font-weight: 600; margin-bottom: 4px;">Submarines &amp; Habitats: 5-Stage 3D Size Shock</h1>
+            <p style="color: #64748b; font-size: 0.85rem;">From a tiny research sub to a sprawling underwater habitat — explore the true scale of five engineering marvels beneath the waves.</p>
+        </div>
+
+        <!-- Workstation Grid -->
+        <div class="workstation">
+            <!-- LEFT PANEL -->
+            <div class="left-panel">
+                <!-- Canvas -->
+                <div class="canvas-container">
+                    <canvas id="simCanvas" width="960" height="540"></canvas>
+                </div>
+
+                <!-- Controls -->
+                <div class="card">
+                    <div class="card-title">Scenario Controls</div>
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">Scale Factor <span class="unit-note">(log)</span></div>
+                            <input type="range" id="scaleSlider" min="1" max="100" value="50" step="1">
+                            <div class="value-badge" id="scaleValue">50</div>
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">Depth Simulation <span class="unit-note">(m)</span></div>
+                            <input type="range" id="depthSlider" min="0" max="11000" value="0" step="100">
+                            <div class="value-badge" id="depthValue">0 m</div>
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">Water Clarity <span class="unit-note">(%)</span></div>
+                            <input type="range" id="claritySlider" min="10" max="100" value="70" step="1">
+                            <div class="value-badge" id="clarityValue">70%</div>
+                        </div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="primary" id="resetBtn">Reset to Default</button>
+                        <button class="accent-outline" id="presetMaxBtn">Max Scale</button>
+                        <button class="accent-outline" id="presetDeepBtn">Deep Dive</button>
+                        <button class="accent-outline" id="presetClearBtn">Clear Water</button>
+                    </div>
+                </div>
+
+                <!-- KPI Readouts -->
+                <div class="card">
+                    <div class="card-title">Live KPI Readouts</div>
+                    <div class="kpi-grid" id="kpiGrid">
+                        <!-- filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Export / Link -->
+                <div class="card">
+                    <div class="card-title">Telemetry &amp; Sharing</div>
+                    <div class="btn-row">
+                        <button class="accent-outline" id="exportCsvBtn">📥 Export CSV Telemetry</button>
+                        <button class="accent-outline" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="right-panel">
+                <!-- Video -->
+                <div class="card">
+                    <div class="card-title">YouTube Stream</div>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/RPave_9CY50" title="Submarines & Habitats: 5-Stage 3D Size Shock" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Analytical Breakdown Table -->
+                <div class="card">
+                    <div class="card-title">Analytical Breakdown</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vehicle / Habitat</th>
+                                <th>Size (m)</th>
+                                <th>Relative Scale</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdownBody">
+                            <!-- filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- FAQ -->
+                <div class="card">
+                    <div class="card-title">FAQ</div>
+                    <div id="faqContainer">
+                        <div class="faq-item">
+                            <div class="faq-q" onclick="toggleFaq(this)">What does the "Scale Factor" slider control? <span class="faq-icon">+</span></div>
+                            <div class="faq-a">The scale factor applies a logarithmic multiplier to the visual rendering of all five objects on the canvas. A higher value stretches the visual comparison, making the largest object (SEALAB III, 3000m) more dominant while still keeping smaller objects visible.</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-q" onclick="toggleFaq(this)">Why is SEALAB III listed as "3,000 m deep" rather than "long"? <span class="faq-icon">+</span></div>
+                            <div class="faq-a">SEALAB III was an underwater habitat designed to operate at a depth of approximately 3,000 meters (its operational depth rating). For a size comparison, we interpret its "size" as the maximum depth it was engineered to reach, which creates a fascinating contrast with the length-based measurements of the submarines.</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-q" onclick="toggleFaq(this)">How is the CSV telemetry generated? <span class="faq-icon">+</span></div>
+                            <div class="faq-a">The CSV export captures the current slider values (scale, depth, clarity), along with the computed KPI metrics and the full dataset of the five items. It is formatted as a standard CSV file ready for spreadsheet analysis.</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-q" onclick="toggleFaq(this)">Does the "Copy Scenario Link" button preserve my slider settings? <span class="faq-icon">+</span></div>
+                            <div class="faq-a">Yes. The link encodes your current scale, depth, and clarity values as URL query parameters. When opened, the workstation will automatically restore your exact configuration.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SCALEVERSE 3D · Submarines & Habitats Size Shock Workstation",
+        "description": "Interactive 3D size comparison and simulation workstation for DSV Limiting Factor, SEALAB II, USS Nautilus (SSN-571), Typhoon-class submarine, and SEALAB III.",
+        "applicationCategory": "EngineeringApplication",
+        "operatingSystem": "Web",
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/submarines-habitats-5-stage-3d-size-shock.html",
+        "author": {
+            "@type": "Organization",
+            "name": "SCALEVERSE 3D"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
+    <script>
+        // ==================== DATA PAYLOAD ====================
+        const DATA = {
+            title: "Submarines & Habitats: 5-Stage 3D Size Shock!",
+            items: [
+                { name: "DSV Limiting Factor", meters: 4.6, metric: "4.6 m long" },
+                { name: "SEALAB II", meters: 17.4, metric: "17.4 m long" },
+                { name: "USS Nautilus (SSN-571)", meters: 97.5, metric: "97.5 m long" },
+                { name: "Typhoon-class submarine", meters: 175, metric: "175 m long" },
+                { name: "SEALAB III", meters: 3000, metric: "3,000 m deep" }
+            ]
+        };
+
+        // ==================== STATE ====================
+        const state = {
+            scale: 50,
+            depth: 0,
+            clarity: 70
+        };
+
+        // ==================== DOM REFS ====================
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const scaleSlider = document.getElementById('scaleSlider');
+        const depthSlider = document.getElementById('depthSlider');
+        const claritySlider = document.getElementById('claritySlider');
+        const scaleValue = document.getElementById('scaleValue');
+        const depthValue = document.getElementById('depthValue');
+        const clarityValue = document.getElementById('clarityValue');
+        const resetBtn = document.getElementById('resetBtn');
+        const presetMaxBtn = document.getElementById('presetMaxBtn');
+        const presetDeepBtn = document.getElementById('presetDeepBtn');
+        const presetClearBtn = document.getElementById('presetClearBtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const kpiGrid = document.getElementById('kpiGrid');
+        const breakdownBody = document.getElementById('breakdownBody');
+        const toast = document.getElementById('toast');
+
+        // ==================== CANVAS RENDERING ====================
+        const W = 960, H = 540;
+
+        function getScaleMultiplier() {
+            // log scale from 1 to 100 -> 1x to ~4x
+            return 1 + (state.scale / 100) * 3;
+        }
+
+        function getDepthFactor() {
+            // 0..11000m -> 0..1 for color shift
+            return Math.min(state.depth / 11000, 1);
+        }
+
+        function getClarityFactor() {
+            return state.clarity / 100;
+        }
+
+        // Colors per item
+        const ITEM_COLORS = [
+            '#38bdf8', // Limiting Factor - cyan
+            '#22c55e', // SEALAB II - green
+            '#f59e0b', // Nautilus - amber
+            '#ef4444', // Typhoon - red
+            '#a855f7'  // SEALAB III - purple
+        ];
+
+        function drawScene() {
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const depthF = getDepthFactor();
+            const clarityF = getClarityFactor();
+            const scaleMultiplier = getScaleMultiplier();
+
+            // Background gradient based on depth
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+            const topR = Math.floor(8 - depthF * 6);
+            const topG = Math.floor(20 - depthF * 16);
+            const topB = Math.floor(40 - depthF * 30);
+            const botR = Math.floor(5 - depthF * 4);
+            const botG = Math.floor(12 - depthF * 10);
+            const botB = Math.floor(25 - depthF * 20);
+            bgGrad.addColorStop(0, `rgb(${Math.max(topR,0)},${Math.max(topG,0)},${Math.max(topB,0)})`);
+            bgGrad.addColorStop(1, `rgb(${Math.max(botR,0)},${Math.max(botG,0)},${Math.max(botB,0)})`);
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Water clarity overlay (particles / light rays)
+            ctx.save();
+            ctx.globalAlpha = 0.06 * clarityF;
+            for (let i = 0; i < 25; i++) {
+                const x = (i * 137 + 50) % w;
+                const y = (i * 89 + 20) % h;
+                ctx.beginPath();
+                ctx.arc(x, y, 2 + Math.sin(i) * 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#7dd3fc';
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // Light rays from surface
+            ctx.save();
+            ctx.globalAlpha = 0.04 * clarityF * (1 - depthF * 0.7);
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.moveTo(w * 0.2 + i * w * 0.15, 0);
+                ctx.lineTo(w * 0.1 + i * w * 0.15, h);
+                ctx.lineTo(w * 0.3 + i * w * 0.15, h);
+                ctx.closePath();
+                ctx.fillStyle = '#38bdf8';
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // Ground line
+            const groundY = h - 40;
+            ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 + 0.2 * clarityF})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(w, groundY);
+            ctx.stroke();
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+            ctx.lineWidth = 0.5;
+            for (let i = 1; i < 10; i++) {
+                const x = (w / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let i = 1; i < 6; i++) {
+                const y = (h / 6) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            // Draw objects
+            const maxVal = 3000;
+            const logMax = Math.log10(maxVal + 1);
+            const baseX = 80;
+            const spacing = (w - 160) / DATA.items.length;
+
+            DATA.items.forEach((item, idx) => {
+                const logVal = Math.log10(item.meters + 1);
+                const normalized = logVal / logMax;
+                const barWidth = Math.max(12, normalized * (w - 200) * 0.8 * scaleMultiplier / 3);
+                const barHeight = Math.max(20, 28 + normalized * 40);
+
+                const cx = baseX + spacing * idx + spacing * 0.35;
+                const cy = groundY - barHeight / 2;
+
+                // Glow
+                ctx.save();
+                ctx.shadowColor = ITEM_COLORS[idx];
+                ctx.shadowBlur = 12 + normalized * 20;
+
+                // Bar / shape
+                const grad = ctx.createLinearGradient(cx - barWidth/2, cy, cx + barWidth/2, cy);
+                grad.addColorStop(0, ITEM_COLORS[idx] + 'cc');
+                grad.addColorStop(1, ITEM_COLORS[idx] + '44');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(cx - barWidth/2, cy - barHeight/2, barWidth, barHeight, 6);
+                ctx.fill();
+
+                ctx.strokeStyle = ITEM_COLORS[idx];
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.restore();
+
+                // Label
+                ctx.save();
+                ctx.font = 'bold 11px "Courier New", monospace';
+                ctx.fillStyle = '#e2e8f0';
+                ctx.textAlign = 'center';
+                // Name (abbreviated)
+                let displayName = item.name;
+                if (displayName.length > 18) displayName = displayName.substring(0, 16) + '…';
+                ctx.fillText(displayName, cx, cy - barHeight/2 - 18);
+                ctx.font = '10px "Courier New", monospace';
+                ctx.fillStyle = ITEM_COLORS[idx];
+                ctx.fillText(item.metric, cx, cy - barHeight/2 - 6);
+
+                // Value on bar
+                ctx.font = 'bold 10px "Courier New", monospace';
+                ctx.fillStyle = '#05070b';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                if (barWidth > 50) {
+                    ctx.fillText(item.meters + (item.meters >= 1000 ? '' : ''), cx, cy);
+                }
+                ctx.restore();
+
+                // Depth indicator for SEALAB III
+                if (idx === 4) {
+                    ctx.save();
+                    ctx.font = '9px "Courier New", monospace';
+                    ctx.fillStyle = '#a855f7';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('▼ DEPTH', cx, cy + barHeight/2 + 14);
+                    ctx.restore();
+                }
+            });
+
+            // Depth scale indicator on left
+            ctx.save();
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
+            ctx.font = '10px "Courier New", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('DEPTH: ' + state.depth.toLocaleString() + ' m', 12, 20);
+            ctx.fillText('SCALE: ' + state.scale + ' | CLARITY: ' + state.clarity + '%', 12, 34);
+            ctx.restore();
+
+            // Title
+            ctx.save();
+            ctx.fillStyle = 'rgba(226, 232, 240, 0.4)';
+            ctx.font = 'bold 10px "Courier New", monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText('SCALEVERSE 3D · SIZE SHOCK', w - 16, 20);
+            ctx.restore();
+        }
+
+        // Polyfill for roundRect
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.beginPath();
+                this.moveTo(x + r, y);
+                this.arcTo(x + w, y, x + w, y + h, r);
+                this.arcTo(x + w, y + h, x, y + h, r);
+                this.arcTo(x, y + h, x, y, r);
+                this.arcTo(x, y, x + w, y, r);
+                this.closePath();
+                return this;
+            };
+        }
+
+        // ==================== KPI UPDATE ====================
+        function updateKPIs() {
+            const scaleMult = getScaleMultiplier();
+            const maxItem = DATA.items.reduce((a, b) => a.meters > b.meters ? a : b);
+            const minItem = DATA.items.reduce((a, b) => a.meters < b.meters ? a : b);
+            const ratio = (maxItem.meters / minItem.meters).toFixed(1);
+
+            const kpis = [
+                { label: 'Objects Compared', value: DATA.items.length, small: false },
+                { label: 'Max Size', value: maxItem.meters.toLocaleString() + ' m', small: true, sub: maxItem.name },
+                { label: 'Min Size', value: minItem.meters.toLocaleString() + ' m', small: true, sub: minItem.name },
+                { label: 'Size Ratio', value: ratio + '×', small: false },
+                { label: 'Scale Mult.', value: scaleMult.toFixed(2) + '×', small: false },
+                { label: 'Depth Factor', value: (getDepthFactor() * 100).toFixed(0) + '%', small: false }
+            ];
+
+            kpiGrid.innerHTML = kpis.map(k => `
+                <div class="kpi-item">
+                    <div class="kpi-label">${k.label}</div>
+                    <div class="kpi-value ${k.small ? 'small' : ''}">${k.value}</div>
+                    ${k.sub ? `<div style="font-size:0.6rem;color:#64748b;">${k.sub}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ==================== BREAKDOWN TABLE ====================
+        function updateBreakdown() {
+            const maxMeters = 3000;
+            breakdownBody.innerHTML = DATA.items.map(item => {
+                const pct = ((item.meters / maxMeters) * 100).toFixed(1);
+                let category = 'Submersible';
+                if (item.meters >= 100) category = 'Submarine';
+                if (item.meters >= 1000) category = 'Habitat / Deep';
+                return `
+                    <tr>
+                        <td style="color:#e2e8f0;font-weight:600;">${item.name}</td>
+                        <td class="highlight">${item.meters.toLocaleString()} m</td>
+                        <td>${pct}%</td>
+                        <td><span class="badge">${category}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== RENDER ====================
+        function renderAll() {
+            drawScene();
+            updateKPIs();
+            updateBreakdown();
+        }
+
+        // ==================== EVENT HANDLERS ====================
+        scaleSlider.addEventListener('input', () => {
+            state.scale = +scaleSlider.value;
+            scaleValue.textContent = state.scale;
+            renderAll();
+        });
+
+        depthSlider.addEventListener('input', () => {
+            state.depth = +depthSlider.value;
+            depthValue.textContent = state.depth.toLocaleString() + ' m';
+            renderAll();
+        });
+
+        claritySlider.addEventListener('input', () => {
+            state.clarity = +claritySlider.value;
+            clarityValue.textContent = state.clarity + '%';
+            renderAll();
+        });
+
+        // Presets
+        resetBtn.addEventListener('click', () => {
+            state.scale = 50;
+            state.depth = 0;
+            state.clarity = 70;
+            syncSliders();
+            renderAll();
+            showToast('Reset to default scenario');
+        });
+
+        presetMaxBtn.addEventListener('click', () => {
+            state.scale = 100;
+            state.depth = 0;
+            state.clarity = 90;
+            syncSliders();
+            renderAll();
+            showToast('Max Scale preset applied');
+        });
+
+        presetDeepBtn.addEventListener('click', () => {
+            state.scale = 60;
+            state.depth = 11000;
+            state.clarity = 30;
+            syncSliders();
+            renderAll();
+            showToast('Deep Dive preset applied');
+        });
+
+        presetClearBtn.addEventListener('click', () => {
+            state.scale = 50;
+            state.depth = 0;
+            state.clarity = 100;
+            syncSliders();
+            renderAll();
+            showToast('Clear Water preset applied');
+        });
+
+        function syncSliders() {
+            scaleSlider.value = state.scale;
+            depthSlider.value = state.depth;
+            claritySlider.value = state.clarity;
+            scaleValue.textContent = state.scale;
+            depthValue.textContent = state.depth.toLocaleString() + ' m';
+            clarityValue.textContent = state.clarity + '%';
+        }
+
+        // ==================== CSV EXPORT ====================
+        exportCsvBtn.addEventListener('click', () => {
+            const scaleMult = getScaleMultiplier();
+            const depthF = getDepthFactor();
+            const rows = [];
+            rows.push(['Metric', 'Value']);
+            rows.push(['Scale Factor', state.scale]);
+            rows.push(['Scale Multiplier', scaleMult.toFixed(4)]);
+            rows.push(['Depth (m)', state.depth]);
+            rows.push(['Depth Factor', depthF.toFixed(4)]);
+            rows.push(['Water Clarity (%)', state.clarity]);
+            rows.push(['Objects Compared', DATA.items.length]);
+            rows.push([]);
+            rows.push(['Item Name', 'Meters', 'Metric Label', 'Visual Proportion (%)']);
+            const maxMeters = 3000;
+            DATA.items.forEach(item => {
+                rows.push([
+                    item.name,
+                    item.meters,
+                    item.metric,
+                    ((item.meters / maxMeters) * 100).toFixed(2)
+                ]);
+            });
+
+            const csv = rows.map(r => r.map(cell => {
+                const s = String(cell);
+                if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+                    return '"' + s.replace(/"/g, '""') + '"';
+                }
+                return s;
+            }).join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'scaleverse_telemetry_' + Date.now() + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('CSV telemetry exported successfully');
+        });
+
+        // ==================== COPY SCENARIO LINK ====================
+        copyLinkBtn.addEventListener('click', () => {
+            const base = window.location.origin + window.location.pathname;
+            const params = new URLSearchParams({
+                scale: state.scale,
+                depth: state.depth,
+                clarity: state.clarity
+            });
+            const url = base + '?' + params.toString();
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Scenario link copied to clipboard');
+            }).catch(() => {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = url;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Scenario link copied to clipboard');
+            });
+        });
+
+        // ==================== URL PARAMS ====================
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('scale')) state.scale = Math.min(100, Math.max(1, +params.get('scale')));
+            if (params.has('depth')) state.depth = Math.min(11000, Math.max(0, +params.get('depth')));
+            if (params.has('clarity')) state.clarity = Math.min(100, Math.max(10, +params.get('clarity')));
+            syncSliders();
+        }
+
+        // ==================== TOAST ====================
+        let toastTimeout;
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // ==================== FAQ TOGGLE ====================
+        window.toggleFaq = function(el) {
+            const answer = el.nextElementSibling;
+            const icon = el.querySelector('.faq-icon');
+            const isOpen = answer.classList.contains('open');
+            if (isOpen) {
+                answer.classList.remove('open');
+                icon.textContent = '+';
+            } else {
+                answer.classList.add('open');
+                icon.textContent = '−';
+            }
+        };
+
+        // ==================== INIT ====================
+        loadFromURL();
+        renderAll();
+
+        // Resize canvas to actual display size for crisp rendering
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = W;
+            canvas.height = H;
+            canvas.style.width = '100%';
+            canvas.style.height = 'auto';
+            drawScene();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        // Initial draw
+        setTimeout(resizeCanvas, 100);
+    </script>
+</body>
+</html>
