@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pac-Man vs Donkey Kong: Ball Maze Escape Duel — Interactive Simulation Workstation | KINETICZEN LABS</title>
+<meta name="description" content="60FPS Matter.js rigid-body physics rivalry simulation.
+
+Try our Free Interactive Calculators & 3D Sandbox: https://ayodayanilukshana-alt.github.io/aether-empire">
+<link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/pac-man-vs-donkey-kong-ball-maze-escape-duel.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Pac-Man vs Donkey Kong: Ball Maze Escape Duel - Interactive Simulation Workstation", "applicationCategory": "EducationalApplication", "operatingSystem": "Web Browser", "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/pac-man-vs-donkey-kong-ball-maze-escape-duel.html", "description": "60FPS Matter.js rigid-body physics rivalry simulation.\n\nTry our Free Interactive Calculators & 3D Sandbox: https://ayodayanilukshana-alt.github.io/aether-empire", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "VideoObject", "name": "Pac-Man vs Donkey Kong: Ball Maze Escape Duel", "description": "60FPS Matter.js rigid-body physics rivalry simulation.\n\nTry our Free Interactive Calculators & 3D Sandbox: https://ayodayanilukshana-alt.github.io/aether-empire", "thumbnailUrl": ["https://i.ytimg.com/vi/tS5Y-nzyntQ/maxresdefault.jpg"], "uploadDate": "2026-11-26", "embedUrl": "https://www.youtube.com/embed/tS5Y-nzyntQ"}]}</script>
+<style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#05070b; color:#f8fafc; font-family:'Inter',system-ui,sans-serif; line-height:1.6; }
+    .topbar { border-bottom:1px solid #1e293b; padding:16px 28px; display:flex; justify-content:space-between; font-family:monospace; background:#0b0f17; }
+    .container { max-width:1360px; margin:0 auto; padding:36px 28px; }
+    .eyebrow { font-family:monospace; font-size:0.78rem; color:#f43f5e; letter-spacing:0.12em; margin-bottom:8px; }
+    h1 { font-size:2.2rem; margin-bottom:10px; }
+    .subtitle { color:#94a3b8; margin-bottom:28px; max-width:840px; }
+    .workstation-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; margin-bottom:36px; }
+    @media(max-width:980px){ .workstation-grid { grid-template-columns:1fr; } }
+    .panel { background:#0b0f17; border:1px solid #1e293b; border-radius:8px; padding:22px; }
+    .panel-title { font-family:monospace; font-size:0.8rem; color:#94a3b8; border-bottom:1px solid #1e293b; padding-bottom:10px; margin-bottom:18px; display:flex; justify-content:space-between; }
+    .control-group { margin-bottom:16px; }
+    .control-label { display:flex; justify-content:space-between; font-family:monospace; font-size:0.82rem; color:#94a3b8; margin-bottom:6px; }
+    .control-val { color:#f8fafc; font-weight:700; }
+    input[type="range"] { width:100%; accent-color:#f43f5e; cursor:pointer; }
+    .btn-row { display:flex; gap:10px; margin-top:18px; }
+    .btn { flex:1; padding:10px; font-family:monospace; font-size:0.78rem; font-weight:700; border:1px solid #334155; background:#111827; color:#fff; border-radius:6px; cursor:pointer; }
+    .btn-primary { background:#f43f5e; color:#05070b; border-color:#f43f5e; }
+    .kpi-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+    .kpi-card { background:#05070b; border:1px solid #1e293b; border-radius:6px; padding:14px; }
+    .kpi-label { font-family:monospace; font-size:0.72rem; color:#64748b; }
+    .kpi-num { font-family:monospace; font-size:1.45rem; font-weight:700; margin-top:4px; }
+    .canvas-stage { width:100%; height:400px; background:#030508; border:1px solid #1e293b; border-radius:6px; display:block; }
+    a { color:inherit; text-decoration:none; }
+    </style>
+</head>
+<body>
+  <nav class="topbar">
+    <a href="./index.html">KINETICZEN LABS PORTAL</a>
+    <span>MODEL ID: tS5Y-nzyntQ</span>
+  </nav>
+  <main class="container">
+    <div class="eyebrow">KINETICZEN LABS QUANTITATIVE WORKSTATION</div>
+    <h1>Pac-Man vs Donkey Kong: Ball Maze Escape Duel</h1>
+    <p class="subtitle">60FPS Matter.js rigid-body physics rivalry simulation.
+
+Try our Free Interactive Calculators & 3D Sandbox: https://ayodayanilukshana-alt.github.io/aether-empire</p>
+    
+        <div class="workstation-grid">
+          <div class="panel">
+            <div class="panel-title"><span>KINEMATIC ARENA CONTROLS</span><span>PACMAN VS DKONG</span></div>
+            <div class="control-group">
+              <div class="control-label"><span>GRAVITY (G)</span><span class="control-val" id="lblG">0.80 G</span></div>
+              <input type="range" id="inG" min="0.1" max="2.5" step="0.05" value="0.80" oninput="upK()">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>RESTITUTION (BOUNCE)</span><span class="control-val" id="lblR">1.01</span></div>
+              <input type="range" id="inR" min="0.7" max="1.06" step="0.01" value="1.01" oninput="upK()">
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="spawnP()">INJECT 10 SPHERES</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><span>REAL-TIME RIGID-BODY COLLISION LAB</span><span>60 FPS</span></div>
+            <canvas id="kCan" class="canvas-stage" width="880" height="400"></canvas>
+          </div>
+        </div>
+        <script>
+        const kc = document.getElementById('kCan'), kctx = kc.getContext('2d');
+        let gVal = 0.25, rVal = 1.01, ang = 0, balls = [];
+        for (let i=0; i<16; i++) balls.push({x:440+(i%4)*15, y:180, vx:(Math.random()-0.5)*8, vy:(Math.random()-0.5)*8, c: i%2===0?'#38bdf8':'#f43f5e'});
+        function upK() {
+          gVal = Number(document.getElementById('inG').value)*0.3;
+          rVal = Number(document.getElementById('inR').value);
+          document.getElementById('lblG').innerText = Number(document.getElementById('inG').value).toFixed(2) + ' G';
+          document.getElementById('lblR').innerText = rVal.toFixed(2);
+        }
+        function spawnP() {
+          for (let i=0; i<10; i++) balls.push({x:440, y:160, vx:(Math.random()-0.5)*10, vy:-5, c:'#10b981'});
+        }
+        function stepK() {
+          kctx.fillStyle = 'rgba(3,5,8,0.35)'; kctx.fillRect(0,0,kc.width,kc.height);
+          ang += 0.025;
+          kctx.strokeStyle = '#f43f5e'; kctx.lineWidth = 10;
+          kctx.beginPath(); kctx.arc(440, 200, 155, ang+0.5, ang+Math.PI*2); kctx.stroke();
+          balls.forEach(b => {
+            b.vy += gVal; b.x += b.vx; b.y += b.vy;
+            const d = Math.hypot(b.x-440, b.y-200);
+            if (Math.abs(d-155) < 12) { b.vx *= -rVal; b.vy *= -rVal; }
+            if (b.x < 12 || b.x > kc.width-12) b.vx *= -0.9;
+            if (b.y < 12 || b.y > kc.height-12) { b.y = Math.min(kc.height-12, b.y); b.vy *= -0.88; }
+            kctx.fillStyle = b.c; kctx.beginPath(); kctx.arc(b.x, b.y, 9, 0, Math.PI*2); kctx.fill();
+          });
+          requestAnimationFrame(stepK);
+        }
+        window.addEventListener('DOMContentLoaded', stepK);
+        </script>
+        
+    <div class="workstation-grid">
+      <div class="panel">
+        <div class="panel-title"><span>RELATED SIMULATION WORKSTATIONS</span><span>INDEX</span></div>
+        <a href="./mantis-shrimp-vs-spider-ultimate-ball-maze-duel.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">Mantis Shrimp vs Spider: Ultimate Ball Maze Duel</a><a href="./godzilla-vs-king-kong-kaiju-ball-maze-physics.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">Godzilla vs King Kong: Kaiju Ball Maze Physics</a><a href="./cobra-vs-mongoose-venom-ball-maze-physics.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">Cobra vs Mongoose: Venom Ball Maze Physics</a><a href="./tardigrade-vs-archaea-extreme-ball-maze-physics.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">Tardigrade vs Archaea: Extreme Ball Maze Physics</a><a href="./mantis-vs-spider-punch-vs-web-ball-maze-physics.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">Mantis vs Spider: Punch vs Web Ball Maze Physics!</a><a href="./hammer-vs-feather-gravity-ball-maze-showdown.html" style="display:block;padding:12px;border:1px solid #1e293b;border-radius:6px;margin-bottom:10px;color:#38bdf8;font-family:monospace;">Hammer vs Feather: Gravity Ball Maze Showdown</a>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span>OFFICIAL BROADCAST STREAM</span><span>YOUTUBE</span></div>
+        <iframe style="width:100%;height:380px;border:1px solid #1e293b;border-radius:6px;" src="https://www.youtube.com/embed/tS5Y-nzyntQ" allowfullscreen></iframe>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
