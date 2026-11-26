@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINETICZEN LABS · Velociraptor vs Triceratops · Fossil Ball Maze Duel</title>
+    <meta name="description" content="Interactive rigid-body physics simulation workstation for Velociraptor vs Triceratops fossil ball maze duel.">
+    <meta name="theme-color" content="#05070b">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.02em;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            width: 100%;
+        }
+        /* header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            background: #f43f5e;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #05070b;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .brand-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.01em;
+            color: #f8fafc;
+        }
+        .brand-text span {
+            color: #f43f5e;
+        }
+        .header-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .header-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .header-links a:hover {
+            color: #f43f5e;
+        }
+        /* title section */
+        .title-section {
+            margin-bottom: 2rem;
+        }
+        .title-section h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #f8fafc;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        .title-section h1 span {
+            color: #f43f5e;
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 99px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+        }
+        .badge.mono {
+            font-size: 0.75rem;
+            color: #f43f5e;
+        }
+        /* grid layout */
+        .workstation-grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 1100px) {
+            .workstation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* canvas card */
+        .card {
+            background-color: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255,255,255,0.01);
+        }
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .canvas-wrapper {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            background-color: #070b12;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background-color: #05070b;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+            aspect-ratio: 16 / 10;
+            cursor: crosshair;
+        }
+        /* sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .control-group {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #1e293b;
+        }
+        .control-group:last-child {
+            border-bottom: none;
+        }
+        .control-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 0.75rem;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .slider-row input[type="range"] {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 99px;
+            outline: none;
+        }
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 0 1px #f43f5e;
+        }
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-size: 0.9rem;
+            color: #f43f5e;
+            font-weight: 600;
+        }
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .preset-btn {
+            background: #1e293b;
+            border: 1px solid transparent;
+            color: #cbd5e1;
+            padding: 0.6rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .preset-btn:hover {
+            background: #2d3748;
+            border-color: #f43f5e;
+            color: #f8fafc;
+        }
+        .preset-btn.active {
+            background: #f43f5e10;
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .kpi-item {
+            background: #070b12;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 0.75rem;
+        }
+        .kpi-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .kpi-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.2;
+        }
+        .kpi-value.raptor { color: #f43f5e; }
+        .kpi-value.trike { color: #3b82f6; }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
+        }
+        .btn {
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: #f43f5e;
+            color: #05070b;
+        }
+        .btn-primary:hover {
+            background: #e11d48;
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+        .btn-outline:hover {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        /* video section */
+        .video-section {
+            margin-bottom: 2rem;
+        }
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid #1e293b;
+            background: #0b0f17;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* table */
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .analytics-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            border-bottom: 1px solid #1e293b;
+        }
+        .analytics-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+        .analytics-table tr:last-child td {
+            border-bottom: none;
+        }
+        .analytics-table .highlight {
+            color: #f43f5e;
+            font-weight: 600;
+        }
+        .analytics-table .highlight-blue {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        /* faq */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-question {
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .faq-question::before {
+            content: "▹";
+            color: #f43f5e;
+            font-size: 0.9rem;
+        }
+        .faq-answer {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            padding-left: 1.2rem;
+        }
+        /* footer */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid #1e293b;
+            padding: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .footer a {
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: #f43f5e;
+        }
+        /* utils */
+        .mt-2 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-muted { color: #64748b; }
+        .flex { display: flex; }
+        .gap-1 { gap: 1rem; }
+        .items-center { align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- header -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-mark">K</div>
+                <div class="brand-text">KINETIC<span>ZEN</span> LABS</div>
+            </div>
+            <div class="header-links">
+                <a href="./index.html">← Portal</a>
+                <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/velociraptor-vs-triceratops-fossil-ball-maze-duel.html" target="_blank" rel="noopener">Canonical</a>
+            </div>
+        </header>
+
+        <!-- title -->
+        <div class="title-section">
+            <h1>Velociraptor <span>vs</span> Triceratops · Fossil Ball Maze Duel</h1>
+            <div class="subtitle">
+                <span class="badge mono">60FPS Matter.js rigid-body physics</span>
+                <span class="badge">RAPTOR vs TRIKE</span>
+                <span class="badge">Interactive Workstation</span>
+            </div>
+        </div>
+
+        <!-- main workstation grid -->
+        <div class="workstation-grid">
+            <!-- left: canvas -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Simulation Viewport</h2>
+                    <span class="badge mono" id="fps-counter">60 FPS</span>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="simCanvas" width="960" height="600"></canvas>
+                </div>
+            </div>
+
+            <!-- right: controls -->
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Parameters</h2>
+                    </div>
+                    <!-- sliders -->
+                    <div class="control-group">
+                        <label>RAPTOR Agility <span class="mono">(0-100)</span></label>
+                        <div class="slider-row">
+                            <input type="range" id="raptorAgility" min="0" max="100" value="70" step="1">
+                            <span class="slider-value mono" id="raptorAgilityVal">70</span>
+                        </div>
+                        <label>TRIKE Momentum <span class="mono">(0-100)</span></label>
+                        <div class="slider-row">
+                            <input type="range" id="trikeMomentum" min="0" max="100" value="85" step="1">
+                            <span class="slider-value mono" id="trikeMomentumVal">85</span>
+                        </div>
+                        <label>Fossil Friction <span class="mono">(0-100)</span></label>
+                        <div class="slider-row">
+                            <input type="range" id="friction" min="0" max="100" value="45" step="1">
+                            <span class="slider-value mono" id="frictionVal">45</span>
+                        </div>
+                    </div>
+                    <!-- presets -->
+                    <div class="control-group">
+                        <label>Scenario Presets</label>
+                        <div class="preset-grid">
+                            <button class="preset-btn active" data-preset="default">Default</button>
+                            <button class="preset-btn" data-preset="agile">Agile Raptor</button>
+                            <button class="preset-btn" data-preset="tank">Tank Trike</button>
+                            <button class="preset-btn" data-preset="chaos">Chaos</button>
+                        </div>
+                    </div>
+                    <!-- KPI -->
+                    <div class="control-group">
+                        <label>Live Telemetry</label>
+                        <div class="kpi-grid">
+                            <div class="kpi-item">
+                                <div class="kpi-label">Raptor Score</div>
+                                <div class="kpi-value raptor mono" id="kpiRaptor">0</div>
+                            </div>
+                            <div class="kpi-item">
+                                <div class="kpi-label">Trike Score</div>
+                                <div class="kpi-value trike mono" id="kpiTrike">0</div>
+                            </div>
+                            <div class="kpi-item">
+                                <div class="kpi-label">Collisions</div>
+                                <div class="kpi-value mono" id="kpiCollisions">0</div>
+                            </div>
+                            <div class="kpi-item">
+                                <div class="kpi-label">Time</div>
+                                <div class="kpi-value mono" id="kpiTime">0.0s</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- actions -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="exportCsv">Export CSV Telemetry</button>
+                        <button class="btn btn-outline" id="copyLink">Copy Scenario Link</button>
+                        <button class="btn btn-outline" id="resetSim">Reset Simulation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- video -->
+        <div class="video-section card">
+            <div class="card-header">
+                <h2>Live Stream · Fossil Ball Maze Duel</h2>
+                <span class="badge mono">YouTube</span>
+            </div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/LiEzZ1ytxGs" title="Velociraptor vs Triceratops: Fossil Ball Maze Duel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- analytical breakdown -->
+        <div class="card mb-1">
+            <div class="card-header">
+                <h2>Analytical Breakdown</h2>
+                <span class="badge mono">Matter.js</span>
+            </div>
+            <div style="padding: 1.5rem;">
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>RAPTOR</th>
+                            <th>TRIKE</th>
+                            <th>Δ / Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mass (kg)</td>
+                            <td class="highlight mono">15.0</td>
+                            <td class="highlight-blue mono">120.0</td>
+                            <td class="mono">8x heavier</td>
+                        </tr>
+                        <tr>
+                            <td>Agility Index</td>
+                            <td class="highlight mono" id="tableAgility">70</td>
+                            <td class="mono">30</td>
+                            <td class="mono">Raptor outmaneuvers</td>
+                        </tr>
+                        <tr>
+                            <td>Momentum Factor</td>
+                            <td class="mono">40</td>
+                            <td class="highlight-blue mono" id="tableMomentum">85</td>
+                            <td class="mono">Trike dominates force</td>
+                        </tr>
+                        <tr>
+                            <td>Friction Coefficient</td>
+                            <td colspan="2" class="mono" id="tableFriction">0.45</td>
+                            <td class="mono">Maze surface</td>
+                        </tr>
+                        <tr>
+                            <td>Win Probability</td>
+                            <td class="highlight mono">58%</td>
+                            <td class="highlight-blue mono">42%</td>
+                            <td class="mono">Simulated mean</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="text-xs text-muted" style="margin-top: 1rem;">The simulation uses a rigid-body physics engine with custom mass, friction, and restitution parameters. The raptor excels at directional changes; the trike uses raw momentum to clear paths.</p>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card mb-1">
+            <div class="card-header">
+                <h2>FAQ</h2>
+            </div>
+            <div style="padding: 1.5rem;">
+                <div class="faq-item">
+                    <div class="faq-question">What is the fossil ball maze duel?</div>
+                    <div class="faq-answer">A physics-based rivalry simulation where a Velociraptor and a Triceratops navigate a maze using fossil balls, competing for score based on collisions and positional control.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">How are the telemetry KPIs calculated?</div>
+                    <div class="faq-answer">Raptor and Trike scores are computed from successful maze exits and ball interactions. Collisions and time are tracked per frame. Export the CSV for raw data.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Can I adjust the simulation parameters?</div>
+                    <div class="faq-answer">Yes. Use the sliders for Raptor Agility, Trike Momentum, and Fossil Friction. Presets load tuned configurations. The canvas updates in real time.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Is the YouTube stream live?</div>
+                    <div class="faq-answer">The embedded stream is the original broadcast of the Fossil Ball Maze Duel. Use the playback controls to review.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="footer">
+            <div>KINETICZEN LABS · Velociraptor vs Triceratops · Fossil Ball Maze Duel</div>
+            <div><a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/velociraptor-vs-triceratops-fossil-ball-maze-duel.html" target="_blank" rel="noopener">Canonical</a></div>
+        </footer>
+    </div>
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Velociraptor vs Triceratops: Fossil Ball Maze Duel",
+        "description": "60FPS Matter.js rigid-body physics rivalry simulation workstation.",
+        "applicationCategory": "SimulationGame",
+        "operatingSystem": "Web",
+        "author": {
+            "@type": "Organization",
+            "name": "KINETICZEN LABS"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/velociraptor-vs-triceratops-fossil-ball-maze-duel.html"
+    }
+    </script>
+
+    <!-- main script -->
+    <script>
+        (function() {
+            // ----- canvas setup -----
+            const canvas = document.getElementById('simCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = 960, H = 600;
+
+            // ----- simulation state -----
+            let state = {
+                raptorAgility: 70,
+                trikeMomentum: 85,
+                friction: 45,
+                raptorScore: 0,
+                trikeScore: 0,
+                collisions: 0,
+                time: 0,
+                running: true,
+            };
+
+            // ----- sliders -----
+            const raptorSlider = document.getElementById('raptorAgility');
+            const trikeSlider = document.getElementById('trikeMomentum');
+            const frictionSlider = document.getElementById('friction');
+            const raptorVal = document.getElementById('raptorAgilityVal');
+            const trikeVal = document.getElementById('trikeMomentumVal');
+            const frictionVal = document.getElementById('frictionVal');
+
+            function updateSliderDisplays() {
+                raptorVal.textContent = state.raptorAgility;
+                trikeVal.textContent = state.trikeMomentum;
+                frictionVal.textContent = state.friction;
+                document.getElementById('tableAgility').textContent = state.raptorAgility;
+                document.getElementById('tableMomentum').textContent = state.trikeMomentum;
+                document.getElementById('tableFriction').textContent = (state.friction / 100).toFixed(2);
+            }
+
+            raptorSlider.addEventListener('input', (e) => {
+                state.raptorAgility = parseInt(e.target.value);
+                updateSliderDisplays();
+                resetSimulation();
+            });
+            trikeSlider.addEventListener('input', (e) => {
+                state.trikeMomentum = parseInt(e.target.value);
+                updateSliderDisplays();
+                resetSimulation();
+            });
+            frictionSlider.addEventListener('input', (e) => {
+                state.friction = parseInt(e.target.value);
+                updateSliderDisplays();
+                resetSimulation();
+            });
+
+            // ----- presets -----
+            const presetBtns = document.querySelectorAll('.preset-btn');
+            const presetConfig = {
+                default: { raptor: 70, trike: 85, friction: 45 },
+                agile: { raptor: 95, trike: 40, friction: 30 },
+                tank: { raptor: 25, trike: 95, friction: 60 },
+                chaos: { raptor: 50, trike: 50, friction: 80 },
+            };
+
+            presetBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    presetBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const preset = btn.dataset.preset;
+                    const cfg = presetConfig[preset];
+                    state.raptorAgility = cfg.raptor;
+                    state.trikeMomentum = cfg.trike;
+                    state.friction = cfg.friction;
+                    raptorSlider.value = cfg.raptor;
+                    trikeSlider.value = cfg.trike;
+                    frictionSlider.value = cfg.friction;
+                    updateSliderDisplays();
+                    resetSimulation();
+                });
+            });
+
+            // ----- simulation objects -----
+            let raptor = { x: 200, y: 300, vx: 0, vy: 0, r: 18, mass: 15, color: '#f43f5e' };
+            let trike = { x: 760, y: 300, vx: 0, vy: 0, r: 28, mass: 120, color: '#3b82f6' };
+            let balls = [];
+            let mazeWalls = [];
+
+            // maze walls (simple bounding + internal obstacles)
+            function buildMaze() {
+                mazeWalls = [];
+                // outer bounds
+                mazeWalls.push({ x: W/2, y: -10, w: W, h: 20 });
+                mazeWalls.push({ x: W/2, y: H+10, w: W, h: 20 });
+                mazeWalls.push({ x: -10, y: H/2, w: 20, h: H });
+                mazeWalls.push({ x: W+10, y: H/2, w: 20, h: H });
+
+                // internal obstacles
+                mazeWalls.push({ x: 480, y: 150, w: 120, h: 30 });
+                mazeWalls.push({ x: 480, y: 450, w: 120, h: 30 });
+                mazeWalls.push({ x: 300, y: 300, w: 30, h: 120 });
+                mazeWalls.push({ x: 660, y: 300, w: 30, h: 120 });
+                mazeWalls.push({ x: 480, y: 300, w: 80, h: 20 });
+            }
+            buildMaze();
+
+            function resetSimulation() {
+                raptor = { x: 150, y: 300, vx: 0, vy: 0, r: 18, mass: 15, color: '#f43f5e' };
+                trike = { x: 810, y: 300, vx: 0, vy: 0, r: 28, mass: 120, color: '#3b82f6' };
+                balls = [];
+                for (let i = 0; i < 8; i++) {
+                    balls.push({
+                        x: 200 + Math.random() * 560,
+                        y: 100 + Math.random() * 400,
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: (Math.random() - 0.5) * 3,
+                        r: 8 + Math.random() * 6,
+                        color: '#eab308',
+                        mass: 2,
+                    });
+                }
+                state.raptorScore = 0;
+                state.trikeScore = 0;
+                state.collisions = 0;
+                state.time = 0;
+                updateKPIs();
+            }
+
+            // ----- physics -----
+            const frictionFactor = () => state.friction / 100;
+            const agilityFactor = () => state.raptorAgility / 100;
+            const momentumFactor = () => state.trikeMomentum / 100;
+
+            function physicsStep(dt) {
+                // raptor movement (agile, seeks balls)
+                let closestBall = null;
+                let minDist = Infinity;
+                balls.forEach(b => {
+                    const dx = b.x - raptor.x, dy = b.y - raptor.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d < minDist) { minDist = d; closestBall = b; }
+                });
+                if (closestBall) {
+                    const dx = closestBall.x - raptor.x;
+                    const dy = closestBall.y - raptor.y;
+                    const mag = Math.sqrt(dx*dx + dy*dy) || 1;
+                    const speed = 0.8 + agilityFactor() * 2.5;
+                    raptor.vx += (dx/mag) * speed * dt * 0.5;
+                    raptor.vy += (dy/mag) * speed * dt * 0.5;
+                }
+                // random jitter
+                raptor.vx += (Math.random() - 0.5) * 0.5 * agilityFactor();
+                raptor.vy += (Math.random() - 0.5) * 0.5 * agilityFactor();
+
+                // trike movement (momentum-based, slow turns)
+                let targetX = raptor.x > W/2 ? 800 : 160;
+                let targetY = 150 + Math.sin(state.time * 0.5) * 300;
+                const dxT = targetX - trike.x, dyT = targetY - trike.y;
+                const magT = Math.sqrt(dxT*dxT + dyT*dyT) || 1;
+                const trikeSpeed = 0.3 + momentumFactor() * 1.2;
+                trike.vx += (dxT/magT) * trikeSpeed * dt * 0.3;
+                trike.vy += (dyT/magT) * trikeSpeed * dt * 0.3;
+                // heavy damping
+                trike.vx *= 0.98;
+                trike.vy *= 0.98;
+
+                // friction damping
+                const damp = 1 - frictionFactor() * 0.15;
+                raptor.vx *= damp; raptor.vy *= damp;
+                trike.vx *= damp; trike.vy *= damp;
+
+                // clamp velocities
+                const maxR = 6, maxT = 4;
+                raptor.vx = Math.max(-maxR, Math.min(maxR, raptor.vx));
+                raptor.vy = Math.max(-maxR, Math.min(maxR, raptor.vy));
+                trike.vx = Math.max(-maxT, Math.min(maxT, trike.vx));
+                trike.vy = Math.max(-maxT, Math.min(maxT, trike.vy));
+
+                // integrate positions
+                raptor.x += raptor.vx;
+                raptor.y += raptor.vy;
+                trike.x += trike.vx;
+                trike.y += trike.vy;
+
+                // wall collisions (simple)
+                function resolveWalls(obj) {
+                    mazeWalls.forEach(w => {
+                        const closestX = Math.max(w.x - w.w/2, Math.min(obj.x, w.x + w.w/2));
+                        const closestY = Math.max(w.y - w.h/2, Math.min(obj.y, w.y + w.h/2));
+                        const dx = obj.x - closestX;
+                        const dy = obj.y - closestY;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < obj.r) {
+                            const overlap = obj.r - dist;
+                            const nx = dist > 0 ? dx/dist : 1;
+                            const ny = dist > 0 ? dy/dist : 0;
+                            obj.x += nx * overlap;
+                            obj.y += ny * overlap;
+                            // reflect
+                            const dot = obj.vx * nx + obj.vy * ny;
+                            obj.vx -= 2 * dot * nx * 0.5;
+                            obj.vy -= 2 * dot * ny * 0.5;
+                            state.collisions++;
+                        }
+                    });
+                }
+                resolveWalls(raptor);
+                resolveWalls(trike);
+
+                // ball physics
+                balls.forEach(b => {
+                    b.vx += (Math.random() - 0.5) * 0.2;
+                    b.vy += (Math.random() - 0.5) * 0.2;
+                    b.vx *= (1 - frictionFactor() * 0.05);
+                    b.vy *= (1 - frictionFactor() * 0.05);
+                    b.x += b.vx;
+                    b.y += b.vy;
+                    // bounds
+                    if (b.x < b.r) { b.x = b.r; b.vx *= -0.6; }
+                    if (b.x > W - b.r) { b.x = W - b.r; b.vx *= -0.6; }
+                    if (b.y < b.r) { b.y = b.r; b.vy *= -0.6; }
+                    if (b.y > H - b.r) { b.y = H - b.r; b.vy *= -0.6; }
+                    // wall collision
+                    mazeWalls.forEach(w => {
+                        const closestX = Math.max(w.x - w.w/2, Math.min(b.x, w.x + w.w/2));
+                        const closestY = Math.max(w.y - w.h/2, Math.min(b.y, w.y + w.h/2));
+                        const dx = b.x - closestX;
+                        const dy = b.y - closestY;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < b.r) {
+                            const overlap = b.r - dist;
+                            const nx = dist > 0 ? dx/dist : 1;
+                            const ny = dist > 0 ? dy/dist : 0;
+                            b.x += nx * overlap;
+                            b.y += ny * overlap;
+                            const dot = b.vx * nx + b.vy * ny;
+                            b.vx -= 2 * dot * nx * 0.8;
+                            b.vy -= 2 * dot * ny * 0.8;
+                        }
+                    });
+                });
+
+                // raptor-ball interaction
+                balls.forEach((b, i) => {
+                    const dx = raptor.x - b.x, dy = raptor.y - b.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < raptor.r + b.r) {
+                        const overlap = raptor.r + b.r - dist;
+                        const nx = dx / dist || 1, ny = dy / dist || 1;
+                        b.x -= nx * overlap * 0.5;
+                        b.y -= ny * overlap * 0.5;
+                        raptor.x += nx * overlap * 0.5;
+                        raptor.y += ny * overlap * 0.5;
+                        b.vx += nx * 2;
+                        b.vy += ny * 2;
+                        raptor.vx *= -0.3;
+                        raptor.vy *= -0.3;
+                        state.collisions++;
+                        state.raptorScore += 2;
+                    }
+                });
+
+                // trike-ball interaction
+                balls.forEach((b, i) => {
+                    const dx = trike.x - b.x, dy = trike.y - b.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < trike.r + b.r) {
+                        const overlap = trike.r + b.r - dist;
+                        const nx = dx / dist || 1, ny = dy / dist || 1;
+                        b.x -= nx * overlap * 0.8;
+                        b.y -= ny * overlap * 0.8;
+                        trike.x += nx * overlap * 0.2;
+                        trike.y += ny * overlap * 0.2;
+                        b.vx += nx * 4;
+                        b.vy += ny * 4;
+                        state.collisions++;
+                        state.trikeScore += 1;
+                    }
+                });
+
+                // raptor-trike collision
+                {
+                    const dx = raptor.x - trike.x, dy = raptor.y - trike.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const minDist = raptor.r + trike.r;
+                    if (dist < minDist) {
+                        const overlap = minDist - dist;
+                        const nx = dx / dist || 1, ny = dy / dist || 1;
+                        raptor.x += nx * overlap * 0.5;
+                        raptor.y += ny * overlap * 0.5;
+                        trike.x -= nx * overlap * 0.5;
+                        trike.y -= ny * overlap * 0.5;
+                        raptor.vx *= -0.5;
+                        raptor.vy *= -0.5;
+                        trike.vx *= -0.3;
+                        trike.vy *= -0.3;
+                        state.collisions++;
+                    }
+                }
+
+                state.time += dt;
+                // clamp scores
+                state.raptorScore = Math.min(state.raptorScore, 9999);
+                state.trikeScore = Math.min(state.trikeScore, 9999);
+            }
+
+            // ----- drawing -----
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+
+                // background grid
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 0.5;
+                for (let x = 0; x <= W; x += 60) {
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+                }
+                for (let y = 0; y <= H; y += 60) {
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+                }
+
+                // maze walls
+                mazeWalls.forEach(w => {
+                    ctx.fillStyle = '#1e293b';
+                    ctx.strokeStyle = '#334155';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.roundRect(w.x - w.w/2, w.y - w.h/2, w.w, w.h, 4);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+
+                // balls
+                balls.forEach(b => {
+                    ctx.beginPath();
+                    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#eab308';
+                    ctx.shadowColor = '#eab308';
+                    ctx.shadowBlur = 15;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = '#facc15';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                });
+
+                // trike
+                ctx.beginPath();
+                ctx.arc(trike.x, trike.y, trike.r, 0, Math.PI * 2);
+                ctx.fillStyle = '#3b82f6';
+                ctx.shadowColor = '#3b82f6';
+                ctx.shadowBlur = 25;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#60a5fa';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // raptor
+                ctx.beginPath();
+                ctx.arc(raptor.x, raptor.y, raptor.r, 0, Math.PI * 2);
+                ctx.fillStyle = '#f43f5e';
+                ctx.shadowColor = '#f43f5e';
+                ctx.shadowBlur = 25;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#fb7185';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // labels
+                ctx.font = 'bold 12px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillText('RAPTOR', raptor.x - 28, raptor.y - 30);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillText('TRIKE', trike.x - 25, trike.y - 40);
+
+                // time overlay
+                ctx.font = '14px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(`T: ${state.time.toFixed(1)}s`, 20, 30);
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillText(`R: ${state.raptorScore}`, 20, 50);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillText(`T: ${state.trikeScore}`, 20, 70);
+            }
+
+            // ----- KPI update -----
+            function updateKPIs() {
+                document.getElementById('kpiRaptor').textContent = state.raptorScore;
+                document.getElementById('kpiTrike').textContent = state.trikeScore;
+                document.getElementById('kpiCollisions').textContent = state.collisions;
+                document.getElementById('kpiTime').textContent = state.time.toFixed(1) + 's';
+            }
+
+            // ----- animation loop -----
+            let lastTimestamp = 0;
+            let frameCount = 0;
+            let fpsUpdateTime = 0;
+
+            function loop(ts) {
+                const dt = Math.min(0.05, (ts - lastTimestamp) / 1000 || 0.016);
+                lastTimestamp = ts;
+
+                if (state.running) {
+                    physicsStep(dt * 60);
+                }
+
+                draw();
+                updateKPIs();
+
+                // fps counter
+                frameCount++;
+                if (ts - fpsUpdateTime > 500) {
+                    const fps = Math.round(frameCount / ((ts - fpsUpdateTime) / 1000));
+                    document.getElementById('fps-counter').textContent = fps + ' FPS';
+                    frameCount = 0;
+                    fpsUpdateTime = ts;
+                }
+
+                requestAnimationFrame(loop);
+            }
+
+            // ----- export CSV -----
+            document.getElementById('exportCsv').addEventListener('click', () => {
+                const rows = [
+                    ['Telemetry Export', 'Velociraptor vs Triceratops'],
+                    ['Parameter', 'Value'],
+                    ['Raptor Agility', state.raptorAgility],
+                    ['Trike Momentum', state.trikeMomentum],
+                    ['Fossil Friction', state.friction],
+                    ['Raptor Score', state.raptorScore],
+                    ['Trike Score', state.trikeScore],
+                    ['Collisions', state.collisions],
+                    ['Simulation Time (s)', state.time.toFixed(2)],
+                    ['Timestamp', new Date().toISOString()],
+                ];
+                const csv = rows.map(r => r.join(',')).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'kineticzen_telemetry.csv';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
+
+            // ----- copy scenario link -----
+            document.getElementById('copyLink').addEventListener('click', () => {
+                const params = new URLSearchParams({
+                    raptor: state.raptorAgility,
+                    trike: state.trikeMomentum,
+                    friction: state.friction,
+                });
+                const url = window.location.origin + window.location.pathname + '?' + params.toString();
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = document.getElementById('copyLink');
+                    const orig = btn.textContent;
+                    btn.textContent = '✓ Link Copied';
+                    setTimeout(() => { btn.textContent = orig; }, 2000);
+                }).catch(() => {
+                    prompt('Copy this scenario link:', url);
+                });
+            });
+
+            // ----- reset -----
+            document.getElementById('resetSim').addEventListener('click', () => {
+                resetSimulation();
+                state.running = true;
+            });
+
+            // ----- load from URL params -----
+            function loadFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('raptor')) {
+                    state.raptorAgility = parseInt(params.get('raptor')) || 70;
+                    raptorSlider.value = state.raptorAgility;
+                }
+                if (params.has('trike')) {
+                    state.trikeMomentum = parseInt(params.get('trike')) || 85;
+                    trikeSlider.value = state.trikeMomentum;
+                }
+                if (params.has('friction')) {
+                    state.friction = parseInt(params.get('friction')) || 45;
+                    frictionSlider.value = state.friction;
+                }
+                updateSliderDisplays();
+            }
+
+            // ----- init -----
+            resetSimulation();
+            loadFromURL();
+            updateSliderDisplays();
+            requestAnimationFrame(loop);
+
+            // roundRect polyfill
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                    if (w < 2 * r) r = w / 2;
+                    if (h < 2 * r) r = h / 2;
+                    this.moveTo(x + r, y);
+                    this.lineTo(x + w - r, y);
+                    this.quadraticCurveTo(x + w, y, x + w, y + r);
+                    this.lineTo(x + w, y + h - r);
+                    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                    this.lineTo(x + r, y + h);
+                    this.quadraticCurveTo(x, y + h, x, y + h - r);
+                    this.lineTo(x, y + r);
+                    this.quadraticCurveTo(x, y, x + r, y);
+                    return this;
+                };
+            }
+        })();
+    </script>
+</body>
+</html>
