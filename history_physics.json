@@ -27,7 +27,8 @@
     "Tardigrade vs Archaea: Extreme Ball Maze Physics",
     "Cobra vs Mongoose: Venom Ball Maze Physics",
     "Mantis Shrimp vs Spider: Ultimate Ball Maze Duel",
-    "Pac-Man vs Donkey Kong: Ball Maze Escape Duel"
+    "Pac-Man vs Donkey Kong: Ball Maze Escape Duel",
+    "Velociraptor vs Triceratops: Fossil Ball Maze Duel"
   ],
   "used_items": [
     "Ronaldo vs Messi",
@@ -147,12 +148,19 @@
     {
       "video_id": "uI1s1AtXBFQ",
       "title": "Mantis Shrimp vs Spider: Ultimate Ball Maze Duel #shorts",
-      "published_at": 1795628164
+      "published_at": 1795628164,
+      "ab_tested": true
     },
     {
       "video_id": "tS5Y-nzyntQ",
       "title": "Pac-Man vs Donkey Kong: Ball Maze Escape Duel #shorts",
-      "published_at": 1795656997
+      "published_at": 1795656997,
+      "ab_tested": true
+    },
+    {
+      "video_id": "LiEzZ1ytxGs",
+      "title": "Velociraptor vs Triceratops: Fossil Ball Maze Duel #shorts",
+      "published_at": 1795714667
     }
   ]
 }
