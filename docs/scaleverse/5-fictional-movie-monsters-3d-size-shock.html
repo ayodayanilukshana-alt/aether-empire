@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Monster Size Shock</title>
+    <!-- Fonts & Base Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .workstation {
+            max-width: 1400px;
+            width: 100%;
+        }
+        h1, h2, h3 {
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+        h1 {
+            font-size: 1.9rem;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        .accent {
+            color: #38bdf8;
+        }
+        .mono {
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+            color: #38bdf8;
+        }
+        .subhead {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid #38bdf8;
+            padding-left: 0.9rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1.1fr 1.9fr;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 1.25rem 1.25rem 1.5rem;
+            box-shadow: 0 8px 20px -8px rgba(0,0,0,0.8);
+        }
+        .card-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .canvas-wrap {
+            background: #070b11;
+            border-radius: 10px;
+            padding: 0.5rem;
+            border: 1px solid #1a2536;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            background: #0a0f16;
+            cursor: crosshair;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .slider-label span:last-child {
+            color: #38bdf8;
+            font-family: monospace;
+        }
+        input[type=range] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 6px;
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #38bdf8;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 0 2px #38bdf880;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #7dd3fc;
+        }
+        .preset-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.2rem;
+        }
+        .btn {
+            background: #111827;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 0.45rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .btn:hover {
+            background: #1e293b;
+            border-color: #38bdf8;
+            color: #f1f5f9;
+        }
+        .btn-primary {
+            background: #38bdf8;
+            border: 1px solid #38bdf8;
+            color: #05070b;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: #7dd3fc;
+            border-color: #7dd3fc;
+            color: #05070b;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+        }
+        .btn-outline:hover {
+            background: #38bdf815;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin: 1.25rem 0 0.8rem;
+        }
+        .kpi {
+            background: #0f1420;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 0.85rem 0.6rem;
+            text-align: center;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+        .kpi-value {
+            font-size: 1.35rem;
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+            color: #38bdf8;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+        .kpi-sub {
+            font-size: 0.65rem;
+            color: #475569;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1.5rem 0 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.75rem 0.5rem;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #1e293b;
+        }
+        td {
+            padding: 0.7rem 0.5rem;
+            border-bottom: 1px solid #1a2536;
+            color: #cbd5e1;
+        }
+        .badge {
+            background: #1e293b;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+        @media (max-width: 700px) {
+            .faq-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .faq-item {
+            border-left: 3px solid #1e293b;
+            padding-left: 1rem;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .embed-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+            background: #000;
+            margin-top: 0.5rem;
+        }
+        .embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #475569;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #1a2536;
+            padding-top: 1.25rem;
+        }
+        .footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        .flex-row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .tag {
+            background: #1e293b;
+            color: #94a3b8;
+            border-radius: 30px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            font-family: monospace;
+        }
+        .status-msg {
+            font-size: 0.8rem;
+            color: #38bdf8;
+            min-height: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="workstation">
+    <!-- Header -->
+    <header>
+        <h1>SCALEVERSE <span class="accent">3D</span> <span style="font-size:0.9rem; font-weight:400; color:#475569; margin-left:1rem;">MONSTER SIZE SHOCK</span></h1>
+        <div class="subhead">From a 1.5-meter Critter to 3,200-meter Cthulhu — interactive scale comparison</div>
+    </header>
+
+    <!-- Main Grid: Controls + Canvas -->
+    <div class="grid-2">
+        <!-- LEFT: Controls & KPIs -->
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="card-title">
+                <span>CONTROL DECK</span>
+                <span class="badge mono" id="activeCount">5 monsters</span>
+            </div>
+            <div class="controls">
+                <!-- Scaling slider -->
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>SCALE COMPRESSION</span>
+                        <span id="scaleVal">1.00×</span>
+                    </div>
+                    <input type="range" id="scaleSlider" min="0.3" max="1.8" value="1.0" step="0.01">
+                </div>
+                <!-- Human height -->
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>HUMAN REFERENCE</span>
+                        <span id="humanVal">1.80 m</span>
+                    </div>
+                    <input type="range" id="humanSlider" min="1.4" max="2.2" value="1.8" step="0.05">
+                </div>
+                <!-- Preset scenarios -->
+                <div style="margin-top:0.25rem;">
+                    <div style="font-size:0.75rem; color:#64748b; margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em;">SCENARIO PRESETS</div>
+                    <div class="preset-row">
+                        <button class="btn" data-preset="critter">Critter</button>
+                        <button class="btn" data-preset="clover">Cloverfield</button>
+                        <button class="btn" data-preset="kong">King Kong</button>
+                        <button class="btn" data-preset="godzilla">Godzilla</button>
+                        <button class="btn" data-preset="cthulhu">Cthulhu</button>
+                        <button class="btn" data-preset="reset">Reset view</button>
+                    </div>
+                </div>
+                <!-- Action buttons -->
+                <div class="flex-row" style="margin-top:0.6rem;">
+                    <button class="btn btn-primary" id="exportCSV">⬇ Export CSV Telemetry</button>
+                    <button class="btn btn-outline" id="copyLink">🔗 Copy Scenario Link</button>
+                    <span id="copyFeedback" class="status-msg"></span>
+                </div>
+            </div>
+
+            <!-- KPI readouts -->
+            <div class="kpi-grid">
+                <div class="kpi">
+                    <div class="kpi-label">Tallest</div>
+                    <div class="kpi-value" id="kpiTallest">3,200 m</div>
+                    <div class="kpi-sub">Cthulhu</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Smallest</div>
+                    <div class="kpi-value" id="kpiSmallest">1.5 m</div>
+                    <div class="kpi-sub">Critter</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Height ratio</div>
+                    <div class="kpi-value" id="kpiRatio">2133×</div>
+                    <div class="kpi-sub">Cthulhu / Critter</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Human vs Cthulhu</div>
+                    <div class="kpi-value" id="kpiHumanVSC">1:1778</div>
+                    <div class="kpi-sub">height factor</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Canvas -->
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="card-title">
+                <span>3D SCALE COMPARISON</span>
+                <span class="mono" id="scaleLabel">1.00× compression</span>
+            </div>
+            <div class="canvas-wrap">
+                <canvas id="monsterCanvas" width="800" height="500"></canvas>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 0.6rem; font-size: 0.7rem; color: #475569;">
+                <span>◀ D R A G &nbsp; T O &nbsp; R O T A T E ▶</span>
+                <span id="hoverInfo">hover over monsters</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICAL TABLE -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-title">
+            <span>ANALYTICAL BREAKDOWN · MONSTER METRICS</span>
+            <span class="badge mono">5 items</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Monster</th>
+                        <th>Height (m)</th>
+                        <th>Height (ft)</th>
+                        <th>Relative to Human (1.8m)</th>
+                        <th>Relative to Critter</th>
+                        <th>Scale factor (× human)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- generated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FAQ + YOUTUBE -->
+    <div class="grid-2" style="grid-template-columns: 1.3fr 1.7fr;">
+        <div class="card">
+            <div class="card-title">FAQ · SCALE & COMPARISON</div>
+            <div class="faq-grid" style="grid-template-columns: 1fr;">
+                <div class="faq-item">
+                    <div class="faq-q">How does the simulation handle extreme size differences?</div>
+                    <div class="faq-a">We apply logarithmic compression to the visual axis, preserving relative order while making all 5 monsters visible. Cthulhu at 3,200 m is ~2,133× taller than the 1.5 m Critter.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">What does the "Scale Compression" slider do?</div>
+                    <div class="faq-a">It visually expands or contracts the drawn heights without altering the underlying numerical data. The KPI readouts always reflect real metric values.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Can I download the data?</div>
+                    <div class="faq-a">Yes — click "Export CSV Telemetry" to get a CSV with all monster names, meters, feet, and ratio values relative to the human reference.</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">YOUTUBE · 3D SIZE SHOCK</div>
+            <div class="embed-container">
+                <iframe src="https://www.youtube.com/embed/rexhsAuvT4c" title="5 Fictional Movie Monsters: 3D Size Shock!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER + JSON-LD -->
+    <div class="footer">
+        <div>© SCALEVERSE 3D · <a href="./index.html">Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-fictional-movie-monsters-3d-size-shock.html">Canonical</a></div>
+        <div class="tag">data from video · 5 monsters</div>
+    </div>
+</div>
+
+<!-- JSON-LD SoftwareApplication Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Scaleverse 3D — Monster Size Shock",
+  "description": "Interactive 3D scale comparison of 5 fictional movie monsters: Critter, Cloverfield Parasite, King Kong (2005), Godzilla (2014), and Cthulhu. Includes canvas visualization, telemetry export, and preset scenarios.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-fictional-movie-monsters-3d-size-shock.html",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "author": {"@type": "Organization", "name": "Scaleverse 3D"}
+}
+</script>
+
+<!-- MAIN SCRIPT -->
+<script>
+(function() {
+    // ---- DATA PAYLOAD (exact) ----
+    const MONSTERS = [
+        { name: "Critter (Critters)", meters: 1.5, metric: "1.5 m (4.9 ft) tall" },
+        { name: "Cloverfield Parasite", meters: 1.8, metric: "1.8 m (5.9 ft) long" },
+        { name: "King Kong (2005)", meters: 7.6, metric: "7.6 m (25 ft) tall" },
+        { name: "Godzilla (2014)", meters: 108, metric: "108 m (354 ft) tall" },
+        { name: "Cthulhu (Call of Cthulhu)", meters: 3200, metric: "3,200 m (10,500 ft) tall" }
+    ];
+
+    // ---- STATE ----
+    let scaleFactor = 1.0;
+    let humanHeight = 1.8;
+    let rotationAngle = 0.45; // radians, for pseudo-3D rotation
+    let hoveredIndex = -1;
+
+    // ---- DOM refs ----
+    const canvas = document.getElementById('monsterCanvas');
+    const ctx = canvas.getContext('2d');
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleVal = document.getElementById('scaleVal');
+    const humanSlider = document.getElementById('humanSlider');
+    const humanVal = document.getElementById('humanVal');
+    const kpiTallest = document.getElementById('kpiTallest');
+    const kpiSmallest = document.getElementById('kpiSmallest');
+    const kpiRatio = document.getElementById('kpiRatio');
+    const kpiHumanVSC = document.getElementById('kpiHumanVSC');
+    const tableBody = document.getElementById('tableBody');
+    const exportBtn = document.getElementById('exportCSV');
+    const copyBtn = document.getElementById('copyLink');
+    const copyFeedback = document.getElementById('copyFeedback');
+    const hoverInfo = document.getElementById('hoverInfo');
+    const activeCount = document.getElementById('activeCount');
+
+    // ---- Helpers ----
+    function formatMeters(m) {
+        if (m >= 1000) return m.toLocaleString('en-US', {maximumFractionDigits:0}) + ' m';
+        return m.toFixed(1) + ' m';
+    }
+    function metersToFeet(m) {
+        return m * 3.28084;
+    }
+    function formatFeet(m) {
+        const ft = metersToFeet(m);
+        if (ft >= 1000) return Math.round(ft).toLocaleString() + ' ft';
+        return ft.toFixed(1) + ' ft';
+    }
+
+    // ---- KPI update ----
+    function updateKPIs() {
+        const sorted = [...MONSTERS].sort((a,b) => b.meters - a.meters);
+        const tallest = sorted[0];
+        const smallest = sorted[sorted.length-1];
+        kpiTallest.textContent = formatMeters(tallest.meters);
+        kpiSmallest.textContent = formatMeters(smallest.meters);
+        const ratio = tallest.meters / smallest.meters;
+        kpiRatio.textContent = Math.round(ratio).toLocaleString() + '×';
+        const humanFactor = tallest.meters / humanHeight;
+        kpiHumanVSC.textContent = '1:' + Math.round(humanFactor).toLocaleString();
+        // table
+        renderTable();
+    }
+
+    function renderTable() {
+        let html = '';
+        MONSTERS.forEach((m, idx) => {
+            const ft = metersToFeet(m.meters);
+            const relHuman = m.meters / humanHeight;
+            const relCritter = m.meters / MONSTERS[0].meters;
+            const scaleFactorHuman = m.meters / humanHeight;
+            html += `<tr>
+                <td style="font-weight:500; color:#f1f5f9;">${m.name}</td>
+                <td class="mono">${formatMeters(m.meters)}</td>
+                <td class="mono">${formatFeet(m.meters)}</td>
+                <td class="mono">${relHuman.toFixed(2)}×</td>
+                <td class="mono">${relCritter.toFixed(2)}×</td>
+                <td class="mono">${scaleFactorHuman.toLocaleString('en-US', {maximumFractionDigits:1})}×</td>
+            </tr>`;
+        });
+        tableBody.innerHTML = html;
+    }
+
+    // ---- DRAWING ----
+    function drawScene() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // background grid
+        ctx.strokeStyle = '#1a2536';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < w; i += 40) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, h);
+            ctx.strokeStyle = '#111a24';
+            ctx.stroke();
+        }
+        for (let i = 0; i < h; i += 40) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(w, i);
+            ctx.strokeStyle = '#111a24';
+            ctx.stroke();
+        }
+
+        // ground line
+        const groundY = h - 70;
+        ctx.beginPath();
+        ctx.moveTo(40, groundY);
+        ctx.lineTo(w - 40, groundY);
+        ctx.strokeStyle = '#2d3a4f';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Compute max visual height in meters (including human)
+        const maxMeters = Math.max(...MONSTERS.map(m => m.meters), humanHeight);
+        // use log scaling for visual, but keep relative feel
+        const logMax = Math.log10(maxMeters + 1);
+        const baseHeight = 340; // pixels available above ground
+
+        // rotation offset (fake 3D depth shift)
+        const rotOffset = Math.sin(rotationAngle) * 18;
+
+        // Draw human reference (always visible, small silhouette)
+        const humanX = w * 0.12;
+        const humanLog = Math.log10(humanHeight + 1) / logMax;
+        const humanH = Math.max(12, humanLog * baseHeight * 0.9);
+        const humanY = groundY - humanH;
+        // human silhouette
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.ellipse(humanX, humanY + humanH * 0.85, humanH * 0.13, humanH * 0.22, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.ellipse(humanX, humanY + humanH * 0.5, humanH * 0.1, humanH * 0.3, 0, 0, Math.PI*2);
+        ctx.fill();
+        // head
+        ctx.beginPath();
+        ctx.arc(humanX, humanY + humanH * 0.15, humanH * 0.1, 0, Math.PI*2);
+        ctx.fillStyle = '#64748b';
+        ctx.fill();
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px monospace';
+        ctx.fillText('HUMAN ' + humanHeight.toFixed(2) + 'm', humanX - 20, groundY + 20);
+
+        // Draw monsters as bars with 3D-ish effect
+        const startX = w * 0.25;
+        const availableWidth = w * 0.65;
+        const barSpacing = Math.min(85, availableWidth / MONSTERS.length);
+
+        MONSTERS.forEach((m, i) => {
+            const logVal = Math.log10(m.meters + 1) / logMax;
+            const barHeight = Math.max(8, logVal * baseHeight * scaleFactor);
+            const x = startX + i * barSpacing + rotOffset * (i / MONSTERS.length);
+            const barWidth = 42;
+            const y = groundY - barHeight;
+
+            // 3D side face
+            const depth = 6;
+            ctx.fillStyle = i === hoveredIndex ? '#7dd3fc' : '#38bdf8';
+            // main face (lighter)
+            ctx.fillStyle = i === hoveredIndex ? '#7dd3fc' : '#38bdf8';
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, barHeight, [6,6,0,0]);
+            ctx.fill();
+            // top highlight
+            ctx.fillStyle = i === hoveredIndex ? '#e0f2fe' : '#7dd3fc';
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, Math.min(12, barHeight*0.15), [6,6,0,0]);
+            ctx.fill();
+            // 3D extrusion (shadow)
+            ctx.fillStyle = '#1e3a5f';
+            ctx.beginPath();
+            ctx.roundRect(x + barWidth, y + 4, depth, barHeight - 4, [0,6,0,0]);
+            ctx.fill();
+
+            // labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '9px monospace';
+            ctx.save();
+            ctx.translate(x + barWidth/2, y - 8);
+            ctx.textAlign = 'center';
+            const shortName = m.name.split(' ')[0];
+            ctx.fillText(shortName, 0, 0);
+            ctx.restore();
+
+            // metric at bottom
+            ctx.fillStyle = '#64748b';
+            ctx.font = '8px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(formatMeters(m.meters), x + barWidth/2, groundY + 28);
+            ctx.fillText(formatFeet(m.meters), x + barWidth/2, groundY + 40);
+
+            // store hit area for hover
+            m._hitX = x;
+            m._hitW = barWidth;
+            m._hitY = y;
+            m._hitH = barHeight;
+        });
+
+        // axis markers
+        ctx.fillStyle = '#475569';
+        ctx.font = '9px monospace';
+        ctx.textAlign = 'right';
+        const steps = 5;
+        for (let s = 0; s <= steps; s++) {
+            const fraction = s / steps;
+            const yPos = groundY - fraction * baseHeight * scaleFactor;
+            if (yPos < groundY && yPos > 10) {
+                const metersVal = Math.pow(10, fraction * logMax) - 1;
+                ctx.fillText(formatMeters(metersVal), w - 25, yPos + 3);
+            }
+        }
+    }
+
+    // Canvas roundRect helper
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (typeof r === 'number') r = [r,r,r,r];
+        const [tl, tr, br, bl] = r || [0,0,0,0];
+        this.moveTo(x+tl, y);
+        this.lineTo(x+w-tr, y);
+        this.quadraticCurveTo(x+w, y, x+w, y+tr);
+        this.lineTo(x+w, y+h-br);
+        this.quadraticCurveTo(x+w, y+h, x+w-br, y+h);
+        this.lineTo(x+bl, y+h);
+        this.quadraticCurveTo(x, y+h, x, y+h-bl);
+        this.lineTo(x, y+tl);
+        this.quadraticCurveTo(x, y, x+tl, y);
+        return this;
+    };
+
+    // ---- EVENTS ----
+    scaleSlider.addEventListener('input', (e) => {
+        scaleFactor = parseFloat(e.target.value);
+        scaleVal.textContent = scaleFactor.toFixed(2) + '×';
+        document.getElementById('scaleLabel').textContent = scaleFactor.toFixed(2) + '× compression';
+        drawScene();
+    });
+
+    humanSlider.addEventListener('input', (e) => {
+        humanHeight = parseFloat(e.target.value);
+        humanVal.textContent = humanHeight.toFixed(2) + ' m';
+        updateKPIs();
+        drawScene();
+    });
+
+    // Preset buttons
+    document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const preset = e.target.dataset.preset;
+            let newScale = 1.0;
+            let newHuman = 1.8;
+            if (preset === 'reset') {
+                newScale = 1.0;
+                newHuman = 1.8;
+            } else {
+                // find monster index
+                const names = ['critter','clover','kong','godzilla','cthulhu'];
+                const idx = names.indexOf(preset);
+                if (idx !== -1) {
+                    // center height: adjust scale to make that monster prominent
+                    const target = MONSTERS[idx];
+                    // set compression so that target is ~200px
+                    const logMax = Math.log10(3200 + 1);
+                    const logTarget = Math.log10(target.meters + 1);
+                    newScale = Math.min(1.8, Math.max(0.3, (200 / 340) / (logTarget / logMax)));
+                }
+            }
+            scaleFactor = newScale;
+            humanHeight = newHuman;
+            scaleSlider.value = newScale;
+            humanSlider.value = newHuman;
+            scaleVal.textContent = newScale.toFixed(2) + '×';
+            humanVal.textContent = newHuman.toFixed(2) + ' m';
+            document.getElementById('scaleLabel').textContent = newScale.toFixed(2) + '× compression';
+            updateKPIs();
+            drawScene();
+        });
+    });
+
+    // Hover detection
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        let found = -1;
+        MONSTERS.forEach((m, i) => {
+            if (m._hitX !== undefined) {
+                if (mouseX >= m._hitX && mouseX <= m._hitX + m._hitW &&
+                    mouseY >= m._hitY && mouseY <= m._hitY + m._hitH) {
+                    found = i;
+                }
+            }
+        });
+        if (found !== hoveredIndex) {
+            hoveredIndex = found;
+            if (found !== -1) {
+                const m = MONSTERS[found];
+                hoverInfo.textContent = m.name + ' · ' + m.metric;
+            } else {
+                hoverInfo.textContent = 'hover over monsters';
+            }
+            drawScene();
+        }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+        hoveredIndex = -1;
+        hoverInfo.textContent = 'hover over monsters';
+        drawScene();
+    });
+
+    // Drag to rotate (pseudo 3D)
+    let isDragging = false, lastX = 0;
+    canvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        lastX = e.clientX;
+    });
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - lastX;
+        rotationAngle += dx * 0.008;
+        lastX = e.clientX;
+        drawScene();
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    // ---- EXPORT CSV ----
+    exportBtn.addEventListener('click', () => {
+        const headers = ['Monster', 'Height (m)', 'Height (ft)', 'Relative to Human (1.8m)', 'Relative to Critter', 'Scale factor vs Human'];
+        const rows = MONSTERS.map(m => {
+            const ft = metersToFeet(m.meters);
+            const relHuman = m.meters / humanHeight;
+            const relCritter = m.meters / MONSTERS[0].meters;
+            return [
+                `"${m.name}"`,
+                m.meters,
+                ft.toFixed(2),
+                relHuman.toFixed(3),
+                relCritter.toFixed(3),
+                (m.meters / humanHeight).toFixed(2)
+            ].join(',');
+        });
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scaleverse_monster_telemetry.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        copyFeedback.textContent = 'CSV exported ✓';
+        setTimeout(() => { copyFeedback.textContent = ''; }, 2000);
+    });
+
+    // ---- COPY LINK ----
+    copyBtn.addEventListener('click', () => {
+        const canonical = 'https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-fictional-movie-monsters-3d-size-shock.html';
+        navigator.clipboard.writeText(canonical).then(() => {
+            copyFeedback.textContent = 'Scenario link copied ✓';
+            setTimeout(() => { copyFeedback.textContent = ''; }, 2000);
+        }).catch(() => {
+            // fallback
+            const input = document.createElement('input');
+            input.value = canonical;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            copyFeedback.textContent = 'Link copied ✓';
+            setTimeout(() => { copyFeedback.textContent = ''; }, 2000);
+        });
+    });
+
+    // ---- INIT ----
+    function init() {
+        updateKPIs();
+        drawScene();
+        // set default human display
+        humanVal.textContent = humanHeight.toFixed(2) + ' m';
+        scaleVal.textContent = scaleFactor.toFixed(2) + '×';
+        document.getElementById('scaleLabel').textContent = scaleFactor.toFixed(2) + '× compression';
+        activeCount.textContent = MONSTERS.length + ' monsters';
+    }
+    init();
+})();
+</script>
+</body>
+</html>
