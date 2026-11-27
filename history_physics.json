@@ -29,7 +29,8 @@
     "Mantis Shrimp vs Spider: Ultimate Ball Maze Duel",
     "Pac-Man vs Donkey Kong: Ball Maze Escape Duel",
     "Velociraptor vs Triceratops: Fossil Ball Maze Duel",
-    "Flash vs Quicksilver: Speed Ball Maze Physics Duel"
+    "Flash vs Quicksilver: Speed Ball Maze Physics Duel",
+    "T-Rex vs Spino: Dino Ball Maze Physics Duel"
   ],
   "used_items": [
     "Ronaldo vs Messi",
@@ -161,12 +162,19 @@
     {
       "video_id": "LiEzZ1ytxGs",
       "title": "Velociraptor vs Triceratops: Fossil Ball Maze Duel #shorts",
-      "published_at": 1795714667
+      "published_at": 1795714667,
+      "ab_tested": true
     },
     {
       "video_id": "WJmOq2Y_YxU",
       "title": "Flash vs Quicksilver: Speed Ball Maze Physics Duel #shorts",
-      "published_at": 1795743440
+      "published_at": 1795743440,
+      "ab_tested": true
+    },
+    {
+      "video_id": "3veGC3ByGhI",
+      "title": "T-Rex vs Spino: Dino Ball Maze Physics Duel #shorts",
+      "published_at": 1795801069
     }
   ]
 }
