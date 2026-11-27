@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINETICZEN LABS · T-Rex vs Spino: Dino Ball Maze Physics Duel</title>
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/t-rex-vs-spino-dino-ball-maze-physics-duel.html">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            padding: 24px;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .workstation {
+            max-width: 1440px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 8px;
+            height: 28px;
+            background: #f43f5e;
+            border-radius: 2px;
+            box-shadow: 0 0 12px rgba(244, 63, 94, 0.6);
+        }
+
+        .brand h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #f1f5f9;
+        }
+
+        .brand span {
+            color: #f43f5e;
+            font-weight: 700;
+        }
+
+        .badge {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge strong {
+            color: #f43f5e;
+        }
+
+        /* Main grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card style */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .card-title .accent {
+            color: #f43f5e;
+        }
+
+        /* Canvas */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: #05070b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+
+        #simCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, #0f172a, #05070b);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-group {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .control-group h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 12px;
+            letter-spacing: 0.06em;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .slider-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+        }
+
+        .slider-label .val {
+            font-family: 'JetBrains Mono', monospace;
+            color: #f43f5e;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
+        }
+
+        .preset-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: #334155;
+            border-color: #f43f5e;
+        }
+
+        .btn-primary {
+            background: #f43f5e;
+            border-color: #f43f5e;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #e11d48;
+            border-color: #e11d48;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #334155;
+            color: #94a3b8;
+        }
+
+        .btn-outline:hover {
+            border-color: #f43f5e;
+            color: #f1f5f9;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .kpi {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .kpi .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+
+        .kpi .value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: #f43f5e;
+            line-height: 1.2;
+        }
+
+        .kpi .value.TREX {
+            color: #f43f5e;
+        }
+
+        .kpi .value.SPINO {
+            color: #3b82f6;
+        }
+
+        /* Export row */
+        .export-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        /* Table */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        th {
+            background: #0f172a;
+            color: #94a3b8;
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-size: 0.65rem;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .team-a {
+            color: #f43f5e;
+            font-weight: 600;
+        }
+
+        .team-b {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 12px 0;
+            cursor: pointer;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-q {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .faq-q .icon {
+            color: #f43f5e;
+            font-weight: 700;
+            transition: transform 0.2s;
+        }
+
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease-out, margin 0.25s;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .faq-item.open .faq-a {
+            max-height: 200px;
+            margin-top: 8px;
+        }
+
+        .faq-item.open .faq-q .icon {
+            transform: rotate(45deg);
+        }
+
+        /* Video embed */
+        .video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #000;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #1e293b;
+            font-size: 0.7rem;
+            color: #475569;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .footer a {
+            color: #f43f5e;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Misc */
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0b0f17;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="workstation">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-logo"></div>
+                <h1>KINETICZEN <span>LABS</span></h1>
+                <span class="badge">T-Rex <strong>vs</strong> Spino</span>
+            </div>
+            <div class="badge">60FPS · Matter.js Rigid-Body Duel</div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+
+            <!-- Left column: Canvas + Video -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+
+                <!-- Canvas -->
+                <div class="card" style="padding: 16px;">
+                    <div class="card-title">
+                        <span>MAZE SIMULATION · <span class="accent">LIVE PHYSICS</span></span>
+                        <span style="font-size: 0.7rem; color: #64748b;">T-REX (red) vs SPINO (blue)</span>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="simCanvas" width="960" height="600"></canvas>
+                    </div>
+                    <div class="export-row">
+                        <button class="btn btn-primary" id="exportCSV">Export CSV Telemetry</button>
+                        <button class="btn btn-outline" id="copyLink">Copy Scenario Link</button>
+                        <button class="btn btn-outline" id="resetSim">Reset Simulation</button>
+                    </div>
+                </div>
+
+                <!-- Video embed -->
+                <div class="card" style="padding: 16px;">
+                    <div class="card-title">
+                        <span>OFFICIAL STREAM · <span class="accent">YOUTUBE</span></span>
+                    </div>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/3veGC3ByGhI" title="T-Rex vs Spino: Dino Ball Maze Physics Duel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Analytical Table -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>ANALYTICAL BREAKDOWN · <span class="accent">TELEMETRY</span></span>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th style="color: #f43f5e;">T-REX</th>
+                                    <th style="color: #3b82f6;">SPINO</th>
+                                    <th>Delta</th>
+                                </tr>
+                            </thead>
+                            <tbody id="telemetryTable">
+                                <tr><td>Velocity (m/s)</td><td class="team-a" id="tVelA">—</td><td class="team-b" id="tVelB">—</td><td id="tDeltaVel">—</td></tr>
+                                <tr><td>Kinetic Energy (J)</td><td class="team-a" id="tKEA">—</td><td class="team-b" id="tKEB">—</td><td id="tDeltaKE">—</td></tr>
+                                <tr><td>Maze Progress (%)</td><td class="team-a" id="tProgA">—</td><td class="team-b" id="tProgB">—</td><td id="tDeltaProg">—</td></tr>
+                                <tr><td>Collision Count</td><td class="team-a" id="tCollA">—</td><td class="team-b" id="tCollB">—</td><td id="tDeltaColl">—</td></tr>
+                                <tr><td>Friction Force (N)</td><td class="team-a" id="tFricA">—</td><td class="team-b" id="tFricB">—</td><td id="tDeltaFric">—</td></tr>
+                                <tr><td>Score (pts)</td><td class="team-a" id="tScoreA">—</td><td class="team-b" id="tScoreB">—</td><td id="tDeltaScore">—</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right column: Controls + KPIs + FAQ -->
+            <div class="controls">
+
+                <!-- KPIs -->
+                <div class="control-group">
+                    <h3>LIVE KPI DASHBOARD</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi">
+                            <div class="label">T-REX SCORE</div>
+                            <div class="value TREX" id="kpiScoreA">0</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="label">SPINO SCORE</div>
+                            <div class="value SPINO" id="kpiScoreB">0</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="label">LEADER</div>
+                            <div class="value" id="kpiLeader" style="font-size: 1rem;">—</div>
+                        </div>
+                    </div>
+                    <div class="kpi-grid" style="margin-top: 10px;">
+                        <div class="kpi">
+                            <div class="label">TOTAL COLLISIONS</div>
+                            <div class="value" id="kpiCollisions" style="color: #94a3b8;">0</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="label">SIM TIME (s)</div>
+                            <div class="value" id="kpiTime" style="color: #94a3b8;">0.0</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="label">FPS</div>
+                            <div class="value" id="kpiFPS" style="color: #94a3b8;">60</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sliders -->
+                <div class="control-group">
+                    <h3>PHYSICS PARAMETERS</h3>
+                    <div class="slider-row">
+                        <div class="slider-label">
+                            <span>Gravity</span>
+                            <span class="val" id="valGravity">9.8</span>
+                        </div>
+                        <input type="range" id="sliderGravity" min="0" max="20" step="0.1" value="9.8">
+                    </div>
+                    <div class="slider-row">
+                        <div class="slider-label">
+                            <span>T-Rex Mass</span>
+                            <span class="val" id="valMassA">5.0</span>
+                        </div>
+                        <input type="range" id="sliderMassA" min="1" max="10" step="0.1" value="5.0">
+                    </div>
+                    <div class="slider-row">
+                        <div class="slider-label">
+                            <span>Spino Mass</span>
+                            <span class="val" id="valMassB">5.0</span>
+                        </div>
+                        <input type="range" id="sliderMassB" min="1" max="10" step="0.1" value="5.0">
+                    </div>
+                    <div class="slider-row">
+                        <div class="slider-label">
+                            <span>Friction</span>
+                            <span class="val" id="valFriction">0.30</span>
+                        </div>
+                        <input type="range" id="sliderFriction" min="0" max="1" step="0.01" value="0.30">
+                    </div>
+                    <div class="slider-row">
+                        <div class="slider-label">
+                            <span>Restitution</span>
+                            <span class="val" id="valRestitution">0.60</span>
+                        </div>
+                        <input type="range" id="sliderRestitution" min="0" max="1" step="0.01" value="0.60">
+                    </div>
+                </div>
+
+                <!-- Presets -->
+                <div class="control-group">
+                    <h3>SCENARIO PRESETS</h3>
+                    <div class="preset-btns">
+                        <button class="btn" data-preset="default">Default</button>
+                        <button class="btn" data-preset="heavy">Heavy T-Rex</button>
+                        <button class="btn" data-preset="light">Light Spino</button>
+                        <button class="btn" data-preset="bouncy">Bouncy</button>
+                        <button class="btn" data-preset="sticky">Sticky</button>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="control-group">
+                    <h3>FREQUENTLY ASKED QUESTIONS</h3>
+                    <div class="faq-item">
+                        <div class="faq-q">What is the Dino Ball Maze? <span class="icon">+</span></div>
+                        <div class="faq-a">A 60FPS rigid-body physics simulation where T-Rex and Spino compete as balls navigating a maze, using Matter.js engine dynamics.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">How is the winner determined? <span class="icon">+</span></div>
+                        <div class="faq-a">The team with the higher score (maze progress + collision points) at the end of the simulation wins. Scores update in real-time.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">Can I export telemetry data? <span class="icon">+</span></div>
+                        <div class="faq-a">Yes, click "Export CSV Telemetry" to download a CSV file containing all live metrics for both teams.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">What do the sliders control? <span class="icon">+</span></div>
+                        <div class="faq-a">Gravity, mass, friction, and restitution affect the balls' movement, collisions, and overall race dynamics. Adjust them to create different outcomes.</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <span>© KINETICZEN LABS · T-Rex vs Spino Dino Ball Maze Physics Duel</span>
+            <span><a href="./index.html">← Back to Portal</a> · <a href="https://ayodayanilukshana-alt.github.io/aether-empire" target="_blank">Aether Empire</a></span>
+        </footer>
+    </div>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "T-Rex vs Spino: Dino Ball Maze Physics Duel",
+        "description": "60FPS Matter.js rigid-body physics rivalry simulation. Interactive telemetry workstation by KINETICZEN LABS.",
+        "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/t-rex-vs-spino-dino-ball-maze-physics-duel.html",
+        "applicationCategory": "SimulationGame",
+        "operatingSystem": "Any",
+        "author": {
+            "@type": "Organization",
+            "name": "KINETICZEN LABS"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
+    <script>
+        (function() {
+            // ==================== SIMULATION STATE ====================
+            const canvas = document.getElementById('simCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Team colors
+            const COLOR_A = '#f43f5e'; // T-Rex red
+            const COLOR_B = '#3b82f6'; // Spino blue
+
+            // Physics parameters (adjustable)
+            let params = {
+                gravity: 9.8,
+                massA: 5.0,
+                massB: 5.0,
+                friction: 0.30,
+                restitution: 0.60
+            };
+
+            // Simulation state
+            let state = {
+                time: 0,
+                fps: 60,
+                lastFrameTime: performance.now(),
+                frameCount: 0,
+                collisionsA: 0,
+                collisionsB: 0,
+                totalCollisions: 0,
+                progressA: 0,
+                progressB: 0,
+                scoreA: 0,
+                scoreB: 0,
+                running: true,
+                winner: null
+            };
+
+            // Balls
+            const ballA = {
+                x: 120,
+                y: 100,
+                vx: 0,
+                vy: 0,
+                radius: 18,
+                color: COLOR_A,
+                label: 'T-REX',
+                trail: []
+            };
+            const ballB = {
+                x: 840,
+                y: 100,
+                vx: 0,
+                vy: 0,
+                radius: 18,
+                color: COLOR_B,
+                label: 'SPINO',
+                trail: []
+            };
+
+            // Maze walls (static rectangles)
+            let walls = [];
+
+            function buildMaze() {
+                const W = canvas.width;
+                const H = canvas.height;
+                walls = [];
+
+                // Border walls
+                const t = 14;
+                walls.push({ x: 0, y: 0, w: W, h: t, type: 'border' });
+                walls.push({ x: 0, y: H - t, w: W, h: t, type: 'border' });
+                walls.push({ x: 0, y: 0, w: t, h: H, type: 'border' });
+                walls.push({ x: W - t, y: 0, w: t, h: H, type: 'border' });
+
+                // Internal maze obstacles
+                walls.push({ x: W * 0.22, y: 0, w: 14, h: H * 0.65, type: 'obstacle' });
+                walls.push({ x: 0, y: H * 0.28, w: W * 0.22, h: 14, type: 'obstacle' });
+
+                walls.push({ x: W * 0.78 - 14, y: H * 0.35, w: 14, h: H * 0.65, type: 'obstacle' });
+                walls.push({ x: W * 0.78, y: H * 0.35, w: W * 0.22, h: 14, type: 'obstacle' });
+
+                walls.push({ x: W * 0.42, y: H * 0.18, w: W * 0.16, h: 14, type: 'obstacle' });
+                walls.push({ x: W * 0.42, y: H * 0.18 + 14, w: 14, h: H * 0.18, type: 'obstacle' });
+                walls.push({ x: W * 0.42 + W * 0.16 - 14, y: H * 0.18 + 14, w: 14, h: H * 0.18, type: 'obstacle' });
+                walls.push({ x: W * 0.42, y: H * 0.36, w: W * 0.16, h: 14, type: 'obstacle' });
+
+                walls.push({ x: W * 0.30, y: H * 0.58, w: 14, h: H * 0.22, type: 'obstacle' });
+                walls.push({ x: W * 0.56, y: H * 0.58, w: 14, h: H * 0.22, type: 'obstacle' });
+                walls.push({ x: W * 0.30, y: H * 0.58 + H * 0.22 - 14, w: W * 0.26, h: 14, type: 'obstacle' });
+
+                walls.push({ x: W * 0.10, y: H * 0.78, w: W * 0.20, h: 14, type: 'obstacle' });
+                walls.push({ x: W * 0.70, y: H * 0.78, w: W * 0.20, h: 14, type: 'obstacle' });
+
+                // Goal zones (visual only)
+            }
+
+            // ==================== PHYSICS ENGINE ====================
+            function resolveCollision(ball, wall) {
+                // Find closest point on rectangle to ball center
+                const closestX = Math.max(wall.x, Math.min(ball.x, wall.x + wall.w));
+                const closestY = Math.max(wall.y, Math.min(ball.y, wall.y + wall.h));
+                const dx = ball.x - closestX;
+                const dy = ball.y - closestY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < ball.radius) {
+                    // Collision detected
+                    const overlap = ball.radius - dist;
+
+                    // Normal
+                    let nx, ny;
+                    if (dist > 0.001) {
+                        nx = dx / dist;
+                        ny = dy / dist;
+                    } else {
+                        // Ball center inside wall - push out in shortest direction
+                        const left = ball.x - wall.x;
+                        const right = wall.x + wall.w - ball.x;
+                        const top = ball.y - wall.y;
+                        const bottom = wall.y + wall.h - ball.y;
+                        const min = Math.min(left, right, top, bottom);
+                        if (min === left) { nx = -1; ny = 0; }
+                        else if (min === right) { nx = 1; ny = 0; }
+                        else if (min === top) { nx = 0; ny = -1; }
+                        else { nx = 0; ny = 1; }
+                    }
+
+                    // Push ball out
+                    ball.x += nx * (overlap + 0.5);
+                    ball.y += ny * (overlap + 0.5);
+
+                    // Reflect velocity
+                    const dot = ball.vx * nx + ball.vy * ny;
+                    if (dot < 0) {
+                        ball.vx -= (1 + params.restitution) * dot * nx;
+                        ball.vy -= (1 + params.restitution) * dot * ny;
+
+                        // Apply friction
+                        ball.vx *= (1 - params.friction * 0.5);
+                        ball.vy *= (1 - params.friction * 0.5);
+
+                        return true; // collision occurred
+                    }
+                }
+                return false;
+            }
+
+            function resolveBallCollision(a, b) {
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const minDist = a.radius + b.radius;
+
+                if (dist < minDist && dist > 0.001) {
+                    const overlap = minDist - dist;
+                    const nx = dx / dist;
+                    const ny = dy / dist;
+
+                    // Push apart
+                    const totalMass = params.massA + params.massB;
+                    const ratioA = params.massB / totalMass;
+                    const ratioB = params.massA / totalMass;
+
+                    a.x -= nx * overlap * ratioA;
+                    a.y -= ny * overlap * ratioA;
+                    b.x += nx * overlap * ratioB;
+                    b.y += ny * overlap * ratioB;
+
+                    // Relative velocity
+                    const dvx = b.vx - a.vx;
+                    const dvy = b.vy - a.vy;
+                    const dot = dvx * nx + dvy * ny;
+
+                    if (dot < 0) {
+                        const impulse = -(1 + params.restitution) * dot / (1 / params.massA + 1 / params.massB);
+                        a.vx -= (impulse / params.massA) * nx;
+                        a.vy -= (impulse / params.massA) * ny;
+                        b.vx += (impulse / params.massB) * nx;
+                        b.vy += (impulse / params.massB) * ny;
+
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function updatePhysics(dt) {
+                // Scale dt to avoid instability
+                const step = Math.min(dt, 1 / 30);
+                const gravity = params.gravity * 100; // pixels/s² scale
+
+                // Apply gravity
+                ballA.vy += gravity * step;
+                ballB.vy += gravity * step;
+
+                // Apply friction (air drag)
+                ballA.vx *= (1 - params.friction * 0.3 * step * 60);
+                ballA.vy *= (1 - params.friction * 0.1 * step * 60);
+                ballB.vx *= (1 - params.friction * 0.3 * step * 60);
+                ballB.vy *= (1 - params.friction * 0.1 * step * 60);
+
+                // Update positions
+                ballA.x += ballA.vx * step;
+                ballB.x += ballB.vx * step;
+                ballA.y += ballA.vy * step;
+                ballB.y += ballB.vy * step;
+
+                // Wall collisions
+                let collA = false, collB = false;
+                for (const wall of walls) {
+                    if (!collA && resolveCollision(ballA, wall)) collA = true;
+                    if (!collB && resolveCollision(ballB, wall)) collB = true;
+                }
+
+                // Ball-ball collision
+                const ballColl = resolveBallCollision(ballA, ballB);
+                if (ballColl) {
+                    collA = true;
+                    collB = true;
+                }
+
+                if (collA) state.collisionsA++;
+                if (collB) state.collisionsB++;
+
+                // Keep inside canvas (safety)
+                for (const ball of [ballA, ballB]) {
+                    if (ball.x - ball.radius < 16) { ball.x = 16 + ball.radius; ball.vx = Math.abs(ball.vx) * 0.5; }
+                    if (ball.x + ball.radius > canvas.width - 16) { ball.x = canvas.width - 16 - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.5; }
+                    if (ball.y - ball.radius < 16) { ball.y = 16 + ball.radius; ball.vy = Math.abs(ball.vy) * 0.5; }
+                    if (ball.y + ball.radius > canvas.height - 16) { ball.y = canvas.height - 16 - ball.radius; ball.vy = -Math.abs(ball.vy) * 0.5; }
+                }
+
+                // Update trails
+                ballA.trail.push({ x: ballA.x, y: ballA.y });
+                if (ballA.trail.length > 20) ballA.trail.shift();
+                ballB.trail.push({ x: ballB.x, y: ballB.y });
+                if (ballB.trail.length > 20) ballB.trail.shift();
+            }
+
+            // ==================== SCORING ====================
+            function computeMetrics() {
+                // Velocity (pixels/s converted to m/s)
+                const velA = Math.sqrt(ballA.vx * ballA.vx + ballA.vy * ballA.vy) / 100;
+                const velB = Math.sqrt(ballB.vx * ballB.vx + ballB.vy * ballB.vy) / 100;
+
+                // Kinetic energy (0.5 * m * v²)
+                const keA = 0.5 * params.massA * velA * velA;
+                const keB = 0.5 * params.massB * velB * velB;
+
+                // Maze progress (normalized to 100% based on distance traveled from start)
+                // Start positions: A at (120, 100), B at (840, 100)
+                const startA = { x: 120, y: 100 };
+                const startB = { x: 840, y: 100 };
+                const maxDist = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height);
+                const distA = Math.sqrt((ballA.x - startA.x) ** 2 + (ballA.y - startA.y) ** 2);
+                const distB = Math.sqrt((ballB.x - startB.x) ** 2 + (ballB.y - startB.y) ** 2);
+                state.progressA = Math.min(100, (distA / maxDist) * 100 * 2);
+                state.progressB = Math.min(100, (distB / maxDist) * 100 * 2);
+
+                // Friction force (μ * m * g)
+                const fricA = params.friction * params.massA * params.gravity;
+                const fricB = params.friction * params.massB * params.gravity;
+
+                // Score: progress + collisions * 2
+                state.scoreA = Math.round(state.progressA + state.collisionsA * 2);
+                state.scoreB = Math.round(state.progressB + state.collisionsB * 2);
+
+                // Total collisions
+                state.totalCollisions = state.collisionsA + state.collisionsB;
+
+                return { velA, velB, keA, keB, fricA, fricB };
+            }
+
+            // ==================== RENDERING ====================
+            function draw() {
+                const W = canvas.width, H = canvas.height;
+                ctx.clearRect(0, 0, W, H);
+
+                // Grid
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 0.5;
+                const gridSize = 40;
+                for (let x = 0; x < W; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, H);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < H; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(W, y);
+                    ctx.stroke();
+                }
+
+                // Goal zones
+                ctx.fillStyle = 'rgba(244, 63, 94, 0.08)';
+                ctx.fillRect(W - 120, H - 80, 100, 60);
+                ctx.fillStyle = 'rgba(59, 130, 246, 0.08)';
+                ctx.fillRect(20, H - 80, 100, 60);
+
+                // Walls
+                for (const wall of walls) {
+                    if (wall.type === 'border') {
+                        ctx.fillStyle = '#1e293b';
+                        ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+                    } else {
+                        ctx.fillStyle = '#0f172a';
+                        ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+                        ctx.strokeStyle = '#334155';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(wall.x, wall.y, wall.w, wall.h);
+                    }
+                }
+
+                // Trails
+                for (const ball of [ballA, ballB]) {
+                    for (let i = 0; i < ball.trail.length; i++) {
+                        const alpha = (i / ball.trail.length) * 0.3;
+                        ctx.beginPath();
+                        ctx.arc(ball.trail[i].x, ball.trail[i].y, ball.radius * 0.6, 0, Math.PI * 2);
+                        ctx.fillStyle = ball.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+                        if (!ball.color.startsWith('rgb')) {
+                            ctx.fillStyle = ball.color;
+                            ctx.globalAlpha = alpha;
+                        }
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                    }
+                }
+
+                // Balls
+                for (const ball of [ballA, ballB]) {
+                    // Glow
+                    ctx.shadowColor = ball.color;
+                    ctx.shadowBlur = 20;
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = ball.color;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+
+                    // Inner highlight
+                    ctx.beginPath();
+                    ctx.arc(ball.x - 4, ball.y - 4, ball.radius * 0.35, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.fill();
+
+                    // Label
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 9px "JetBrains Mono", monospace';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(ball.label, ball.x, ball.y + 1);
+                }
+
+                // Velocity vectors
+                for (const ball of [ballA, ballB]) {
+                    const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+                    if (speed > 10) {
+                        const scale = 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(ball.x, ball.y);
+                        ctx.lineTo(ball.x + ball.vx * scale, ball.y + ball.vy * scale);
+                        ctx.strokeStyle = ball.color + '80';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // ==================== UI UPDATES ====================
+            function updateUI() {
+                const m = computeMetrics();
+
+                // KPIs
+                document.getElementById('kpiScoreA').textContent = state.scoreA;
+                document.getElementById('kpiScoreB').textContent = state.scoreB;
+                document.getElementById('kpiCollisions').textContent = state.totalCollisions;
+                document.getElementById('kpiTime').textContent = state.time.toFixed(1);
+
+                // Leader
+                const leaderEl = document.getElementById('kpiLeader');
+                if (state.scoreA > state.scoreB) {
+                    leaderEl.textContent = 'T-REX';
+                    leaderEl.style.color = COLOR_A;
+                } else if (state.scoreB > state.scoreA) {
+                    leaderEl.textContent = 'SPINO';
+                    leaderEl.style.color = COLOR_B;
+                } else {
+                    leaderEl.textContent = 'TIE';
+                    leaderEl.style.color = '#94a3b8';
+                }
+
+                // Projected FPS
+                document.getElementById('kpiFPS').textContent = Math.round(state.fps);
+
+                // Table
+                document.getElementById('tVelA').textContent = m.velA.toFixed(2);
+                document.getElementById('tVelB').textContent = m.velB.toFixed(2);
+                document.getElementById('tDeltaVel').textContent = (m.velA - m.velB).toFixed(2);
+
+                document.getElementById('tKEA').textContent = m.keA.toFixed(3);
+                document.getElementById('tKEB').textContent = m.keB.toFixed(3);
+                document.getElementById('tDeltaKE').textContent = (m.keA - m.keB).toFixed(3);
+
+                document.getElementById('tProgA').textContent = state.progressA.toFixed(1);
+                document.getElementById('tProgB').textContent = state.progressB.toFixed(1);
+                document.getElementById('tDeltaProg').textContent = (state.progressA - state.progressB).toFixed(1);
+
+                document.getElementById('tCollA').textContent = state.collisionsA;
+                document.getElementById('tCollB').textContent = state.collisionsB;
+                document.getElementById('tDeltaColl').textContent = state.collisionsA - state.collisionsB;
+
+                document.getElementById('tFricA').textContent = m.fricA.toFixed(2);
+                document.getElementById('tFricB').textContent = m.fricB.toFixed(2);
+                document.getElementById('tDeltaFric').textContent = (m.fricA - m.fricB).toFixed(2);
+
+                document.getElementById('tScoreA').textContent = state.scoreA;
+                document.getElementById('tScoreB').textContent = state.scoreB;
+                document.getElementById('tDeltaScore').textContent = state.scoreA - state.scoreB;
+            }
+
+            // ==================== MAIN LOOP ====================
+            let lastTime = performance.now();
+
+            function loop(now) {
+                requestAnimationFrame(loop);
+
+                const dt = (now - lastTime) / 1000;
+                lastTime = now;
+
+                // FPS calculation
+                state.frameCount++;
+                if (dt > 0) {
+                    state.fps = state.fps * 0.9 + (1 / dt) * 0.1;
+                }
+
+                if (state.running) {
+                    state.time += Math.min(dt, 0.05);
+                    updatePhysics(dt);
+                }
+
+                draw();
+                updateUI();
+            }
+
+            // ==================== EVENT HANDLERS ====================
+            // Sliders
+            document.getElementById('sliderGravity').addEventListener('input', function() {
+                params.gravity = parseFloat(this.value);
+                document.getElementById('valGravity').textContent = params.gravity.toFixed(1);
+            });
+
+            document.getElementById('sliderMassA').addEventListener('input', function() {
+                params.massA = parseFloat(this.value);
+                document.getElementById('valMassA').textContent = params.massA.toFixed(1);
+            });
+
+            document.getElementById('sliderMassB').addEventListener('input', function() {
+                params.massB = parseFloat(this.value);
+                document.getElementById('valMassB').textContent = params.massB.toFixed(1);
+            });
+
+            document.getElementById('sliderFriction').addEventListener('input', function() {
+                params.friction = parseFloat(this.value);
+                document.getElementById('valFriction').textContent = params.friction.toFixed(2);
+            });
+
+            document.getElementById('sliderRestitution').addEventListener('input', function() {
+                params.restitution = parseFloat(this.value);
+                document.getElementById('valRestitution').textContent = params.restitution.toFixed(2);
+            });
+
+            // Presets
+            document.querySelectorAll('[data-preset]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const preset = this.dataset.preset;
+                    switch (preset) {
+                        case 'default':
+                            params = { gravity: 9.8, massA: 5.0, massB: 5.0, friction: 0.30, restitution: 0.60 };
+                            break;
+                        case 'heavy':
+                            params = { gravity: 9.8, massA: 9.0, massB: 3.0, friction: 0.40, restitution: 0.40 };
+                            break;
+                        case 'light':
+                            params = { gravity: 9.8, massA: 2.0, massB: 8.0, friction: 0.20, restitution: 0.70 };
+                            break;
+                        case 'bouncy':
+                            params = { gravity: 12.0, massA: 5.0, massB: 5.0, friction: 0.10, restitution: 0.95 };
+                            break;
+                        case 'sticky':
+                            params = { gravity: 6.0, massA: 6.0, massB: 6.0, friction: 0.80, restitution: 0.10 };
+                            break;
+                    }
+                    // Update sliders
+                    document.getElementById('sliderGravity').value = params.gravity;
+                    document.getElementById('valGravity').textContent = params.gravity.toFixed(1);
+                    document.getElementById('sliderMassA').value = params.massA;
+                    document.getElementById('valMassA').textContent = params.massA.toFixed(1);
+                    document.getElementById('sliderMassB').value = params.massB;
+                    document.getElementById('valMassB').textContent = params.massB.toFixed(1);
+                    document.getElementById('sliderFriction').value = params.friction;
+                    document.getElementById('valFriction').textContent = params.friction.toFixed(2);
+                    document.getElementById('sliderRestitution').value = params.restitution;
+                    document.getElementById('valRestitution').textContent = params.restitution.toFixed(2);
+                });
+            });
+
+            // Reset
+            document.getElementById('resetSim').addEventListener('click', function() {
+                resetSimulation();
+            });
+
+            function resetSimulation() {
+                ballA.x = 120;
+                ballA.y = 100;
+                ballA.vx = 0;
+                ballA.vy = 0;
+                ballA.trail = [];
+                ballB.x = 840;
+                ballB.y = 100;
+                ballB.vx = 0;
+                ballB.vy = 0;
+                ballB.trail = [];
+                state.time = 0;
+                state.collisionsA = 0;
+                state.collisionsB = 0;
+                state.totalCollisions = 0;
+                state.progressA = 0;
+                state.progressB = 0;
+                state.scoreA = 0;
+                state.scoreB = 0;
+                state.winner = null;
+            }
+
+            // Export CSV
+            document.getElementById('exportCSV').addEventListener('click', function() {
+                const m = computeMetrics();
+                const rows = [
+                    ['Metric', 'T-REX', 'SPINO', 'Delta'],
+                    ['Velocity (m/s)', m.velA.toFixed(3), m.velB.toFixed(3), (m.velA - m.velB).toFixed(3)],
+                    ['Kinetic Energy (J)', m.keA.toFixed(4), m.keB.toFixed(4), (m.keA - m.keB).toFixed(4)],
+                    ['Maze Progress (%)', state.progressA.toFixed(2), state.progressB.toFixed(2), (state.progressA - state.progressB).toFixed(2)],
+                    ['Collision Count', state.collisionsA, state.collisionsB, state.collisionsA - state.collisionsB],
+                    ['Friction Force (N)', m.fricA.toFixed(3), m.fricB.toFixed(3), (m.fricA - m.fricB).toFixed(3)],
+                    ['Score (pts)', state.scoreA, state.scoreB, state.scoreA - state.scoreB],
+                    ['Sim Time (s)', state.time.toFixed(1), '', ''],
+                    ['Total Collisions', state.totalCollisions, '', ''],
+                    ['Parameters', '', '', ''],
+                    ['Gravity', params.gravity, '', ''],
+                    ['Mass A', params.massA, '', ''],
+                    ['Mass B', params.massB, '', ''],
+                    ['Friction', params.friction, '', ''],
+                    ['Restitution', params.restitution, '', '']
+                ];
+
+                const csv = rows.map(r => r.join(',')).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kineticzen_telemetry_${Date.now()}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            // Copy Scenario Link
+            document.getElementById('copyLink').addEventListener('click', function() {
+                const url = 'https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/t-rex-vs-spino-dino-ball-maze-physics-duel.html';
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = this;
+                    const original = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => { btn.textContent = original; }, 1500);
+                }).catch(() => {
+                    // Fallback
+                    prompt('Copy this link:', url);
+                });
+            });
+
+            // FAQ toggle
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('open');
+                });
+            });
+
+            // ==================== INIT ====================
+            buildMaze();
+            requestAnimationFrame(loop);
+
+            // Resize handling for canvas
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                const rect = container.getBoundingClientRect();
+                // Keep internal resolution fixed at 960x600 for physics consistency
+                // Canvas CSS scales it
+            }
+            window.addEventListener('resize', resizeCanvas);
+
+            // Expose scenario data
+            window.__scenario = {
+                teamA: 'T-REX',
+                teamB: 'SPINO',
+                title: 'T-Rex vs Spino: Dino Ball Maze Physics Duel',
+                brand: 'KINETICZEN LABS'
+            };
+
+        })();
+    </script>
+</body>
+</html>
