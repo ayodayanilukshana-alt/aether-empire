@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D | Prehistoric Predators: 5 Colossal Killers</title>
+  <meta name="description" content="Interactive size comparison and telemetry workstation for prehistoric predators. Explore, scale, and export data.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/prehistoric-predators-5-colossal-killers-by-size.html">
+  <style>
+    /* --- Reset & Base --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Monospace numbers */
+    .mono, .kpi-value, .table-value, .csv, .metric, .slider-value, .stat-number {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', 'Consolas', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Layout --- */
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* --- Header --- */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      background: #38bdf8;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #05070b;
+      font-weight: 900;
+      font-size: 20px;
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.4);
+    }
+    .brand-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-text span {
+      color: #38bdf8;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* --- Buttons --- */
+    .btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background: #1a2332;
+      border-color: #38bdf8;
+    }
+    .btn-primary {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #1e293b;
+    }
+    .btn-outline:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    /* --- Cards --- */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+      margin-bottom: 18px;
+    }
+
+    /* --- Top Grid --- */
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .top-grid { grid-template-columns: 1fr; }
+    }
+
+    /* --- KPI Row --- */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 600px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    .kpi-item {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px 18px;
+      text-align: center;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .kpi-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #38bdf8;
+      line-height: 1.2;
+    }
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* --- Canvas --- */
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      background: #05070b;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #05070b;
+      cursor: crosshair;
+    }
+
+    /* --- Slider --- */
+    .slider-container {
+      margin-bottom: 18px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .slider-label {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .slider-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      outline: none;
+      margin-top: 4px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+    }
+
+    /* --- Preset Buttons --- */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .preset-btn {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 8px;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      font-weight: 500;
+    }
+    .preset-btn:hover {
+      border-color: #38bdf8;
+      color: #fff;
+      background: #1a2332;
+    }
+    .preset-btn.active {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      color: #38bdf8;
+    }
+
+    /* --- Table --- */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: #0b0f17;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #1e293b;
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: rgba(56, 189, 248, 0.03);
+    }
+    .table-value {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    .table-bar {
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .table-bar-fill {
+      height: 100%;
+      background: #38bdf8;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    /* --- FAQ --- */
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 16px 0;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+    .faq-question {
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .faq-question::after {
+      content: '+';
+      color: #38bdf8;
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+    .faq-question.open::after {
+      content: '−';
+    }
+    .faq-answer {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      display: none;
+      padding-top: 4px;
+    }
+    .faq-answer.show {
+      display: block;
+    }
+
+    /* --- Video Embed --- */
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    .video-wrap iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* --- Misc --- */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .text-sm { font-size: 0.8rem; color: #64748b; }
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .gap-2 { gap: 8px; }
+    .flex { display: flex; }
+    .flex-wrap { flex-wrap: wrap; }
+
+    .link-portal {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      font-size: 0.8rem;
+      color: #38bdf8;
+      transition: all 0.15s;
+    }
+    .link-portal:hover {
+      border-color: #38bdf8;
+      background: #1a2332;
+      text-decoration: none;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #05070b; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-mark">SV</div>
+        <div class="brand-text">SCALE<span>VERSE</span> 3D</div>
+      </div>
+      <div class="header-actions">
+        <a href="./index.html" class="link-portal">← Portal</a>
+        <button class="btn btn-outline" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+        <button class="btn btn-primary" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+      </div>
+    </header>
+
+    <!-- Title & Summary -->
+    <div style="margin-bottom: 28px;">
+      <h1 style="font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px;">
+        Prehistoric Predators: <span style="color: #38bdf8;">5 Colossal Killers</span> by Size
+      </h1>
+      <p style="color: #94a3b8; font-size: 0.95rem; max-width: 800px;">
+        From a 1.5-meter sprinting raptor to a 15-meter armored fish, these extinct super-predators redefine scale.
+        Adjust the scale multiplier and select presets to compare their true magnitude.
+      </p>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-item">
+        <div class="kpi-label">Largest Predator</div>
+        <div class="kpi-value mono" id="kpiLargest">15.0 m</div>
+        <div class="kpi-sub" id="kpiLargestName">Spinosaurus</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Smallest Predator</div>
+        <div class="kpi-value mono" id="kpiSmallest">1.5 m</div>
+        <div class="kpi-sub" id="kpiSmallestName">Velociraptor</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Average Size</div>
+        <div class="kpi-value mono" id="kpiAvg">9.3 m</div>
+        <div class="kpi-sub">across 5 species</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Scale Factor</div>
+        <div class="kpi-value mono" id="kpiScale">1.00×</div>
+        <div class="kpi-sub">relative to real size</div>
+      </div>
+    </div>
+
+    <!-- Top Grid: Canvas + Controls -->
+    <div class="top-grid">
+      <!-- Canvas Panel -->
+      <div class="card" style="margin-bottom: 0;">
+        <div class="card-title">Size Comparison Visualization</div>
+        <div class="canvas-wrap">
+          <canvas id="predatorCanvas" width="1200" height="400"></canvas>
+        </div>
+        <div class="flex-between mt-2">
+          <div class="text-sm mono" id="canvasInfo">Scale: 1.00× · Hover over bars for details</div>
+          <div class="text-sm mono" style="color: #38bdf8;">SCALEVERSE 3D</div>
+        </div>
+      </div>
+
+      <!-- Controls Panel -->
+      <div class="card" style="margin-bottom: 0;">
+        <div class="card-title">Interactive Controls</div>
+
+        <!-- Scale Slider -->
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">Global Scale Multiplier</span>
+            <span class="slider-value mono" id="scaleValue">1.00×</span>
+          </div>
+          <input type="range" id="scaleSlider" min="0.25" max="3.0" step="0.05" value="1.0">
+          <div class="flex-between mt-2">
+            <span class="text-sm">0.25×</span>
+            <span class="text-sm">3.00×</span>
+          </div>
+        </div>
+
+        <!-- Preset Buttons -->
+        <div class="slider-label" style="margin-bottom: 8px;">Scenario Presets</div>
+        <div class="preset-grid" id="presetGrid">
+          <button class="preset-btn active" data-scale="1.0">Real Size</button>
+          <button class="preset-btn" data-scale="0.5">Half Scale</button>
+          <button class="preset-btn" data-scale="1.5">1.5× Enlarged</button>
+          <button class="preset-btn" data-scale="2.0">2× Double</button>
+          <button class="preset-btn" data-scale="2.5">2.5× Mega</button>
+          <button class="preset-btn" data-scale="3.0">3× Colossal</button>
+        </div>
+
+        <!-- Quick Stats -->
+        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #1e293b;">
+          <div class="flex-between mb-2">
+            <span class="text-sm">Scaled Largest</span>
+            <span class="mono" style="color: #38bdf8;" id="scaledLargest">15.00 m</span>
+          </div>
+          <div class="flex-between mb-2">
+            <span class="text-sm">Scaled Smallest</span>
+            <span class="mono" style="color: #38bdf8;" id="scaledSmallest">1.50 m</span>
+          </div>
+          <div class="flex-between">
+            <span class="text-sm">Size Ratio</span>
+            <span class="mono" style="color: #38bdf8;" id="sizeRatio">10.0 : 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytical Breakdown Table -->
+    <div class="card">
+      <div class="card-title">Analytical Breakdown</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Predator</th>
+              <th>Real Length (m)</th>
+              <th>Scaled Length (m)</th>
+              <th>Relative to Largest</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Video Embed -->
+    <div class="card">
+      <div class="card-title">YouTube Stream</div>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/xhZedRWnRpQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="card">
+      <div class="card-title">Frequently Asked Questions</div>
+      <div id="faqContainer">
+        <div class="faq-item">
+          <div class="faq-question">What is the largest predator in this dataset?</div>
+          <div class="faq-answer">Spinosaurus is the largest at 15 meters in length, according to the provided data. It is followed closely by Tyrannosaurus Rex and Deinosuchus, both at 12 meters.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">How does the scale multiplier work?</div>
+          <div class="faq-answer">The scale multiplier linearly scales all predator lengths. A multiplier of 2.0× doubles every predator's size, while 0.5× halves them. The relative proportions between species remain constant.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Can I export the data for analysis?</div>
+          <div class="faq-answer">Yes. Click the "Export CSV Telemetry" button in the header to download a CSV file containing the original lengths, scaled lengths, and ratios for all five predators at the current scale setting.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">What does the size ratio indicate?</div>
+          <div class="faq-answer">The size ratio compares the scaled length of the largest predator (Spinosaurus) to the smallest (Velociraptor). At 1.0× scale, the ratio is 10:1 (15m vs 1.5m). This ratio remains constant regardless of the scale multiplier.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">How do I share a specific scenario?</div>
+          <div class="faq-answer">Use the "Copy Scenario Link" button. It encodes the current scale value into the URL hash (e.g., #scale=2.5). When you share that link, the simulation will automatically load with that scale.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex-between" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #1e293b;">
+      <div class="text-sm">SCALEVERSE 3D · Prehistoric Predators</div>
+      <div class="text-sm mono" style="color: #64748b;">Data Source: Video Payload</div>
+    </div>
+  </div>
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D - Prehistoric Predators Size Comparison",
+    "description": "Interactive size comparison and telemetry workstation for prehistoric predators including Velociraptor, Dunkleosteus, Deinosuchus, Tyrannosaurus Rex, and Spinosaurus.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/prehistoric-predators-5-colossal-killers-by-size.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // --- DATA ---
+      const PREDATORS = [
+        { name: "Velociraptor", meters: 1.5, metric: "1.5 m long" },
+        { name: "Dunkleosteus", meters: 6, metric: "6 m long" },
+        { name: "Deinosuchus", meters: 12, metric: "12 m long" },
+        { name: "Tyrannosaurus Rex", meters: 12, metric: "12 m long" },
+        { name: "Spinosaurus", meters: 15, metric: "15 m long" }
+      ];
+
+      // --- DOM refs ---
+      const canvas = document.getElementById('predatorCanvas');
+      const ctx = canvas.getContext('2d');
+      const scaleSlider = document.getElementById('scaleSlider');
+      const scaleValueEl = document.getElementById('scaleValue');
+      const kpiScaleEl = document.getElementById('kpiScale');
+      const kpiLargestEl = document.getElementById('kpiLargest');
+      const kpiSmallestEl = document.getElementById('kpiSmallest');
+      const kpiAvgEl = document.getElementById('kpiAvg');
+      const kpiLargestNameEl = document.getElementById('kpiLargestName');
+      const kpiSmallestNameEl = document.getElementById('kpiSmallestName');
+      const scaledLargestEl = document.getElementById('scaledLargest');
+      const scaledSmallestEl = document.getElementById('scaledSmallest');
+      const sizeRatioEl = document.getElementById('sizeRatio');
+      const tableBody = document.getElementById('tableBody');
+      const presetGrid = document.getElementById('presetGrid');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const canvasInfo = document.getElementById('canvasInfo');
+
+      // --- State ---
+      let currentScale = 1.0;
+      let hoveredIndex = -1;
+
+      // --- Utility ---
+      function formatMeters(val) {
+        return val.toFixed(2) + ' m';
+      }
+
+      function getScaledMeters(meters) {
+        return meters * currentScale;
+      }
+
+      // --- Update UI and Canvas ---
+      function updateAll() {
+        // Update slider and labels
+        scaleSlider.value = currentScale;
+        const scaleStr = currentScale.toFixed(2) + '×';
+        scaleValueEl.textContent = scaleStr;
+        kpiScaleEl.textContent = scaleStr;
+        canvasInfo.textContent = 'Scale: ' + scaleStr + ' · Hover over bars for details';
+
+        // Compute scaled values
+        const scaled = PREDATORS.map(p => ({
+          ...p,
+          scaledMeters: p.meters * currentScale
+        }));
+
+        // Largest / smallest
+        const sorted = [...scaled].sort((a, b) => b.meters - a.meters);
+        const largest = sorted[0];
+        const smallest = sorted[sorted.length - 1];
+        const avgReal = PREDATORS.reduce((s, p) => s + p.meters, 0) / PREDATORS.length;
+
+        // KPI updates
+        kpiLargestEl.textContent = largest.meters.toFixed(1) + ' m';
+        kpiLargestNameEl.textContent = largest.name;
+        kpiSmallestEl.textContent = smallest.meters.toFixed(1) + ' m';
+        kpiSmallestNameEl.textContent = smallest.name;
+        kpiAvgEl.textContent = avgReal.toFixed(1) + ' m';
+
+        const largestScaled = largest.meters * currentScale;
+        const smallestScaled = smallest.meters * currentScale;
+        scaledLargestEl.textContent = formatMeters(largestScaled);
+        scaledSmallestEl.textContent = formatMeters(smallestScaled);
+
+        const ratio = (largest.meters / smallest.meters).toFixed(1);
+        sizeRatioEl.textContent = ratio + ' : 1';
+
+        // Table
+        const maxMeters = Math.max(...PREDATORS.map(p => p.meters));
+        tableBody.innerHTML = PREDATORS.map(p => {
+          const pct = (p.meters / maxMeters) * 100;
+          return `
+            <tr>
+              <td style="font-weight: 500; color: #e2e8f0;">${p.name}</td>
+              <td class="table-value mono">${p.meters.toFixed(1)} m</td>
+              <td class="table-value mono">${(p.meters * currentScale).toFixed(2)} m</td>
+              <td>
+                <div class="flex-between" style="margin-bottom: 2px;">
+                  <span class="mono" style="color: #94a3b8; font-size: 0.75rem;">${pct.toFixed(0)}%</span>
+                </div>
+                <div class="table-bar"><div class="table-bar-fill" style="width: ${pct}%;"></div></div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Canvas
+        drawCanvas(scaled);
+
+        // Preset active state
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+          btn.classList.toggle('active', parseFloat(btn.dataset.scale) === currentScale);
+        });
+      }
+
+      // --- Canvas Drawing ---
+      function drawCanvas(scaledPredators) {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        const W = rect.width;
+        const H = 400;
+
+        // Set canvas resolution
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Background
+        ctx.fillStyle = '#05070b';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid lines
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.5;
+        for (let i = 1; i < 5; i++) {
+          const y = (H / 5) * i;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+        }
+
+        // Padding
+        const padLeft = 100;
+        const padRight = 40;
+        const padTop = 30;
+        const padBottom = 50;
+        const chartW = W - padLeft - padRight;
+        const chartH = H - padTop - padBottom;
+
+        // Find max scaled meters for bar scaling
+        const maxScaled = Math.max(...scaledPredators.map(p => p.scaledMeters), 1);
+
+        // Bar dimensions
+        const barCount = scaledPredators.length;
+        const barGap = 16;
+        const barHeight = Math.min(40, (chartH - barGap * (barCount - 1)) / barCount);
+        const totalBarsHeight = barCount * barHeight + (barCount - 1) * barGap;
+        const startY = padTop + (chartH - totalBarsHeight) / 2;
+
+        // Draw each bar
+        scaledPredators.forEach((p, i) => {
+          const y = startY + i * (barHeight + barGap);
+          const barW = (p.scaledMeters / maxScaled) * chartW;
+          const isHovered = (i === hoveredIndex);
+
+          // Bar background
+          ctx.fillStyle = '#0b0f17';
+          ctx.beginPath();
+          ctx.roundRect(padLeft, y, chartW, barHeight, 4);
+          ctx.fill();
+
+          // Bar fill
+          const gradient = ctx.createLinearGradient(padLeft, y, padLeft + barW, y);
+          gradient.addColorStop(0, isHovered ? '#7dd3fc' : '#38bdf8');
+          gradient.addColorStop(1, isHovered ? '#38bdf8' : '#0ea5e9');
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.roundRect(padLeft, y, Math.max(barW, 4), barHeight, 4);
+          ctx.fill();
+
+          // Glow on hover
+          if (isHovered) {
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 16;
+            ctx.beginPath();
+            ctx.roundRect(padLeft, y, Math.max(barW, 4), barHeight, 4);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+
+          // Name label
+          ctx.fillStyle = isHovered ? '#ffffff' : '#94a3b8';
+          ctx.font = '500 12px "Inter", system-ui, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(p.name, padLeft - 12, y + barHeight / 2);
+
+          // Value label
+          ctx.fillStyle = isHovered ? '#38bdf8' : '#64748b';
+          ctx.font = '600 11px "JetBrains Mono", "Fira Code", monospace';
+          ctx.textAlign = 'left';
+          const valText = p.scaledMeters.toFixed(1) + ' m';
+          const textX = padLeft + barW + 8;
+          if (textX < W - 10) {
+            ctx.fillText(valText, textX, y + barHeight / 2);
+          } else {
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#05070b';
+            ctx.fillText(valText, padLeft + barW - 8, y + barHeight / 2 + 1);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText(valText, padLeft + barW - 8, y + barHeight / 2);
+          }
+        });
+
+        // X-axis labels
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const steps = 5;
+        for (let i = 0; i <= steps; i++) {
+          const x = padLeft + (chartW / steps) * i;
+          const val = (maxScaled / steps) * i;
+          ctx.fillText(val.toFixed(1) + 'm', x, H - padBottom + 8);
+        }
+
+        // Chart border bottom
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, H - padBottom + 2);
+        ctx.lineTo(padLeft + chartW, H - padBottom + 2);
+        ctx.stroke();
+      }
+
+      // RoundRect polyfill for older browsers
+      if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+          if (w < 2 * r) r = w / 2;
+          if (h < 2 * r) r = h / 2;
+          this.moveTo(x + r, y);
+          this.arcTo(x + w, y, x + w, y + h, r);
+          this.arcTo(x + w, y + h, x, y + h, r);
+          this.arcTo(x, y + h, x, y, r);
+          this.arcTo(x, y, x + w, y, r);
+          this.closePath();
+          return this;
+        };
+      }
+
+      // --- Hover detection ---
+      function handleMouseMove(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const W = rect.width;
+        const H = 400;
+        const padLeft = 100;
+        const padRight = 40;
+        const padTop = 30;
+        const padBottom = 50;
+        const chartH = H - padTop - padBottom;
+
+        const barCount = PREDATORS.length;
+        const barGap = 16;
+        const barHeight = Math.min(40, (chartH - barGap * (barCount - 1)) / barCount);
+        const totalBarsHeight = barCount * barHeight + (barCount - 1) * barGap;
+        const startY = padTop + (chartH - totalBarsHeight) / 2;
+
+        let found = -1;
+        for (let i = 0; i < barCount; i++) {
+          const barY = startY + i * (barHeight + barGap);
+          if (y >= barY && y <= barY + barHeight && x >= padLeft && x <= W - padRight) {
+            found = i;
+            break;
+          }
+        }
+
+        if (found !== hoveredIndex) {
+          hoveredIndex = found;
+          const scaled = PREDATORS.map(p => ({
+            ...p,
+            scaledMeters: p.meters * currentScale
+          }));
+          drawCanvas(scaled);
+        }
+      }
+
+      function handleMouseLeave() {
+        if (hoveredIndex !== -1) {
+          hoveredIndex = -1;
+          const scaled = PREDATORS.map(p => ({
+            ...p,
+            scaledMeters: p.meters * currentScale
+          }));
+          drawCanvas(scaled);
+        }
+      }
+
+      // --- Event Listeners ---
+      scaleSlider.addEventListener('input', (e) => {
+        currentScale = parseFloat(e.target.value);
+        updateAll();
+      });
+
+      presetGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.preset-btn');
+        if (!btn) return;
+        const scale = parseFloat(btn.dataset.scale);
+        currentScale = scale;
+        updateAll();
+      });
+
+      canvas.addEventListener('mousemove', handleMouseMove);
+      canvas.addEventListener('mouseleave', handleMouseLeave);
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          const scaled = PREDATORS.map(p => ({
+            ...p,
+            scaledMeters: p.meters * currentScale
+          }));
+          drawCanvas(scaled);
+        }, 100);
+      });
+
+      // --- Copy Link ---
+      copyLinkBtn.addEventListener('click', () => {
+        const url = new URL(window.location.href);
+        url.hash = 'scale=' + currentScale.toFixed(2);
+        const link = url.toString();
+        navigator.clipboard.writeText(link).then(() => {
+          const original = copyLinkBtn.textContent;
+          copyLinkBtn.textContent = '✓ Copied!';
+          copyLinkBtn.style.borderColor = '#38bdf8';
+          copyLinkBtn.style.color = '#38bdf8';
+          setTimeout(() => {
+            copyLinkBtn.textContent = original;
+            copyLinkBtn.style.borderColor = '';
+            copyLinkBtn.style.color = '';
+          }, 2000);
+        }).catch(() => {
+          prompt('Copy this link:', link);
+        });
+      });
+
+      // --- Export CSV ---
+      exportCsvBtn.addEventListener('click', () => {
+        let csv = 'Predator,Real Length (m),Scaled Length (m),Scale Multiplier,Largest Ratio\n';
+        const max = Math.max(...PREDATORS.map(p => p.meters));
+        PREDATORS.forEach(p => {
+          const scaled = p.meters * currentScale;
+          const ratio = (p.meters / max).toFixed(4);
+          csv += `"${p.name}",${p.meters.toFixed(2)},${scaled.toFixed(2)},${currentScale.toFixed(2)},${ratio}\n`;
+        });
+        // Add summary row
+        const avg = PREDATORS.reduce((s, p) => s + p.meters, 0) / PREDATORS.length;
+        csv += `\nSummary,Average Real Length (m),Average Scaled Length (m),,,${avg.toFixed(2)},${(avg * currentScale).toFixed(2)},,,\n`;
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scaleverse-predators-telemetry.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // --- FAQ Toggle ---
+      document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+          q.classList.toggle('open');
+          const answer = q.nextElementSibling;
+          answer.classList.toggle('show');
+        });
+      });
+
+      // --- Parse URL hash for scale ---
+      function parseHash() {
+        const hash = window.location.hash;
+        if (hash) {
+          const match = hash.match(/scale=([\d.]+)/);
+          if (match) {
+            const val = parseFloat(match[1]);
+            if (!isNaN(val) && val >= 0.25 && val <= 3.0) {
+              currentScale = val;
+            }
+          }
+        }
+      }
+
+      // --- Init ---
+      parseHash();
+      updateAll();
+
+      // Slight delay to ensure canvas is properly sized after layout
+      setTimeout(() => {
+        updateAll();
+      }, 50);
+
+    })();
+  </script>
+</body>
+</html>
