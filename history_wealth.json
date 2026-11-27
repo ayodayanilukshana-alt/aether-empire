@@ -18,7 +18,8 @@
     "What If You Stood on a Neutron Star vs a Black Hole?",
     "17,468 Tubes to a Quantum Brain",
     "What If Earth's Magnetic Shield Vanished for 60 Seconds?",
-    "Inside a $1K Storm Shelter vs a $500M Billionaire Bunker"
+    "Inside a $1K Storm Shelter vs a $500M Billionaire Bunker",
+    "What If You Swallowed $1M of Gold?"
   ],
   "used_items": [],
   "used_domains": [],
@@ -69,7 +70,13 @@
     {
       "video_id": "FXb-EeXgydY",
       "title": "Inside a $1K Storm Shelter vs a $500M Billionaire Bunker #shorts",
-      "published_at": 1795743440
+      "published_at": 1795743440,
+      "ab_tested": true
+    },
+    {
+      "video_id": "mOArN8uAFMI",
+      "title": "What If You Swallowed $1M of Gold? #shorts",
+      "published_at": 1795801128
     }
   ]
 }
