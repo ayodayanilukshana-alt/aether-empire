@@ -21,7 +21,8 @@
     "Submarines & Habitats: 5-Stage 3D Size Shock!",
     "Flying Giants: 5 Largest Birds & Pterosaurs in 3D",
     "5 Most Expensive Objects Ever Built: 3D Size Shock",
-    "Prehistoric Predators: 5 Colossal Killers by Size"
+    "Prehistoric Predators: 5 Colossal Killers by Size",
+    "Exoplanets: From Tiny to Colossal in 3D"
   ],
   "used_items": [
     "V-2 Rocket",
@@ -179,12 +180,19 @@
     {
       "video_id": "7gvs70G1n2w",
       "title": "5 Most Expensive Objects Ever Built: 3D Size Shock #shorts",
-      "published_at": 1795714825
+      "published_at": 1795714825,
+      "ab_tested": true
     },
     {
       "video_id": "xhZedRWnRpQ",
       "title": "Prehistoric Predators: 5 Colossal Killers by Size #shorts",
-      "published_at": 1795743501
+      "published_at": 1795743501,
+      "ab_tested": true
+    },
+    {
+      "video_id": "V6azn6fIwaU",
+      "title": "Exoplanets: From Tiny to Colossal in 3D #shorts",
+      "published_at": 1795801197
     }
   ]
 }
