@@ -17,7 +17,8 @@
     "5 Impossible Mega-Projects Built Right Now",
     "What If You Stood on a Neutron Star vs a Black Hole?",
     "17,468 Tubes to a Quantum Brain",
-    "What If Earth's Magnetic Shield Vanished for 60 Seconds?"
+    "What If Earth's Magnetic Shield Vanished for 60 Seconds?",
+    "Inside a $1K Storm Shelter vs a $500M Billionaire Bunker"
   ],
   "used_items": [],
   "used_domains": [],
@@ -62,7 +63,13 @@
     {
       "video_id": "949RLmoPoIE",
       "title": "What If You Stood on a Neutron Star vs a Black Hole?",
-      "published_at": 1795610647
+      "published_at": 1795610647,
+      "ab_tested": true
+    },
+    {
+      "video_id": "FXb-EeXgydY",
+      "title": "Inside a $1K Storm Shelter vs a $500M Billionaire Bunker #shorts",
+      "published_at": 1795743440
     }
   ]
 }

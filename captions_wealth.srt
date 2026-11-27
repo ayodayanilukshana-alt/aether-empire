@@ -1,319 +1,47 @@
 1
-00:00:00,096 --> 00:00:01,837
-At one G your body works
+00:00:00,096 --> 00:00:01,767
+For a thousand dollars you get
 
 2
-00:00:01,849 --> 00:00:05,607
-perfectly Blood pumps bones support muscles
+00:00:01,778 --> 00:00:03,449
+eight square feet of rusty metal
 
 3
-00:00:05,619 --> 00:00:08,154
-move But this is the baseline
+00:00:03,461 --> 00:00:06,019
+and a bucket Fifty grand buys
 
 4
-00:00:08,960 --> 00:00:10,700
-The universe has far more extreme
+00:00:06,031 --> 00:00:07,760
+you a reinforced concrete room with
 
 5
-00:00:10,712 --> 00:00:12,608
-gravitational fields waiting to test your
+00:00:07,771 --> 00:00:10,925
+bunk beds and ventilation Five million
 
 6
-00:00:12,593 --> 00:00:15,453
-limits On the sun gravity is
+00:00:10,936 --> 00:00:12,654
+dollars gets you a luxury underground
 
 7
-00:00:15,464 --> 00:00:18,358
-28 times Earth's Your body would
+00:00:12,665 --> 00:00:15,510
+apartment with a hydroponic garden One
 
 8
-00:00:18,370 --> 00:00:20,940
-weigh over two tons Your heart
+00:00:15,522 --> 00:00:17,184
+hundred million builds a fortress with
 
 9
-00:00:20,952 --> 00:00:22,856
-cannot pump blood against this force
+00:00:17,192 --> 00:00:19,435
+a pool gym and command center
 
 10
-00:00:23,662 --> 00:00:26,244
-You're pinned suffocating as bones begin
+00:00:20,352 --> 00:00:23,270
+Five hundred million A self sustaining
 
 11
-00:00:26,255 --> 00:00:29,042
-to crack A white dwarf's gravity
+00:00:23,281 --> 00:00:24,885
+underground city that feels like a
 
 12
-00:00:29,053 --> 00:00:32,333
-is 100,000 times Earth's Your body
-
-13
-00:00:32,344 --> 00:00:34,038
-is instantly flattened into a thin
-
-14
-00:00:34,050 --> 00:00:37,064
-layer of degenerate matter Atoms themselves
-
-15
-00:00:37,076 --> 00:00:39,517
-are crushed You become a smear
-
-16
-00:00:39,529 --> 00:00:42,543
-of subatomic particles unrecognizable as human
-
-17
-00:00:43,464 --> 00:00:45,442
-On a neutron star gravity is
-
-18
-00:00:45,450 --> 00:00:48,216
-a billion times stronger You're crushed
-
-19
-00:00:48,227 --> 00:00:49,676
-into a pancake a few atoms
-
-20
-00:00:49,688 --> 00:00:52,246
-thick Your atoms fuse into new
-
-21
-00:00:52,258 --> 00:00:54,921
-elements You become a single layer
-
-22
-00:00:54,933 --> 00:00:57,592
-of exotic matter A black hole's
-
-23
-00:00:57,604 --> 00:00:59,567
-gravity is infinite at the singularity
-
-24
-00:01:00,369 --> 00:01:02,566
-As you approach tidal forces stretch
-
-25
-00:01:02,577 --> 00:01:03,819
-you into a thin strand of
-
-26
-00:01:03,769 --> 00:01:07,090
-atoms You're spaghettified then crushed to
-
-27
-00:01:07,063 --> 00:01:09,750
-nothing Your information may be lost
-
-28
-00:01:09,762 --> 00:01:15,659
-forever In 1945 ENIAC used 17,468 vacuum
-
-29
-00:01:15,670 --> 00:01:18,007
-tubes weighed 30 tons and drew
-
-30
-00:01:18,018 --> 00:01:19,362
-enough power to light a small
-
-31
-00:01:19,374 --> 00:01:21,406
-town just to perform about 5,000
-
-32
-00:01:21,418 --> 00:01:24,627
-calculations per second Today your phone
-
-33
-00:01:24,639 --> 00:01:28,394
-is millions of times faster By 1971
-
-34
-00:01:28,628 --> 00:01:32,191
-the Intel 4004 packed 2,300 transistors
-
-35
-00:01:32,203 --> 00:01:34,703
-onto one fingernail sized chip replacing
-
-36
-00:01:34,714 --> 00:01:36,291
-room sized logic with a whisper
-
-37
-00:01:36,303 --> 00:01:38,383
-of silicon and launching the microprocessor
-
-38
-00:01:38,394 --> 00:01:41,428
-era That tiny chip changed everything
-
-39
-00:01:42,336 --> 00:01:45,946
-In 1997 IBM's Deep Blue evaluated 200
-
-40
-00:01:45,958 --> 00:01:47,865
-million chess positions every second and
-
-41
-00:01:47,862 --> 00:01:49,906
-defeated Garry Kasparov proving that brute
-
-42
-00:01:49,918 --> 00:01:51,612
-force silicon could outthink a human
-
-43
-00:01:51,624 --> 00:01:54,272
-world champion The machine had crossed
-
-44
-00:01:54,284 --> 00:01:58,192
-a line By 2022 large language models
-
-45
-00:01:58,204 --> 00:02:00,961
-like GPT 3 trained on 175
-
-46
-00:02:00,972 --> 00:02:03,870
-billion parameters learning grammar code and
-
-47
-00:02:03,881 --> 00:02:05,563
-reasoning from oceans of text turning
-
-48
-00:02:05,575 --> 00:02:07,222
-raw compute into something that felt
-
-49
-00:02:07,234 --> 00:02:11,629
-eerily conversational By 2035 engineers aim to
-
-50
-00:02:11,614 --> 00:02:13,238
-link a million qubits into quantum
-
-51
-00:02:13,250 --> 00:02:16,346
-AI hybrids solving chemistry and optimization
-
-52
-00:02:16,357 --> 00:02:18,156
-problems that would take today's fastest
-
-53
-00:02:18,168 --> 00:02:21,179
-supercomputers thousands of years The brain
-
-54
-00:02:21,191 --> 00:02:24,331
-may finally leave biology behind At
-
-55
-00:02:24,343 --> 00:02:26,586
-midnight the invisible shield holding back
-
-56
-00:02:26,598 --> 00:02:28,806
-the sun's charged breath simply vanishes
-
-57
-00:02:29,608 --> 00:02:31,983
-Within seconds auroras erupt toward the
-
-58
-00:02:31,921 --> 00:02:33,896
-equator and every compass on Earth
-
-59
-00:02:33,907 --> 00:02:37,447
-spins wildly Then radio signals begin
-
-60
-00:02:37,459 --> 00:02:40,381
-to hiss Satellites suddenly face a
-
-61
-00:02:40,343 --> 00:02:43,739
-blizzard of charged particles GPS drifts
-
-62
-00:02:43,937 --> 00:02:46,671
-television feeds freeze and orbiting spacecraft
-
-63
-00:02:46,683 --> 00:02:48,867
-absorb radiation doses equal to dozens
-
-64
-00:02:48,879 --> 00:02:50,269
-of chest X rays in under
-
-65
-00:02:50,281 --> 00:02:52,827
-a minute On the ground power
-
-66
-00:02:52,839 --> 00:02:56,060
-lines hum with induced currents Transformers
-
-67
-00:02:56,071 --> 00:02:58,548
-heat voltage spikes ripple across continents
-
-68
-00:02:58,782 --> 00:03:00,919
-and unprotected grids flirt with blackouts
-
-69
-00:03:00,931 --> 00:03:02,465
-from London to Tokyo within the
-
-70
-00:03:02,438 --> 00:03:05,572
-same minute Airline crews and astronauts
-
-71
-00:03:05,584 --> 00:03:08,139
-take the hit first At altitude
-
-72
-00:03:08,385 --> 00:03:11,036
-radiation levels climb sharply forcing polar
-
-73
-00:03:11,048 --> 00:03:12,847
-flights to divert while space station
-
-74
-00:03:12,859 --> 00:03:15,020
-crews shelter behind water and polyethylene
-
-75
-00:03:15,032 --> 00:03:18,421
-as cosmic rays intensify Sixty seconds
-
-76
-00:03:18,433 --> 00:03:20,909
-later the field snaps back compressing
-
-77
-00:03:20,921 --> 00:03:23,188
-trapped particles into one brilliant pulse
-
-78
-00:03:23,990 --> 00:03:26,575
-The sky glows electronics flicker and
-
-79
-00:03:26,560 --> 00:03:29,341
-humanity exhales realizing an invisible bubble
-
-80
-00:03:29,352 --> 00:03:31,210
-separates us from a hostile universe
+00:00:24,835 --> 00:00:25,664
+space station
