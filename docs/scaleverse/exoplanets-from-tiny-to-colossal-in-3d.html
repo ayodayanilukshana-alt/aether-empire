@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALEVERSE 3D · Exoplanets: From Tiny to Colossal</title>
+    <!-- Canonical -->
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/exoplanets-from-tiny-to-colossal-in-3d.html">
+    <!-- Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #05070b;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-wrapper {
+            max-width: 1500px;
+            width: 100%;
+        }
+        /* header / brand */
+        .brand-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #1e293b;
+        }
+        .brand h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #f1f5f9;
+        }
+        .brand h1 span {
+            color: #38bdf8;
+            font-weight: 700;
+        }
+        .brand .sub {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+            letter-spacing: 0.3px;
+        }
+        .nav-links a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #1e293b;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+        .nav-links a:hover {
+            background-color: #1e293b;
+            border-color: #38bdf8;
+        }
+        /* main grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        .canvas-card {
+            background-color: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .canvas-header h2 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .canvas-header h2 i {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #38bdf8;
+            border-radius: 50%;
+        }
+        .badge {
+            font-size: 0.75rem;
+            background-color: #1e293b;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            color: #94a3b8;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #05070b;
+            border-radius: 14px;
+            border: 1px solid #1e293b;
+            cursor: grab;
+        }
+        canvas:active {
+            cursor: grabbing;
+        }
+        .controls-panel {
+            background-color: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .control-group label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        input[type="range"] {
+            flex: 1;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #05070b;
+        }
+        .slider-value {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #38bdf8;
+            min-width: 60px;
+            text-align: right;
+        }
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        .preset-btn {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 0.5rem 0.2rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: inherit;
+            text-align: center;
+        }
+        .preset-btn:hover {
+            background: #1e293b;
+            border-color: #38bdf8;
+            color: white;
+        }
+        .preset-btn.active {
+            background: #38bdf8;
+            color: #05070b;
+            border-color: #38bdf8;
+            font-weight: 700;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 0.2rem;
+        }
+        .kpi-item {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 0.7rem 0.5rem;
+            text-align: center;
+            border: 1px solid #1e293b;
+        }
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        .kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #38bdf8;
+        }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-top: 0.4rem;
+        }
+        .btn {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            padding: 0.7rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: inherit;
+        }
+        .btn:hover {
+            background: #1e293b;
+            border-color: #38bdf8;
+        }
+        .btn-primary {
+            background: #38bdf8;
+            border-color: #38bdf8;
+            color: #05070b;
+            font-weight: 700;
+        }
+        .btn-primary:hover {
+            background: #7dd3fc;
+            border-color: #7dd3fc;
+        }
+        /* table section */
+        .analytics-section {
+            background-color: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .analytics-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+            letter-spacing: -0.3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.75rem 0.5rem;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #1e293b;
+        }
+        td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+        td:last-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: #38bdf8;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .highlight {
+            color: white;
+            font-weight: 600;
+        }
+        /* faq + video */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 800px) {
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .faq-card, .video-card {
+            background-color: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 1.25rem;
+        }
+        .faq-card h3, .video-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            color: #f1f5f9;
+            font-weight: 500;
+        }
+        .faq-item {
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.7rem;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        .faq-a {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #475569;
+            padding-top: 1rem;
+            border-top: 1px solid #1e293b;
+        }
+        .footer-note a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Brand / Header -->
+    <div class="brand-bar">
+        <div class="brand">
+            <h1><span>SCALEVERSE</span> 3D</h1>
+            <div class="sub">EXOPLANETS: FROM TINY TO COLOSSAL</div>
+        </div>
+        <div class="nav-links">
+            <a href="./index.html">← Portal</a>
+        </div>
+    </div>
+
+    <!-- Main Dashboard: Canvas + Controls -->
+    <div class="dashboard">
+        <!-- Canvas Area -->
+        <div class="canvas-card">
+            <div class="canvas-header">
+                <h2><i></i> SIZE COMPARISON · 3D PERSPECTIVE</h2>
+                <span class="badge">DRAG TO ROTATE</span>
+            </div>
+            <canvas id="exoCanvas" width="1200" height="675"></canvas>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <div class="control-group">
+                <label>⚡ SCENARIO PRESETS</label>
+                <div class="preset-grid">
+                    <button class="preset-btn active" data-preset="all">All Worlds</button>
+                    <button class="preset-btn" data-preset="rocky">Rocky</button>
+                    <button class="preset-btn" data-preset="giants">Giants</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🔭 ZOOM / SCALE</label>
+                <div class="slider-row">
+                    <input type="range" id="zoomSlider" min="0.3" max="3.0" step="0.01" value="1.0">
+                    <span class="slider-value" id="zoomValue">1.00x</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🌌 PERSPECTIVE TILT</label>
+                <div class="slider-row">
+                    <input type="range" id="tiltSlider" min="0" max="100" step="1" value="35">
+                    <span class="slider-value" id="tiltValue">35°</span>
+                </div>
+            </div>
+
+            <!-- KPI Readouts -->
+            <div class="kpi-grid">
+                <div class="kpi-item">
+                    <div class="kpi-label">Largest Object</div>
+                    <div class="kpi-value" id="kpiLargest">2.5M km</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Smallest Object</div>
+                    <div class="kpi-value" id="kpiSmallest">3,900 km</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn" id="exportCsvBtn">📊 Export CSV Telemetry</button>
+                <button class="btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytical Table -->
+    <div class="analytics-section">
+        <h2>📋 ANALYTICAL BREAKDOWN · EXOPLANET DATA</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Designation</th>
+                    <th>Diameter (km)</th>
+                    <th>Relative Scale</th>
+                    <th>Rendered Radius (px)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- JS will populate -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- FAQ + Video -->
+    <div class="bottom-grid">
+        <div class="faq-card">
+            <h3>❓ FREQUENTLY ASKED QUESTIONS</h3>
+            <div class="faq-item">
+                <div class="faq-q">What is the size range of these exoplanets?</div>
+                <div class="faq-a">From Kepler-37b (3,900 km) to GQ Lupi b (2.5 million km) — a staggering factor of ~641x.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">How is the 3D visualization scaled?</div>
+                <div class="faq-a">Radii are normalized to the largest object (GQ Lupi b) and adjusted by the zoom slider.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Can I export the telemetry data?</div>
+                <div class="faq-a">Yes, use the "Export CSV Telemetry" button to download a CSV of all planet diameters.</div>
+            </div>
+        </div>
+        <div class="video-card">
+            <h3>🎬 WATCH THE FULL ANALYSIS</h3>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/V6azn6fIwaU" title="Exoplanets: From Tiny to Colossal in 3D" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        SCALEVERSE 3D · <a href="./index.html">Portal</a> · Data from video payload · All sizes approximate
+    </div>
+</div>
+
+<!-- JSON-LD SoftwareApplication Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SCALEVERSE 3D · Exoplanet Size Comparison",
+    "description": "Interactive 3D simulation workstation for comparing the diameters of five exoplanets from Kepler-37b to GQ Lupi b.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/exoplanets-from-tiny-to-colossal-in-3d.html",
+    "author": {
+        "@type": "Organization",
+        "name": "SCALEVERSE 3D"
+    },
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    }
+}
+</script>
+
+<!-- Main Script -->
+<script>
+    (function() {
+        // ----- DATA PAYLOAD (exact) -----
+        const planets = [
+            { name: "Kepler-37b", meters: 3900000, metric: "3,900 km diameter" },
+            { name: "Proxima Centauri b", meters: 11500000, metric: "11,500 km diameter" },
+            { name: "Kepler-10c", meters: 29000000, metric: "29,000 km diameter" },
+            { name: "HD 100546 b", meters: 987000000, metric: "987,000 km diameter" },
+            { name: "GQ Lupi b", meters: 2500000000, metric: "2.5 million km diameter" }
+        ];
+
+        // ----- CANVAS SETUP -----
+        const canvas = document.getElementById('exoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // ----- STATE -----
+        let state = {
+            zoom: 1.0,
+            tilt: 35,        // degrees
+            preset: 'all',   // 'all', 'rocky', 'giants'
+            rotation: 0,     // for drag
+            dragStart: null,
+            dragRotation: 0
+        };
+
+        // ----- UI ELEMENTS -----
+        const zoomSlider = document.getElementById('zoomSlider');
+        const zoomValue = document.getElementById('zoomValue');
+        const tiltSlider = document.getElementById('tiltSlider');
+        const tiltValue = document.getElementById('tiltValue');
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        const kpiLargest = document.getElementById('kpiLargest');
+        const kpiSmallest = document.getElementById('kpiSmallest');
+        const tableBody = document.getElementById('tableBody');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+
+        // ----- HELPERS -----
+        function getVisiblePlanets() {
+            if (state.preset === 'rocky') {
+                return planets.filter(p => p.meters < 100000000);
+            } else if (state.preset === 'giants') {
+                return planets.filter(p => p.meters >= 100000000);
+            }
+            return planets;
+        }
+
+        // Max radius for scaling relative to largest in dataset
+        const maxMeters = Math.max(...planets.map(p => p.meters));
+        // base radius in pixels (used before zoom) – subject to zoom
+        const BASE_RADIUS = 120;
+
+        function getPlanetRadius(meters) {
+            return (meters / maxMeters) * BASE_RADIUS * state.zoom;
+        }
+
+        // ----- DRAWING -----
+        function draw() {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            // background subtle grid / stars
+            ctx.fillStyle = '#05070b';
+            ctx.fillRect(0, 0, w, h);
+
+            // faint stars
+            ctx.fillStyle = '#1e293b';
+            for (let i = 0; i < 80; i++) {
+                if (i % 2 === 0) {
+                    ctx.beginPath();
+                    const sx = (Math.sin(i * 132) * 0.5 + 0.5) * w;
+                    const sy = (Math.cos(i * 78) * 0.5 + 0.5) * h;
+                    ctx.arc(sx, sy, 1.2, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+
+            const visible = getVisiblePlanets();
+            if (visible.length === 0) return;
+
+            // --- compute positions ---
+            const centerX = w / 2;
+            const centerY = h / 2 + (state.tilt - 50) * 1.2; // tilt shifts vertical center
+
+            // Arrange planets in a horizontal line with even spacing based on their rendered radius
+            // We want to fit them all in canvas width with padding.
+            let totalWidth = 0;
+            const radii = visible.map(p => getPlanetRadius(p.meters));
+            const padding = 20; // px between spheres
+            totalWidth = radii.reduce((acc, r) => acc + 2 * r, 0) + (visible.length - 1) * padding;
+
+            // if total width exceeds canvas width, we scale down? but we want to respect zoom.
+            // We'll allow overflow if zoom is large, but clip.
+            let startX = centerX - totalWidth / 2;
+
+            // Sort by size ascending for visual progression (small to large)
+            // But the data is already in that order. Keep original payload order for consistency.
+            // We'll use the visible array order.
+
+            // Apply rotation effect: rotate the line slightly? We'll use rotation for a 3D-ish orbit.
+            // Actually we'll just shift the y position based on x to simulate tilt/rotation.
+            const rotationRad = (state.rotation + state.dragRotation) * Math.PI / 180;
+
+            // 3D-like projection: each planet is a sphere drawn with radial gradient.
+            // We'll compute a y-offset based on x position to simulate camera tilt.
+            const tiltFactor = (state.tilt - 50) * 0.015; // -0.75 to 0.75 roughly
+
+            // Iterate and draw each planet
+            let currentX = startX;
+            radii.forEach((r, idx) => {
+                const planet = visible[idx];
+                const planetX = currentX + r;
+                // vertical offset due to tilt: planets further from center shift more
+                const normalizedX = (planetX - centerX) / (w / 2); // -1..1
+                const yOffset = normalizedX * tiltFactor * 180; // pixels
+                // also add a slight rotation effect (circular)
+                const rotYOffset = Math.sin(rotationRad + normalizedX * 1.5) * 12 * (state.zoom / 2);
+
+                const planetY = centerY + yOffset + rotYOffset;
+
+                // draw sphere with radial gradient
+                const gradient = ctx.createRadialGradient(
+                    planetX - r * 0.3, planetY - r * 0.3, r * 0.1,
+                    planetX, planetY, r * 1.1
+                );
+                // Color based on size: small rocky = grey-blue, large gas = orange/red
+                const hue = 200 + (planet.meters / maxMeters) * 120; // 200 -> 320
+                const sat = 60 + (planet.meters / maxMeters) * 30;
+                const light = 45 + (planet.meters / maxMeters) * 20;
+
+                gradient.addColorStop(0, `hsl(${hue}, ${sat}%, ${light + 15}%)`);
+                gradient.addColorStop(0.7, `hsl(${hue}, ${sat}%, ${light - 10}%)`);
+                gradient.addColorStop(1, `hsl(${hue}, ${sat}%, ${light - 30}%)`);
+
+                ctx.beginPath();
+                ctx.arc(planetX, planetY, r, 0, 2 * Math.PI);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // highlight / specular
+                ctx.beginPath();
+                ctx.arc(planetX - r * 0.25, planetY - r * 0.25, r * 0.2, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.fill();
+
+                // label
+                ctx.font = 'bold ' + Math.max(10, Math.min(14, r * 0.25)) + 'px "Inter", monospace';
+                ctx.fillStyle = '#e2e8f0';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                // only show label if radius is large enough or preset all
+                if (r > 15 || state.zoom > 0.8) {
+                    ctx.fillText(planet.name.length > 18 ? planet.name.slice(0, 16) + '…' : planet.name, planetX, planetY + r + 6);
+                }
+
+                currentX += 2 * r + padding;
+            });
+
+            // draw a faint horizontal baseline
+            ctx.beginPath();
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 8]);
+            ctx.moveTo(40, centerY);
+            ctx.lineTo(w - 40, centerY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // ----- UPDATE KPIs & TABLE -----
+        function updateKPIsAndTable() {
+            // Largest / Smallest (from all planets)
+            const sorted = [...planets].sort((a, b) => b.meters - a.meters);
+            const largest = sorted[0];
+            const smallest = sorted[sorted.length - 1];
+            kpiLargest.textContent = (largest.meters / 1000000).toFixed(1) + 'M km';
+            kpiSmallest.textContent = (smallest.meters / 1000).toFixed(0) + ' km';
+
+            // Table
+            let html = '';
+            planets.forEach(p => {
+                const relScale = (p.meters / maxMeters).toFixed(4);
+                const renderedRadius = getPlanetRadius(p.meters).toFixed(1);
+                html += `<tr>
+                    <td class="highlight">${p.name}</td>
+                    <td>${p.meters.toLocaleString()}</td>
+                    <td>${relScale}x</td>
+                    <td>${renderedRadius} px</td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html;
+        }
+
+        // ----- UPDATE SLIDER UI -----
+        function updateSliderUI() {
+            zoomValue.textContent = state.zoom.toFixed(2) + 'x';
+            tiltValue.textContent = state.tilt + '°';
+            zoomSlider.value = state.zoom;
+            tiltSlider.value = state.tilt;
+        }
+
+        // ----- REFRESH EVERYTHING -----
+        function refreshAll() {
+            updateSliderUI();
+            updateKPIsAndTable();
+            draw();
+        }
+
+        // ----- EVENT LISTENERS -----
+        zoomSlider.addEventListener('input', (e) => {
+            state.zoom = parseFloat(e.target.value);
+            refreshAll();
+        });
+
+        tiltSlider.addEventListener('input', (e) => {
+            state.tilt = parseInt(e.target.value);
+            refreshAll();
+        });
+
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                presetBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.preset = btn.dataset.preset;
+                refreshAll();
+            });
+        });
+
+        // Drag to rotate (changes rotation offset)
+        canvas.addEventListener('mousedown', (e) => {
+            state.dragStart = e.clientX;
+        });
+        canvas.addEventListener('mousemove', (e) => {
+            if (state.dragStart !== null) {
+                const delta = e.clientX - state.dragStart;
+                state.dragRotation = delta * 0.5;
+                state.rotation = 0; // reset base or we can keep? we'll just use dragRotation
+                draw();
+            }
+        });
+        canvas.addEventListener('mouseup', () => {
+            if (state.dragStart !== null) {
+                state.rotation += state.dragRotation;
+                state.dragRotation = 0;
+                state.dragStart = null;
+                draw();
+            }
+        });
+        canvas.addEventListener('mouseleave', () => {
+            if (state.dragStart !== null) {
+                state.rotation += state.dragRotation;
+                state.dragRotation = 0;
+                state.dragStart = null;
+                draw();
+            }
+        });
+
+        // ----- EXPORT CSV -----
+        exportCsvBtn.addEventListener('click', () => {
+            const headers = ['Name', 'Diameter (km)', 'Metric', 'Relative Scale'];
+            const rows = planets.map(p => [
+                p.name,
+                p.meters,
+                p.metric,
+                (p.meters / maxMeters).toFixed(6)
+            ]);
+            let csvContent = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'exoplanet_telemetry.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+
+        // ----- COPY SCENARIO LINK -----
+        copyLinkBtn.addEventListener('click', () => {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                copyLinkBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyLinkBtn.textContent = '🔗 Copy Scenario Link';
+                }, 1500);
+            }).catch(() => {
+                // fallback
+                prompt('Copy this link:', window.location.href);
+            });
+        });
+
+        // ----- INITIALIZE -----
+        // ensure default preset active
+        document.querySelector('[data-preset="all"]').classList.add('active');
+        refreshAll();
+
+        // Handle canvas resize? We set fixed ratio. works fine.
+        // Redraw on window resize if needed; but canvas fixed size, fine.
+
+        // also update table rendered radius when zoom changes (already in refreshAll)
+        // we need to re-render table when zoom changes, which refreshAll does.
+        // But the updateKPIsAndTable uses getPlanetRadius which uses state.zoom.
+        // We'll override refreshAll to also update KPIs which are static anyway.
+        // Actually we want the table to reflect zoom. So we call updateKPIsAndTable inside refreshAll after zoom change.
+        // But we already call it, good.
+
+        // However, KPIs largest/smallest are absolute, not zoom dependent. Fine.
+
+        // Fix the refreshAll for zoom: we need to also update the table when zoom changes.
+        // already done.
+
+        // Edge: When dragging, we call draw directly, not refreshAll, so table remains correct.
+        // But we should also update table when zoom changes? It is done via refreshAll.
+    })();
+</script>
+</body>
+</html>
