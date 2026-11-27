@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPITALGRID · What If You Swallowed $1M of Gold?</title>
+  <style>
+    /* sleek dark institutional UI */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #05070b;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #e2e8f0;
+      line-height: 1.5;
+      padding: 24px 20px;
+    }
+
+    .grid-container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* typography */
+    h1, h2, h3, h4 {
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-accent {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .subhead {
+      color: #94a3b8;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      border-left: 3px solid #10b981;
+      padding-left: 14px;
+    }
+
+    /* cards */
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 20px 22px;
+      box-shadow: 0 10px 25px -12px rgba(0, 0, 0, 0.8);
+      transition: border-color 0.15s;
+    }
+
+    .card:hover {
+      border-color: #2d3a50;
+    }
+
+    /* monospace numbers */
+    .mono, .metric-value, .kpi-number, .stat, .telemetry, .csv-area, .preset-btn, .readout {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+
+    .metric-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    /* layout */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* controls */
+    .slider-group {
+      margin-bottom: 22px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 10px;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #10b981;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      transition: 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #34d399;
+    }
+
+    /* preset buttons */
+    .preset-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 6px;
+    }
+
+    .preset-btn, .csv-btn, .copy-btn {
+      background: #111827;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+      letter-spacing: 0.01em;
+    }
+
+    .preset-btn:hover, .csv-btn:hover, .copy-btn:hover {
+      background: #1e293b;
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    .preset-btn.active {
+      background: #10b981;
+      border-color: #10b981;
+      color: #05070b;
+      font-weight: 700;
+    }
+
+    .csv-btn, .copy-btn {
+      background: #0f172a;
+      border-color: #334155;
+      padding: 10px 22px;
+      font-weight: 600;
+    }
+
+    .csv-btn {
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    .copy-btn {
+      border-color: #3b82f6;
+      color: #6b9eff;
+    }
+
+    /* canvas */
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #070b12;
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      aspect-ratio: 16 / 9;
+      cursor: crosshair;
+    }
+
+    /* table */
+    .analytics-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 12px;
+    }
+
+    .analytics-table th {
+      text-align: left;
+      padding: 12px 8px;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #1e293b;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+    }
+
+    .analytics-table td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #1a2332;
+      color: #cbd5e1;
+    }
+
+    .analytics-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .analytics-table .highlight {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    /* FAQ */
+    details {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      transition: 0.1s;
+    }
+
+    details[open] {
+      border-color: #2d3a50;
+      background: #0d131d;
+    }
+
+    summary {
+      font-weight: 500;
+      color: #e2e8f0;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "+";
+      color: #10b981;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    details[open] summary::after {
+      content: "−";
+    }
+
+    details p {
+      margin-top: 12px;
+      color: #9aa9bb;
+      font-size: 0.92rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 12px;
+    }
+
+    /* video wrapper */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid #1e293b;
+      background: #000;
+      margin-top: 12px;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* misc */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .kpi-item {
+      background: #0d131f;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .kpi-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .kpi-number {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .kpi-unit {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-left: 2px;
+    }
+
+    .portal-link {
+      color: #10b981;
+      text-decoration: none;
+      border-bottom: 1px dashed #10b981;
+    }
+
+    .portal-link:hover {
+      color: #34d399;
+    }
+
+    .footer-note {
+      font-size: 0.75rem;
+      color: #475569;
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    .row-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .telemetry-log {
+      background: #060a10;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      color: #a0b3cc;
+      border: 1px solid #1e293b;
+      max-height: 80px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="grid-container">
+
+  <!-- header -->
+  <header>
+    <h1>
+      <span class="brand-accent">CAPITALGRID</span> 
+      <span style="font-weight: 300; color: #475569;">/ simulation</span>
+    </h1>
+    <div class="subhead">
+      What If You Swallowed $1M of Gold? — digestive tract risk model · 1 kg Au · pH 1.5 · 7m intestine
+    </div>
+  </header>
+
+  <!-- main dashboard: 3 columns -->
+  <div class="dashboard">
+    <!-- left column: controls + canvas + telemetry -->
+    <div class="card" style="padding: 20px;">
+      <h3 style="font-size: 1.1rem; margin-bottom: 18px; color: #94a3b8;">⚙️ scenario controls</h3>
+
+      <!-- sliders -->
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Gold mass (kg)</span>
+          <span class="mono" id="goldMassVal">1.00 kg</span>
+        </div>
+        <input type="range" id="goldMass" min="0.2" max="2.0" step="0.01" value="1.0">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Stomach acidity (pH)</span>
+          <span class="mono" id="phVal">1.50</span>
+        </div>
+        <input type="range" id="phLevel" min="0.5" max="4.0" step="0.1" value="1.5">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Intestinal transit (m)</span>
+          <span class="mono" id="intestineVal">7.0 m</span>
+        </div>
+        <input type="range" id="intestineLength" min="3.0" max="10.0" step="0.1" value="7.0">
+      </div>
+
+      <!-- preset buttons -->
+      <div class="preset-grid">
+        <button class="preset-btn active" data-preset="default">🏆 Default</button>
+        <button class="preset-btn" data-preset="aggressive">🔥 Aggressive</button>
+        <button class="preset-btn" data-preset="conservative">🛡️ Conservative</button>
+        <button class="preset-btn" data-preset="toxic">☠️ Toxic shock</button>
+      </div>
+
+      <!-- canvas -->
+      <canvas id="digestCanvas" width="600" height="338"></canvas>
+
+      <!-- telemetry log -->
+      <div class="telemetry-log mono" id="telemetryLog">
+        system: ready · gold mass 1.00 kg · pH 1.50 · length 7.0 m
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px;">
+        <span style="font-size: 0.8rem; color: #475569;">live model · digestive risk index</span>
+        <span class="mono" id="riskIndex" style="color: #10b981; font-weight: 600;">0.42</span>
+      </div>
+    </div>
+
+    <!-- middle column: KPI readouts + export/copy -->
+    <div class="card" style="display: flex; flex-direction: column;">
+      <h3 style="font-size: 1.1rem; margin-bottom: 18px; color: #94a3b8;">📊 key metrics</h3>
+
+      <div class="kpi-grid">
+        <div class="kpi-item">
+          <div class="kpi-label">gold value</div>
+          <div class="kpi-number mono">$1.00M</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">acid exposure</div>
+          <div class="kpi-number mono" id="acidExposure">pH 1.50</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">transit distance</div>
+          <div class="kpi-number mono" id="transitKpi">7.0 m</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">toxicity risk</div>
+          <div class="kpi-number mono" id="toxicityKpi">0.10 mg</div>
+        </div>
+      </div>
+
+      <!-- single headline metric -->
+      <div style="margin-top: 18px; background: #0d131f; border-radius: 14px; padding: 16px; border: 1px solid #1e293b;">
+        <div class="kpi-label">survival probability</div>
+        <div class="mono" style="font-size: 2.2rem; font-weight: 700; color: #10b981;" id="survivalProb">68.4%</div>
+      </div>
+
+      <div style="margin-top: auto; display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end;">
+        <button class="copy-btn" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+        <button class="csv-btn" id="csvExportBtn">⬇ Export CSV Telemetry</button>
+      </div>
+    </div>
+
+    <!-- right column: video + quick stats -->
+    <div class="card" style="padding: 20px;">
+      <h3 style="font-size: 1.1rem; margin-bottom: 10px; color: #94a3b8;">▶ youtube deep dive</h3>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/mOArN8uAFMI" title="What If You Swallowed $1M of Gold?" allowfullscreen></iframe>
+      </div>
+      <div style="margin-top: 16px;">
+        <div class="kpi-label">item breakdown</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+          <span class="preset-btn" style="padding: 4px 12px; font-size: 0.7rem; background: #0a0f16;">1 kg Au</span>
+          <span class="preset-btn" style="padding: 4px 12px; font-size: 0.7rem; background: #0a0f16;">pH 1.5</span>
+          <span class="preset-btn" style="padding: 4px 12px; font-size: 0.7rem; background: #0a0f16;">7 m</span>
+          <span class="preset-btn" style="padding: 4px 12px; font-size: 0.7rem; background: #0a0f16;">0.1 mg</span>
+          <span class="preset-btn" style="padding: 4px 12px; font-size: 0.7rem; background: #0a0f16;">$1M</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- analytical breakdown table -->
+  <div class="card full-width" style="margin-top: 18px;">
+    <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: #94a3b8;">📋 analytical breakdown · digestive payload</h3>
+    <table class="analytics-table">
+      <thead>
+        <tr><th>item</th><th>metric</th><th>value</th><th>simulated state</th></tr>
+      </thead>
+      <tbody id="breakdownBody">
+        <tr><td>The Golden First Bite</td><td>Mass</td><td class="mono">1.00 kg</td><td><span class="highlight">solid gold bolus</span></td></tr>
+        <tr><td>Stomach Acid Showdown</td><td>pH</td><td class="mono">1.50</td><td><span class="highlight">corrosive environment</span></td></tr>
+        <tr><td>Intestinal Traffic Jam</td><td>Length</td><td class="mono">7.0 m</td><td><span class="highlight">obstruction risk</span></td></tr>
+        <tr><td>The Toxic Truth</td><td>Toxicity</td><td class="mono">0.10 mg</td><td><span class="highlight">trace heavy metals</span></td></tr>
+        <tr><td>The Million-Dollar Exit</td><td>Value</td><td class="mono">$1,000,000</td><td><span class="highlight">retrieval impossible</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ + schema -->
+  <div class="card full-width" style="margin-top: 18px;">
+    <h3 style="font-size: 1.1rem; margin-bottom: 14px; color: #94a3b8;">❓ frequently asked questions</h3>
+    <details>
+      <summary>Is this simulation medically accurate?</summary>
+      <p>No. This is an artistic risk model based on the video's data payload. Real gold ingestion would have different physiological effects. Always consult a medical professional.</p>
+    </details>
+    <details>
+      <summary>What does the "survival probability" represent?</summary>
+      <p>It's a derived index combining gold mass, stomach pH, intestinal length, and toxicity into a single heuristic. It is not a clinical prediction.</p>
+    </details>
+    <details>
+      <summary>Can I export the current scenario?</summary>
+      <p>Yes. Use the "Export CSV Telemetry" button to download the current slider values and KPIs as a CSV file.</p>
+    </details>
+    <details>
+      <summary>Where does the $1M gold value come from?</summary>
+      <p>Based on the video's data payload: "The Million-Dollar Exit" item corresponds to $1,000,000 worth of gold.</p>
+    </details>
+  </div>
+
+  <div class="footer-note">
+    <a href="./index.html" class="portal-link">← back to capitalgrid portal</a> · canonical: https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/what-if-you-swallowed-1m-of-gold.html
+  </div>
+
+</div>
+
+<!-- JSON-LD SoftwareApplication schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "CAPITALGRID · Gold Ingestion Simulator",
+  "description": "Interactive workstation modeling the digestive journey of swallowing $1M of gold.",
+  "applicationCategory": "Simulation",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "CAPITALGRID"
+  },
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/capitalgrid/what-if-you-swallowed-1m-of-gold.html"
+}
+</script>
+
+<script>
+  (function() {
+    // DOM elements
+    const goldMassSlider = document.getElementById('goldMass');
+    const phSlider = document.getElementById('phLevel');
+    const intestineSlider = document.getElementById('intestineLength');
+    const goldMassVal = document.getElementById('goldMassVal');
+    const phVal = document.getElementById('phVal');
+    const intestineVal = document.getElementById('intestineVal');
+    const acidExposure = document.getElementById('acidExposure');
+    const transitKpi = document.getElementById('transitKpi');
+    const toxicityKpi = document.getElementById('toxicityKpi');
+    const survivalProb = document.getElementById('survivalProb');
+    const riskIndex = document.getElementById('riskIndex');
+    const telemetryLog = document.getElementById('telemetryLog');
+    const breakdownBody = document.getElementById('breakdownBody');
+    const canvas = document.getElementById('digestCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // preset buttons
+    const presetBtns = document.querySelectorAll('.preset-btn[data-preset]');
+
+    // export & copy
+    const csvBtn = document.getElementById('csvExportBtn');
+    const copyBtn = document.getElementById('copyLinkBtn');
+
+    // state
+    let currentScenario = {
+      goldMass: 1.0,
+      ph: 1.5,
+      intestine: 7.0
+    };
+
+    // --- helper update functions ---
+    function updateUIFromState() {
+      // sliders
+      goldMassSlider.value = currentScenario.goldMass;
+      phSlider.value = currentScenario.ph;
+      intestineSlider.value = currentScenario.intestine;
+
+      // value labels
+      goldMassVal.textContent = currentScenario.goldMass.toFixed(2) + ' kg';
+      phVal.textContent = currentScenario.ph.toFixed(1);
+      intestineVal.textContent = currentScenario.intestine.toFixed(1) + ' m';
+
+      // KPI readouts
+      acidExposure.textContent = 'pH ' + currentScenario.ph.toFixed(2);
+      transitKpi.textContent = currentScenario.intestine.toFixed(1) + ' m';
+      
+      // toxicity derived (starts 0.10 mg, scales with mass and pH)
+      const toxicBase = 0.10;
+      const toxicFactor = (currentScenario.goldMass * 0.8) + (2.5 - currentScenario.ph) * 0.08;
+      const toxicity = Math.max(0.01, toxicBase * toxicFactor);
+      toxicityKpi.textContent = toxicity.toFixed(2) + ' mg';
+
+      // survival probability (heuristic)
+      let survival = 85 - (currentScenario.goldMass * 18) - (2.0 - currentScenario.ph) * 12 + (currentScenario.intestine * 1.2);
+      survival = Math.min(98, Math.max(5, survival));
+      survivalProb.textContent = survival.toFixed(1) + '%';
+
+      // risk index
+      let risk = (currentScenario.goldMass * 0.3) + ((2.5 - currentScenario.ph) * 0.25) + (currentScenario.intestine * 0.04) + (toxicity * 1.2);
+      risk = Math.min(2.0, Math.max(0.1, risk));
+      riskIndex.textContent = risk.toFixed(2);
+
+      // update telemetry log
+      telemetryLog.textContent = `system: active · gold ${currentScenario.goldMass.toFixed(2)} kg · pH ${currentScenario.ph.toFixed(1)} · length ${currentScenario.intestine.toFixed(1)} m · risk ${risk.toFixed(2)}`;
+
+      // update breakdown table (first 3 items dynamic, rest static but we can reflect)
+      const rows = breakdownBody.querySelectorAll('tr');
+      if (rows.length >= 5) {
+        rows[0].cells[2].textContent = currentScenario.goldMass.toFixed(2) + ' kg';
+        rows[1].cells[2].textContent = currentScenario.ph.toFixed(1);
+        rows[2].cells[2].textContent = currentScenario.intestine.toFixed(1) + ' m';
+      }
+
+      drawCanvas();
+    }
+
+    // --- canvas drawing ---
+    function drawCanvas() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // background grid
+      ctx.strokeStyle = '#1a2332';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < w; i += 30) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, h);
+        ctx.strokeStyle = '#131d2b';
+        ctx.stroke();
+      }
+      for (let i = 0; i < h; i += 30) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(w, i);
+        ctx.strokeStyle = '#131d2b';
+        ctx.stroke();
+      }
+
+      // draw digestive tract schematic
+      const massFactor = currentScenario.goldMass / 2.0;
+      const phFactor = (currentScenario.ph - 0.5) / 3.5;
+      const lengthFactor = (currentScenario.intestine - 3.0) / 7.0;
+
+      // stomach acid glow
+      const acidRadius = 40 + (1 - phFactor) * 30;
+      const grad = ctx.createRadialGradient(180, 160, 10, 180, 160, acidRadius);
+      grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+      grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+      ctx.beginPath();
+      ctx.arc(180, 160, acidRadius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // gold bolus
+      ctx.beginPath();
+      const goldSize = 24 + massFactor * 30;
+      ctx.arc(180, 160, goldSize, 0, Math.PI * 2);
+      ctx.fillStyle = '#fbbf24';
+      ctx.shadowColor = '#fbbf24';
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // intestine path (tube)
+      ctx.beginPath();
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 28;
+      ctx.lineCap = 'round';
+      const startX = 260;
+      const startY = 160;
+      ctx.moveTo(startX, startY);
+      ctx.bezierCurveTo(340, 100, 420, 220, 520, 140);
+      ctx.stroke();
+
+      // inner intestine highlight
+      ctx.beginPath();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 4;
+      ctx.setLineDash([10, 12]);
+      ctx.moveTo(startX, startY);
+      ctx.bezierCurveTo(340, 100, 420, 220, 520, 140);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // obstruction indicator (based on length)
+      const obsX = 380 + lengthFactor * 80;
+      const obsY = 160 + Math.sin(obsX * 0.02) * 40;
+      ctx.beginPath();
+      ctx.arc(obsX, obsY, 12, 0, Math.PI * 2);
+      ctx.fillStyle = '#ef4444';
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#ef4444';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // labels
+      ctx.font = '11px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('STOMACH', 120, 70);
+      ctx.fillText('INTESTINE', 420, 90);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText('Au', 170, 120);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillText('OBSTRUCTION', obsX - 30, obsY - 20);
+
+      // toxicity particles
+      const toxicCount = Math.floor(toxicityKpi.textContent.replace(' mg','') * 5);
+      for (let i = 0; i < Math.min(toxicCount, 20); i++) {
+        const tx = 300 + Math.random() * 200;
+        const ty = 120 + Math.random() * 80;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.5)';
+        ctx.fill();
+      }
+    }
+
+    // preset definitions
+    const presets = {
+      default: { goldMass: 1.0, ph: 1.5, intestine: 7.0 },
+      aggressive: { goldMass: 1.8, ph: 0.8, intestine: 9.2 },
+      conservative: { goldMass: 0.4, ph: 3.2, intestine: 4.5 },
+      toxic: { goldMass: 1.9, ph: 0.6, intestine: 9.8 }
+    };
+
+    function setPreset(name) {
+      const p = presets[name];
+      if (!p) return;
+      currentScenario = { ...p };
+      updateUIFromState();
+      // update active class
+      presetBtns.forEach(btn => {
+        if (btn.dataset.preset === name) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
+
+    // slider event listeners
+    function onSliderChange() {
+      currentScenario.goldMass = parseFloat(goldMassSlider.value);
+      currentScenario.ph = parseFloat(phSlider.value);
+      currentScenario.intestine = parseFloat(intestineSlider.value);
+      updateUIFromState();
+      // remove active from presets
+      presetBtns.forEach(btn => btn.classList.remove('active'));
+    }
+
+    goldMassSlider.addEventListener('input', onSliderChange);
+    phSlider.addEventListener('input', onSliderChange);
+    intestineSlider.addEventListener('input', onSliderChange);
+
+    // preset click
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        setPreset(btn.dataset.preset);
+      });
+    });
+
+    // --- CSV export ---
+    function exportCSV() {
+      const toxicValue = toxicityKpi.textContent;
+      const survival = survivalProb.textContent;
+      const risk = riskIndex.textContent;
+
+      const rows = [
+        ['parameter', 'value', 'unit'],
+        ['gold_mass', currentScenario.goldMass.toFixed(2), 'kg'],
+        ['stomach_ph', currentScenario.ph.toFixed(1), 'pH'],
+        ['intestine_length', currentScenario.intestine.toFixed(1), 'm'],
+        ['toxicity', toxicValue.replace(' mg',''), 'mg'],
+        ['survival_probability', survival.replace('%',''), '%'],
+        ['risk_index', risk, 'index'],
+        ['timestamp', new Date().toISOString(), '']
+      ];
+
+      const csvContent = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `capitalgrid_gold_sim_${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // log
+      telemetryLog.textContent = 'telemetry exported → ' + new Date().toLocaleTimeString();
+    }
+
+    // --- copy scenario link ---
+    function copyScenarioLink() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('gm', currentScenario.goldMass.toFixed(2));
+      url.searchParams.set('ph', currentScenario.ph.toFixed(1));
+      url.searchParams.set('il', currentScenario.intestine.toFixed(1));
+
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        telemetryLog.textContent = 'scenario link copied to clipboard · ' + new Date().toLocaleTimeString();
+      }).catch(() => {
+        // fallback
+        const tempInput = document.createElement('input');
+        tempInput.value = url.toString();
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        telemetryLog.textContent = 'scenario link copied (fallback)';
+      });
+    }
+
+    csvBtn.addEventListener('click', exportCSV);
+    copyBtn.addEventListener('click', copyScenarioLink);
+
+    // read initial query params
+    function loadFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const gm = params.get('gm');
+      const ph = params.get('ph');
+      const il = params.get('il');
+      if (gm && !isNaN(parseFloat(gm))) currentScenario.goldMass = Math.min(2.0, Math.max(0.2, parseFloat(gm)));
+      if (ph && !isNaN(parseFloat(ph))) currentScenario.ph = Math.min(4.0, Math.max(0.5, parseFloat(ph)));
+      if (il && !isNaN(parseFloat(il))) currentScenario.intestine = Math.min(10.0, Math.max(3.0, parseFloat(il)));
+      updateUIFromState();
+    }
+
+    // initial
+    loadFromQuery();
+    updateUIFromState();
+
+    // redraw on resize (canvas stays fixed size internally, but just in case)
+    window.addEventListener('resize', () => drawCanvas());
+
+  })();
+</script>
+</body>
+</html>
