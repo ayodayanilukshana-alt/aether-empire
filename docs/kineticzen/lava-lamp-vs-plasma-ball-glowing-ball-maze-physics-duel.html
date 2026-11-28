@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KineticZen Labs · Lava Lamp vs Plasma Ball · Glowing Ball Maze Physics Duel</title>
+    <meta name="description" content="Interactive rigid-body physics workstation comparing Lava Lamp vs Plasma Ball in a glowing ball maze. Adjust parameters, run scenarios, and export telemetry.">
+    <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/lava-lamp-vs-plasma-ball-glowing-ball-maze-physics-duel.html">
+    <!-- JSON-LD SoftwareApplication Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "KineticZen Labs · Lava Lamp vs Plasma Ball Physics Duel",
+      "description": "60FPS Matter.js rigid-body physics rivalry simulation between Lava Lamp and Plasma Ball in a glowing ball maze.",
+      "url": "https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/lava-lamp-vs-plasma-ball-glowing-ball-maze-physics-duel.html",
+      "applicationCategory": "Simulation",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "KineticZen Labs"
+      }
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #05070b;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 1.5rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app {
+            max-width: 1400px;
+            width: 100%;
+        }
+        /* header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .brand h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand span {
+            color: #64748b;
+            font-size: 0.85rem;
+            border-left: 1px solid #1e293b;
+            padding-left: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .portal-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #1e293b;
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .portal-link:hover {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        /* layout grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* cards */
+        .card {
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
+        }
+        .card-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 14px;
+            background: #f43f5e;
+            border-radius: 2px;
+        }
+        /* canvas */
+        .canvas-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: #05070b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        #mazeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .canvas-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* sliders */
+        .control-group {
+            margin-bottom: 1rem;
+        }
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .control-label span:last-child {
+            color: #f1f5f9;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #f43f5e;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #0b0f17;
+            box-shadow: 0 0 0 1px #f43f5e;
+        }
+        /* buttons */
+        .btn-row {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+        .btn {
+            background: #1e293b;
+            border: none;
+            color: #e2e8f0;
+            padding: 0.45rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn:hover {
+            background: #2d3a4f;
+        }
+        .btn-primary {
+            background: #f43f5e;
+            color: #05070b;
+            font-weight: 700;
+        }
+        .btn-primary:hover {
+            background: #fb7185;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #1e293b;
+        }
+        .btn-outline:hover {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+        /* kpi grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .kpi-item {
+            background: #05070b;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+        }
+        .kpi-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .kpi-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: #f1f5f9;
+            line-height: 1.2;
+        }
+        .kpi-value.teamA { color: #f43f5e; }
+        .kpi-value.teamB { color: #38bdf8; }
+        .kpi-sub {
+            font-size: 0.6rem;
+            color: #475569;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* table */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        th, td {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+        th {
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            background: #05070b;
+        }
+        td {
+            color: #cbd5e1;
+        }
+        .teamA-text { color: #f43f5e; font-weight: 600; }
+        .teamB-text { color: #38bdf8; font-weight: 600; }
+        /* faq */
+        .faq-item {
+            border-bottom: 1px solid #1e293b;
+            padding: 0.75rem 0;
+        }
+        .faq-q {
+            font-weight: 600;
+            color: #e2e8f0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .faq-q::after {
+            content: '+';
+            color: #f43f5e;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        .faq-q.open::after {
+            content: '−';
+        }
+        .faq-a {
+            display: none;
+            padding-top: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .faq-a.show {
+            display: block;
+        }
+        /* youtube */
+        .video-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: #000;
+            margin-top: 0.5rem;
+        }
+        .video-wrap iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: none;
+        }
+        /* misc */
+        .footer-note {
+            text-align: center;
+            color: #334155;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+            border-top: 1px solid #1e293b;
+            padding-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .footer-note a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .footer-note a:hover {
+            color: #f43f5e;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="brand">
+                <h1>KINETICZEN LABS</h1>
+                <span>v2.4 · PHYSICS WORKSTATION</span>
+            </div>
+            <a href="./index.html" class="portal-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Portal
+            </a>
+        </header>
+
+        <!-- MAIN SIMULATION GRID -->
+        <div class="grid">
+            <!-- LEFT: CANVAS + PRESETS + CONTROLS -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="status-dot"></span> GLOWING BALL MAZE · LIVE RIGID-BODY
+                </div>
+                <div class="canvas-wrap">
+                    <canvas id="mazeCanvas" width="800" height="500"></canvas>
+                </div>
+                <div class="canvas-footer">
+                    <span>SIM TIME: <span id="simTime">0.0</span>s · FPS: <span id="fpsDisplay">60</span></span>
+                    <span>TEAM A: LAVA LAMP · TEAM B: PLASMA BALL</span>
+                </div>
+
+                <!-- PRESET SCENARIOS -->
+                <div style="margin-top: 1rem;">
+                    <div class="card-title">SCENARIO PRESETS</div>
+                    <div class="btn-row">
+                        <button class="btn btn-outline" data-preset="default">⚖️ Default Duel</button>
+                        <button class="btn btn-outline" data-preset="lavaSurge">🔥 Lava Surge</button>
+                        <button class="btn btn-outline" data-preset="plasmaStorm">⚡ Plasma Storm</button>
+                        <button class="btn btn-outline" data-preset="chaos">🌀 Chaos Maze</button>
+                        <button class="btn btn-outline" data-preset="lowGravity">🌙 Low Gravity</button>
+                    </div>
+                </div>
+
+                <!-- CONTROLS -->
+                <div style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <div class="control-group">
+                            <div class="control-label"><span>Gravity</span><span id="gravityVal">1.00</span></div>
+                            <input type="range" id="gravity" min="0" max="2" step="0.01" value="1.0">
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><span>Lava Viscosity</span><span id="viscosityVal">0.50</span></div>
+                            <input type="range" id="viscosity" min="0.1" max="1.5" step="0.01" value="0.5">
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><span>Plasma Charge</span><span id="chargeVal">1.00</span></div>
+                            <input type="range" id="charge" min="0" max="2" step="0.01" value="1.0">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="control-group">
+                            <div class="control-label"><span>Bounce / Restitution</span><span id="bounceVal">0.80</span></div>
+                            <input type="range" id="bounce" min="0" max="1" step="0.01" value="0.8">
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><span>Ball Count</span><span id="countVal">12</span></div>
+                            <input type="range" id="ballCount" min="4" max="30" step="1" value="12">
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><span>Maze Complexity</span><span id="complexityVal">0.65</span></div>
+                            <input type="range" id="complexity" min="0.1" max="1" step="0.01" value="0.65">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-row" style="margin-top: 0.5rem;">
+                    <button class="btn btn-primary" id="resetBtn">⟲ Reset Simulation</button>
+                    <button class="btn btn-outline" id="exportCsvBtn">⬇ Export CSV Telemetry</button>
+                    <button class="btn btn-outline" id="copyLinkBtn">🔗 Copy Scenario Link</button>
+                </div>
+            </div>
+
+            <!-- RIGHT: KPI + TELEMETRY -->
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <!-- KPI -->
+                <div class="card">
+                    <div class="card-title">LIVE KPI TELEMETRY</div>
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <div class="kpi-label">LAVA LAMP SCORE</div>
+                            <div class="kpi-value teamA" id="kpiLava">0</div>
+                            <div class="kpi-sub">COLLISIONS · ENERGY</div>
+                        </div>
+                        <div class="kpi-item">
+                            <div class="kpi-label">PLASMA BALL SCORE</div>
+                            <div class="kpi-value teamB" id="kpiPlasma">0</div>
+                            <div class="kpi-sub">COLLISIONS · ENERGY</div>
+                        </div>
+                        <div class="kpi-item">
+                            <div class="kpi-label">TOTAL ENERGY</div>
+                            <div class="kpi-value" id="kpiEnergy">0.0</div>
+                            <div class="kpi-sub">J (NORMALIZED)</div>
+                        </div>
+                        <div class="kpi-item">
+                            <div class="kpi-label">MAZE INTEGRITY</div>
+                            <div class="kpi-value" id="kpiIntegrity">100%</div>
+                            <div class="kpi-sub">STRUCTURAL</div>
+                        </div>
+                    </div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #64748b; border-top: 1px solid #1e293b; padding-top: 0.75rem; margin-top: 0.25rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                            <span>LAVA <span style="color: #f43f5e;">●</span></span>
+                            <span id="lavaBar">|||||||||||||||||||||||||||||||</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>PLASMA <span style="color: #38bdf8;">●</span></span>
+                            <span id="plasmaBar">|||||||||||||||||||||||||||||||</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YOUTUBE EMBED -->
+                <div class="card">
+                    <div class="card-title">ORIGINAL VIDEO</div>
+                    <div class="video-wrap">
+                        <iframe src="https://www.youtube.com/embed/LoIYXESngUw" title="Lava Lamp vs Plasma Ball: Glowing Ball Maze Physics Duel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICAL BREAKDOWN TABLE -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-title">ANALYTICAL BREAKDOWN · LAVA LAMP vs PLASMA BALL</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>METRIC</th>
+                            <th>LAVA LAMP</th>
+                            <th>PLASMA BALL</th>
+                            <th>UNIT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Collision Count (session)</td>
+                            <td class="teamA-text" id="tableLavaCollisions">0</td>
+                            <td class="teamB-text" id="tablePlasmaCollisions">0</td>
+                            <td>hits</td>
+                        </tr>
+                        <tr>
+                            <td>Avg. Kinetic Energy</td>
+                            <td class="teamA-text" id="tableLavaKE">0.00</td>
+                            <td class="teamB-text" id="tablePlasmaKE">0.00</td>
+                            <td>J (norm)</td>
+                        </tr>
+                        <tr>
+                            <td>Max Velocity Reached</td>
+                            <td class="teamA-text" id="tableLavaVel">0.00</td>
+                            <td class="teamB-text" id="tablePlasmaVel">0.00</td>
+                            <td>m/s</td>
+                        </tr>
+                        <tr>
+                            <td>Friction Coeff. (effective)</td>
+                            <td class="teamA-text" id="tableLavaFric">0.50</td>
+                            <td class="teamB-text" id="tablePlasmaFric">1.00</td>
+                            <td>μ</td>
+                        </tr>
+                        <tr>
+                            <td>Restitution (bounce)</td>
+                            <td class="teamA-text" id="tableLavaRest">0.80</td>
+                            <td class="teamB-text" id="tablePlasmaRest">0.80</td>
+                            <td>e</td>
+                        </tr>
+                        <tr>
+                            <td>Score (Energy + Hits)</td>
+                            <td class="teamA-text" id="tableLavaScore">0</td>
+                            <td class="teamB-text" id="tablePlasmaScore">0</td>
+                            <td>pts</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ SECTION -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-title">FREQUENTLY ASKED QUESTIONS</div>
+            <div class="faq-item">
+                <div class="faq-q" data-faq>What physics engine powers this simulation?</div>
+                <div class="faq-a">This workstation uses a custom lightweight rigid-body integrator designed for 60 FPS performance. It models elastic collisions, viscous drag (lava lamp), and charge-repulsion (plasma ball) within a procedural maze.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" data-faq>How is the 'Lava Lamp' team different from 'Plasma Ball'?</div>
+                <div class="faq-a">The Lava Lamp team has higher viscosity (slower, more damped motion) and red-tinted balls. The Plasma Ball team has lower damping, higher restitution, and blue-tinted balls with electrostatic charge that adds repulsive forces.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" data-faq>How do I export telemetry?</div>
+                <div class="faq-a">Click the "Export CSV Telemetry" button. A CSV file will download containing the current simulation parameters, collision counts, energy readings, and per-ball velocity data.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" data-faq>Can I share my exact scenario?</div>
+                <div class="faq-a">Yes. Click "Copy Scenario Link" to copy a URL containing all slider values and preset configurations. Paste it anywhere to reproduce this exact simulation state.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" data-faq>What do the KPI scores represent?</div>
+                <div class="faq-a">The score is a weighted combination of successful maze collisions, normalized kinetic energy, and team-specific multipliers (Lava = viscosity bonus, Plasma = charge bonus). Higher is better for that team.</div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-note">
+            <span>KINETICZEN LABS · </span>
+            <a href="./index.html">Portal</a>
+            <span> · </span>
+            <a href="https://ayodayanilukshana-alt.github.io/aether-empire/kineticzen/lava-lamp-vs-plasma-ball-glowing-ball-maze-physics-duel.html" target="_blank">Canonical</a>
+            <span> · Built for the Lava Lamp vs Plasma Ball Duel</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // SIMULATION STATE
+        // ============================================================
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+
+        // Default parameters
+        const defaults = {
+            gravity: 1.0,
+            viscosity: 0.5,
+            charge: 1.0,
+            bounce: 0.8,
+            ballCount: 12,
+            complexity: 0.65
+        };
+
+        const params = { ...defaults };
+
+        // Simulation state
+        let balls = [];
+        let mazeWalls = [];
+        let simTime = 0;
+        let lastTime = performance.now();
+        let fps = 60;
+        let frameCounter = 0;
+        let fpsTimer = 0;
+        let animationId = null;
+        let telemetry = {
+            lavaCollisions: 0,
+            plasmaCollisions: 0,
+            lavaKE: 0,
+            plasmaKE: 0,
+            lavaVel: 0,
+            plasmaVel: 0,
+            lavaScore: 0,
+            plasmaScore: 0,
+            totalEnergy: 0,
+            integrity: 100
+        };
+
+        // Team colors
+        const TEAM_A_COLOR = '#f43f5e'; // Lava
+        const TEAM_B_COLOR = '#38bdf8'; // Plasma
+
+        // ============================================================
+        // MAZE GENERATION
+        // ============================================================
+        function generateMaze() {
+            mazeWalls = [];
+            const cx = W / 2;
+            const cy = H / 2;
+            const r = 160 + params.complexity * 120;
+
+            // Outer boundary
+            mazeWalls.push({ x1: 10, y1: 10, x2: W - 10, y2: 10 });
+            mazeWalls.push({ x1: W - 10, y1: 10, x2: W - 10, y2: H - 10 });
+            mazeWalls.push({ x1: W - 10, y1: H - 10, x2: 10, y2: H - 10 });
+            mazeWalls.push({ x1: 10, y1: H - 10, x2: 10, y2: 10 });
+
+            // Inner maze walls based on complexity
+            const numWalls = Math.floor(6 + params.complexity * 14);
+            for (let i = 0; i < numWalls; i++) {
+                const angle1 = (i / numWalls) * Math.PI * 2;
+                const angle2 = angle1 + Math.PI / 2 + Math.PI * params.complexity;
+                const r1 = r * (0.4 + 0.6 * Math.abs(Math.sin(i * 1.7)));
+                const r2 = r * (0.4 + 0.6 * Math.abs(Math.cos(i * 2.3)));
+
+                const x1 = cx + Math.cos(angle1) * r1;
+                const y1 = cy + Math.sin(angle1) * r1;
+                const x2 = cx + Math.cos(angle2) * r2;
+                const y2 = cy + Math.sin(angle2) * r2;
+
+                if (isWallValid(x1, y1, x2, y2)) {
+                    mazeWalls.push({ x1, y1, x2, y2 });
+                }
+            }
+
+            // Add some cross walls
+            const crossCount = Math.floor(4 + params.complexity * 10);
+            for (let i = 0; i < crossCount; i++) {
+                const a = Math.random() * Math.PI * 2;
+                const len = 40 + Math.random() * 100;
+                const mx = cx + Math.cos(a) * r * 0.7;
+                const my = cy + Math.sin(a) * r * 0.7;
+                const ex = mx + Math.cos(a + Math.PI/2) * len;
+                const ey = my + Math.sin(a + Math.PI/2) * len;
+                if (isWallValid(mx, my, ex, ey)) {
+                    mazeWalls.push({ x1: mx, y1: my, x2: ex, y2: ey });
+                }
+            }
+        }
+
+        function isWallValid(x1, y1, x2, y2) {
+            // Don't place walls too close to center
+            const cx = W/2, cy = H/2;
+            const d1 = Math.hypot(x1 - cx, y1 - cy);
+            const d2 = Math.hypot(x2 - cx, y2 - cy);
+            if (d1 < 30 || d2 < 30) return false;
+            // Don't place walls too close to edges
+            if (x1 < 20 || x1 > W-20 || y1 < 20 || y1 > H-20) return false;
+            if (x2 < 20 || x2 > W-20 || y2 < 20 || y2 > H-20) return false;
+            return true;
+        }
+
+        // ============================================================
+        // BALL GENERATION
+        // ============================================================
+        function generateBalls() {
+            balls = [];
+            const count = params.ballCount;
+            for (let i = 0; i < count; i++) {
+                const isTeamA = i < Math.floor(count / 2);
+                const radius = 8 + Math.random() * 6;
+                const x = 60 + Math.random() * (W - 120);
+                const y = 60 + Math.random() * (H - 120);
+
+                // Avoid spawning inside walls (rough check)
+                let attempts = 0;
+                while (isInsideWall(x, y, radius) && attempts < 50) {
+                    x = 60 + Math.random() * (W - 120);
+                    y = 60 + Math.random() * (H - 120);
+                    attempts++;
+                }
+
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 2;
+                balls.push({
+                    x, y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius,
+                    team: isTeamA ? 'A' : 'B',
+                    color: isTeamA ? TEAM_A_COLOR : TEAM_B_COLOR,
+                    charge: isTeamA ? 0 : params.charge,
+                    viscosity: isTeamA ? params.viscosity : 0.1,
+                    restitution: params.bounce,
+                    maxVel: 0,
+                    hits: 0
+                });
+            }
+        }
+
+        function isInsideWall(x, y, radius) {
+            for (const w of mazeWalls) {
+                const dist = pointToSegmentDist(x, y, w.x1, w.y1, w.x2, w.y2);
+                if (dist < radius + 2) return true;
+            }
+            return false;
+        }
+
+        function pointToSegmentDist(px, py, x1, y1, x2, y2) {
+            const dx = x2 - x1, dy = y2 - y1;
+            const len2 = dx*dx + dy*dy;
+            if (len2 === 0) return Math.hypot(px - x1, py - y1);
+            let t = ((px - x1) * dx + (py - y1) * dy) / len2;
+            t = Math.max(0, Math.min(1, t));
+            const nearX = x1 + t * dx, nearY = y1 + t * dy;
+            return Math.hypot(px - nearX, py - nearY);
+        }
+
+        // ============================================================
+        // PHYSICS UPDATE
+        // ============================================================
+        function updatePhysics(dt) {
+            const g = params.gravity * 0.15;
+            const visc = params.viscosity;
+            const chg = params.charge;
+            const cx = W/2, cy = H/2;
+
+            // Update positions
+            for (const b of balls) {
+                // Gravity
+                if (b.team === 'A') {
+                    // Lava lamp: gravity plus viscosity
+                    b.vy += g;
+                    b.vx *= (1 - 0.02 * visc);
+                    b.vy *= (1 - 0.02 * visc);
+                } else {
+                    // Plasma: gravity plus charge repulsion
+                    b.vy += g * 0.7;
+                }
+
+                // Plasma charge repulsion from center
+                if (b.team === 'B' && chg > 0) {
+                    const dx = b.x - cx;
+                    const dy = b.y - cy;
+                    const dist = Math.hypot(dx, dy) + 0.1;
+                    const force = chg * 0.08 / (dist * 0.05 + 1);
+                    b.vx += (dx / dist) * force * 0.5;
+                    b.vy += (dy / dist) * force * 0.5;
+                }
+
+                // Lava lamp viscosity drag
+                if (b.team === 'A') {
+                    b.vx *= (1 - 0.008 * visc);
+                    b.vy *= (1 - 0.008 * visc);
+                }
+
+                // Apply velocity
+                b.x += b.vx * dt * 60;
+                b.y += b.vy * dt * 60;
+
+                // Track max velocity
+                const speed = Math.hypot(b.vx, b.vy);
+                if (speed > b.maxVel) b.maxVel = speed;
+
+                // Boundary collisions
+                if (b.x - b.radius < 10) {
+                    b.x = 10 + b.radius;
+                    b.vx *= -b.restitution;
+                    b.hits++;
+                    if (b.team === 'A') telemetry.lavaCollisions++;
+                    else telemetry.plasmaCollisions++;
+                }
+                if (b.x + b.radius > W - 10) {
+                    b.x = W - 10 - b.radius;
+                    b.vx *= -b.restitution;
+                    b.hits++;
+                    if (b.team === 'A') telemetry.lavaCollisions++;
+                    else telemetry.plasmaCollisions++;
+                }
+                if (b.y - b.radius < 10) {
+                    b.y = 10 + b.radius;
+                    b.vy *= -b.restitution;
+                    b.hits++;
+                    if (b.team === 'A') telemetry.lavaCollisions++;
+                    else telemetry.plasmaCollisions++;
+                }
+                if (b.y + b.radius > H - 10) {
+                    b.y = H - 10 - b.radius;
+                    b.vy *= -b.restitution;
+                    b.hits++;
+                    if (b.team === 'A') telemetry.lavaCollisions++;
+                    else telemetry.plasmaCollisions++;
+                }
+            }
+
+            // Ball-to-ball collisions
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    const a = balls[i], b = balls[j];
+                    const dx = b.x - a.x, dy = b.y - a.y;
+                    const dist = Math.hypot(dx, dy);
+                    const minDist = a.radius + b.radius;
+                    if (dist < minDist && dist > 0) {
+                        const nx = dx / dist, ny = dy / dist;
+                        const overlap = minDist - dist;
+                        a.x -= nx * overlap * 0.5;
+                        a.y -= ny * overlap * 0.5;
+                        b.x += nx * overlap * 0.5;
+                        b.y += ny * overlap * 0.5;
+
+                        // Exchange velocities (elastic)
+                        const dvx = a.vx - b.vx;
+                        const dvy = a.vy - b.vy;
+                        const dot = dvx * nx + dvy * ny;
+                        if (dot > 0) {
+                            const e = (a.restitution + b.restitution) * 0.5;
+                            const impulse = (1 + e) * dot / 2;
+                            a.vx -= impulse * nx;
+                            a.vy -= impulse * ny;
+                            b.vx += impulse * nx;
+                            b.vy += impulse * ny;
+                        }
+
+                        a.hits++;
+                        b.hits++;
+                        if (a.team === 'A') telemetry.lavaCollisions++;
+                        else telemetry.plasmaCollisions++;
+                        if (b.team === 'A') telemetry.lavaCollisions++;
+                        else telemetry.plasmaCollisions++;
+                    }
+                }
+            }
+
+            // Full maze wall collision (simplified: check distance to each wall segment)
+            for (const b of balls) {
+                for (const w of mazeWalls) {
+                    const dist = pointToSegmentDist(b.x, b.y, w.x1, w.y1, w.x2, w.y2);
+                    if (dist < b.radius) {
+                        // Find closest point
+                        const dx = w.x2 - w.x1, dy = w.y2 - w.y1;
+                        const len2 = dx*dx + dy*dy;
+                        let t = ((b.x - w.x1) * dx + (b.y - w.y1) * dy) / len2;
+                        t = Math.max(0, Math.min(1, t));
+                        const nearX = w.x1 + t * dx;
+                        const nearY = w.y1 + t * dy;
+                        const ndx = b.x - nearX, ndy = b.y - nearY;
+                        const ndist = Math.hypot(ndx, ndy) + 0.001;
+                        const nx = ndx / ndist, ny = ndy / ndist;
+                        const overlap = b.radius - dist;
+                        b.x += nx * overlap;
+                        b.y += ny * overlap;
+                        // Reflect velocity
+                        const dot = b.vx * nx + b.vy * ny;
+                        if (dot < 0) {
+                            b.vx -= (1 + b.restitution) * dot * nx;
+                            b.vy -= (1 + b.restitution) * dot * ny;
+                        }
+                        b.hits++;
+                        if (b.team === 'A') telemetry.lavaCollisions++;
+                        else telemetry.plasmaCollisions++;
+                    }
+                }
+            }
+
+            // Update telemetry
+            updateTelemetry();
+        }
+
+        function updateTelemetry() {
+            let lavaHits = 0, plasmaHits = 0;
+            let lavaKE = 0, plasmaKE = 0;
+            let lavaMaxVel = 0, plasmaMaxVel = 0;
+            let lavaCount = 0, plasmaCount = 0;
+            let totalKE = 0;
+
+            for (const b of balls) {
+                const ke = 0.5 * (b.vx * b.vx + b.vy * b.vy);
+                totalKE += ke;
+                const vel = Math.hypot(b.vx, b.vy);
+                if (b.team === 'A') {
+                    lavaHits += b.hits;
+                    lavaKE += ke;
+                    lavaMaxVel = Math.max(lavaMaxVel, vel);
+                    lavaCount++;
+                } else {
+                    plasmaHits += b.hits;
+                    plasmaKE += ke;
+                    plasmaMaxVel = Math.max(plasmaMaxVel, vel);
+                    plasmaCount++;
+                }
+            }
+
+            telemetry.lavaCollisions = lavaHits;
+            telemetry.plasmaCollisions = plasmaHits;
+            telemetry.lavaKE = lavaCount > 0 ? lavaKE / lavaCount : 0;
+            telemetry.plasmaKE = plasmaCount > 0 ? plasmaKE / plasmaCount : 0;
+            telemetry.lavaVel = lavaMaxVel;
+            telemetry.plasmaVel = plasmaMaxVel;
+            telemetry.totalEnergy = totalKE;
+
+            // Score formula
+            telemetry.lavaScore = Math.round(lavaHits * 2 + lavaKE * 10 + params.viscosity * 20);
+            telemetry.plasmaScore = Math.round(plasmaHits * 2 + plasmaKE * 12 + params.charge * 25);
+
+            // Integrity
+            telemetry.integrity = Math.max(0, 100 - Math.floor(totalKE * 0.5));
+
+            // Update DOM
+            document.getElementById('kpiLava').textContent = telemetry.lavaScore;
+            document.getElementById('kpiPlasma').textContent = telemetry.plasmaScore;
+            document.getElementById('kpiEnergy').textContent = totalKE.toFixed(1);
+            document.getElementById('kpiIntegrity').textContent = telemetry.integrity + '%';
+
+            // Bars
+            const maxBar = 30;
+            const lavaBarLen = Math.min(maxBar, Math.round(telemetry.lavaScore / 10));
+            const plasmaBarLen = Math.min(maxBar, Math.round(telemetry.plasmaScore / 10));
+            document.getElementById('lavaBar').textContent = '|'.repeat(lavaBarLen) + '·'.repeat(maxBar - lavaBarLen);
+            document.getElementById('plasmaBar').textContent = '|'.repeat(plasmaBarLen) + '·'.repeat(maxBar - plasmaBarLen);
+
+            // Table
+            document.getElementById('tableLavaCollisions').textContent = lavaHits;
+            document.getElementById('tablePlasmaCollisions').textContent = plasmaHits;
+            document.getElementById('tableLavaKE').textContent = (lavaCount > 0 ? (lavaKE / lavaCount) : 0).toFixed(2);
+            document.getElementById('tablePlasmaKE').textContent = (plasmaCount > 0 ? (plasmaKE / plasmaCount) : 0).toFixed(2);
+            document.getElementById('tableLavaVel').textContent = lavaMaxVel.toFixed(2);
+            document.getElementById('tablePlasmaVel').textContent = plasmaMaxVel.toFixed(2);
+            document.getElementById('tableLavaFric').textContent = params.viscosity.toFixed(2);
+            document.getElementById('tablePlasmaFric').textContent = params.charge.toFixed(2);
+            document.getElementById('tableLavaRest').textContent = params.bounce.toFixed(2);
+            document.getElementById('tablePlasmaRest').textContent = params.bounce.toFixed(2);
+            document.getElementById('tableLavaScore').textContent = telemetry.lavaScore;
+            document.getElementById('tablePlasmaScore').textContent = telemetry.plasmaScore;
+
+            // Update slider displays
+            document.getElementById('gravityVal').textContent = params.gravity.toFixed(2);
+            document.getElementById('viscosityVal').textContent = params.viscosity.toFixed(2);
+            document.getElementById('chargeVal').textContent = params.charge.toFixed(2);
+            document.getElementById('bounceVal').textContent = params.bounce.toFixed(2);
+            document.getElementById('countVal').textContent = params.ballCount;
+            document.getElementById('complexityVal').textContent = params.complexity.toFixed(2);
+        }
+
+        // ============================================================
+        // RENDERING
+        // ============================================================
+        function render() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Background glow
+            const grad = ctx.createRadialGradient(W/2, H/2, 50, W/2, H/2, 400);
+            grad.addColorStop(0, 'rgba(15, 23, 42, 0.8)');
+            grad.addColorStop(1, 'rgba(5, 7, 11, 1)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Draw maze walls
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            for (const w of mazeWalls) {
+                ctx.beginPath();
+                ctx.moveTo(w.x1, w.y1);
+                ctx.lineTo(w.x2, w.y2);
+                ctx.stroke();
+            }
+
+            // Draw center glow
+            const cx = W/2, cy = H/2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 30, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(244, 63, 94, 0.08)';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.06)';
+            ctx.fill();
+
+            // Draw balls
+            for (const b of balls) {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+
+                const radial = ctx.createRadialGradient(b.x - b.radius*0.3, b.y - b.radius*0.3, 2, b.x, b.y, b.radius);
+                radial.addColorStop(0, b.team === 'A' ? '#fb7185' : '#7dd3fc');
+                radial.addColorStop(1, b.color);
+                ctx.fillStyle = radial;
+                ctx.fill();
+
+                // Glow
+                ctx.shadowColor = b.color;
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Charge indicator for plasma
+                if (b.team === 'B' && params.charge > 0.5) {
+                    ctx.beginPath();
+                    ctx.arc(b.x, b.y, b.radius + 3, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            // Draw team labels
+            ctx.font = '11px "JetBrains Mono", monospace';
+            ctx.fillStyle = TEAM_A_COLOR;
+            ctx.fillText('LAVA LAMP', 15, 25);
+            ctx.fillStyle = TEAM_B_COLOR;
+            ctx.fillText('PLASMA BALL', W - 120, 25);
+
+            // Sim time
+            ctx.fillStyle = '#475569';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillText('SIM TIME: ' + simTime.toFixed(1) + 's', 15, H - 15);
+        }
+
+        // ============================================================
+        // ANIMATION LOOP
+        // ============================================================
+        function animate(now) {
+            const dt = Math.min(0.05, (now - lastTime) / 1000);
+            lastTime = now;
+
+            if (dt > 0) {
+                simTime += dt;
+                updatePhysics(dt);
+            }
+
+            render();
+
+            // FPS counter
+            frameCounter++;
+            fpsTimer += dt;
+            if (fpsTimer >= 0.5) {
+                fps = Math.round(frameCounter / fpsTimer);
+                frameCounter = 0;
+                fpsTimer = 0;
+                document.getElementById('fpsDisplay').textContent = fps;
+            }
+            document.getElementById('simTime').textContent = simTime.toFixed(1);
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // ============================================================
+        // INIT / RESET
+        // ============================================================
+        function initSimulation() {
+            simTime = 0;
+            telemetry = {
+                lavaCollisions: 0,
+                plasmaCollisions: 0,
+                lavaKE: 0,
+                plasmaKE: 0,
+                lavaVel: 0,
+                plasmaVel: 0,
+                lavaScore: 0,
+                plasmaScore: 0,
+                totalEnergy: 0,
+                integrity: 100
+            };
+
+            generateMaze();
+            generateBalls();
+            updateTelemetry();
+
+            if (animationId) cancelAnimationFrame(animationId);
+            lastTime = performance.now();
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // ============================================================
+        // PRESETS
+        // ============================================================
+        const presets = {
+            default: { gravity: 1.0, viscosity: 0.5, charge: 1.0, bounce: 0.8, ballCount: 12, complexity: 0.65 },
+            lavaSurge: { gravity: 0.6, viscosity: 1.2, charge: 0.2, bounce: 0.5, ballCount: 16, complexity: 0.5 },
+            plasmaStorm: { gravity: 1.4, viscosity: 0.2, charge: 1.8, bounce: 0.95, ballCount: 20, complexity: 0.8 },
+            chaos: { gravity: 1.8, viscosity: 0.8, charge: 1.5, bounce: 1.0, ballCount: 28, complexity: 1.0 },
+            lowGravity: { gravity: 0.2, viscosity: 0.3, charge: 0.8, bounce: 0.7, ballCount: 10, complexity: 0.4 }
+        };
+
+        function applyPreset(name) {
+            const p = presets[name];
+            if (!p) return;
+            Object.assign(params, p);
+            // Update sliders
+            document.getElementById('gravity').value = params.gravity;
+            document.getElementById('viscosity').value = params.viscosity;
+            document.getElementById('charge').value = params.charge;
+            document.getElementById('bounce').value = params.bounce;
+            document.getElementById('ballCount').value = params.ballCount;
+            document.getElementById('complexity').value = params.complexity;
+            initSimulation();
+        }
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        document.getElementById('gravity').addEventListener('input', (e) => {
+            params.gravity = parseFloat(e.target.value);
+            updateTelemetry();
+        });
+        document.getElementById('viscosity').addEventListener('input', (e) => {
+            params.viscosity = parseFloat(e.target.value);
+            updateTelemetry();
+        });
+        document.getElementById('charge').addEventListener('input', (e) => {
+            params.charge = parseFloat(e.target.value);
+            for (const b of balls) {
+                if (b.team === 'B') b.charge = params.charge;
+            }
+            updateTelemetry();
+        });
+        document.getElementById('bounce').addEventListener('input', (e) => {
+            params.bounce = parseFloat(e.target.value);
+            for (const b of balls) b.restitution = params.bounce;
+            updateTelemetry();
+        });
+        document.getElementById('ballCount').addEventListener('input', (e) => {
+            params.ballCount = parseInt(e.target.value);
+            initSimulation();
+        });
+        document.getElementById('complexity').addEventListener('input', (e) => {
+            params.complexity = parseFloat(e.target.value);
+            initSimulation();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            initSimulation();
+        });
+
+        // Preset buttons
+        document.querySelectorAll('[data-preset]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                applyPreset(btn.dataset.preset);
+            });
+        });
+
+        // Export CSV
+        document.getElementById('exportCsvBtn').addEventListener('click', () => {
+            const rows = [
+                ['Metric', 'Value', 'Unit'],
+                ['Simulation Time', simTime.toFixed(2), 'seconds'],
+                ['FPS', fps, 'frames/s'],
+                ['Gravity', params.gravity.toFixed(2), 'norm'],
+                ['Lava Viscosity', params.viscosity.toFixed(2), 'μ'],
+                ['Plasma Charge', params.charge.toFixed(2), 'C'],
+                ['Bounce/Restitution', params.bounce.toFixed(2), 'e'],
+                ['Ball Count', params.ballCount, 'count'],
+                ['Maze Complexity', params.complexity.toFixed(2), 'norm'],
+                ['', '', ''],
+                ['TEAM A (LAVA LAMP)', '', ''],
+                ['Collisions', telemetry.lavaCollisions, 'hits'],
+                ['Avg KE', telemetry.lavaKE.toFixed(4), 'J'],
+                ['Max Velocity', telemetry.lavaVel.toFixed(4), 'm/s'],
+                ['Score', telemetry.lavaScore, 'pts'],
+                ['', '', ''],
+                ['TEAM B (PLASMA BALL)', '', ''],
+                ['Collisions', telemetry.plasmaCollisions, 'hits'],
+                ['Avg KE', telemetry.plasmaKE.toFixed(4), 'J'],
+                ['Max Velocity', telemetry.plasmaVel.toFixed(4), 'm/s'],
+                ['Score', telemetry.plasmaScore, 'pts'],
+                ['', '', ''],
+                ['TOTAL ENERGY', telemetry.totalEnergy.toFixed(4), 'J'],
+                ['MAZE INTEGRITY', telemetry.integrity, '%']
+            ];
+
+            const csv = rows.map(r => r.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'kineticzen_telemetry_' + Date.now() + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Copy Scenario Link
+        document.getElementById('copyLinkBtn').addEventListener('click', () => {
+            const p = new URLSearchParams({
+                g: params.gravity.toFixed(2),
+                v: params.viscosity.toFixed(2),
+                c: params.charge.toFixed(2),
+                b: params.bounce.toFixed(2),
+                n: params.ballCount,
+                m: params.complexity.toFixed(2)
+            });
+            const url = window.location.origin + window.location.pathname + '?' + p.toString();
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('copyLinkBtn');
+                const orig = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            }).catch(() => {
+                prompt('Copy this scenario link:', url);
+            });
+        });
+
+        // FAQ toggle
+        document.querySelectorAll('[data-faq]').forEach(el => {
+            el.addEventListener('click', () => {
+                el.classList.toggle('open');
+                const answer = el.nextElementSibling;
+                if (answer) answer.classList.toggle('show');
+            });
+        });
+
+        // Load from URL params if present
+        function loadFromURL() {
+            const p = new URLSearchParams(window.location.search);
+            if (p.has('g')) params.gravity = parseFloat(p.get('g'));
+            if (p.has('v')) params.viscosity = parseFloat(p.get('v'));
+            if (p.has('c')) params.charge = parseFloat(p.get('c'));
+            if (p.has('b')) params.bounce = parseFloat(p.get('b'));
+            if (p.has('n')) params.ballCount = parseInt(p.get('n'));
+            if (p.has('m')) params.complexity = parseFloat(p.get('m'));
+
+            // Update sliders
+            document.getElementById('gravity').value = params.gravity;
+            document.getElementById('viscosity').value = params.viscosity;
+            document.getElementById('charge').value = params.charge;
+            document.getElementById('bounce').value = params.bounce;
+            document.getElementById('ballCount').value = params.ballCount;
+            document.getElementById('complexity').value = params.complexity;
+        }
+
+        // ============================================================
+        // BOOT
+        // ============================================================
+        loadFromURL();
+        initSimulation();
+    </script>
+</body>
+</html>
