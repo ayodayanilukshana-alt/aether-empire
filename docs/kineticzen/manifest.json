@@ -2,6 +2,16 @@
   {
     "pod": "PHYSICS",
     "channel_slug": "kineticzen",
+    "video_id": "k_exPbFOkrs",
+    "title": "Slinky vs Yo-Yo: Spinning Ring Ball Maze",
+    "slug": "slinky-vs-yo-yo-spinning-ring-ball-maze",
+    "summary": "60FPS Matter.js rigid-body physics rivalry simulation.\n\nTry our Free Interactive Calculators & 3D Sandbox: https://ayodayanilukshana-alt.github.io/aether-empire",
+    "views": 1,
+    "published_at": "2026-11-28"
+  },
+  {
+    "pod": "PHYSICS",
+    "channel_slug": "kineticzen",
     "video_id": "LoIYXESngUw",
     "title": "Lava Lamp vs Plasma Ball: Glowing Ball Maze Physics Duel!",
     "slug": "lava-lamp-vs-plasma-ball-glowing-ball-maze-physics-duel",
