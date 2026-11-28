@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCALEVERSE 3D · Empires Scale Workstation</title>
+  <meta name="description" content="Interactive 3D scale comparison of history's five largest empires by land area.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-largest-empires-earth-shattering-3d-scale.html">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #05070b;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.5;
+      padding: 24px 20px 40px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workstation {
+      max-width: 1400px;
+      width: 100%;
+    }
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #1e293b;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #38bdf8;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+    }
+    .brand-text h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-text h1 span {
+      color: #38bdf8;
+    }
+    .brand-text p {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      letter-spacing: 0.02em;
+    }
+    .portal-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 1px solid #1e293b;
+      border-radius: 30px;
+      transition: all 0.2s;
+      background: #0b0f17;
+    }
+    .portal-link:hover {
+      border-color: #38bdf8;
+      background: #0f172a;
+    }
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 1000px) {
+      .grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 20px 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    .card-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-bottom: 16px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #05070b;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    #empireCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .kpi-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .kpi-value {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #38bdf8;
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi-value small {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+    .slider-label .value {
+      font-family: monospace;
+      color: #38bdf8;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 10px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #38bdf8;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 0 1px #38bdf8;
+      transition: 0.1s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 7px 14px;
+      border-radius: 30px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .preset-btn:hover {
+      border-color: #38bdf8;
+      background: #1e293b;
+      color: #f1f5f9;
+    }
+    .preset-btn.active {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 600;
+    }
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .action-btn {
+      flex: 1 1 140px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+    .action-btn:hover {
+      border-color: #38bdf8;
+      background: #1e293b;
+    }
+    .action-btn.primary {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #05070b;
+      font-weight: 600;
+    }
+    .action-btn.primary:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+    }
+    .table-section {
+      margin-top: 32px;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 12px 14px;
+      background: #0f172a;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid #1e293b;
+    }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+      color: #cbd5e1;
+    }
+    .data-table td:first-child {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      color: #f1f5f9;
+    }
+    .data-table tr:hover td {
+      background: #0f172a;
+    }
+    .data-table .accent {
+      color: #38bdf8;
+    }
+    .faq-section {
+      margin-top: 32px;
+    }
+    .faq-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+    }
+    .faq-item summary {
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      color: #e2e8f0;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+    .faq-item summary::after {
+      content: '+';
+      color: #38bdf8;
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+    .faq-item[open] summary::after {
+      content: '−';
+    }
+    .faq-item p {
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: 0.88rem;
+      padding-left: 4px;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #0b0f17;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      margin-top: 28px;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .footer-note {
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+    .footer-note a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b;
+      color: #f1f5f9;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      border: 1px solid #38bdf8;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 999;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .badge {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      color: #94a3b8;
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-family: monospace;
+    }
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="workstation">
+  <!-- Brand bar -->
+  <div class="brand-bar">
+    <div class="brand">
+      <div class="brand-icon">S3</div>
+      <div class="brand-text">
+        <h1>SCALEVERSE <span>3D</span></h1>
+        <p>Empires Earth-Shattering Scale Workstation</p>
+      </div>
+    </div>
+    <a href="./index.html" class="portal-link">← Back to Portal</a>
+  </div>
+
+  <!-- Main interactive grid -->
+  <div class="grid-layout">
+    <!-- Left: Canvas + KPIs -->
+    <div class="card">
+      <div class="canvas-header">
+        <div class="card-title" style="margin-bottom:0;">3D Land-Area Comparison</div>
+        <span class="badge" id="scaleBadge">1:100,000,000</span>
+      </div>
+      <div class="canvas-container">
+        <canvas id="empireCanvas" width="1200" height="675"></canvas>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-label">Selected Empire</div>
+          <div class="kpi-value" id="kpiName">British Empire</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Land Area</div>
+          <div class="kpi-value" id="kpiArea">35,500,000 <small>km²</small></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Relative to Aztec</div>
+          <div class="kpi-value" id="kpiRelative">71.00 <small>×</small></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Controls -->
+    <div class="card controls-panel">
+      <div class="card-title">Simulation Controls</div>
+      
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Zoom Scale</span>
+          <span class="value mono" id="zoomValue">1.0×</span>
+        </div>
+        <input type="range" id="zoomSlider" min="0.5" max="2.5" step="0.01" value="1.0">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Rotation Speed</span>
+          <span class="value mono" id="rotValue">0.30</span>
+        </div>
+        <input type="range" id="rotSlider" min="0" max="1.5" step="0.01" value="0.3">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Empire Opacity</span>
+          <span class="value mono" id="opacityValue">0.85</span>
+        </div>
+        <input type="range" id="opacitySlider" min="0.2" max="1" step="0.01" value="0.85">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Aztec Reference Size</span>
+          <span class="value mono" id="refSizeValue">1.00</span>
+        </div>
+        <input type="range" id="refSizeSlider" min="0.4" max="2.0" step="0.01" value="1.0">
+      </div>
+
+      <div>
+        <div class="slider-label" style="margin-bottom:8px;">
+          <span>Empire Preset Selection</span>
+        </div>
+        <div class="preset-buttons" id="presetContainer"></div>
+      </div>
+
+      <div class="action-row">
+        <button class="action-btn primary" id="exportBtn">⬇ Export CSV Telemetry</button>
+        <button class="action-btn" id="copyBtn">🔗 Copy Scenario Link</button>
+      </div>
+      <div style="font-size:0.72rem; color:#64748b; text-align:center;" id="statusMeta"></div>
+    </div>
+  </div>
+
+  <!-- Analytical Breakdown Table -->
+  <div class="card table-section">
+    <div class="card-title">Analytical Breakdown · Land Area by Empire</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Empire</th>
+          <th>Land Area (km²)</th>
+          <th>Relative to Aztec</th>
+          <th>Sphere Radius (px)</th>
+          <th>Share of Total</th>
+        </tr>
+      </thead>
+      <tbody id="breakdownBody"></tbody>
+    </table>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="card faq-section">
+    <div class="card-title">Frequently Asked Questions</div>
+    <details class="faq-item" open>
+      <summary>How is the 3D sphere size calculated?</summary>
+      <p>Sphere volume (and visual radius) is proportional to the cube root of land area to maintain volume-preserving scaling. The Aztec Empire (500,000 km²) serves as the baseline reference. Larger empires like the British Empire (35,500,000 km²) appear dramatically larger due to the cubic relationship.</p>
+    </details>
+    <details class="faq-item">
+      <summary>What do the slider controls actually affect?</summary>
+      <p>Zoom adjusts the camera distance, Rotation Speed controls the auto-spin of the 3D spheres, Opacity changes the transparency of the rendered spheres, and the Aztec Reference Size slider scales the baseline sphere to help compare relative volumes visually.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Why are the empires arranged in this specific order?</summary>
+      <p>The spheres are arranged from smallest to largest land area in a horizontal sequence: Aztec, Roman, Russian, Mongol, and British. This mirrors the ascending scale narrative from the source video and makes the magnitude differences immediately apparent.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Can I export the current simulation state?</summary>
+      <p>Yes — the "Export CSV Telemetry" button generates a CSV file containing the current slider values and the underlying land-area dataset. The "Copy Scenario Link" button copies a shareable URL that encodes your current slider configuration.</p>
+    </details>
+  </div>
+
+  <!-- Video Embed -->
+  <div class="card" style="margin-top: 32px; padding: 18px;">
+    <div class="card-title">Source Video · 5 Largest Empires: Earth-Shattering 3D Scale!</div>
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/EeLKpHnP1ks" title="5 Largest Empires: Earth-Shattering 3D Scale!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-note">
+    <span>SCALEVERSE 3D · Data-driven historical scale simulation</span>
+    <span><a href="./index.html">Portal</a> · Canonical: <a href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-largest-empires-earth-shattering-3d-scale.html" target="_blank" rel="noopener">link</a></span>
+  </div>
+</div>
+
+<div id="toast">Copied to clipboard</div>
+
+<!-- JSON-LD Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SCALEVERSE 3D · Empires Scale Workstation",
+  "description": "Interactive 3D land-area comparison of history's five largest empires: Aztec, Roman, Russian, Mongol, and British.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "SCALEVERSE 3D"
+  },
+  "url": "https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/5-largest-empires-earth-shattering-3d-scale.html",
+  "browserRequirements": "Requires JavaScript and Canvas support"
+}
+</script>
+
+<script>
+  // === DATA PAYLOAD ===
+  const DATA = [
+    { name: "Aztec Empire", meters: 500000, metric: "500,000 km²", color: "#f97316" },
+    { name: "Roman Empire", meters: 5000000, metric: "5,000,000 km²", color: "#ef4444" },
+    { name: "Russian Empire", meters: 22800000, metric: "22,800,000 km²", color: "#a855f7" },
+    { name: "Mongol Empire", meters: 24000000, metric: "24,000,000 km²", color: "#3b82f6" },
+    { name: "British Empire", meters: 35500000, metric: "35,500,000 km²", color: "#38bdf8" }
+  ];
+
+  const BASELINE = DATA[0].meters; // Aztec 500,000 km²
+
+  // === STATE ===
+  const state = {
+    zoom: 1.0,
+    rotationSpeed: 0.3,
+    opacity: 0.85,
+    refSize: 1.0,
+    selectedIndex: 4 // British Empire default
+  };
+
+  // === CANVAS SETUP ===
+  const canvas = document.getElementById('empireCanvas');
+  const ctx = canvas.getContext('2d');
+  let animationFrame = null;
+  let rotationAngle = 0;
+  let lastTimestamp = 0;
+
+  function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    drawScene();
+  });
+
+  // === DRAWING ===
+  function getCanvasWidth() { return canvas.width / (window.devicePixelRatio || 1); }
+  function getCanvasHeight() { return canvas.height / (window.devicePixelRatio || 1); }
+
+  function drawScene(timestamp) {
+    const w = getCanvasWidth();
+    const h = getCanvasHeight();
+    
+    // Clear
+    ctx.clearRect(0, 0, w, h);
+    
+    // Background
+    const bgGrad = ctx.createRadialGradient(w/2, h/2, 50, w/2, h/2, w*0.7);
+    bgGrad.addColorStop(0, '#0b0f17');
+    bgGrad.addColorStop(1, '#05070b');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Grid lines (subtle)
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < 8; i++) {
+      const x = (w / 8) * i;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+    for (let i = 0; i < 5; i++) {
+      const y = (h / 5) * i;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    // Compute sphere radii (volume-preserving cubic root)
+    const maxArea = 35500000;
+    const minArea = 500000;
+    const baseRadius = Math.min(w, h) * 0.10;
+    
+    const spheres = DATA.map((item, idx) => {
+      // Volume-preserving radius: cube root of (area / baseline)
+      const volumeFactor = Math.cbrt(item.meters / BASELINE);
+      let radius = baseRadius * volumeFactor * state.refSize;
+      
+      // Cap radius to fit layout
+      const maxAllowedRadius = Math.min(w, h) * 0.28;
+      if (radius > maxAllowedRadius) radius = maxAllowedRadius;
+      
+      return { ...item, radius, idx };
+    });
+
+    // Layout positions (evenly spaced, ascending size order)
+    const spacing = w / (DATA.length + 1);
+    const baseY = h * 0.52;
+
+    // 3D rotation effect: orbit spheres vertically with slight phase offset
+    const rotPhase = rotationAngle;
+    
+    // Sort for drawing order (back to front based on z)
+    const drawOrder = spheres.map((s, i) => {
+      const phase = i * 1.2;
+      const z = Math.sin(rotPhase + phase) * 0.5 + 0.5; // 0 = back, 1 = front
+      return { ...s, z, phase };
+    }).sort((a, b) => a.z - b.z);
+
+    drawOrder.forEach((sphere, orderIdx) => {
+      const spacingX = w / (DATA.length + 1);
+      const x = spacingX * (sphere.idx + 1);
+      
+      // Vertical bob based on rotation phase
+      const bob = Math.sin(rotPhase + sphere.phase * 1.5) * (h * 0.025);
+      const y = baseY + bob;
+      
+      // Depth scaling
+      const depthScale = 0.85 + 0.15 * sphere.z;
+      const r = sphere.radius * depthScale;
+      
+      // Shadow
+      ctx.save();
+      ctx.shadowColor = sphere.color;
+      ctx.shadowBlur = 30 * sphere.z;
+      
+      // Gradient sphere
+      const grad = ctx.createRadialGradient(
+        x - r * 0.3, y - r * 0.3, r * 0.1,
+        x, y, r
+      );
+      grad.addColorStop(0, sphere.color + 'ff');
+      grad.addColorStop(0.6, sphere.color + 'cc');
+      grad.addColorStop(1, sphere.color + '33');
+      
+      ctx.globalAlpha = state.opacity;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      
+      // Rim light
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = sphere.color + '66';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      
+      // Highlight arc
+      ctx.beginPath();
+      ctx.arc(x - r * 0.2, y - r * 0.2, r * 0.7, -Math.PI * 0.8, -Math.PI * 0.2);
+      ctx.strokeStyle = '#ffffff44';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      
+      ctx.restore();
+      
+      // Label
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.font = 'bold 11px "Inter", system-ui, sans-serif';
+      ctx.fillStyle = '#e2e8f0';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      
+      // Name abbreviated
+      const shortName = sphere.name.replace(' Empire', '');
+      ctx.fillText(shortName, x, y + r + 10);
+      
+      // Area
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#94a3b8';
+      const areaStr = (sphere.meters / 1000000).toFixed(1) + 'M km²';
+      ctx.fillText(areaStr, x, y + r + 26);
+      
+      ctx.restore();
+      
+      // Selection highlight ring
+      if (sphere.idx === state.selectedIndex) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, r + 8, 0, Math.PI * 2);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.stroke();
+        ctx.restore();
+      }
+    });
+
+    // Legend top-left
+    ctx.save();
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'left';
+    ctx.fillText('VOLUME-PRESERVING 3D SCALE · AZTEC = 1.00', 16, h - 16);
+    ctx.restore();
+  }
+
+  // === ANIMATION LOOP ===
+  function animate(ts) {
+    if (!lastTimestamp) lastTimestamp = ts;
+    const dt = Math.min((ts - lastTimestamp) / 1000, 0.1);
+    lastTimestamp = ts;
+    
+    rotationAngle += dt * state.rotationSpeed;
+    
+    drawScene(ts);
+    animationFrame = requestAnimationFrame(animate);
+  }
+
+  function startAnimation() {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    lastTimestamp = 0;
+    animationFrame = requestAnimationFrame(animate);
+  }
+
+  // === KPI UPDATES ===
+  function updateKPIs() {
+    const sel = DATA[state.selectedIndex];
+    document.getElementById('kpiName').textContent = sel.name.replace(' Empire', '');
+    document.getElementById('kpiArea').innerHTML = sel.meters.toLocaleString() + ' <small>km²</small>';
+    
+    const relative = (sel.meters / BASELINE).toFixed(2);
+    document.getElementById('kpiRelative').innerHTML = relative + ' <small>×</small>';
+  }
+
+  // === PRESET BUTTONS ===
+  function buildPresets() {
+    const container = document.getElementById('presetContainer');
+    container.innerHTML = '';
+    DATA.forEach((item, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'preset-btn' + (idx === state.selectedIndex ? ' active' : '');
+      btn.dataset.index = idx;
+      btn.textContent = item.name.replace(' Empire', '');
+      btn.addEventListener('click', () => {
+        state.selectedIndex = idx;
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateKPIs();
+        updateBreakdownHighlight();
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  // === BREAKDOWN TABLE ===
+  function buildBreakdown() {
+    const tbody = document.getElementById('breakdownBody');
+    tbody.innerHTML = '';
+    const totalArea = DATA.reduce((sum, d) => sum + d.meters, 0);
+    
+    DATA.forEach((item, idx) => {
+      const ratio = item.meters / BASELINE;
+      const volumeFactor = Math.cbrt(item.meters / BASELINE);
+      const sphereRadius = (8 * volumeFactor).toFixed(2);
+      const share = ((item.meters / totalArea) * 100).toFixed(2);
+      
+      const tr = document.createElement('tr');
+      tr.dataset.index = idx;
+      if (idx === state.selectedIndex) {
+        tr.style.background = '#0f172a';
+      }
+      tr.innerHTML = `
+        <td><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${item.color}; margin-right:8px;"></span>${item.name}</td>
+        <td class="accent">${item.meters.toLocaleString()}</td>
+        <td>${ratio.toFixed(2)}×</td>
+        <td>${sphereRadius} px</td>
+        <td>${share}%</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function updateBreakdownHighlight() {
+    document.querySelectorAll('#breakdownBody tr').forEach((tr, idx) => {
+      tr.style.background = idx === state.selectedIndex ? '#0f172a' : '';
+    });
+  }
+
+  // === SLIDER CONTROLS ===
+  function setupSliders() {
+    const zoomSlider = document.getElementById('zoomSlider');
+    const rotSlider = document.getElementById('rotSlider');
+    const opacitySlider = document.getElementById('opacitySlider');
+    const refSlider = document.getElementById('refSizeSlider');
+
+    zoomSlider.addEventListener('input', (e) => {
+      state.zoom = parseFloat(e.target.value);
+      document.getElementById('zoomValue').textContent = state.zoom.toFixed(2) + '×';
+      updateScaleBadge();
+      drawScene();
+    });
+
+    rotSlider.addEventListener('input', (e) => {
+      state.rotationSpeed = parseFloat(e.target.value);
+      document.getElementById('rotValue').textContent = state.rotationSpeed.toFixed(2);
+    });
+
+    opacitySlider.addEventListener('input', (e) => {
+      state.opacity = parseFloat(e.target.value);
+      document.getElementById('opacityValue').textContent = state.opacity.toFixed(2);
+      drawScene();
+    });
+
+    refSlider.addEventListener('input', (e) => {
+      state.refSize = parseFloat(e.target.value);
+      document.getElementById('refSizeValue').textContent = state.refSize.toFixed(2);
+      drawScene();
+    });
+  }
+
+  function updateScaleBadge() {
+    const scale = (100000000 / state.zoom).toFixed(0);
+    document.getElementById('scaleBadge').textContent = '1:' + scale.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // === EXPORT CSV ===
+  function exportCSV() {
+    const rows = [
+      ['Empire', 'Land Area (km2)', 'Relative to Aztec', 'Selected'],
+    ];
+    DATA.forEach((item, idx) => {
+      rows.push([
+        item.name,
+        item.meters,
+        (item.meters / BASELINE).toFixed(4),
+        idx === state.selectedIndex ? 'YES' : 'NO'
+      ]);
+    });
+    rows.push([]);
+    rows.push(['Parameter', 'Value']);
+    rows.push(['Zoom', state.zoom.toFixed(2)]);
+    rows.push(['Rotation Speed', state.rotationSpeed.toFixed(2)]);
+    rows.push(['Opacity', state.opacity.toFixed(2)]);
+    rows.push(['Aztec Reference Size', state.refSize.toFixed(2)]);
+    rows.push(['Selected Empire', DATA[state.selectedIndex].name]);
+    rows.push(['Export Timestamp', new Date().toISOString()]);
+
+    const csv = rows.map(r => r.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'scaleverse_empires_telemetry.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showToast('CSV telemetry exported');
+  }
+
+  // === COPY SCENARIO LINK ===
+  function copyScenarioLink() {
+    const params = new URLSearchParams();
+    params.set('zoom', state.zoom.toFixed(2));
+    params.set('rot', state.rotationSpeed.toFixed(2));
+    params.set('opacity', state.opacity.toFixed(2));
+    params.set('ref', state.refSize.toFixed(2));
+    params.set('empire', DATA[state.selectedIndex].name.replace(' Empire', '').toLowerCase());
+    
+    const base = window.location.origin + window.location.pathname;
+    const url = base + '?' + params.toString();
+    
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Scenario link copied to clipboard');
+    }).catch(() => {
+      // Fallback
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast('Scenario link copied');
+    });
+  }
+
+  // === TOAST ===
+  let toastTimeout;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  // === LOAD STATE FROM URL ===
+  function loadStateFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('zoom')) state.zoom = parseFloat(params.get('zoom'));
+    if (params.has('rot')) state.rotationSpeed = parseFloat(params.get('rot'));
+    if (params.has('opacity')) state.opacity = parseFloat(params.get('opacity'));
+    if (params.has('ref')) state.refSize = parseFloat(params.get('ref'));
+    
+    if (params.has('empire')) {
+      const name = params.get('empire').toLowerCase();
+      const idx = DATA.findIndex(d => d.name.toLowerCase().replace(' empire', '') === name);
+      if (idx >= 0) state.selectedIndex = idx;
+    }
+    
+    // Sync sliders
+    document.getElementById('zoomSlider').value = state.zoom;
+    document.getElementById('zoomValue').textContent = state.zoom.toFixed(2) + '×';
+    document.getElementById('rotSlider').value = state.rotationSpeed;
+    document.getElementById('rotValue').textContent = state.rotationSpeed.toFixed(2);
+    document.getElementById('opacitySlider').value = state.opacity;
+    document.getElementById('opacityValue').textContent = state.opacity.toFixed(2);
+    document.getElementById('refSizeSlider').value = state.refSize;
+    document.getElementById('refSizeValue').textContent = state.refSize.toFixed(2);
+  }
+
+  // === INIT ===
+  function init() {
+    resizeCanvas();
+    loadStateFromURL();
+    buildPresets();
+    buildBreakdown();
+    updateKPIs();
+    updateScaleBadge();
+    setupSliders();
+    drawScene();
+    startAnimation();
+    
+    document.getElementById('exportBtn').addEventListener('click', exportCSV);
+    document.getElementById('copyBtn').addEventListener('click', copyScenarioLink);
+    
+    // Show status
+    document.getElementById('statusMeta').textContent = 'Interactive simulation ready · ' + DATA.length + ' empires loaded';
+  }
+
+  // Start when DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
+</body>
+</html>
