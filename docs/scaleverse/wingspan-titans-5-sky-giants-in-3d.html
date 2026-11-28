@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wingspan Titans | SCALEVERSE 3D</title>
+  <meta name="description" content="Explore and compare the wingspans of five extraordinary flyers in an interactive SCALEVERSE 3D simulation.">
+  <link rel="canonical" href="https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/wingspan-titans-5-sky-giants-in-3d.html">
+  <meta name="theme-color" content="#05070b">
+  <style>
+    :root{color-scheme:dark;--bg:#05070b;--card:#0b0f17;--line:#1e293b;--muted:#94a3b8;--text:#e5edf7;--accent:#38bdf8;--green:#34d399}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+    a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}button,input,select{font:inherit}
+    .wrap{max-width:1240px;margin:auto;padding:24px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0 22px;border-bottom:1px solid var(--line)}
+    .brand{font-weight:800;letter-spacing:.13em;color:#f8fafc}.brand span{color:var(--accent)}
+    .toplink{font-size:13px;color:var(--muted)}
+    .hero{padding:34px 0 22px;display:flex;justify-content:space-between;gap:24px;align-items:end}
+    .eyebrow{color:var(--accent);font:12px ui-monospace,SFMono-Regular,monospace;text-transform:uppercase;letter-spacing:.16em}
+    h1{font-size:clamp(30px,5vw,54px);line-height:1.08;margin:10px 0 12px;letter-spacing:-.04em}
+    .intro{max-width:720px;color:var(--muted);margin:0}
+    .status{white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--green);font:12px ui-monospace,monospace}
+    .layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.85fr);gap:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+    .cardhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}
+    h2{font-size:16px;margin:0;letter-spacing:.01em}h3{font-size:14px;margin:0 0 10px}
+    .small{font-size:12px;color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+    canvas{display:block;width:100%;height:380px;border:1px solid #172235;border-radius:10px;background:#070b12;touch-action:none}
+    .legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:6px}
+    .controls{display:grid;gap:17px}
+    label{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:#cbd5e1}
+    input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0 0}
+    select{width:100%;padding:10px 11px;color:var(--text);background:#080c13;border:1px solid var(--line);border-radius:8px}
+    .presets{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    button{cursor:pointer;color:#dbeafe;background:#101a27;border:1px solid #26374c;border-radius:8px;padding:9px 11px;transition:.16s}
+    button:hover{border-color:var(--accent);color:#fff;background:#122335}
+    button.primary{background:#08253a;border-color:#12618a;color:#bfeaff}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+    .kpi{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px}
+    .kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .kpi-value{font:700 23px ui-monospace,monospace;margin-top:5px;color:#f8fafc}
+    .section{margin-top:16px}.table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+    th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+    td{font-size:13px}tbody tr{cursor:pointer}tbody tr:hover,tbody tr.active{background:#101a27}
+    .bartrack{height:7px;background:#172235;border-radius:9px;min-width:100px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,#1479a8,var(--accent));border-radius:9px}
+    .video{position:relative;width:100%;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#06090f}
+    .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .faq details{padding:13px 0;border-bottom:1px solid var(--line)}.faq summary{cursor:pointer;font-weight:600}.faq p{color:var(--muted);margin:8px 0 0}
+    footer{padding:24px 0 8px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:10px}
+    .notice{min-height:18px;color:var(--green);font-size:12px}
+    @media(max-width:800px){.layout{grid-template-columns:1fr}.hero{align-items:start;flex-direction:column}.kpis{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){.wrap{padding:16px}.kpi-value{font-size:19px}canvas{height:300px}.actions button{flex:1}}
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"Wingspan Titans | SCALEVERSE 3D",
+    "applicationCategory":"EducationalApplication",
+    "operatingSystem":"Any",
+    "description":"An interactive wingspan comparison workstation for five giant flyers.",
+    "url":"https://ayodayanilukshana-alt.github.io/aether-empire/scaleverse/wingspan-titans-5-sky-giants-in-3d.html",
+    "brand":{"@type":"Brand","name":"SCALEVERSE 3D"}
+  }
+  </script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="./index.html" aria-label="SCALEVERSE 3D home">SCALEVERSE <span>3D</span></a>
+    <a class="toplink" href="./index.html">← All simulations</a>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Flight scale laboratory / 01</div>
+      <h1>Wingspan Titans</h1>
+      <p class="intro">From ocean-soaring albatrosses to giraffe-tall pterosaurs, compare five remarkable flyers by wingspan. Select a subject, adjust the viewing scale, and inspect the measurements in real time.</p>
+    </div>
+    <div class="status">● SIMULATION READY</div>
+  </section>
+
+  <div class="layout">
+    <section class="card">
+      <div class="cardhead">
+        <h2>Wingspan visualization</h2>
+        <span class="small mono" id="viewLabel">TOP VIEW · METERS</span>
+      </div>
+      <canvas id="wingCanvas" aria-label="Interactive top-down wingspan comparison visualization"></canvas>
+      <div class="legend"><span><i class="dot"></i>Selected flyer</span><span>Span is drawn to the same scale across all subjects</span><span id="scaleLegend" class="mono"></span></div>
+      <p class="small" style="margin-bottom:0">Drag horizontally to rotate the stylized silhouette. Use the scale control to zoom; measurements remain unchanged.</p>
+    </section>
+
+    <aside class="card">
+      <div class="cardhead"><h2>Simulation controls</h2><span class="small">LIVE TELEMETRY</span></div>
+      <div class="controls">
+        <div>
+          <label for="subject">Flyer <span class="mono" id="selectedMetric"></span></label>
+          <select id="subject"></select>
+        </div>
+        <div>
+          <label for="scale">View scale <span class="mono" id="scaleValue">1.00×</span></label>
+          <input id="scale" type="range" min="0.65" max="1.65" step="0.01" value="1">
+        </div>
+        <div>
+          <label for="rotation">Silhouette rotation <span class="mono" id="rotationValue">0°</span></label>
+          <input id="rotation" type="range" min="-35" max="35" step="1" value="0">
+        </div>
+        <div>
+          <h3>Scenario presets</h3>
+          <div class="presets">
+            <button data-preset="small">Living flyers</button>
+            <button data-preset="giants">Prehistoric giants</button>
+            <button data-preset="record">Maximum span</button>
+            <button data-preset="all">Full comparison</button>
+          </div>
+        </div>
+        <div>
+          <div class="actions">
+            <button class="primary" id="exportBtn">Export CSV Telemetry</button>
+            <button id="copyBtn">Copy Scenario Link</button>
+          </div>
+          <div class="notice" id="notice" aria-live="polite"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="kpis" aria-label="Selected flyer metrics">
+    <div class="kpi"><div class="kpi-label">Wingspan</div><div class="kpi-value" id="kpiSpan">—</div></div>
+    <div class="kpi"><div class="kpi-label">Relative to condor</div><div class="kpi-value" id="kpiRatio">—</div></div>
+    <div class="kpi"><div class="kpi-label">Rank by span</div><div class="kpi-value" id="kpiRank">—</div></div>
+    <div class="kpi"><div class="kpi-label">Range vs. smallest</div><div class="kpi-value" id="kpiRange">—</div></div>
+  </section>
+
+  <section class="card section">
+    <div class="cardhead"><h2>Comparative analytical breakdown</h2><span class="small">Ordered by wingspan · largest first</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Rank</th><th>Flyer</th><th>Wingspan</th><th>Relative to condor</th><th>Scale profile</th></tr></thead>
+        <tbody id="dataRows"></tbody>
+      </table>
+    </div>
+    <p class="small" style="margin-bottom:0">Values are the supplied wingspan figures for this simulation. Scale profiles show each wingspan as a proportion of the largest listed subject.</p>
+  </section>
+
+  <section class="card section">
+    <div class="cardhead"><h2>Video briefing</h2><span class="small">WINGSPAN TITANS: 5 SKY GIANTS IN 3D</span></div>
+    <div class="video"><iframe src="https://www.youtube.com/embed/QcLAXgY8tn4" title="Wingspan Titans: 5 Sky Giants in 3D" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+  </section>
+
+  <section class="card section faq">
+    <div class="cardhead"><h2>Frequently asked questions</h2></div>
+    <details><summary>What does the visualization represent?</summary><p>It presents a stylized, top-down silhouette whose horizontal span is proportional to the selected flyer’s supplied wingspan. All subjects share one common scale, so their sizes can be compared directly.</p></details>
+    <details><summary>Which flyer has the greatest listed wingspan?</summary><p>Quetzalcoatlus northropi leads this dataset at 11.0 meters, followed by Pelagornis sandersi at 7.4 meters.</p></details>
+    <details><summary>What do the scenario presets change?</summary><p>Presets select a subject or group of subjects and update the display. The zoom and rotation controls adjust the visualization only; they do not modify the source measurements.</p></details>
+    <details><summary>What is included in the CSV export?</summary><p>The export records all five supplied measurements along with the current selected flyer, view scale, and silhouette rotation.</p></details>
+  </section>
+  <footer><span>SCALEVERSE 3D · WINGSPAN LAB</span><span>Measurements in meters · Interactive model</span></footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const flyers = [
+    {name:"Andean Condor", meters:3.3, metric:"3.3 m wingspan"},
+    {name:"Wandering Albatross", meters:3.5, metric:"3.5 m wingspan"},
+    {name:"Argentavis magnificens", meters:7.0, metric:"7.0 m wingspan"},
+    {name:"Pelagornis sandersi", meters:7.4, metric:"7.4 m max wingspan"},
+    {name:"Quetzalcoatlus northropi", meters:11.0, metric:"11 m wingspan"}
+  ];
+  const $ = id => document.getElementById(id);
+  const canvas = $("wingCanvas"), ctx = canvas.getContext("2d");
+  const subject = $("subject"), scaleInput = $("scale"), rotationInput = $("rotation");
+  let selected = 0, zoom = 1, rotation = 0, dragX = null, dpr = 1;
+
+  flyers.forEach((f,i) => {
+    const o = document.createElement("option"); o.value = i; o.textContent = f.name; subject.appendChild(o);
+  });
+
+  function populateTable(){
+    const sorted = flyers.map((f,i)=>({...f,i})).sort((a,b)=>b.meters-a.meters);
+    $("dataRows").innerHTML = sorted.map((f,rank)=>`<tr data-index="${f.i}" class="${f.i===selected?"active":""}">
+      <td class="mono">${rank+1}</td><td>${f.name}</td><td class="mono">${f.meters.toFixed(1)} m</td>
+      <td class="mono">${(f.meters/flyers[0].meters).toFixed(2)}×</td>
+      <td><div class="bartrack" aria-label="${(f.meters/11*100).toFixed(0)} percent of maximum"><div class="bar" style="width:${f.meters/11*100}%"></div></div></td>
+    </tr>`).join("");
+    $("dataRows").querySelectorAll("tr").forEach(row=>row.addEventListener("click",()=>setSelected(+row.dataset.index)));
+  }
+  function setSelected(i){selected=i;subject.value=String(i);update();}
+  function update(){
+    const f=flyers[selected], rank=[...flyers].sort((a,b)=>b.meters-a.meters).findIndex(x=>x===f)+1;
+    $("selectedMetric").textContent=f.metric;
+    $("kpiSpan").textContent=f.meters.toFixed(1)+" m";
+    $("kpiRatio").textContent=(f.meters/flyers[0].meters).toFixed(2)+"×";
+    $("kpiRank").textContent=rank+" / 5";
+    $("kpiRange").textContent="+"+(f.meters-flyers[0].meters).toFixed(1)+" m";
+    $("scaleValue").textContent=zoom.toFixed(2)+"×";
+    $("rotationValue").textContent=rotation+"°";
+    $("scaleLegend").textContent="MAX SPAN 11.0 m";
+    populateTable(); draw();
+  }
+  function resize(){
+    const r=canvas.getBoundingClientRect(); dpr=Math.max(1,window.devicePixelRatio||1);
+    canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);draw();
+  }
+  function draw(){
+    const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
+    ctx.clearRect(0,0,w,h);
+    const bg=ctx.createLinearGradient(0,0,0,h);bg.addColorStop(0,"#080e18");bg.addColorStop(1,"#060910");ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+    ctx.save();ctx.strokeStyle="rgba(56,189,248,.075)";ctx.lineWidth=1;
+    for(let x=0;x<w;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+    for(let y=0;y<h;y+=32){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+    ctx.restore();
+    const maxW=Math.min(w*.76,430), spanPx=maxW*(flyers[selected].meters/11)*zoom;
+    const cx=w/2,cy=h*.52, angle=rotation*Math.PI/180;
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);
+    const half=spanPx/2, bodyH=Math.max(7,spanPx*.055);
+    ctx.shadowColor="#38bdf8";ctx.shadowBlur=18;ctx.fillStyle="#38bdf8";
+    // Stylized bilateral swept-wing silhouette, drawn symmetrically to the measured span.
+    ctx.beginPath();
+    ctx.moveTo(0,-bodyH*.62);
+    ctx.lineTo(half*.16,-bodyH*.45);ctx.lineTo(half*.42,-bodyH*.83);
+    ctx.lineTo(half,-bodyH*.22);ctx.lineTo(half*.78,bodyH*.02);
+    ctx.lineTo(half*.48,bodyH*.22);ctx.lineTo(half*.18,bodyH*.42);
+    ctx.lineTo(0,bodyH*.55);
+    ctx.lineTo(-half*.18,bodyH*.42);ctx.lineTo(-half*.48,bodyH*.22);
+    ctx.lineTo(-half*.78,bodyH*.02);ctx.lineTo(-half, -bodyH*.22);
+    ctx.lineTo(-half*.42,-bodyH*.83);ctx.lineTo(-half*.16,-bodyH*.45);ctx.closePath();ctx.fill();
+    ctx.shadowBlur=0;ctx.fillStyle="#c9f2ff";ctx.beginPath();ctx.ellipse(0,0,Math.max(3,bodyH*.16),bodyH*.72,0,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    // Measurement guide
+    const guideY=h-44,x1=cx-spanPx/2,x2=cx+spanPx/2;
+    ctx.strokeStyle="rgba(125,211,252,.75)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x1,guideY);ctx.lineTo(x2,guideY);ctx.moveTo(x1,guideY-6);ctx.lineTo(x1,guideY+6);ctx.moveTo(x2,guideY-6);ctx.lineTo(x2,guideY+6);ctx.stroke();
+    ctx.font="12px ui-monospace,monospace";ctx.fillStyle="#bae6fd";ctx.textAlign="center";
+    ctx.fillText(flyers[selected].meters.toFixed(1)+" m",cx,guideY-9);
+    ctx.textAlign="left";ctx.fillStyle="#64748b";ctx.font="10px ui-monospace,monospace";ctx.fillText("WINGSPAN PROFILE",15,20);
+    ctx.textAlign="right";ctx.fillText("COMMON SCALE · MAX 11.0 m",w-15,20);
+  }
+
+  subject.addEventListener("change",()=>setSelected(+subject.value));
+  scaleInput.addEventListener("input",()=>{zoom=+scaleInput.value;update()});
+  rotationInput.addEventListener("input",()=>{rotation=+rotationInput.value;update()});
+  document.querySelectorAll("[data-preset]").forEach(btn=>btn.addEventListener("click",()=>{
+    const p=btn.dataset.preset;
+    if(p==="small")setSelected(0);
+    if(p==="giants")setSelected(3);
+    if(p==="record")setSelected(4);
+    if(p==="all"){zoom=1;rotation=0;scaleInput.value="1";rotationInput.value="0";setSelected(2)}
+  }));
+  canvas.addEventListener("pointerdown",e=>{dragX=e.clientX;canvas.setPointerCapture(e.pointerId)});
+  canvas.addEventListener("pointermove",e=>{if(dragX!==null){rotation=Math.max(-35,Math.min(35,rotation+(e.clientX-dragX)*.25));dragX=e.clientX;rotationInput.value=rotation;update()}});
+  canvas.addEventListener("pointerup",()=>dragX=null);
+  canvas.addEventListener("pointercancel",()=>dragX=null);
+  window.addEventListener("resize",resize);
+
+  $("exportBtn").addEventListener("click",()=>{
+    const q=v=>'"'+String(v).replaceAll('"','""')+'"';
+    const rows=[["name","wingspan_m","metric","selected","view_scale","rotation_degrees"],
+      ...flyers.map((f,i)=>[f.name,f.meters,f.metric,i===selected?"yes":"no",zoom.toFixed(2),rotation])];
+    const csv=rows.map(r=>r.map(q).join(",")).join("\r\n");
+    const url=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));
+    const a=document.createElement("a");a.href=url;a.download="scaleverse-wingspan-telemetry.csv";a.click();URL.revokeObjectURL(url);
+    $("notice").textContent="CSV telemetry exported.";
+  });
+  $("copyBtn").addEventListener("click",async()=>{
+    const u=new URL(location.href);u.searchParams.set("subject",String(selected));u.searchParams.set("scale",zoom.toFixed(2));u.searchParams.set("rotation",String(rotation));
+    try{await navigator.clipboard.writeText(u.href);$("notice").textContent="Scenario link copied to clipboard."}
+    catch(e){const t=document.createElement("textarea");t.value=u.href;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();$("notice").textContent="Scenario link copied to clipboard."}
+  });
+  const params=new URLSearchParams(location.search);
+  if(params.has("subject"))selected=Math.max(0,Math.min(4,parseInt(params.get("subject"),10)||0));
+  if(params.has("scale"))zoom=Math.max(.65,Math.min(1.65,parseFloat(params.get("scale"))||1));
+  if(params.has("rotation"))rotation=Math.max(-35,Math.min(35,parseInt(params.get("rotation"),10)||0));
+  subject.value=String(selected);scaleInput.value=zoom;rotationInput.value=rotation;
+  resize();update();
+})();
+</script>
+</body>
+</html>
